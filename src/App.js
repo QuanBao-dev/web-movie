@@ -2,8 +2,8 @@ import "./App.css";
 
 import React from "react";
 import { BrowserRouter as Router,NavLink as Link, Route, Switch } from "react-router-dom";
-import Home from "./components/Home/Home";
-import User from "./components/User/User";
+import Home from "./Home/Home";
+import User from "./User/User";
 
 function App() {
   return (

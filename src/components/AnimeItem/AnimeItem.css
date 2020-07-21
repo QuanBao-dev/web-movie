@@ -2,13 +2,26 @@
   margin: 30px 10px;
   height: 400px;
   width: 300px;
+  border-radius: 10px;
+  position: relative;
+  box-shadow: 0 0 10px 5px rgba(0, 0, 0, 0.692);
 }
 
 .anime-item img{
+  position: absolute;
   width: 100%;
   height: 100%;
-  object-fit: contain;
+  object-fit: cover;
   object-position: center;
   border-radius: 10px;
 }
 
+.anime-item-info{
+  color:white;
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  background-color: rgba(0, 0, 0, 0.521);
+  border-radius: 10px;
+  text-align: center;
+}

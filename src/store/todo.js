@@ -3,14 +3,14 @@ import { BehaviorSubject } from "rxjs";
 import { tap, share } from "rxjs/operators";
 const initialState = {
   dataDetail: [],
-  currentPage:1,
-  numberOfProduct:12,
-  year:2020,
-  season:"summer",
-  maxPage:1,
-  isLoading:true,
-  error:undefined,
-  dataFilter: []
+  currentPage: 1,
+  numberOfProduct: 12,
+  year: 2020,
+  season: "summer",
+  maxPage: 1,
+  isLoading: true,
+  dataFilter: [],
+  textSearch: "",
 };
 
 const subject = new BehaviorSubject(initialState);
@@ -19,7 +19,7 @@ let state = initialState;
 
 const todoStore = {
   initialState,
-  subscribe: (setState) => subject.pipe().subscribe((v) => setState(v)),
+  subscribe: (setState) => subject.pipe(tap((v) => console.log(v))).subscribe((v) => setState(v)),
   init: () => {
     subject.next(state);
   },
@@ -31,53 +31,69 @@ const todoStore = {
     subject.next(state);
   },
 
-  increaseCurrentPage:() => {
+  updateCurrentPage: (page) => {
     state = {
       ...state,
-      currentPage:(state.currentPage+1 <= state.maxPage) ? state.currentPage + 1 : state.currentPage,
-    }
-    subject.next(state)
+      currentPage: page,
+    };
+    subject.next(state);
   },
 
-  decreaseCurrentPage:() => {
+  increaseCurrentPage: () => {
     state = {
       ...state,
-      currentPage: (state.currentPage - 1 > 0) ? state.currentPage-1 : state.currentPage,
-    }
-    subject.next(state)
+      currentPage:
+        state.currentPage + 1 <= state.maxPage
+          ? state.currentPage + 1
+          : state.currentPage,
+    };
+    subject.next(state);
   },
 
-  updateSeason:(season) => {
+  decreaseCurrentPage: () => {
     state = {
       ...state,
-      season:season,
-    }
-    subject.next(state)
+      currentPage:
+        state.currentPage - 1 > 0 ? state.currentPage - 1 : state.currentPage,
+    };
+    subject.next(state);
   },
 
-  updateYear:(year) => {
+  updateSeason: (season) => {
     state = {
       ...state,
-      year:year,
-    }
-    subject.next(state)
+      season: season,
+    };
+    subject.next(state);
   },
 
-  handleError:(error) => {
+  updateYear: (year) => {
     state = {
       ...state,
-      error:error
-    }
-    subject.next(state)
-  }
+      year: year,
+    };
+    subject.next(state);
+  },
+
+  updateDataFilter: (dataFilter) => {
+    state = {
+      ...state,
+      dataFilter: dataFilter,
+    };
+    subject.next(state);
+  },
 };
 
-export const updateMaxPage=(max) => {
-  state.maxPage = max
-}
+export const updateMaxPage = (max) => {
+  state.maxPage = max;
+};
 
 export const updateIsLoading = (bool) => {
-  state.isLoading = bool
-}
+  state.isLoading = bool;
+};
+
+export const savingTextSearch = (text) => {
+  state.textSearch = text;
+};
 
 export default todoStore;

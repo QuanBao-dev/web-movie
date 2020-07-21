@@ -1,11 +1,25 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-useless-escape */
 import { orderBy } from "lodash";
-import { combineLatest, fromEvent } from "rxjs";
+import { combineLatest, fromEvent, of, timer } from "rxjs";
 import { ajax } from "rxjs/ajax";
-import { map, pluck, tap, catchError } from "rxjs/operators";
+import {
+  catchError,
+  filter,
+  map,
+  pluck,
+  switchMap,
+  tap,
+  switchMapTo,
+  share,
+  debounceTime
+} from "rxjs/operators";
 
-import todoStore, { updateIsLoading, updateMaxPage } from "../store/todo";
+import todoStore, {
+  savingTextSearch,
+  updateIsLoading,
+  updateMaxPage,
+} from "../store/todo";
 
 export const stream = todoStore;
 
@@ -20,39 +34,35 @@ export const validateFormSubmit$ = (inputUsername, inputPassword) => {
 };
 
 export const fetchAnimeSeason$ = (year, season, page, numberOfProducts) => {
-  return ajax(`https://api.jikan.moe/v3/season/${year}/${season}`).pipe(
-    tap(() => updateIsLoading(true)),
-    pluck("response", "anime"),
-    map((anime) => {
-      if (!anime) {
-        stream.handleError({
-          status: 400,
-          type: "HttpException",
-          message:
-            "Invalid or incomplete request. Please double check the request documentation",
-          error: null,
-        });
-      } else {
-        console.log("fetch");
-        updateMaxPage(Math.ceil(anime.length / 12));
-        return orderBy(anime, ["airing_start"], ["desc"]).slice(
-          (page - 1) * numberOfProducts,
-          page * numberOfProducts
-        );
-      }
-    }),
-    tap((v) => {
-      stream.updateAnimeData(v);
-      updateIsLoading(false);
-    }),
-    catchError((error) => {
-      stream.handleError(error);
-    })
+  return timer(0).pipe(
+    switchMapTo(
+      ajax(`https://api.jikan.moe/v3/season/${year}/${season}`).pipe(
+        tap(() => updateIsLoading(true)),
+        share(),
+        pluck("response", "anime"),
+        map((anime) => {
+          updateMaxPage(Math.ceil(anime.length / 12));
+          return orderBy(anime, ["airing_start"], ["desc"]).slice(
+            (page - 1) * numberOfProducts,
+            page * numberOfProducts
+          );
+        }),
+        tap((v) => {
+          stream.updateAnimeData(v);
+          updateIsLoading(false);
+        }),
+        catchError((error) => {
+          stream.handleError(error);
+          return of([]);
+        })
+      )
+    )
   );
 };
 
 export const changeCurrentPage$ = () => {
   return fromEvent(document, "keydown").pipe(
+    filter((v) => v.target.tagName === "BODY"),
     pluck("keyCode"),
     map((keyCode) => {
       switch (keyCode) {
@@ -75,6 +85,10 @@ export const changeYear$ = (selectYearElement) => {
     pluck("target", "value"),
     tap((year) => {
       stream.updateYear(parseInt(year));
+    }),
+    catchError((err) => {
+      console.error(err);
+      return of("");
     })
   );
 };
@@ -85,6 +99,39 @@ export const changeSeason$ = (selectSeasonElement) => {
     pluck("target", "value"),
     tap((season) => {
       stream.updateSeason(season);
+    }),
+    catchError((err) => {
+      console.error(err);
+      return of("");
     })
+  );
+};
+
+export const changeSearchInput$ = (searchInputElement) => {
+  const searchedInput$ = fromEvent(searchInputElement, "input").pipe(
+    debounceTime(1000)
+  );
+  return searchedInput$.pipe(
+    pluck("target", "value"),
+    tap((text) => savingTextSearch(text)),
+    catchError((err) => {
+      console.error(err);
+      return of("");
+    }),
+    switchMap((text) =>
+      ajax("https://api.jikan.moe/v3/search/anime?q=" + text).pipe(
+        share(),
+        pluck("response", "results"),
+        map((data) => {
+          const dataSearched = data;
+          return dataSearched;
+        }),
+        catchError((err) => {
+          console.error(err);
+          return of([]);
+        })
+      )
+    ),
+    tap((data) => stream.updateDataFilter(data))
   );
 };

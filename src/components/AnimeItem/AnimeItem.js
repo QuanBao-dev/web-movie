@@ -3,10 +3,12 @@ import "./AnimeItem.css";
 const AnimeItem = ({anime}) => {
   return (
     <div className="anime-item">
-      <span>{anime.title}</span>
-      <div>{anime.airing_start}</div>
       <a href={anime.url}>
         <img src={anime.image_url} alt="NOT_FOUND" />
+        <div className="anime-item-info">
+          <h3>{anime.title}</h3>
+          <h3>{anime.airing_start}</h3>
+        </div>
       </a>
     </div>
   )

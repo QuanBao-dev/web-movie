@@ -1,7 +1,7 @@
 import React from "react";
 import "./User.css";
 import { Link, Switch, Route } from "react-router-dom";
-import Name from "../Name/Name";
+import Name from "../components/Name/Name";
 function User(props) {
   return (
     <div>

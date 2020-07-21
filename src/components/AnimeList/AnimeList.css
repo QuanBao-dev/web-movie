@@ -1,0 +1,7 @@
+.list-anime{
+  display: flex;
+  width:64%;
+  margin:auto;
+  flex-wrap: wrap;
+}
+

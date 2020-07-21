@@ -9,7 +9,8 @@ const initialState = {
   season:"summer",
   maxPage:1,
   isLoading:true,
-  error:undefined
+  error:undefined,
+  dataFilter: []
 };
 
 const subject = new BehaviorSubject(initialState);

@@ -7,8 +7,6 @@ import { map, pluck, tap, catchError } from "rxjs/operators";
 
 import todoStore, { updateIsLoading, updateMaxPage } from "../store/todo";
 
-// import { orderBy } from "lodash";
-
 export const stream = todoStore;
 
 export const validateFormSubmit$ = (inputUsername, inputPassword) => {

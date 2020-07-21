@@ -10,6 +10,7 @@ import {
   changeSeason$,
 } from "../../epics/todo";
 import Input from "../Input/Input";
+import AnimeList from "../AnimeList/AnimeList";
 
 const middleWare = (todoState) => {
   if (todoState.currentPage > todoState.maxPage) {
@@ -44,6 +45,8 @@ function Home() {
 
     const subscription5 = changeSeason$(selectSeason.current).subscribe();
 
+    
+
     return () => {
       subscription.unsubscribe();
       subscription2.unsubscribe();
@@ -58,7 +61,7 @@ function Home() {
     todoState.year,
     todoState.error,
   ]);
-  console.log(todoState);
+  // console.log(todoState);
   middleWare(todoState);
   if (todoState.error) {
     return (
@@ -73,7 +76,7 @@ function Home() {
         className="block-popup"
         style={{
           display:
-            !todoState.isLoading && todoState.maxPage !== todoState.currentPage
+            !todoState.isLoading && todoState.maxPage >= todoState.currentPage + 1 && todoState.currentPage - 1 >= 1
               ? "block"
               : "none",
         }}
@@ -100,19 +103,7 @@ function Home() {
         <Input label="Search" input={searchInput} />
       </div>
 
-      <div className="list-anime">
-        {todoState.dataDetail.map((anime, index) => {
-          return (
-            <div key={index} className="anime-item">
-              <span>{anime.title}</span>
-              <div>{anime.airing_start}</div>
-              <a href={anime.url}>
-                <img src={anime.image_url} alt="NOT_FOUND" />
-              </a>
-            </div>
-          );
-        })}
-      </div>
+      <AnimeList data={todoState.dataDetail} />
     </div>
   );
 }

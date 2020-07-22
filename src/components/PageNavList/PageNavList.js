@@ -8,9 +8,11 @@ const PageNavList = ({ elementsLi, stream, todoState }) => {
         return (
           <li
             key={index}
-            onClick={(e) =>
-              stream.updateCurrentPage(parseInt(e.target.innerHTML))
-            }
+            onClick={(e) => {
+              if (todoState.currentPage !== parseInt(e.target.innerHTML)) {
+                stream.updateCurrentPage(parseInt(e.target.innerHTML));
+              }
+            }}
             className={`page-nav-item${
               todoState.currentPage === page ? " active-page" : ""
             }`}

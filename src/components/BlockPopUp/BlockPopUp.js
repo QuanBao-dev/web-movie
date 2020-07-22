@@ -1,7 +1,8 @@
 import React from "react";
 import "./BlockPopUp.css";
 
-const BlockPopUp = ({todoState}) => {
+const BlockPopUp = ({ todoState }) => {
+  console.log(todoState);
   return (
     <div
       className="block-popup"
@@ -14,7 +15,9 @@ const BlockPopUp = ({todoState}) => {
             : "none",
       }}
     >
-      <h1>Loading...</h1>
+      <div>
+        <h1>Loading...</h1>
+      </div>
     </div>
   );
 };

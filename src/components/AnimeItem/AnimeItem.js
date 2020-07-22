@@ -1,17 +1,20 @@
 import React from "react";
 import "./AnimeItem.css";
-const AnimeItem = ({anime}) => {
+import { useHistory } from "react-router-dom";
+const AnimeItem = ({ anime }) => {
+  const history = useHistory();
   return (
-    <div className="anime-item">
-      <a href={anime.url}>
-        <img src={anime.image_url} alt="NOT_FOUND" />
-        <div className="anime-item-info">
-          <h3>{anime.title}</h3>
-          <h3>{anime.airing_start}</h3>
-        </div>
-      </a>
+    <div
+      className="anime-item"
+      onClick={() => history.push("/anime/" + anime.title)}
+    >
+      <img src={anime.image_url} alt="NOT_FOUND" />
+      <div className="anime-item-info">
+        <h3>{anime.title}</h3>
+        <h3>{anime.airing_start}</h3>
+      </div>
     </div>
-  )
+  );
 };
 
 export default AnimeItem;

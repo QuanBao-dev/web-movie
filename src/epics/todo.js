@@ -5,14 +5,14 @@ import { combineLatest, fromEvent, of, timer } from "rxjs";
 import { ajax } from "rxjs/ajax";
 import {
   catchError,
+  debounceTime,
   filter,
   map,
   pluck,
-  switchMap,
-  tap,
-  switchMapTo,
   share,
-  debounceTime
+  switchMap,
+  switchMapTo,
+  tap,
 } from "rxjs/operators";
 
 import todoStore, {

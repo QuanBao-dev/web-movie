@@ -1,9 +1,13 @@
 .nav-bar__app{
   display: flex;
   list-style-type: none;
-  background-color: rgb(123, 125, 210);
+  background-color: rgb(2, 2, 2);
   margin: 0;
   padding: 10px 0;
+  z-index:10;
+  width: 100%;
+  position: fixed;
+  top:0;
 }
 
 .nav-bar__app li{
@@ -21,5 +25,6 @@
 
 .active{
   transition: 0.3s ease-in-out;
-  background-color: black;
+  background-color: white;
+  color: black!important;
 }

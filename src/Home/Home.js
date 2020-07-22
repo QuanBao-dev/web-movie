@@ -93,11 +93,10 @@ function Home() {
     return todoState.currentPage - Math.floor(numberOfPagesDisplay / 2) + v;
   });
   return (
-    <div>
+    <div className="home-page">
       <BlockPopUp todoState={todoState} />
       <div style={{ margin: "auto", width: "80%", textAlign: "center" }}>
         <h2>Max page: {todoState.maxPage}</h2>
-        <h2 className="new-page__title">Page {todoState.currentPage}</h2>
         <select
           style={{
             margin: "10px",

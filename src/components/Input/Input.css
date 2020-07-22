@@ -36,6 +36,7 @@
   height: 30px;
   width: 100%;
   font-size: 120%;
+  background-color: inherit;
   border:none;
   outline: none;
   border-bottom: 1px solid black;

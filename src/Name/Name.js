@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { stream } from "../epics/todo";
+import { fetchTopMovie$, stream } from "../epics/todo";
 import "./Name.css";
 
 const fetchData = async (name) => {
@@ -14,16 +14,34 @@ const Name = (props) => {
   useEffect(() => {
     const subscription = stream.subscribe(setData);
     stream.init();
-    fetchData(name).then((v) => {
-      setData(v);
-    });
+    const subscription2 = fetchTopMovie$().subscribe();
+    fetchData(name)
+      .then((v) => {
+        if (v.status !== 403) {
+          setData(v);
+        }
+      })
+      .catch((err) => {
+        console.error(err);
+      });
     return () => {
       subscription.unsubscribe();
+      subscription2.unsubscribe();
     };
   }, [name]);
   let findingAnime;
-  if (data.dataDetail) {
+  if (data.dataTopMovie && !findingAnime) {
+    findingAnime = data.dataTopMovie.find((v) => {
+      return v.title === name;
+    });
+  }
+  if (data.dataDetail && !findingAnime) {
     findingAnime = data.dataDetail.find((v) => {
+      return v.title === name;
+    });
+  }
+  if(data.dataFilter && !findingAnime){
+    findingAnime = data.dataFilter.find((v) => {
       return v.title === name;
     });
   }
@@ -32,7 +50,13 @@ const Name = (props) => {
       return v.title === name;
     });
   }
-  // console.log(data);
+  console.log(data);
+  let arrKeys;
+  if(findingAnime){
+    arrKeys = Object.keys(findingAnime).filter(v => {
+      return ["title","image_url","url","synopsis"].indexOf(v) === -1 ? true : false
+    });
+  }
   return (
     <div className="layout">
       {findingAnime && (
@@ -45,11 +69,23 @@ const Name = (props) => {
             <div className="box-info">
               <div>Thong tin</div>
               <ul>
-                <li>airing: {`${findingAnime.airing}`}</li>
-                <li>start_date: {findingAnime.start_date}</li>
-                <li>Type: {findingAnime.type}</li>
-                <li>rated:{findingAnime.rated}</li>
-                <li>score: {findingAnime.score}</li>
+                {arrKeys && arrKeys.map((v, index) => {
+                  if(typeof findingAnime[v] !== "object"){
+                    return (
+                      <li key={index}>
+                        {v}: {`${findingAnime[v]}`}
+                      </li>
+                    );
+
+                  } else {
+                    const genres = findingAnime[v] && findingAnime[v].map(v => v.name).join(" | ");
+                    return (
+                      <li key={index}>
+                        {v}: {`${genres}`}
+                      </li>
+                    )
+                  }
+                })}
               </ul>
             </div>
             <div className="box-content">

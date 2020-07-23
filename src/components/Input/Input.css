@@ -5,6 +5,7 @@
   width: 100%;
   position: relative;
   overflow: hidden;
+  color:white;
 }
 
 .form-custom .label-name::before{
@@ -40,6 +41,7 @@
   border:none;
   outline: none;
   border-bottom: 1px solid black;
+  color: white;
 }
 
 .form-custom input:focus + .label-name,

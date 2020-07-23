@@ -4,7 +4,7 @@ import "./AnimeList.css";
 const AnimeList = ({data}) => {
   return (
     <div className="list-anime">
-      {data.map((anime, index) => {
+      {data&&data.map((anime, index) => {
         return (
           <AnimeItem key={index} anime={anime} />
         );

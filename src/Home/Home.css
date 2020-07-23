@@ -1,3 +1,89 @@
 .home-page{
   background-color: rgb(95, 91, 91);
 }
+
+.container-anime-list{
+  display: flex;
+  background-color: rgb(51, 54, 68);
+  margin-top: 30px;
+  box-shadow: 0 0 10px 5px black;
+}
+
+.anime-pagination{
+  background-color: rgb(47, 58, 71);
+  width:64%;
+  margin:50px 0 50px auto;
+  /* margin: 10px 0; */
+  border-radius: 10px;
+  box-shadow: 0 0 10px 10px black, 0 0 10px 6px white;
+}
+
+.upcoming-anime-list-container{
+  width: 30%;
+  color: aliceblue;
+  margin:50px auto 50px 0;
+  box-shadow: 0 0 10px 10px black, 0 0 10px 6px white;
+  border-radius: 10px;
+  background-color: rgb(49, 47, 71);
+}
+
+.upcoming-anime-list{
+  padding: 0;
+  white-space: nowrap;
+  overflow-y: auto;
+  height: 1900px;
+  width: 100%;
+  list-style-type: none;
+}
+
+.upcoming-anime-list li{
+  width: 100%;
+  margin: auto;
+  position: relative;
+  border-radius: 10px;
+}
+
+.upcoming-anime-list-info{
+  color:white;
+  width: 80%;
+  margin: auto;
+  text-align: center;
+  background-color: rgb(37, 39, 63);
+  white-space: normal;
+  box-shadow: 0 0 10px 2px black;
+  border: 10px double black;
+  border-radius: 10px;
+}
+
+.upcoming-anime-list-info .title{
+  font-size: 140%;
+  padding: 10px;
+  box-shadow: 0 0px 1px 1px rgb(107, 106, 106);
+  border: 10px double black;
+}
+
+.upcoming-anime-list li img{
+  width: 60%;
+  height: 100%;
+  display: block;
+  cursor: pointer;
+  margin: 15px auto 10px auto;
+  box-shadow: 0 0 10px 5px rgb(75, 75, 49);
+  object-fit: cover;
+  border-radius: 10px;
+  object-position: center;
+  animation: none;
+}
+
+.upcoming-anime-list li img:hover{
+  animation: rotate 1.5s linear infinite both;
+}
+
+@keyframes rotate {
+  0% {
+      filter: hue-rotate(0deg)
+  }
+  100% {
+    filter: hue-rotate(360deg)
+  }
+}

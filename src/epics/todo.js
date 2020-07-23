@@ -19,6 +19,7 @@ import todoStore, {
   savingTextSearch,
   updateIsLoading,
   updateMaxPage,
+  updateTopMovie,
 } from "../store/todo";
 
 export const stream = todoStore;
@@ -35,28 +36,31 @@ export const validateFormSubmit$ = (inputUsername, inputPassword) => {
 
 export const fetchAnimeSeason$ = (year, season, page, numberOfProducts) => {
   return timer(0).pipe(
+    tap(() => updateIsLoading(true)),
     switchMapTo(
       ajax(`https://api.jikan.moe/v3/season/${year}/${season}`).pipe(
-        tap(() => updateIsLoading(true)),
         share(),
         pluck("response", "anime"),
         map((anime) => {
           updateMaxPage(Math.ceil(anime.length / 12));
+          updateIsLoading(false);
           return orderBy(anime, ["airing_start"], ["desc"]).slice(
             (page - 1) * numberOfProducts,
             page * numberOfProducts
           );
         }),
-        tap((v) => {
-          stream.updateAnimeData(v);
-          updateIsLoading(false);
-        }),
         catchError((error) => {
-          stream.handleError(error);
+          console.error(error);
+          updateIsLoading(false);
+          stream.catchingError(error);
           return of([]);
         })
       )
-    )
+    ),
+    tap((v) => {
+      stream.updateAnimeData(v);
+      updateIsLoading(false);
+    })
   );
 };
 
@@ -133,5 +137,23 @@ export const changeSearchInput$ = (searchInputElement) => {
       )
     ),
     tap((data) => stream.updateDataFilter(data))
+  );
+};
+
+export const fetchTopMovie$ = () => {
+  return timer(0).pipe(
+    switchMapTo(
+      ajax({
+        url: "http://api.jikan.moe/v3/top/anime/1/airing",
+      }).pipe(
+        share(),
+        pluck("response", "top"),
+        catchError((err) => {
+          console.error(err);
+          return of([]);
+        })
+      )
+    ),
+    tap((topMovieList) => updateTopMovie(topMovieList))
   );
 };

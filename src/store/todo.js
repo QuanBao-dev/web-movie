@@ -11,6 +11,8 @@ const initialState = {
   isLoading: true,
   dataFilter: [],
   textSearch: "",
+  dataTopMovie:[],
+  error:null,
 };
 
 const subject = new BehaviorSubject(initialState);
@@ -23,10 +25,19 @@ const todoStore = {
   init: () => {
     subject.next(state);
   },
+
   updateAnimeData: (data) => {
     state = {
       ...state,
       dataDetail: [...data],
+    };
+    subject.next(state);
+  },
+
+  catchingError:(error) => {
+    state = {
+      ...state,
+      error:error,
     };
     subject.next(state);
   },
@@ -95,5 +106,10 @@ export const updateIsLoading = (bool) => {
 export const savingTextSearch = (text) => {
   state.textSearch = text;
 };
+
+export const updateTopMovie =(data) => {
+  state.dataTopMovie = data;
+};
+
 
 export default todoStore;

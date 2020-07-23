@@ -8,7 +8,7 @@ const BlockPopUp = ({ todoState }) => {
       className="block-popup"
       style={{
         display:
-          !todoState.isLoading &&
+          todoState.isLoading === true &&
           todoState.maxPage >= todoState.currentPage + 1 &&
           todoState.currentPage - 1 >= 1
             ? "block"

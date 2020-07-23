@@ -6,9 +6,9 @@ const SearchedAnimeList = ({ todoState }) => {
   return (
     <div
       className="search-list-anime"
-      style={{ display: todoState.dataFilter.length > 0 ? "block" : "none" }}
+      style={{ display: todoState.dataFilter && todoState.dataFilter.length > 0 ? "block" : "none" }}
     >
-      {todoState.dataFilter.map((anime, index) => {
+      {todoState.dataFilter&&todoState.dataFilter.map((anime, index) => {
         return (
           <SearchedAnime
             key={index}

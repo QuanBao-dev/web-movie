@@ -1,0 +1,14 @@
+.container-background-form{
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.form-register{
+  width: 40rem;
+  background-color: rgba(45, 62, 117, 0.692);
+  padding: 4rem 5rem 5rem 5rem;
+}

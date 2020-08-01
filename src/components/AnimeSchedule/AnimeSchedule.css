@@ -1,0 +1,98 @@
+.week-schedule-movie{
+  list-style-type: none;
+  padding: 1rem;
+  margin: 0;
+  font-size: 1rem;
+  background-color: #2e2e3b;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 0 10px 10px rgba(0, 0, 0, 0.979), 0 0 10px 10px rgba(255, 255, 255, 0.979);
+
+}
+
+.day-schedule-movie{
+  padding: 1rem 0;
+  background-color: #1e1e1e;
+  margin: 1rem 0;
+  border-radius: 3px solid black;
+  padding-left: 10px;
+  box-shadow: 0 0 3px 2px rgb(3, 3, 3),  0 0 3px 2px rgba(255, 255, 255, 0.979);;
+}
+
+.day-schedule-movie .title{
+  font-size: 1.2rem;
+  text-transform: capitalize;
+}
+
+.all-movies-day{
+  background-color: black;
+  color:white;
+  grid-template-columns: repeat(5, 1fr);
+  grid-gap: 1rem;
+  margin-top: 1rem;
+}
+
+.container-week-schedule-movie{
+  padding:10px;
+  background-color: #474453;
+}
+
+.schedule-movie{
+  position: relative;
+  overflow: hidden;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.schedule-movie-content{
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  transform: scale(0);
+  background-color: #2e2e3b65;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.schedule-movie:hover .schedule-movie-content{
+  transition: 0.5s;
+  transform: scale(1);
+}
+
+.schedule-movie-img{
+  object-fit: cover;
+  object-position: center;
+  width: 100%;
+  height: 20rem;
+}
+
+.schedule-movie-rating{
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: none;
+}
+
+.schedule-movie-rating .score{
+  display: inline-block;
+  background-color: black;
+  padding: 5px;
+  border-radius: 10px;
+  color: red;
+  margin: 10px;
+}
+
+.schedule-movie-rating .episodes{
+  background-color: black;
+  display: inline-block;
+  color:yellow;
+  padding: 5px;
+  border-radius: 10px;
+  margin: 10px 10px auto 10px;
+}

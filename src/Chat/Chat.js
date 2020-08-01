@@ -56,7 +56,7 @@ function Chat() {
     inputAuthorRefs,
     inputRefs,
   ]);
-  console.log(chatState);
+  // console.log(chatState);
   return (
     <div className="wrapper-messages">
       <div style={{ marginBottom: "50px" }}>

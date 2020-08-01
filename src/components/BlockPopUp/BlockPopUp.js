@@ -2,7 +2,6 @@ import React from "react";
 import "./BlockPopUp.css";
 
 const BlockPopUp = ({ todoState }) => {
-  console.log(todoState);
   return (
     <div
       className="block-popup"

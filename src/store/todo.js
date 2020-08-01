@@ -1,8 +1,8 @@
 /* eslint-disable no-unused-vars */
 import { BehaviorSubject } from "rxjs";
-import { tap, share } from "rxjs/operators";
 const initialState = {
   dataDetail: [],
+  dataDetailOriginal:[],
   currentPage: 1,
   numberOfProduct: 12,
   year: 2020,
@@ -13,6 +13,8 @@ const initialState = {
   textSearch: "",
   dataTopMovie:[],
   error:null,
+  dataScheduleMovie: {},
+  dateSchedule:Array.from(Array(7).keys()).map(() => false),
 };
 
 const subject = new BehaviorSubject(initialState);
@@ -21,8 +23,27 @@ let state = initialState;
 
 const todoStore = {
   initialState,
-  subscribe: (setState) => subject.pipe(tap((v) => console.log(v))).subscribe((v) => setState(v)),
+  subscribe: (setState) => subject.pipe().subscribe((v) => setState(v)),
   init: () => {
+    subject.next(state);
+  },
+
+  updateDate:(date) => {
+    state = {
+      ...state,
+      dateSchedule:[...date]
+    }
+    subject.next(state);
+  },
+
+  updateDataSchedule:(data) =>{
+    state={
+      ...state,
+      dataScheduleMovie:{
+        ...state.dataScheduleMovie,
+        ...data
+      }
+    }
     subject.next(state);
   },
 
@@ -93,6 +114,14 @@ const todoStore = {
     };
     subject.next(state);
   },
+
+  updateTopMovie: (data) => {
+    state={
+      ...state,
+      dataTopMovie:[...data]
+    };
+    subject.next(state);
+  }
 };
 
 export const updateMaxPage = (max) => {
@@ -103,13 +132,17 @@ export const updateIsLoading = (bool) => {
   state.isLoading = bool;
 };
 
+export const updateOriginalData = (data) =>{
+  state.dataDetailOriginal = data
+}
+
 export const savingTextSearch = (text) => {
   state.textSearch = text;
 };
 
-export const updateTopMovie =(data) => {
-  state.dataTopMovie = data;
-};
+// export const updateTopMovie =(data) => {
+//   state.dataTopMovie = data;
+// };
 
 
 export default todoStore;

@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-useless-escape */
 import { orderBy } from "lodash";
-import { combineLatest, fromEvent, of, timer } from "rxjs";
+import { combineLatest, fromEvent, of, timer, from } from "rxjs";
 import { ajax } from "rxjs/ajax";
 import {
   catchError,
@@ -13,23 +13,41 @@ import {
   switchMap,
   switchMapTo,
   tap,
+  mergeMap,
+  combineAll
 } from "rxjs/operators";
 
 import todoStore, {
   savingTextSearch,
   updateIsLoading,
   updateMaxPage,
+  updateOriginalData,
   updateTopMovie,
 } from "../store/todo";
 
 export const stream = todoStore;
 
-export const validateFormSubmit$ = (inputUsername, inputPassword) => {
-  const username$ = fromEvent(inputUsername, "input");
+export const validateFormSubmit$ = (
+  emailUsername,
+  inputPassword,
+  buttonSubmit
+) => {
+  buttonSubmit.disabled = true;
+  const username$ = fromEvent(emailUsername, "input");
   const password$ = fromEvent(inputPassword, "input");
-  return combineLatest(username$, password$).pipe(
-    map(([username, password]) => {
-      return [username.target.value, password.target.value];
+  const source$ = from([username$, password$]).pipe(combineAll());
+  return source$.pipe(
+    map(([email, password]) => {
+      if (
+        email.target.value.length < 6 ||
+        !email.target.value.includes("@") ||
+        password.target.value.length < 6
+      ) {
+        buttonSubmit.disabled = true;
+      } else {
+        buttonSubmit.disabled = false;
+      }
+      return [email.target.value, password.target.value];
     })
   );
 };
@@ -43,6 +61,7 @@ export const fetchAnimeSeason$ = (year, season, page, numberOfProducts) => {
         pluck("response", "anime"),
         map((anime) => {
           updateMaxPage(Math.ceil(anime.length / 12));
+          updateOriginalData(anime);
           updateIsLoading(false);
           stream.catchingError(null);
           return orderBy(anime, ["airing_start"], ["desc"]).slice(
@@ -155,6 +174,32 @@ export const fetchTopMovie$ = () => {
         })
       )
     ),
-    tap((topMovieList) => updateTopMovie(topMovieList))
+    tap((topMovieList) => stream.updateTopMovie(topMovieList))
+  );
+};
+
+export const fetchAnimeSchedule$ = (weekIndex) => {
+  const week = [
+    "monday",
+    "tuesday",
+    "wednesday",
+    "thursday",
+    "friday",
+    "saturday",
+    "sunday",
+  ];
+  const filterWeek = week.filter((v, index) => weekIndex[index]);
+  const source$ = from(filterWeek);
+  return source$.pipe(
+    mergeMap((day) =>
+      ajax(`https://api.jikan.moe/v3/schedule/${day}`).pipe(
+        pluck("response", day),
+        catchError((err) => {
+          console.error(err);
+          return of([]);
+        }),
+        tap((v) => stream.updateDataSchedule({ [day]: v }))
+      )
+    )
   );
 };

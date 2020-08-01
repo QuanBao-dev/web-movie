@@ -1,0 +1,14 @@
+.container-background{
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.form-login{
+  width: 40rem;
+  background-color: rgba(29, 33, 46, 0.692);
+  padding: 4rem 5rem 5rem 5rem;
+}

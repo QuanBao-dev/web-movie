@@ -15,7 +15,7 @@ const chatStore = {
     behaviorSubject.next(state);
   },
   updateMessage: (newMessage, index) => {
-    console.log(state.messages[index]);
+    // console.log(state.messages[index]);
     let suitablePositionToAdd = state.messages.length;
     if (index !== null) {
       const marginLeftSource = parseInt(
@@ -27,12 +27,12 @@ const chatStore = {
           parseInt(state.messages[i].marginLeft.replace(/px/g, ""))
         ) {
           suitablePositionToAdd = i;
-          console.log({suitablePositionToAdd});
+          // console.log({suitablePositionToAdd});
           break;
         }
       }
     }
-    console.log(suitablePositionToAdd);
+    // console.log(suitablePositionToAdd);
     state = {
       ...state,
       messages: [

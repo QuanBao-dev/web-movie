@@ -17,7 +17,7 @@ import {
   stream,
 } from "../epics/todo";
 import { Link } from "react-router-dom";
-
+import AnimeSchedule from "../components/AnimeSchedule/AnimeSchedule";
 const middleWare = (todoState) => {
   if (todoState.currentPage > todoState.maxPage) {
     todoState.currentPage = todoState.maxPage;
@@ -95,7 +95,7 @@ function Home() {
     }
     return todoState.currentPage - Math.floor(numberOfPagesDisplay / 2) + v;
   });
-  console.log(todoState.dataTopMovie.length);
+  // console.log(todoState);
   return (
     <div className="home-page">
       <BlockPopUp todoState={todoState} />
@@ -175,6 +175,7 @@ function Home() {
           </div>
         </div>
       </div>
+      <AnimeSchedule />
     </div>
   );
 }

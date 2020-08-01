@@ -165,7 +165,7 @@ function Home() {
           </ul>
         </div>
         <div className="anime-pagination">
-          <AnimeList data={todoState.dataDetail} />
+          <AnimeList data={todoState.dataDetail} error={todoState.error || null}/>
           <div style={{ margin: "auto", width: "50%", textAlign: "center" }}>
             <PageNavList
               elementsLi={elementsLi}

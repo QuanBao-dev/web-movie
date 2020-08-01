@@ -36,6 +36,21 @@
   list-style-type: none;
 }
 
+.upcoming-anime-list::-webkit-scrollbar {
+  width: 5px;
+  background-color: #F5F5F5;
+}
+
+.upcoming-anime-list::-webkit-scrollbar-track {
+  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+  background-color: #444242;
+}
+
+.upcoming-anime-list::-webkit-scrollbar-thumb {
+  background-color: #F90; 
+  border-radius: 10px;
+}
+
 .upcoming-anime-list li{
   width: 100%;
   margin: auto;

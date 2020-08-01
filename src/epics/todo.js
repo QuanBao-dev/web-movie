@@ -44,6 +44,7 @@ export const fetchAnimeSeason$ = (year, season, page, numberOfProducts) => {
         map((anime) => {
           updateMaxPage(Math.ceil(anime.length / 12));
           updateIsLoading(false);
+          stream.catchingError(null);
           return orderBy(anime, ["airing_start"], ["desc"]).slice(
             (page - 1) * numberOfProducts,
             page * numberOfProducts

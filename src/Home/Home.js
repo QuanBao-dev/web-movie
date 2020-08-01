@@ -3,7 +3,6 @@ import "./Home.css";
 import React, { useEffect, useRef, useState } from "react";
 
 import AnimeList from "../components/AnimeList/AnimeList";
-import BlockPopUp from "../components/BlockPopUp/BlockPopUp";
 import Input from "../components/Input/Input";
 import PageNavList from "../components/PageNavList/PageNavList";
 import SearchedAnimeList from "../components/SearchedAnimeList/SearchedAnimeList";
@@ -98,7 +97,6 @@ function Home() {
   // console.log(todoState);
   return (
     <div className="home-page">
-      <BlockPopUp todoState={todoState} />
       <div style={{ marginTop: "100px", textAlign: "center" }}>
         <select
           style={{

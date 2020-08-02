@@ -12,9 +12,22 @@ import Chat from "./Chat/Chat";
 import Name from "./Name/Name";
 import Login from "./Login/Login";
 import Register from "./Register/Register";
+// import {ajax} from "rxjs/ajax";
 function App() {
   const navLoginRef = useRef();
   const navRegisterRef = useRef();
+  // useEffect(() =>{
+  //   const sub = ajax({
+  //     method:"DELETE",
+  //     url:"http://localhost:5000/api/users",
+  //     body:{
+  //       request:"Hello"
+  //     }
+  //   }).subscribe(v => console.log(v));
+  //   return () =>{
+  //     sub.unsubscribe()
+  //   }
+  // },[])
   return (
     <Router>
       <nav>

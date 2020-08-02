@@ -67,7 +67,7 @@ const AnimeSchedule = () => {
                         className="schedule-movie"
                         key={index}
                         onClick={() => {
-                          history.push("/anime/" + anime.title);
+                          history.push(`/anime/${anime.mal_id}`);
                         }}
                       >
                         <div className="schedule-movie-content">

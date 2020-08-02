@@ -6,7 +6,7 @@ const AnimeItem = ({ anime }) => {
   return (
     <div
       className="anime-item"
-      onClick={() => history.push("/anime/" + anime.title)}
+      onClick={() => history.push(`/anime/${anime.mal_id}`)}
     >
       <img src={anime.image_url} alt="NOT_FOUND" />
       <div className="anime-item-info">

@@ -3,7 +3,7 @@ import { fetchTopMovie$, stream } from "../epics/todo";
 import "./Name.css";
 
 const fetchData = async (name) => {
-  let data = await fetch("http://api.jikan.moe/v3/search/anime?q=" + name);
+  let data = await fetch(`http://api.jikan.moe/v3/anime/${name}`);
   data = await data.json();
   return data;
 };
@@ -15,11 +15,14 @@ const fetchDataVideo = async (malId) => {
 };
 let findingAnime;
 
+function capitalizeFirstLetter(string) {
+  return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
 const Name = (props) => {
   const { name } = props.match.params;
   const [data, setData] = useState({});
   useEffect(() => {
-    findingAnime = null;
     const subscription = stream.subscribe(setData);
     stream.init();
     const subscription2 = fetchTopMovie$().subscribe();
@@ -27,14 +30,14 @@ const Name = (props) => {
       .then((v) => {
         if (v.status !== 403) {
           setData(v);
+          console.log({ v });
           return v;
         }
       })
-      .then(async (v) => {
-        const anime = v.results.find((mv) => mv.title === name);
+      .then(async (anime) => {
         const api = await fetchDataVideo(anime.mal_id);
         setData({
-          ...v,
+          ...anime,
           dataPromo: api,
         });
       })
@@ -46,37 +49,28 @@ const Name = (props) => {
       subscription2.unsubscribe();
     };
   }, [name]);
-  if (data.dataDetailOriginal && (!findingAnime || !findingAnime.synopsis)) {
-    findingAnime = data.dataDetailOriginal.find((v) => {
-      return v.title === name;
-    });
-  }
-  if (data.dataTopMovie && (!findingAnime || !findingAnime.synopsis)) {
-    findingAnime = data.dataTopMovie.find((v) => {
-      return v.title === name;
-    });
-  }
-  if (data.dataFilter && (!findingAnime || !findingAnime.synopsis)) {
-    findingAnime = data.dataFilter.find((v) => {
-      return v.title === name;
-    });
-  }
 
-  if (data.results && (!findingAnime || !findingAnime.synopsis)) {
-    findingAnime = data.results.find((v) => {
-      return v.title === name;
-    });
+  if (data) {
+    findingAnime = data;
   }
-
   let arrKeys;
   if (findingAnime) {
     arrKeys = Object.keys(findingAnime).filter((v) => {
-      return ["title", "image_url", "url", "synopsis"].indexOf(v) === -1
+      return [
+        "title",
+        "image_url",
+        "url",
+        "synopsis",
+        "trailer_url",
+        "request_hash",
+        "request_cached",
+        "request_cache_expiry",
+        "mal_id",
+      ].indexOf(v) === -1
         ? true
         : false;
     });
   }
-  console.log(data);
   return (
     <div className="layout">
       {findingAnime && (
@@ -94,18 +88,45 @@ const Name = (props) => {
                     if (typeof findingAnime[v] !== "object") {
                       return (
                         <li key={index}>
-                          {v}: {`${findingAnime[v]}`}
+                          {capitalizeFirstLetter(v)}: {`${findingAnime[v]}`}
                         </li>
                       );
                     } else {
-                      const genres =
-                        findingAnime[v] &&
-                        findingAnime[v].map((v) => v.name).join(" | ");
-                      return (
-                        <li key={index}>
-                          {v}: {`${genres}`}
-                        </li>
-                      );
+                      if (findingAnime[v] && findingAnime[v].length) {
+                        let check = true;
+                        findingAnime[v].forEach((anime) => {
+                          if (typeof anime === "object") {
+                            check = false;
+                          }
+                        });
+                        if (!check) {
+                          const array = findingAnime[v].map(
+                            (anime) => anime.name
+                          );
+                          return (
+                            <li key={index}>
+                              {capitalizeFirstLetter(v)}:{" "}
+                              {`${array.join(" || ")}`}
+                            </li>
+                          );
+                        }
+                        return (
+                          <li key={index}>
+                            {capitalizeFirstLetter(v)}:{" "}
+                            {`${findingAnime[v].join(" * ")}`}
+                          </li>
+                        );
+                      }
+                      return undefined;
+                      // console.log(findingAnime[v]);
+                      // const genres =
+                      //   findingAnime[v] &&
+                      //   findingAnime[v].map((v) => v.name).join(" | ");
+                      // return (
+                      //   <li key={index}>
+                      //     {v}: {`${genres}`}
+                      //   </li>
+                      // );
                     }
                   })}
               </ul>

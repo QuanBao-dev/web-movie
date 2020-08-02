@@ -152,7 +152,7 @@ function Home() {
                   <h2>Rank {movie.rank}</h2>
                   <li>
                     <div className="upcoming-anime-list-info">
-                      <Link to={"/anime/" + movie.title}>
+                      <Link to={"/anime/" + movie.mal_id}>
                         <img src={movie.image_url} alt="Preview" />
                       </Link>
                       <div className="title">{movie.title}</div>

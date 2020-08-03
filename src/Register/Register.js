@@ -3,17 +3,21 @@ import Input from "../components/Input/Input";
 import { validateFormSubmit$ } from "../epics/todo";
 import "./Register.css";
 // import uid from "uid";
-// import { useHistory } from "react-router-dom";
+import { useHistory } from "react-router-dom";
+import Axios from "axios";
 
 const Register = () => {
+  // eslint-disable-next-line no-unused-vars
   const emailRef = useRef();
   const passwordRef = useRef();
   const submitRef = useRef();
-  // const history = useHistory();
+  const usernameRef = useRef();
+  const history = useHistory();
   useEffect(() => {
     const subscription = validateFormSubmit$(
       emailRef.current,
       passwordRef.current,
+      usernameRef.current,
       submitRef.current
     ).subscribe();
     return () => {
@@ -26,6 +30,7 @@ const Register = () => {
         <h1 style={{ color: "white", textAlign: "center" }}>Register</h1>
         <Input label="Email" input={emailRef} />
         <Input label="Password" input={passwordRef} type="password" />
+        <Input label="Username" input={usernameRef} />
         <button
           type="submit"
           ref={submitRef}
@@ -33,10 +38,12 @@ const Register = () => {
             submitForm(
               emailRef.current.value,
               passwordRef.current.value,
-              // history
+              usernameRef.current.value,
+              history,
             );
             emailRef.current.value = "";
             passwordRef.current.value = "";
+            usernameRef.current.value = "";
           }}
         >
           Submit
@@ -46,8 +53,21 @@ const Register = () => {
   );
 };
 
-function submitForm(email, password) {
-  console.log(email, password);
+async function submitForm(email, password, username, history) {
+  try {
+    const res = await Axios.post("http://localhost:5000/api/users/register", {
+      email,
+      password,
+      username
+    });
+    const resJson = res.data;
+    console.log(resJson);
+    history.push("/auth/login");
+  } catch (error) {
+    alert("Account already existed");
+    // console.log(email,password);
+    console.error(error);
+  }
 }
 
 export default Register;

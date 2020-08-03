@@ -1,33 +1,34 @@
-import "./App.css";
+import './App.css';
 
-import React, { useRef } from "react";
-import {
-  BrowserRouter as Router,
-  NavLink as Link,
-  Route,
-  Switch,
-} from "react-router-dom";
-import Home from "./Home/Home";
-import Chat from "./Chat/Chat";
-import Name from "./Name/Name";
-import Login from "./Login/Login";
-import Register from "./Register/Register";
-// import {ajax} from "rxjs/ajax";
+import Axios from 'axios';
+import React, { useEffect, useRef, useState } from 'react';
+import { useCookies } from 'react-cookie';
+import { BrowserRouter as Router, NavLink as Link, Route, Switch } from 'react-router-dom';
+
+// import Chat from './Chat/Chat';
+import EpisodePage from './EpisodePage/EpisodePage';
+import Home from './Home/Home';
+import Login from './Login/Login';
+import Name from './Name/Name';
+import Register from './Register/Register';
+import { fetchingUser$, userStream } from './epics/user';
+
 function App() {
   const navLoginRef = useRef();
   const navRegisterRef = useRef();
-  // useEffect(() =>{
-  //   const sub = ajax({
-  //     method:"DELETE",
-  //     url:"http://localhost:5000/api/users",
-  //     body:{
-  //       request:"Hello"
-  //     }
-  //   }).subscribe(v => console.log(v));
-  //   return () =>{
-  //     sub.unsubscribe()
-  //   }
-  // },[])
+  const [user, setUser] = useState(userStream.initialState);
+  // eslint-disable-next-line no-unused-vars
+  const [cookies, setCookie, removeCookie] = useCookies(["idCartoonUser"]);
+
+  useEffect(() => {
+    const subscription = userStream.subscribe(setUser);
+    const fetchingUserSub = fetchingUser$(cookies.idCartoonUser).subscribe();
+    return () => {
+      fetchingUserSub.unsubscribe();
+      subscription.unsubscribe();
+    };
+  }, [cookies.idCartoonUser]);
+  // console.log(userStream.currentState());
   return (
     <Router>
       <nav>
@@ -37,33 +38,65 @@ function App() {
               Home
             </Link>
           </li>
-          <li>
-            <Link to="/users/discuss" activeClassName="active">
-              Discuss
-            </Link>
-          </li>
-          <li ref={navLoginRef} style={{margin:"0 0 0 auto"}}>
-            <Link to="/auth/login" activeClassName="active">
-              Login
-            </Link>
+          <li ref={navLoginRef} style={{ margin: "0 0 0 auto" }}>
+            {!user && (
+              <Link to="/auth/login" activeClassName="active">
+                Login
+              </Link>
+            )}
+            {user && (
+              <div
+                style={{ color: "white", cursor: "pointer" }}
+                onClick={() => {
+                  logoutUser(setCookie, cookies.idCartoonUser);
+                }}
+              >
+                Logout
+              </div>
+            )}
           </li>
 
-          <li ref={navRegisterRef}>
-            <Link to="/auth/register" activeClassName="active">
-              Register
-            </Link>
-          </li>
+          {!user && (
+            <li ref={navRegisterRef}>
+              <Link to="/auth/register" activeClassName="active">
+                Register
+              </Link>
+            </li>
+          )}
+          {user && (
+            <li style={{ color: "white" }}>
+              <div>{user.username}</div>
+            </li>
+          )}
         </ul>
       </nav>
       <Switch>
         <Route path="/" component={Home} exact />
-        <Route path="/users/discuss" component={Chat} />
+        {/* <Route path="/users/discuss" component={Chat} /> */}
+        <Route path="/anime/:malId/comment" component={EpisodePage} />
         <Route path="/anime/:name" component={Name} />
-        <Route path="/auth/login" component={Login} />
-        <Route path="/auth/register" component={Register} />
+        {!user && <Route path="/auth/login" component={Login} />}
+        {!user && <Route path="/auth/register" component={Register} />}
       </Switch>
     </Router>
   );
 }
 
+async function logoutUser(setCookie, cookie) {
+  try {
+    await Axios.delete("http://localhost:5000/api/users/logout", {
+      headers: {
+        authorization: `Bearer ${cookie}`,
+      },
+    });
+    setCookie("idCartoonUser", "", {
+      expires: new Date(Date.now() - 43200000),
+      path: "/",
+    });
+    userStream.updateUser(undefined);
+    // window.location.replace("/");
+  } catch (error) {
+    console.error(error);
+  }
+}
 export default App;

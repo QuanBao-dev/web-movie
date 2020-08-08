@@ -25,15 +25,11 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  boxMovie: {
-    type: [String],
-    default: [],
-  },
 });
 
-userSchema.pre("findOneAndUpdate", function (next) {
-  this._update.updatedAt = new Date(Date.now());
+userSchema.pre("save", function (next) {
+  this.updatedAt = new Date(Date.now());
   next();
 });
 
-module.exports = mongoose.model("users", userSchema);
+module.exports = mongoose.model("user", userSchema);

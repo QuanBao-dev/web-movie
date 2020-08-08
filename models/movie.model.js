@@ -13,28 +13,25 @@ const movieSchema = new mongoose.Schema({
     type: String,
     require: true,
   },
-  episodes: {
-    type: [
-      {
-        episode: Number,
-        videoUrl: String,
-        source: String,
-        type: String,
-      },
-    ],
-    default: [],
-  },
   messages: {
     type: [
       {
         createdAt: Date,
         author: String,
-        time: Date,
         textContent: String,
         marginLeft: String,
       },
     ],
     default: [],
+  },
+  episodes:{
+    type:[
+      {
+        episode:Number,
+        embedUrl:String,
+      }
+    ],
+    default:[],
   },
 });
 
@@ -43,4 +40,4 @@ movieSchema.pre("findOneAndUpdate", function (next) {
   next();
 });
 
-module.exports = mongoose.model("movies", movieSchema);
+module.exports = mongoose.model("movie", movieSchema);

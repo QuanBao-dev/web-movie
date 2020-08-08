@@ -17,5 +17,14 @@ const registerValidation = (data) => {
   return schema.validate(data);
 };
 
+const changeInfoAccountValidation = (data) => {
+  const schema = Joi.object({
+    email:Joi.string().min(6).email(),
+    password:Joi.string().min(6),
+    username:Joi.string().min(6)
+  });
+  return schema.validate(data);
+}
 module.exports.loginValidation = loginValidation;
 module.exports.registerValidation = registerValidation;
+module.exports.changeInfoAccountValidation = changeInfoAccountValidation;

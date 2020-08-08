@@ -2,7 +2,11 @@ const jwt = require("jsonwebtoken");
 module.exports.verifyRole = (...roles) => {
   return (req, res, next) => {
     const authHeader = req.headers["authorization"];
+    // console.log(req.signedCookies.idCartoonUser);
     let token = authHeader && authHeader.split(" ")[1];
+    if(token === "undefined"){
+      token = null;
+    }
     if(!token){
       token = req.signedCookies.idCartoonUser;
     }

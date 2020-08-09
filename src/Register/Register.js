@@ -1,8 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import Input from "../components/Input/Input";
-import { validateFormSubmit$ } from "../epics/todo";
+import { validateFormSubmit$ } from "../epics/home";
 import "./Register.css";
-// import uid from "uid";
 import { useHistory } from "react-router-dom";
 import Axios from "axios";
 
@@ -55,18 +54,16 @@ const Register = () => {
 
 async function submitForm(email, password, username, history) {
   try {
-    const res = await Axios.post("http://localhost:5000/api/users/register", {
+    await Axios.post("http://localhost:5000/api/users/register", {
       email,
       password,
       username
     });
-    const resJson = res.data;
-    console.log(resJson);
+    // console.log(resJson);
     history.push("/auth/login");
   } catch (error) {
     alert("Account already existed");
     // console.log(email,password);
-    console.error(error);
   }
 }
 

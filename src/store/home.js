@@ -46,7 +46,7 @@ const subject = new BehaviorSubject(initialState);
 
 let state = initialState;
 
-const todoStore = {
+const homeStore = {
   initialState,
   subscribe: (setState) => subject.pipe().subscribe((v) => setState(v)),
   init: () => {
@@ -193,4 +193,4 @@ export const allowScrollToSeeMore =(bool) => {
   state.shouldScrollToSeeMore = bool;
 };
 
-export default todoStore;
+export default homeStore;

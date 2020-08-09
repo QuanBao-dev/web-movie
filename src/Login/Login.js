@@ -3,7 +3,7 @@ import "./Login.css";
 import React, { useEffect, useRef } from "react";
 
 import Input from "../components/Input/Input";
-import { validateFormSubmitLogin$ } from "../epics/todo";
+import { validateFormSubmitLogin$ } from "../epics/home";
 import Axios from "axios";
 import { useCookies } from "react-cookie";
 import { useHistory } from "react-router-dom";
@@ -29,7 +29,7 @@ const Login = () => {
     <div className="container-background-form">
       <div className="form-login">
         <h1 style={{ color: "white", textAlign: "center" }}>Login</h1>
-        <Input label="Username" input={emailRef} />
+        <Input label="Email" input={emailRef} />
         <Input label="Password" input={passwordRef} type="password" />
         <button
           type="submit"
@@ -64,11 +64,11 @@ async function submitForm(email, password, history, setCookie) {
       expires: new Date(Date.now() + 43200000),
       path: "/",
     });
-    history.push("/");
+    window.location.replace("/");
+    // history.push("/");
   } catch (error) {
     // console.log(email,password);
     alert("Invalid account");
-    console.error(error);
   }
 }
 

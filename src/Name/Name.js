@@ -25,7 +25,7 @@ import { orderBy } from "lodash";
 import { allowShouldFetchEpisodeMovie } from "../store/pageWatch";
 
 const fetchData = async (name) => {
-  let data = await fetch(`http://api.jikan.moe/v3/anime/${name}`);
+  let data = await fetch(`https://api.jikan.moe/v3/anime/${name}`);
   data = await data.json();
   return data;
 };

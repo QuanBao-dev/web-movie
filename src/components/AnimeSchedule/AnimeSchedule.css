@@ -28,8 +28,8 @@
 .all-movies-day{
   background-color: black;
   color:white;
-  grid-template-columns: repeat(5, 1fr);
   grid-gap: 1rem;
+  flex-wrap: wrap;
   margin-top: 1rem;
 }
 

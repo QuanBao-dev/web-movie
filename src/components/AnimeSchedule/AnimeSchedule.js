@@ -55,7 +55,7 @@ const AnimeSchedule = () => {
               </div>
               <div
                 style={{
-                  display: homeState.dateSchedule[index] ? "grid" : "none",
+                  display: homeState.dateSchedule[index] ? "flex" : "none",
                 }}
                 className="all-movies-day"
                 ref={movieRefs[index]}

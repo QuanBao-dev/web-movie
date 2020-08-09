@@ -41,6 +41,7 @@
 .anime-name-info .box-info{
   width:40%;
   box-shadow: 2px 0 10px 1px black;
+  font-size: larger;
 }
 
 .anime-name-info .box-info div{
@@ -88,6 +89,9 @@
   padding: 10px;
   text-align: justify;
   line-height: 30px;
+  font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+  font-size: larger;
+  color: #a39c9c;
 }
 
 .anime-name-info .box-content .link{
@@ -103,4 +107,46 @@
 
 .video-promotion-item{
   margin:3rem 0;
+}
+
+.btn{
+  padding:1rem;
+  text-decoration: none;
+  color: white;
+  cursor: pointer;
+}
+
+.btn:disabled{
+  pointer-events: none;
+  background-color: #6b3333;
+}
+
+.btn-success{
+  background-color: green;
+}
+
+.btn-primary{
+  background-color: #1838c5;
+}
+
+.btn-danger{
+  background-color: #a31212;
+}
+
+.list-video-url{
+  display: flex;
+  flex-direction: row;
+}
+
+.list-video-url a{
+  display: block;
+  padding: 1rem;
+  font-size: 1.2rem;
+  margin:1rem;
+  background-color: #393c4b;
+  text-decoration: none;
+  color: white;
+  border-radius: 10px;
+  border:1px double black;
+  box-shadow: 0 0 5px 5px black, 0 0 5px 5px white;
 }

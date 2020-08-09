@@ -1,12 +1,32 @@
 /* eslint-disable no-unused-vars */
 import { BehaviorSubject } from "rxjs";
+let today = (new Date(Date.now())).getMonth()+1;
+let currentSeason;
+let numSeason = parseInt(((today+1)/3).toString())
+
+switch (numSeason){
+  case 2:
+    currentSeason = "spring"
+    break
+  case 3:
+    currentSeason = "summer"
+    break
+  case 4:
+    currentSeason = "fall"
+    break
+  case 1:
+    currentSeason = "winter"
+    break
+  default:
+    break
+};
 const initialState = {
   dataDetail: [],
   dataDetailOriginal:[],
   currentPage: 1,
   numberOfProduct: 12,
   year: 2020,
-  season: "summer",
+  season: currentSeason,
   maxPage: 1,
   isLoading: true,
   dataFilter: [],
@@ -15,6 +35,11 @@ const initialState = {
   error:null,
   dataScheduleMovie: {},
   dateSchedule:Array.from(Array(7).keys()).map(() => false),
+  updatedMovie:[],
+  boxMovie:[],
+  shouldFetchLatestUpdatedMovie:true,
+  shouldFetchBoxMovie:false,
+  shouldScrollToSeeMore:false,
 };
 
 const subject = new BehaviorSubject(initialState);
@@ -121,6 +146,21 @@ const todoStore = {
       dataTopMovie:[...data]
     };
     subject.next(state);
+  },
+  updateUpdatedMovie:(data) => {
+    state={
+      ...state,
+      updatedMovie:[...data]
+    };
+    subject.next(state);
+  },
+
+  updateBoxMovie:(data) => {
+    state = {
+      ...state,
+      boxMovie:[...data]
+    };
+    subject.next(state)
   }
 };
 
@@ -140,9 +180,17 @@ export const savingTextSearch = (text) => {
   state.textSearch = text;
 };
 
-// export const updateTopMovie =(data) => {
-//   state.dataTopMovie = data;
-// };
+export const allowUpdatedMovie =(bool) => {
+  state.shouldFetchLatestUpdatedMovie = bool;
+};
 
+export const allowBoxMovie =(bool) => {
+  state.shouldFetchBoxMovie = bool;
+};
+
+
+export const allowScrollToSeeMore =(bool) => {
+  state.shouldScrollToSeeMore = bool;
+};
 
 export default todoStore;

@@ -26,6 +26,7 @@
   box-shadow: 0 0 10px 10px black, 0 0 10px 6px white;
   border-radius: 10px;
   background-color: rgb(49, 47, 71);
+  height: 100%;
 }
 
 .upcoming-anime-list{
@@ -93,6 +94,33 @@
 
 .upcoming-anime-list li img:hover{
   animation: rotate 1.5s linear infinite both;
+}
+
+.recently-updated-movie{
+  margin-top: 4.5rem;
+  color: white;
+  background-color: #242847;
+  box-shadow: 0 0 5px 10px black, 0 0 5px 10px yellow;
+}
+
+.sub-nav-bar{
+  position: relative;
+}
+
+.sub-nav-item{
+  text-shadow: 0.3rem 0.3rem black; 
+  margin: 0 1rem;
+  cursor: pointer;
+}
+
+.sub-nav-bar::before{
+  content: "";
+  position: absolute;
+}
+
+.sub-nav-active{
+  padding: 10px;
+  background-color: rgb(77, 53, 16);
 }
 
 @keyframes rotate {

@@ -1,25 +1,32 @@
-import "./Home.css";
+import './Home.css';
 
-import React, { useEffect, useRef, useState } from "react";
+import { orderBy } from 'lodash';
+import React, { useEffect, useRef, useState } from 'react';
+import { useCookies } from 'react-cookie';
+import { Link } from 'react-router-dom';
 
-import AnimeList from "../components/AnimeList/AnimeList";
-import Input from "../components/Input/Input";
-import PageNavList from "../components/PageNavList/PageNavList";
-import SearchedAnimeList from "../components/SearchedAnimeList/SearchedAnimeList";
+import AnimeList from '../components/AnimeList/AnimeList';
+import AnimeSchedule from '../components/AnimeSchedule/AnimeSchedule';
+import Input from '../components/Input/Input';
+import PageNavList from '../components/PageNavList/PageNavList';
+import SearchedAnimeList from '../components/SearchedAnimeList/SearchedAnimeList';
 import {
   changeCurrentPage$,
   changeSearchInput$,
   changeSeason$,
   changeYear$,
   fetchAnimeSeason$,
+  fetchBoxMovie$,
   fetchTopMovie$,
+  fetchUpdatedMovie$,
   stream,
-} from "../epics/todo";
-import { Link } from "react-router-dom";
-import AnimeSchedule from "../components/AnimeSchedule/AnimeSchedule";
-const middleWare = (todoState) => {
-  if (todoState.currentPage > todoState.maxPage) {
-    todoState.currentPage = todoState.maxPage;
+} from '../epics/home';
+import { userStream } from '../epics/user';
+import { allowBoxMovie, allowScrollToSeeMore, allowUpdatedMovie } from '../store/home';
+
+const middleWare = (homeState) => {
+  if (homeState.currentPage > homeState.maxPage) {
+    homeState.currentPage = homeState.maxPage;
   }
 };
 
@@ -28,76 +35,210 @@ function unsubscribeSubscription(...subscriptions) {
     subscription.unsubscribe();
   });
 }
-
+let shouldFetchTopMovie = true;
+const numberOfMovieShown = 4;
 function Home() {
-  const [todoState, setTodoState] = useState(stream.initialState);
+  const [homeState, setHomeState] = useState(stream.initialState);
+  const [limitShowRecentlyUpdated, setLimitShowRecentlyUpdated] = useState(
+    numberOfMovieShown
+  );
+  const user = userStream.currentState();
+  const [cookies] = useCookies(["idCartoonUser"]);
+  const [subNavToggle, setSubNavToggle] = useState(0);
   const searchInput = useRef(null);
   const selectYear = useRef(null);
   const selectSeason = useRef(null);
-
+  const targetScroll = useRef(null);
   useEffect(() => {
-    // eslint-disable-next-line no-restricted-globals
-    scroll({
-      top: 0,
-      behavior: "smooth",
-    });
-    const subscription = stream.subscribe((v) => setTodoState(v));
+    if (homeState.shouldScrollToSeeMore) {
+      allowScrollToSeeMore(false);
+      // eslint-disable-next-line no-restricted-globals
+      scroll({
+        top: targetScroll.current.offsetTop - 90,
+        behavior: "smooth",
+      });
+    }
+
+    const subscription = stream.subscribe((v) => setHomeState(v));
     stream.init();
-    selectSeason.current.value = todoState.season;
-    selectYear.current.value = todoState.year;
+    selectSeason.current.value = homeState.season;
+    selectYear.current.value = homeState.year;
     if (searchInput.current) {
-      searchInput.current.value = todoState.textSearch;
+      searchInput.current.value = homeState.textSearch;
     }
     const subscription2 = fetchAnimeSeason$(
-      todoState.year,
-      todoState.season,
-      todoState.currentPage,
-      todoState.numberOfProduct
+      homeState.year,
+      homeState.season,
+      homeState.currentPage,
+      homeState.numberOfProduct
     ).subscribe();
     const subscription3 = changeCurrentPage$().subscribe();
     const subscription4 = changeYear$(selectYear.current).subscribe();
     const subscription5 = changeSeason$(selectSeason.current).subscribe();
     const subscription6 = changeSearchInput$(searchInput.current).subscribe();
-    const subscription7 = fetchTopMovie$().subscribe();
+    let subscription7;
+    if (shouldFetchTopMovie === true) {
+      subscription7 = fetchTopMovie$().subscribe(
+        () => (shouldFetchTopMovie = false)
+      );
+    }
+
+    let subscription8;
+    if (
+      subNavToggle === 0 &&
+      homeState.shouldFetchLatestUpdatedMovie === true
+    ) {
+      subscription8 = fetchUpdatedMovie$().subscribe(() => {
+        allowUpdatedMovie(false);
+      });
+    }
+    let subscription9;
+    if (subNavToggle === 1 && homeState.shouldFetchBoxMovie === true) {
+      subscription9 = fetchBoxMovie$(cookies.idCartoonUser).subscribe(() => {
+        allowBoxMovie(false);
+      });
+    }
+
+    if (subNavToggle === 1 && !user) {
+      setSubNavToggle(0);
+    }
     return () => {
+      if (subscription7) {
+        subscription7.unsubscribe();
+      }
+      if (subscription8) {
+        subscription8.unsubscribe();
+      }
+      if (subscription9) {
+        subscription9.unsubscribe();
+      }
       unsubscribeSubscription(
         subscription,
         subscription2,
         subscription3,
         subscription4,
         subscription5,
-        subscription6,
-        subscription7
+        subscription6
       );
     };
   }, [
-    todoState.currentPage,
-    todoState.numberOfProduct,
-    todoState.season,
-    todoState.textSearch,
-    todoState.year,
+    cookies.idCartoonUser,
+    subNavToggle,
+    homeState.currentPage,
+    homeState.numberOfProduct,
+    homeState.season,
+    homeState.shouldFetchBoxMovie,
+    homeState.shouldFetchLatestUpdatedMovie,
+    homeState.shouldScrollToSeeMore,
+    homeState.textSearch,
+    homeState.year,
+    user,
   ]);
-  middleWare(todoState);
-  const numberOfYears = 4;
-  const numberOfPagesDisplay = 5;
+  middleWare(homeState);
+  const startYear = 2000;
+  const endYear = new Date(Date.now()).getFullYear();
+  const numberOfYears = endYear - startYear + 1;
+  const numberOfPagesDisplay = homeState.maxPage < 5 ? homeState.maxPage : 5;
   const elementOptions = Array.from(Array(numberOfYears).keys()).map(
     (v) => new Date(Date.now()).getFullYear() - v
   );
   const elementsLi = Array.from(Array(numberOfPagesDisplay).keys()).map((v) => {
-    if (todoState.currentPage <= Math.floor(numberOfPagesDisplay / 2)) {
+    if (homeState.currentPage <= Math.floor(numberOfPagesDisplay / 2)) {
       return v + 1;
     } else if (
-      todoState.currentPage >=
-      todoState.maxPage - Math.floor(numberOfPagesDisplay / 2)
+      homeState.currentPage >=
+      homeState.maxPage - Math.floor(numberOfPagesDisplay / 2)
     ) {
-      return todoState.maxPage - numberOfPagesDisplay + (v + 1);
+      return homeState.maxPage - numberOfPagesDisplay + (v + 1);
     }
-    return todoState.currentPage - Math.floor(numberOfPagesDisplay / 2) + v;
+    return homeState.currentPage - Math.floor(numberOfPagesDisplay / 2) + v;
   });
-  // console.log(todoState);
+  // console.log(homeState);
   return (
     <div className="home-page">
-      <div style={{ marginTop: "100px", textAlign: "center" }}>
+      <div className="recently-updated-movie">
+        <div className="sub-nav-bar" style={{ display: "flex" }}>
+          <h1
+            className={`sub-nav-item${
+              subNavToggle === 0 ? " sub-nav-active" : ""
+            }`}
+            onClick={() => {
+              setSubNavToggle(0);
+            }}
+          >
+            Recently Updated
+          </h1>
+          {user && (
+            <h1
+              className={`sub-nav-item${
+                subNavToggle === 1 ? " sub-nav-active" : ""
+              }`}
+              onClick={() => {
+                allowBoxMovie(true);
+                setSubNavToggle(1);
+              }}
+            >
+              Box Movie
+            </h1>
+          )}
+        </div>
+        <AnimeList
+          data={
+            subNavToggle === 0
+              ? orderBy(homeState.updatedMovie, ["updatedAt"], ["desc"]).slice(
+                  0,
+                  limitShowRecentlyUpdated > homeState.updatedMovie.length
+                    ? homeState.updatedMovie.length
+                    : limitShowRecentlyUpdated
+                )
+              : subNavToggle === 1 && user
+              ? orderBy(homeState.boxMovie, ["dateAdded"], ["desc"]).slice(
+                  0,
+                  limitShowRecentlyUpdated > homeState.boxMovie.length
+                    ? homeState.boxMovie.length
+                    : limitShowRecentlyUpdated
+                )
+              : []
+          }
+          error={homeState.error || null}
+        />
+        <div
+          style={{
+            backgroundColor: "black",
+            display: "flex",
+            justifyContent: "center",
+            padding: "1rem",
+            cursor: "pointer",
+          }}
+          onClick={() => {
+            const temp = limitShowRecentlyUpdated;
+            allowScrollToSeeMore(false);
+            if (subNavToggle === 0) {
+              if (temp + numberOfMovieShown <= homeState.updatedMovie.length) {
+                setLimitShowRecentlyUpdated(temp + numberOfMovieShown);
+              } else {
+                setLimitShowRecentlyUpdated(homeState.updatedMovie.length);
+              }
+            } else if (subNavToggle === 1) {
+              if (temp + numberOfMovieShown <= homeState.boxMovie.length) {
+                setLimitShowRecentlyUpdated(temp + numberOfMovieShown);
+              } else {
+                setLimitShowRecentlyUpdated(homeState.boxMovie.length);
+              }
+            }
+          }}
+        >
+          <div>See more</div>
+        </div>
+      </div>
+      <div
+        style={{
+          marginTop: "10px",
+          textAlign: "center",
+          backgroundColor: "#242847",
+        }}
+        ref={targetScroll}
+      >
         <select
           style={{
             margin: "10px",
@@ -108,13 +249,13 @@ function Home() {
             fontSize: "150%",
             boxShadow: "2px 2px 5px 2px black",
           }}
-          defaultValue={`${todoState.season}`}
+          defaultValue={`${homeState.season}`}
           ref={selectSeason}
         >
+          <option value="winter">winter</option>
           <option value="spring">spring</option>
           <option value="summer">summer</option>
           <option value="fall">fall</option>
-          <option value="winter">winter</option>
         </select>
         <select
           style={{
@@ -126,7 +267,7 @@ function Home() {
             fontSize: "150%",
             boxShadow: "2px 2px 5px 2px black",
           }}
-          defaultValue={`${todoState.year}`}
+          defaultValue={`${homeState.year}`}
           ref={selectYear}
         >
           {elementOptions.map((v, index) => {
@@ -138,16 +279,26 @@ function Home() {
           })}
         </select>
       </div>
-      <div style={{ width: "300px", margin: "auto" }}>
-        <Input label="Search" input={searchInput} />
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          backgroundColor: "#242847",
+          paddingBottom: "1rem",
+          boxShadow: "0 20px 10px 10px #242847",
+        }}
+      >
+        <div style={{ width: "300px" }}>
+          <Input label="Search" input={searchInput} />
+        </div>
       </div>
-      <SearchedAnimeList todoState={todoState} />
+      <SearchedAnimeList homeState={homeState} />
       <div className="container-anime-list">
         <div className="upcoming-anime-list-container">
           <h2>Top Anime</h2>
           <ul className="upcoming-anime-list">
-            {todoState.dataTopMovie &&
-              todoState.dataTopMovie.map((movie, index) => (
+            {homeState.dataTopMovie &&
+              homeState.dataTopMovie.map((movie, index) => (
                 <div key={index}>
                   <h2>Rank {movie.rank}</h2>
                   <li>
@@ -163,12 +314,15 @@ function Home() {
           </ul>
         </div>
         <div className="anime-pagination">
-          <AnimeList data={todoState.dataDetail} error={todoState.error || null}/>
+          <AnimeList
+            data={homeState.dataDetail}
+            error={homeState.error || null}
+          />
           <div style={{ margin: "auto", width: "50%", textAlign: "center" }}>
             <PageNavList
               elementsLi={elementsLi}
               stream={stream}
-              todoState={todoState}
+              homeState={homeState}
             />
           </div>
         </div>

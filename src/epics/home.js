@@ -1,41 +1,68 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-useless-escape */
 import { orderBy } from "lodash";
-import { combineLatest, fromEvent, of, timer, from } from "rxjs";
+import { from, fromEvent, of, timer } from "rxjs";
 import { ajax } from "rxjs/ajax";
 import {
   catchError,
+  combineAll,
   debounceTime,
   filter,
   map,
+  mergeMap,
   pluck,
-  share,
   switchMap,
   switchMapTo,
   tap,
-  mergeMap,
-  combineAll
 } from "rxjs/operators";
 
-import todoStore, {
+import homeStore, {
+  allowScrollToSeeMore,
   savingTextSearch,
   updateIsLoading,
   updateMaxPage,
   updateOriginalData,
-  updateTopMovie,
-} from "../store/todo";
+} from "../store/home";
 
-export const stream = todoStore;
+export const stream = homeStore;
 
 export const validateFormSubmit$ = (
-  emailUsername,
+  inputEmail,
+  inputPassword,
+  inputUsername,
+  buttonSubmit
+) => {
+  buttonSubmit.disabled = true;
+  const email$ = fromEvent(inputEmail, "input");
+  const password$ = fromEvent(inputPassword, "input");
+  const username$ = fromEvent(inputUsername, "input");
+  const source$ = from([email$, password$, username$]).pipe(combineAll());
+  return source$.pipe(
+    map(([email, password, username]) => {
+      if (
+        email.target.value.length < 6 ||
+        !email.target.value.includes("@") ||
+        password.target.value.length < 6 ||
+        username.target.value.length < 6
+      ) {
+        buttonSubmit.disabled = true;
+      } else {
+        buttonSubmit.disabled = false;
+      }
+      return [email.target.value, password.target.value, username.target.value];
+    })
+  );
+};
+
+export const validateFormSubmitLogin$ = (
+  inputEmail,
   inputPassword,
   buttonSubmit
 ) => {
   buttonSubmit.disabled = true;
-  const username$ = fromEvent(emailUsername, "input");
+  const email$ = fromEvent(inputEmail, "input");
   const password$ = fromEvent(inputPassword, "input");
-  const source$ = from([username$, password$]).pipe(combineAll());
+  const source$ = from([email$, password$]).pipe(combineAll());
   return source$.pipe(
     map(([email, password]) => {
       if (
@@ -57,9 +84,9 @@ export const fetchAnimeSeason$ = (year, season, page, numberOfProducts) => {
     tap(() => updateIsLoading(true)),
     switchMapTo(
       ajax(`https://api.jikan.moe/v3/season/${year}/${season}`).pipe(
-        share(),
         pluck("response", "anime"),
         map((anime) => {
+          anime = anime.filter((movie) => movie.airing_start && limitAdultGenre(movie.genres));
           updateMaxPage(Math.ceil(anime.length / 12));
           updateOriginalData(anime);
           updateIsLoading(false);
@@ -70,7 +97,6 @@ export const fetchAnimeSeason$ = (year, season, page, numberOfProducts) => {
           );
         }),
         catchError((error) => {
-          console.error(error);
           updateIsLoading(false);
           stream.catchingError(error);
           return of([]);
@@ -84,6 +110,16 @@ export const fetchAnimeSeason$ = (year, season, page, numberOfProducts) => {
   );
 };
 
+function limitAdultGenre(genres){
+  let check = true;
+  genres.forEach((genre) =>{
+    if(genre.name === "Hentai"){
+      check=false
+    }
+  })
+  return check
+}
+
 export const changeCurrentPage$ = () => {
   return fromEvent(document, "keydown").pipe(
     filter((v) => v.target.tagName === "BODY"),
@@ -91,9 +127,11 @@ export const changeCurrentPage$ = () => {
     map((keyCode) => {
       switch (keyCode) {
         case 39:
+          allowScrollToSeeMore(true);
           stream.increaseCurrentPage();
           return;
         case 37:
+          allowScrollToSeeMore(true);
           stream.decreaseCurrentPage();
           return;
         default:
@@ -111,7 +149,6 @@ export const changeYear$ = (selectYearElement) => {
       stream.updateYear(parseInt(year));
     }),
     catchError((err) => {
-      console.error(err);
       return of("");
     })
   );
@@ -125,7 +162,6 @@ export const changeSeason$ = (selectSeasonElement) => {
       stream.updateSeason(season);
     }),
     catchError((err) => {
-      console.error(err);
       return of("");
     })
   );
@@ -139,19 +175,16 @@ export const changeSearchInput$ = (searchInputElement) => {
     pluck("target", "value"),
     tap((text) => savingTextSearch(text)),
     catchError((err) => {
-      console.error(err);
       return of("");
     }),
     switchMap((text) =>
       ajax("https://api.jikan.moe/v3/search/anime?q=" + text).pipe(
-        share(),
         pluck("response", "results"),
         map((data) => {
           const dataSearched = data;
           return dataSearched;
         }),
         catchError((err) => {
-          console.error(err);
           return of([]);
         })
       )
@@ -166,15 +199,29 @@ export const fetchTopMovie$ = () => {
       ajax({
         url: "http://api.jikan.moe/v3/top/anime/1/airing",
       }).pipe(
-        share(),
         pluck("response", "top"),
         catchError((err) => {
-          console.error(err);
           return of([]);
         })
       )
     ),
     tap((topMovieList) => stream.updateTopMovie(topMovieList))
+  );
+};
+
+export const fetchUpdatedMovie$ = () => {
+  return timer(0).pipe(
+    switchMapTo(
+      ajax({
+        url: "http://localhost:5000/api/movies/latest",
+      }).pipe(
+        pluck("response", "message"),
+        tap((updatedMovie) => {
+          stream.updateUpdatedMovie(updatedMovie);
+        }),
+        catchError(() => of([]))
+      )
+    )
   );
 };
 
@@ -195,11 +242,29 @@ export const fetchAnimeSchedule$ = (weekIndex) => {
       ajax(`https://api.jikan.moe/v3/schedule/${day}`).pipe(
         pluck("response", day),
         catchError((err) => {
-          console.error(err);
           return of([]);
         }),
         tap((v) => stream.updateDataSchedule({ [day]: v }))
       )
     )
+  );
+};
+
+export const fetchBoxMovie$ = (idCartoonUser) => {
+  return timer(0).pipe(
+    switchMap(() =>
+      ajax({
+        url: "http://localhost:5000/api/movies/box/",
+        headers: {
+          authorization: `Bearer ${idCartoonUser}`,
+        },
+      }).pipe(
+        pluck("response","message"),
+        catchError((err) => from([]))
+      )
+    ),
+    tap(v => {
+      stream.updateBoxMovie(v);
+    })
   );
 };

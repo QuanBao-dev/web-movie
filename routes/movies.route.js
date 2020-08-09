@@ -153,7 +153,7 @@ router.delete("/:malId", verifyRole("Admin"), async (req, res) => {
 });
 
 async function addMovieUpdated(malId) {
-  const api = await Axios.get(`http://api.jikan.moe/v3/anime/${malId}`);
+  const api = await Axios.get(`https://api.jikan.moe/v3/anime/${malId}`);
   const dataApi = api.data;
   try {
     const movie = await UpdatedMovie.findOne({ malId });

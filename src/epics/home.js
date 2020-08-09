@@ -197,7 +197,7 @@ export const fetchTopMovie$ = () => {
   return timer(0).pipe(
     switchMapTo(
       ajax({
-        url: "http://api.jikan.moe/v3/top/anime/1/airing",
+        url: "https://api.jikan.moe/v3/top/anime/1/airing",
       }).pipe(
         pluck("response", "top"),
         catchError((err) => {

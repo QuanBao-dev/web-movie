@@ -1,0 +1,25 @@
+.container-edit-user{
+  margin:auto;
+  width:80%;
+  background-color: #232841;
+  display: flex;
+  flex-direction: column;
+  color: aliceblue;
+  font-size: 1.4rem;
+  align-items: flex-start;
+  padding: 3rem;
+}
+
+.edit-user-item{
+  width: 100%;
+}
+
+.edit-user-item input{
+  width: 99%;
+  height: 2rem;
+  font-size: 1rem;
+}
+
+.button-submit-edit{
+  margin: 1rem 0 0 auto;
+}

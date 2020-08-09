@@ -1,6 +1,6 @@
 import React, { createRef, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
-import { fetchAnimeSchedule$, stream } from "../../epics/todo";
+import { fetchAnimeSchedule$, stream } from "../../epics/home";
 import "./AnimeSchedule.css";
 const AnimeSchedule = () => {
   const history = useHistory();
@@ -75,9 +75,9 @@ const AnimeSchedule = () => {
                         </div>
                         <div className="schedule-movie-rating">
                           <div className="episodes">
-                            {anime.episodes || "NaN"} ep{anime.score > 1 && "s"}
+                            {anime.episodes || "???"} ep{anime.episodes > 1 && "s"}
                           </div>
-                          <div className="score">{anime.score}</div>
+                          <div className="score">{anime.score || "??"} / 10</div>
                         </div>
                         <img
                           className="schedule-movie-img"

@@ -4,8 +4,15 @@
   width: 300px;
   border-radius: 10px;
   position: relative;
-  box-shadow: 0 0 10px 5px rgba(0, 0, 0, 0.692);
+  box-shadow: 0 0 10px 5px rgba(0, 0, 0, 0.329);
   cursor: pointer;
+  overflow: hidden;
+  border: 2px solid rgba(255, 255, 255, 0);
+
+}
+
+.anime-item:hover{
+  border: 2px solid rgba(255, 255, 255, 0.61);
 }
 
 .anime-item img{
@@ -25,4 +32,15 @@
   background-color: rgba(0, 0, 0, 0.521);
   border-radius: 10px;
   text-align: center;
+}
+
+.anime-airing-symbol{
+  position: absolute;
+  z-index: 2;
+  background-color: rgba(0, 0, 0, 0.479);
+  color: rgb(0, 255, 0);
+  font-size: 1rem;
+  border-radius: 10px;
+  margin: 10px;
+  padding: 0.5rem;
 }

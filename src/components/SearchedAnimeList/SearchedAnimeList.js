@@ -1,18 +1,21 @@
-import React from "react";
-import SearchedAnime from "../SearchedAnime/SearchedAnime";
-import "./SearchedAnimeList.css";
+import './SearchedAnimeList.css';
 
-const SearchedAnimeList = ({ todoState }) => {
+import React from 'react';
+
+import SearchedAnime from '../SearchedAnime/SearchedAnime';
+
+const SearchedAnimeList = ({ homeState }) => {
   return (
     <div
       className="search-list-anime"
-      style={{ display: todoState.dataFilter && todoState.dataFilter.length > 0 ? "block" : "none" }}
+      style={{ display: homeState.dataFilter && homeState.dataFilter.length > 0 ? "block" : "none" }}
     >
-      {todoState.dataFilter&&todoState.dataFilter.map((anime, index) => {
+      {homeState.dataFilter&&homeState.dataFilter.map((anime, index) => {
         return (
           <SearchedAnime
             key={index}
             image_url={anime.image_url}
+            malId={anime.mal_id}
             title={anime.title}
           />
         );

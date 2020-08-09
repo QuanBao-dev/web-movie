@@ -37,13 +37,13 @@ const fetchDataVideo = async (malId) => {
 };
 
 const fetchEpisodeDataVideo = async (malId) => {
-  let data = await fetch(`http://localhost:5000/api/movies/${malId}/episodes`);
+  let data = await fetch(`/api/movies/${malId}/episodes`);
   data = await data.json();
   return data;
 };
 
 const fetchBoxMovieOneMovie = async (malId, idCartoonUser) => {
-  let data = await Axios.get(`http://localhost:5000/api/movies/box/${malId}`, {
+  let data = await Axios.get(`/api/movies/box/${malId}`, {
     headers: {
       authorization: `Bearer ${idCartoonUser}`,
     },
@@ -76,7 +76,7 @@ function handleAddBoxMovie(
           exhaustMap(() =>
             ajax({
               method: "POST",
-              url: "http://localhost:5000/api/movies/box",
+              url: "/api/movies/box",
               headers: {
                 authorization: `Bearer ${idCartoonUser}`,
               },
@@ -129,7 +129,7 @@ function handleDeleteBoxMovie(
           exhaustMap(() =>
             ajax({
               method: "DELETE",
-              url: `http://localhost:5000/api/movies/box/${malId}`,
+              url: `/api/movies/box/${malId}`,
               headers: {
                 authorization: `Bearer ${idCartoonUser}`,
               },
@@ -396,7 +396,7 @@ const Name = (props) => {
                         }
                         try {
                           const res = await Axios.put(
-                            `http://localhost:5000/api/movies/${name}/episode/${episode}`,
+                            `/api/movies/${name}/episode/${episode}`,
                             {
                               embedUrl,
                             },

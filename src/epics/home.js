@@ -213,7 +213,7 @@ export const fetchUpdatedMovie$ = () => {
   return timer(0).pipe(
     switchMapTo(
       ajax({
-        url: "http://localhost:5000/api/movies/latest",
+        url: "/api/movies/latest",
       }).pipe(
         pluck("response", "message"),
         tap((updatedMovie) => {
@@ -254,7 +254,7 @@ export const fetchBoxMovie$ = (idCartoonUser) => {
   return timer(0).pipe(
     switchMap(() =>
       ajax({
-        url: "http://localhost:5000/api/movies/box/",
+        url: "/api/movies/box/",
         headers: {
           authorization: `Bearer ${idCartoonUser}`,
         },

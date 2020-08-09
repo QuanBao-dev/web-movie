@@ -138,7 +138,7 @@ function Comment({ malId }) {
                       }
                       chatStream.updateDeleteMessage(listDelete);
                       await Axios.put(
-                        "http://localhost:5000/api/movies/admin/" + malId,
+                        "/api/movies/admin/" + malId,
                         chatStream.currentState().messages,
                         {
                           headers: {
@@ -246,7 +246,7 @@ async function handleUpdateMessage(
   chatStream.updateMessage(newMessage, index, isPush);
   // console.log(chatStream.currentState());
   try {
-    await Axios.put(`http://localhost:5000/api/movies/${malId}`, {
+    await Axios.put(`/api/movies/${malId}`, {
       messages: chatStream.currentState().messages,
     });
     allowShouldFetchComment(true);

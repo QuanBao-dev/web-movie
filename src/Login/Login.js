@@ -54,7 +54,7 @@ const Login = () => {
 
 async function submitForm(email, password, history, setCookie) {
   try {
-    const res = await Axios.post("http://localhost:5000/api/users/login", {
+    const res = await Axios.post("/api/users/login", {
       email,
       password,
     });

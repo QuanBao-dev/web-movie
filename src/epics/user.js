@@ -10,7 +10,7 @@ export const fetchingUser$ = (idCartoonUser) => {
       authorization: `Bearer ${idCartoonUser || ""}`,
     },
     method: "GET",
-    url: "http://localhost:5000/api/",
+    url: "/api",
   }).pipe(
     throttleTime(1000,asyncScheduler,{
       leading:true,

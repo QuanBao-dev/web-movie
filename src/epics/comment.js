@@ -32,7 +32,7 @@ export const fetchPageMessage$ = (malId) => {
   return timer(0).pipe(
     switchMapTo(
       ajax({
-        url: `http://localhost:5000/api/movies/${malId}`,
+        url: `/api/movies/${malId}`,
       }).pipe(
         map((res) => res.response.message),
         catchError(() => of({}))

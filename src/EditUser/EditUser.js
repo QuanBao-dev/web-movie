@@ -86,7 +86,7 @@ function submitForm$(
     debounceTime(500),
     exhaustMap(() => ajax({
       method:"PUT",
-      url:"http://localhost:5000/api/users/current",
+      url:"/api/users/current",
       body:data,
       headers:{
         authorization:`Bearer ${idCartoonUser}`

@@ -131,7 +131,7 @@ const AdminManager = () => {
                             try {
                               let temp = [...adminState.users];
                               await Axios.delete(
-                                `http://localhost:5000/api/users/${user._id}`,
+                                `/api/users/${user._id}`,
                                 {
                                   headers: {
                                     authorization: `Bearer ${cookies.idCartoonUser}`,
@@ -170,7 +170,7 @@ const AdminManager = () => {
                             try {
                               let temp = [...adminState.users];
                               await Axios.delete(
-                                `http://localhost:5000/api/users/${user._id}`,
+                                `/api/users/${user._id}`,
                                 {
                                   headers: {
                                     authorization: `Bearer ${cookies.idCartoonUser}`,

@@ -8,7 +8,7 @@ export const fetchEpisodesOfMovie$ = (malId) => {
   return timer(0).pipe(
     switchMapTo(
       ajax({
-        url: `http://localhost:5000/api/movies/${malId}/episodes`,
+        url: `/api/movies/${malId}/episodes`,
       }).pipe(
         pluck("response", "message"),
         catchError(() => {

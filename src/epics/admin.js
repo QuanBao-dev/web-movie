@@ -49,7 +49,7 @@ export const fetchAllUsers$ = (idCartoonUser) => {
   return timer(0).pipe(
     exhaustMap(() =>
       ajax({
-        url: "http://localhost:5000/api/users",
+        url: "/api/users",
         headers: {
           authorization: `Bearer ${idCartoonUser}`,
         },

@@ -121,7 +121,7 @@ function App() {
 
 async function logoutUser(setCookie, cookie) {
   try {
-    await Axios.delete("http://localhost:5000/api/users/logout", {
+    await Axios.delete("/api/users/logout", {
       headers: {
         authorization: `Bearer ${cookie}`,
       },

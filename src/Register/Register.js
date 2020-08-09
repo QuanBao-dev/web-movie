@@ -54,7 +54,7 @@ const Register = () => {
 
 async function submitForm(email, password, username, history) {
   try {
-    await Axios.post("http://localhost:5000/api/users/register", {
+    await Axios.post("/api/users/register", {
       email,
       password,
       username

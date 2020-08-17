@@ -263,13 +263,15 @@ const Name = (props) => {
             />
           </div>
           <div className="menu-control">
-            <Link
-              className="btn btn-success"
-              onClick={() => allowShouldFetchComment(true)}
-              to={"/anime/" + findingAnime.mal_id + `/watch/1`}
-            >
-              Watch
-            </Link>
+            {episodeData && episodeData.length > 0 && (
+              <Link
+                className="btn btn-success"
+                onClick={() => allowShouldFetchComment(true)}
+                to={"/anime/" + findingAnime.mal_id + `/watch/1`}
+              >
+                Watch
+              </Link>
+            )}
             {user && (
               <span style={{ display: "none" }} ref={controlBoxMovieRef}>
                 {!boxMovie && (

@@ -22,4 +22,12 @@ router.get("/auth/login", (req, res) => {
   res.sendFile(path.join(__dirname, "../build", "index.html"));
 });
 
+router.get("/theater", (req, res) => {
+  res.sendFile(path.join(__dirname, "../build", "index.html"));
+});
+
+router.get("/theater/:groupId", (req, res) => {
+  res.sendFile(path.join(__dirname, "../build", "index.html"));
+});
+
 module.exports = router;

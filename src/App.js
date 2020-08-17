@@ -20,7 +20,7 @@ import { fetchingUser$, userStream } from "./epics/user";
 import AdminManager from "./AdminManager/AdminManager";
 import { allowShouldFetchAllUser } from "./store/admin";
 import EditUser from "./EditUser/EditUser";
-
+import Theater from "./Theater/Theater";
 function App() {
   const navLoginRef = useRef();
   const navRegisterRef = useRef();
@@ -70,6 +70,13 @@ function App() {
               </Link>
             </li>
           )}
+          <li>
+            {user && (
+              <Link to="/theater" activeClassName="active">
+                Theater
+              </Link>
+            )}
+          </li>
           <li ref={navLoginRef} style={{ margin: "0 0 0 auto" }}>
             {!user && (
               <Link to="/auth/login" activeClassName="active">
@@ -96,10 +103,8 @@ function App() {
             </li>
           )}
           {user && (
-            <li style={{ color: "white", cursor:"pointer" }}>
-              <Link to={`/edit`}>
-                {user.username}
-              </Link>
+            <li style={{ color: "white", cursor: "pointer" }}>
+              <Link to={`/edit`}>{user.username}</Link>
             </li>
           )}
         </ul>
@@ -111,6 +116,7 @@ function App() {
         )}
         <Route path="/anime/:malId/watch/:episode" component={EpisodePage} />
         <Route path="/anime/:name" component={Name} />
+        {user && <Route path="/theater" component={Theater} />}
         {user && <Route path="/edit" component={EditUser} />}
         {!user && <Route path="/auth/login" component={Login} />}
         {!user && <Route path="/auth/register" component={Register} />}
@@ -132,7 +138,6 @@ async function logoutUser(setCookie, cookie) {
     });
     userStream.updateUser(undefined);
     // window.location.replace("/");
-  } catch (error) {
-  }
+  } catch (error) {}
 }
 export default App;

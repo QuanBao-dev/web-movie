@@ -1,0 +1,17 @@
+.notification-user-join{
+  color:green;
+}
+
+.disconnected-danger{
+  color:red!important;
+}
+
+.container-video-call{
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.container-video-call video{
+  width: 300px;
+  height: 300px;
+}

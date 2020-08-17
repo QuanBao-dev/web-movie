@@ -39,7 +39,7 @@ const TheaterWatch = (props) => {
     let submitFormSub;
     if (theaterState.isSignIn) {
       const myVideo = document.createElement("video");
-      myVideo.muted = true;
+      // myVideo.muted = true;
       // console.log({ peers });
       navigator.mediaDevices
         .getUserMedia({
@@ -49,6 +49,8 @@ const TheaterWatch = (props) => {
         .then((stream) => {
           myPeer = new Peer(nanoid(), {
             host: "my-web-movie.herokuapp.com",
+            // host: "localhost",
+            // port: 5000,
             path: "/peerjs",
           });
           myPeer.on("open", (id) => {

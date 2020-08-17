@@ -6,12 +6,10 @@ const path = require("path");
 const app = express();
 const port = process.env.PORT || 5000;
 const server = require("http").Server(app);
-const io = require("socket.io")(server);
+const io = require("socket.io")(server, { wsEngine: "ws" });
 const { ExpressPeerServer } = require("peer");
-const { nanoid } = require("nanoid");
 
 const peerServer = ExpressPeerServer(server, {
-  port: 5000,
   path: "/",
 });
 mongoose.connect(
@@ -39,9 +37,9 @@ io.on("connection", (socket) => {
     }
     rooms[groupId].users[socket.id] = username;
     socket.to(groupId).emit("user-join", username, userId);
-    socket.on("disconnect",()=>{
-      socket.to(groupId).emit("disconnected-user-video",userId);
-    })
+    socket.on("disconnect", () => {
+      socket.to(groupId).emit("disconnected-user-video", userId);
+    });
   });
   socket.on("create-new-room", () => {
     socket.broadcast.emit("fetch-data-rooms");
@@ -81,7 +79,7 @@ app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Credentials", true);
   next();
 });
-app.use("/peerjs",peerServer);
+app.use("/peerjs", peerServer);
 app.use("/api/theater/", theaterRoute);
 app.use("/api/movies/box", boxMovieRoute);
 app.use("/api/movies", moviesRoute);

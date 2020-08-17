@@ -66,7 +66,7 @@ const TheaterWatch = (props) => {
             }) 
           });
           socket.on("user-join", (username, userId) => {
-            const myVideo = document.createElement("video");
+            // const myVideo = document.createElement("video");
             // myVideo.muted = true;
             // console.log({ peers });
             navigator.mediaDevices

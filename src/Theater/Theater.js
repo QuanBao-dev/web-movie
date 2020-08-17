@@ -2,7 +2,7 @@ import "./Theater.css";
 
 import React, { useEffect, useRef, useState } from "react";
 import { useCookies } from "react-cookie";
-import { Link, Route, Switch } from "react-router-dom";
+import { Route, Switch } from "react-router-dom";
 
 import Input from "../components/Input/Input";
 import TheaterWatch from "../components/TheaterWatch/TheaterWatch";

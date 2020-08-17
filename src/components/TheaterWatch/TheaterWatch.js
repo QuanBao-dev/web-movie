@@ -60,14 +60,14 @@ const TheaterWatch = (props) => {
           myPeer.on("call", (call) => {
             call.answer(stream);
             const video = document.createElement("video");
-            video.muted = true;
+            // video.muted = true;
             call.on("stream",(userVideoStream)=>{
               addVideoStream(video,userVideoStream,videoCallRef.current);
             }) 
           });
           socket.on("user-join", (username, userId) => {
             const myVideo = document.createElement("video");
-            myVideo.muted = true;
+            // myVideo.muted = true;
             // console.log({ peers });
             navigator.mediaDevices
               .getUserMedia({
@@ -173,7 +173,7 @@ function addVideoStream(videoElement, stream, videoGridElement) {
 function connectToNewUser(userId, stream, videoGridElement) {
   const call = myPeer.call(userId, stream);
   const video = document.createElement("video");
-  video.muted = true;
+  // video.muted = true;
   call.on("stream", (userVideoStream) => {
     addVideoStream(video, userVideoStream, videoGridElement);
   });

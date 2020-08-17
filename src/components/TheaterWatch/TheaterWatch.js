@@ -43,7 +43,7 @@ const TheaterWatch = (props) => {
       // console.log({ peers });
       navigator.mediaDevices
         .getUserMedia({
-          // video: true,
+          video: true,
           audio: true,
         })
         .then((stream) => {
@@ -72,7 +72,7 @@ const TheaterWatch = (props) => {
             // console.log({ peers });
             navigator.mediaDevices
               .getUserMedia({
-                // video: true,
+                video: true,
                 audio: true,
               })
               .then((stream) => {

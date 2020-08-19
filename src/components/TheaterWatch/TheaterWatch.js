@@ -110,8 +110,9 @@ const TheaterWatch = (props) => {
         })
         .then((stream) => {
           myPeer = new Peer(nanoid(), {
-            host: "localhost",
-            port: 5000,
+            host: "https://my-web-movie.herokuapp.com",
+            // host: "localhost",
+            // port: 5000,
             path: "/peerjs",
           });
           const myVideo = document.createElement("video");

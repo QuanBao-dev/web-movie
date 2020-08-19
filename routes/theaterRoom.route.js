@@ -1,9 +1,78 @@
 const { nanoid } = require("nanoid");
 const { verifyRole } = require("../middleware/verify-role");
 const TheaterRoom = require("../models/theaterRoom.model");
+const TheaterRoomMember = require("../models/theaterRoomMember.model");
 const ignoreProps = require("../validations/ignore.validation");
 
 const router = require("express").Router();
+
+router.get(
+  "/:groupId/members",
+  verifyRole("User", "Admin"),
+  async (req, res) => {
+    try {
+      const members = await TheaterRoomMember.find({
+        groupId: req.params.groupId,
+      })
+        .lean()
+        .select({ _id: false, __v: false });
+      res.send({ message: members });
+    } catch (error) {
+      res.status(404).send({ error: "Something went wrong" });
+    }
+  }
+);
+
+router.post(
+  "/:groupId/members",
+  verifyRole("User", "Admin"),
+  async (req, res) => {
+    const { userId, username } = req.body;
+    try {
+      const newUserJoinGroup = await TheaterRoomMember.findOneAndUpdate(
+        {
+          userId,
+          groupId: req.params.groupId,
+        },
+        {
+          username,
+          joinAt: Date.now(),
+        },
+        {
+          upsert: true,
+          new: true,
+        }
+      )
+        .lean()
+        .select({ _id: false, __v: false });
+      res.send({
+        message: ignoreProps(["_id", "__v"], newUserJoinGroup),
+      });
+    } catch (error) {
+      res.status(404).send({ error: "Something went wrong" });
+    }
+  }
+);
+
+router.delete(
+  "/:groupId/members",
+  verifyRole("User", "Admin"),
+  async (req, res) => {
+    const { groupId } = req.params;
+    try {
+      await TheaterRoomMember.deleteMany({
+        groupId,
+      })
+        .lean()
+        .select({ _id: false, __v: false });
+      res.send({
+        message: "success",
+      });
+    } catch (error) {
+      res.status(404).send({ error: "Something went wrong" });
+    }
+  }
+);
 
 router.get("/", verifyRole("User", "Admin"), async (req, res) => {
   //TODO get all rooms

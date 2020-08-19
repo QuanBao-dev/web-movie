@@ -6,8 +6,16 @@ const path = require("path");
 const app = express();
 const port = process.env.PORT || 5000;
 const server = require("http").Server(app);
-const io = require("socket.io")(server, { wsEngine: "ws" });
+const io = require("socket.io")(server);
 const { ExpressPeerServer } = require("peer");
+
+const moviesRoute = require("./routes/movies.route");
+const usersRoute = require("./routes/users.route");
+const tokenRoute = require("./routes/token.route");
+const boxMovieRoute = require("./routes/boxMovie.route");
+const renderRoute = require("./routes/index.route");
+const theaterRoute = require("./routes/theaterRoom.route");
+const TheaterRoomMember = require("./models/theaterRoomMember.model");
 
 const peerServer = ExpressPeerServer(server, {
   path: "/",
@@ -31,14 +39,74 @@ let rooms = {};
 io.on("connection", (socket) => {
   console.log("connected to websocket");
   socket.on("new-user", (username, groupId, userId) => {
+    socket.emit("fetch-user-online");
+    socket.to(groupId).emit("fetch-user-online");
+    console.log(groupId);
     socket.join(groupId);
     if (!rooms[groupId]) {
       rooms[groupId] = { users: {} };
     }
     rooms[groupId].users[socket.id] = username;
-    socket.to(groupId).emit("user-join", username, userId);
-    socket.on("disconnect", () => {
-      socket.to(groupId).emit("disconnected-user-video", userId);
+    socket.to(groupId).emit("user-join", username, userId, groupId);
+    socket.on("disconnect-custom", async () => {
+      try {
+        const newUserJoinGroup = await TheaterRoomMember.findOne({
+          userId,
+          groupId,
+        });
+        if (!newUserJoinGroup) {
+          return;
+        }
+        await newUserJoinGroup.remove();
+      } catch (error) {
+        console.log(error);
+      }
+      Object.entries(rooms)
+        .reduce((disconnectedUsers, [groupId, room]) => {
+          if (rooms[groupId].users[socket.id]) {
+            disconnectedUsers.push({ room, groupId });
+          }
+          return disconnectedUsers;
+        }, [])
+        .forEach(({ room, groupId }) => {
+          console.log(room.users[socket.id]);
+          if (rooms[groupId].users[socket.id]) {
+            socket
+              .to(groupId)
+              .emit("disconnected-user", room.users[socket.id], userId, groupId);
+            rooms[groupId].users[socket.id] = null;
+          }
+        });
+    });
+    socket.on("disconnect", async () => {
+      console.log("disconnect");
+      try {
+        const newUserJoinGroup = await TheaterRoomMember.findOne({
+          userId,
+          groupId,
+        });
+        if (!newUserJoinGroup) {
+          return;
+        }
+        await newUserJoinGroup.remove();
+      } catch (error) {
+        console.log(error);
+      }
+      Object.entries(rooms)
+        .reduce((disconnectedUsers, [groupId, room]) => {
+          if (rooms[groupId].users[socket.id]) {
+            disconnectedUsers.push({ room, groupId });
+          }
+          return disconnectedUsers;
+        }, [])
+        .forEach(({ room, groupId }) => {
+          if (rooms[groupId].users[socket.id]) {
+            socket
+              .to(groupId)
+              .emit("disconnected-user", room.users[socket.id], userId, groupId);
+            rooms[groupId].users[socket.id] = null;
+          }
+        });
     });
   });
   socket.on("create-new-room", () => {
@@ -47,26 +115,7 @@ io.on("connection", (socket) => {
   socket.on("greeting", (hello) => {
     console.log(hello);
   });
-  socket.on("disconnect", () => {
-    Object.entries(rooms)
-      .reduce((disconnectedUsers, [groupId, room]) => {
-        if (rooms[groupId].users[socket.id]) {
-          disconnectedUsers.push({ room, groupId });
-        }
-        return disconnectedUsers;
-      }, [])
-      .forEach(({ room, groupId }) => {
-        socket.to(groupId).emit("disconnected-user", room.users[socket.id]);
-        delete rooms[groupId].users[socket.id];
-      });
-  });
 });
-const moviesRoute = require("./routes/movies.route");
-const usersRoute = require("./routes/users.route");
-const tokenRoute = require("./routes/token.route");
-const boxMovieRoute = require("./routes/boxMovie.route");
-const renderRoute = require("./routes/index.route");
-const theaterRoute = require("./routes/theaterRoom.route");
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser(process.env.SESSION_SECRET));

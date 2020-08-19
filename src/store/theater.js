@@ -1,20 +1,21 @@
+
 import { BehaviorSubject } from "rxjs";
 import io from "socket.io-client";
 const behaviorSubject = new BehaviorSubject();
 const initialState = {
   rooms: [],
   allowFetchRooms: true,
-  currentRoomDetail:null,
-  isSignIn:false,
-  allowFetchCurrentRoomDetail:true,
-  notifications:[],
-  allowAppendMessage:true,
-  allowAppendDisconnectedMessage:true
+  currentRoomDetail: null,
+  isSignIn: false,
+  notifications: [],
+  roomsLoginId: [],
+  allowFetchCurrentRoomDetail: true,
+  usersOnline: [],
 };
 let state = initialState;
 const theaterStore = {
   initialState,
-  socket:io("/"),
+  socket: io(`/`),
   subscribe: (setState) => behaviorSubject.subscribe(setState),
   currentState: () => {
     let temp;
@@ -40,13 +41,30 @@ const theaterStore = {
     behaviorSubject.next(state);
   },
 
-  updateCurrentRoomDetail:(room) => {
+  updateCurrentRoomDetail: (room) => {
     state = {
       ...state,
-      currentRoomDetail:{...room}
+      currentRoomDetail: { ...room },
+    };
+    behaviorSubject.next(state);
+  },
+
+  updateRoomsLoginId: (groupId) => {
+    state = {
+      ...state,
+      roomsLoginId: [...state.roomsLoginId, groupId],
+    };
+    behaviorSubject.next(state);
+  },
+
+  updateUsersOnline: (users) => {
+    state = {
+      ...state,
+      usersOnline: [...users],
     };
     behaviorSubject.next(state)
   },
+
 };
 
 export const updateAllowFetchRooms = (bool) => {
@@ -54,18 +72,11 @@ export const updateAllowFetchRooms = (bool) => {
 };
 
 export const updateSignIn = (bool) => {
-  state.isSignIn = bool
-}
+  state.isSignIn = bool;
+};
 
 export const updateAllowFetchCurrentRoomDetail = (bool) => {
   state.allowFetchCurrentRoomDetail = bool;
 };
 
-export const updateAllowAppendMessage = (bool) => {
-  state.allowAppendMessage = bool;
-}
-
-export const updateAllowAppendDisconnectedMessage = (bool) =>{
-  state.allowAppendDisconnectedMessage = bool;
-}
 export default theaterStore;

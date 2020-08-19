@@ -2,7 +2,7 @@ import "./Theater.css";
 
 import React, { useEffect, useRef, useState } from "react";
 import { useCookies } from "react-cookie";
-import { Route, Switch } from "react-router-dom";
+import { Link, Route, Switch } from "react-router-dom";
 
 import Input from "../components/Input/Input";
 import TheaterWatch from "../components/TheaterWatch/TheaterWatch";
@@ -58,8 +58,8 @@ const Theater = (props) => {
           {theaterState.rooms &&
             theaterState.rooms.map((room, index) => {
               return (
-                <a
-                  href={`/theater/${room.groupId}`}
+                <Link
+                  to={`/theater/${room.groupId}`}
                   className={`room-link-item${
                     locationPath === room.groupId ? " active-link" : ""
                   }`}
@@ -70,7 +70,7 @@ const Theater = (props) => {
                   key={index}
                 >
                   <div>{room.roomName}</div>
-                </a>
+                </Link>
               );
             })}
         </div>

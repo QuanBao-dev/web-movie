@@ -21,6 +21,7 @@ import AdminManager from "./AdminManager/AdminManager";
 import { allowShouldFetchAllUser } from "./store/admin";
 import EditUser from "./EditUser/EditUser";
 import Theater from "./Theater/Theater";
+import { theaterStream } from "./epics/theater";
 function App() {
   const navLoginRef = useRef();
   const navRegisterRef = useRef();
@@ -45,13 +46,14 @@ function App() {
             <Link
               to="/"
               activeClassName="active"
-              onClick={() =>
+              onClick={() => {
                 // eslint-disable-next-line no-restricted-globals
                 scroll({
                   top: 0,
                   behavior: "smooth",
-                })
-              }
+                });
+                theaterStream.socket.emit("disconnect-custom");
+              }}
               exact
             >
               Home
@@ -63,6 +65,7 @@ function App() {
                 to="/admin"
                 onClick={() => {
                   allowShouldFetchAllUser(true);
+                  theaterStream.socket.emit("disconnect-custom");
                 }}
                 activeClassName="active"
               >
@@ -72,14 +75,26 @@ function App() {
           )}
           <li>
             {user && (
-              <Link to="/theater" activeClassName="active">
+              <Link
+                to="/theater"
+                activeClassName="active"
+                onClick={() => {
+                  theaterStream.socket.emit("disconnect-custom");
+                }}
+              >
                 Theater
               </Link>
             )}
           </li>
           <li ref={navLoginRef} style={{ margin: "0 0 0 auto" }}>
             {!user && (
-              <Link to="/auth/login" activeClassName="active">
+              <Link
+                to="/auth/login"
+                activeClassName="active"
+                onClick={() => {
+                  theaterStream.socket.emit("disconnect-custom");
+                }}
+              >
                 Login
               </Link>
             )}
@@ -88,6 +103,7 @@ function App() {
                 style={{ color: "white", cursor: "pointer" }}
                 onClick={() => {
                   logoutUser(setCookie, cookies.idCartoonUser);
+                  theaterStream.socket.emit("disconnect-custom");
                 }}
               >
                 Logout
@@ -97,14 +113,27 @@ function App() {
 
           {!user && (
             <li ref={navRegisterRef}>
-              <Link to="/auth/register" activeClassName="active">
+              <Link
+                to="/auth/register"
+                activeClassName="active"
+                onClick={() => {
+                  theaterStream.socket.emit("disconnect-custom");
+                }}
+              >
                 Register
               </Link>
             </li>
           )}
           {user && (
             <li style={{ color: "white", cursor: "pointer" }}>
-              <Link to={`/edit`}>{user.username}</Link>
+              <Link
+                to={`/edit`}
+                onClick={() => {
+                  theaterStream.socket.emit("disconnect-custom");
+                }}
+              >
+                {user.username}
+              </Link>
             </li>
           )}
         </ul>

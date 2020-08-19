@@ -14,7 +14,9 @@ const initialState = {
 let state = initialState;
 const theaterStore = {
   initialState,
-  socket: io(`https://my-web-movie.herokuapp.com`),
+  socket: io(`https://my-web-movie.herokuapp.com`,{
+    transports: ['websocket']
+  }),
   subscribe: (setState) => behaviorSubject.subscribe(setState),
   currentState: () => {
     let temp;

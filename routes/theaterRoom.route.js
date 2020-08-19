@@ -27,11 +27,12 @@ router.post(
   "/:groupId/members",
   verifyRole("User", "Admin"),
   async (req, res) => {
-    const { userId, username } = req.body;
+    const { userId, username, email } = req.body;
     try {
       const newUserJoinGroup = await TheaterRoomMember.findOneAndUpdate(
         {
           userId,
+          email,
           groupId: req.params.groupId,
         },
         {

@@ -28,6 +28,7 @@ let videoCallE;
 let idCartoonUser;
 let groupId;
 let user;
+let videoWatchElement;
 socket.on("user-join", async (username, userId, roomId) => {
   console.log(roomId, groupId);
   if (roomId !== groupId) {
@@ -40,7 +41,7 @@ socket.on("user-join", async (username, userId, roomId) => {
     );
     navigator.mediaDevices
       .getUserMedia({
-        video: true,
+        // video: true,
         audio: true,
       })
       .then((stream) => {
@@ -69,13 +70,11 @@ socket.on("disconnected-user", async (username, userId, roomId) => {
       const videoCallChildList = [...videoCallE.childNodes];
       console.log(videoCallChildList);
       videoCallChildList.forEach((child) => {
-        if(!child.id){
+        if (!child.id) {
           child.muted = true;
-          child.remove()
+          child.remove();
         }
-      })
-      console.log(userId, videoCallE.childNodes[0]);
-      console.log(videoCallE.childNodes[0].id,"first element");
+      });
     }
   }
 });
@@ -84,7 +83,28 @@ socket.on("fetch-user-online", () => {
     theaterStream.updateUsersOnline(users);
   });
 });
+socket.on("play-video-user", (currentTime) => {
+  console.log("play");
+  videoWatchElement.currentTime = currentTime;
+  videoWatchElement.play();
+});
+socket.on("pause-video-user", (currentTime) => {
+  console.log("pause");
+  videoWatchElement.currentTime = currentTime;
+  videoWatchElement.pause();
+});
 
+socket.on("upload-video", (uri) => {
+  uploadNewVideo(uri, videoWatchElement);
+  videoWatchElement.oncanplay = () => {
+    videoWatchElement.onplay = () => {
+      socket.emit("play-all-video", videoWatchElement.currentTime);
+    };
+    videoWatchElement.onpause = () => {
+      socket.emit("pause-all-video", videoWatchElement.currentTime);
+    };
+  };
+});
 const replaySubject = new ReplaySubject(3);
 const TheaterWatch = (props) => {
   groupId = props.match.params.groupId;
@@ -94,8 +114,11 @@ const TheaterWatch = (props) => {
   const inputPasswordRef = useRef();
   const notificationRef = useRef();
   const videoCallRef = useRef();
+  const inputVideoRef = useRef();
+  const videoWatchRef = useRef();
   const [cookies] = useCookies(["idCartoonUser"]);
   useEffect(() => {
+    videoWatchElement = videoWatchRef.current;
     notificationE = notificationRef.current;
     videoCallE = videoCallRef.current;
     idCartoonUser = cookies.idCartoonUser;
@@ -105,7 +128,7 @@ const TheaterWatch = (props) => {
     if (theaterState.isSignIn) {
       navigator.mediaDevices
         .getUserMedia({
-          video: true,
+          // video: true,
           audio: true,
         })
         .then((stream) => {
@@ -124,6 +147,7 @@ const TheaterWatch = (props) => {
               {
                 userId: id,
                 username: user.username,
+                email: user.email,
               },
               {
                 headers: {
@@ -131,8 +155,13 @@ const TheaterWatch = (props) => {
                 },
               }
             );
-            socket.emit("new-user", user.username, groupId, id);
+            socket.emit("new-user", user.username, groupId, id, user.email);
             addVideoStream(myVideo, stream, videoCallRef.current);
+            appendNewMessage(
+              "Your audio is connected",
+              notificationE,
+              "audio-connected"
+            );
             // connectToNewUser(id, stream, videoCallRef.current);
             myPeer.on("call", (call) => {
               call.answer(stream); //get the video of current user to other people
@@ -194,9 +223,25 @@ const TheaterWatch = (props) => {
         <div>
           <div className="notification-user-join" ref={notificationRef}></div>
           {theaterState.currentRoomDetail.roomName}
-          <div className="container-video">Video watch</div>
+          <div> Video watch</div>
+          <div className="container-video">
+            <video ref={videoWatchRef}></video>
+          </div>
+          <input
+            type="file"
+            ref={inputVideoRef}
+            onChange={() => {
+              const reader = new FileReader();
+              console.log("submit");
+              reader.onload = function (file) {
+                const fileContent = file.target.result;
+                socket.emit("new-video", fileContent);
+                // uploadNewVideo(fileContent, videoWatchRef.current);
+              };
+              reader.readAsDataURL(inputVideoRef.current.files[0]);
+            }}
+          />
           <div className="container-video-call" ref={videoCallRef}></div>
-          <input type="file" />
         </div>
       )}
       {theaterState.isSignIn && (
@@ -223,6 +268,11 @@ const TheaterWatch = (props) => {
     </div>
   );
 };
+
+function uploadNewVideo(fileContent, videoWatchElement) {
+  videoWatchElement.controls = true;
+  videoWatchElement.src = fileContent;
+}
 
 function appendNewMessage(message, notificationE, className) {
   const messageElement = document.createElement("div");
@@ -255,7 +305,7 @@ function addVideoStream(videoElement, stream, videoGridElement) {
 }
 
 function connectToNewUser(userId, stream, videoGridElement) {
-  console.log("other user",userId);
+  console.log("other user", userId);
   const call = myPeer.call(userId, stream);
   const video = document.createElement("video");
   try {
@@ -268,13 +318,13 @@ function connectToNewUser(userId, stream, videoGridElement) {
       const videoCallChildList = [...videoCallE.childNodes];
       console.log(videoCallChildList);
       videoCallChildList.forEach((child) => {
-        if(!child.id){
+        if (!child.id) {
           child.muted = true;
-          child.remove()
+          child.remove();
         }
-      })
-      console.log(userId, videoCallE.childNodes[0]);
-      console.log(videoCallE.childNodes[0].id,"first element");
+      });
+      // console.log(userId, videoCallE.childNodes[0]);
+      // console.log(videoCallE.childNodes[0].id,"first element");
     });
     peers[userId] = call;
   } catch (error) {

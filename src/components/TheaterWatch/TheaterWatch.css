@@ -6,6 +6,10 @@
   color:red!important;
 }
 
+.audio-connected{
+  color:blue;
+}
+
 .container-video-call{
   display: flex;
   flex-wrap: wrap;

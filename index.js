@@ -38,7 +38,17 @@ mongoose.connect(
 let rooms = {};
 io.on("connection", (socket) => {
   console.log("connected to websocket");
-  socket.on("new-user", (username, groupId, userId) => {
+  socket.on("new-user", (username, groupId, userId, email) => {
+    socket.on("new-video", (videoUri) => {
+      socket.emit("upload-video", videoUri);
+      socket.to(groupId).emit("upload-video", videoUri);
+    });
+    socket.on("play-all-video", (currentTime) => {
+      socket.to(groupId).emit("play-video-user", currentTime);
+    });
+    socket.on("pause-all-video", (currentTime) => {
+      socket.to(groupId).emit("pause-video-user", currentTime);
+    });
     socket.emit("fetch-user-online");
     socket.to(groupId).emit("fetch-user-online");
     console.log(groupId);
@@ -50,14 +60,10 @@ io.on("connection", (socket) => {
     socket.to(groupId).emit("user-join", username, userId, groupId);
     socket.on("disconnect-custom", async () => {
       try {
-        const newUserJoinGroup = await TheaterRoomMember.findOne({
-          userId,
+        await TheaterRoomMember.deleteMany({
+          email,
           groupId,
-        });
-        if (!newUserJoinGroup) {
-          return;
-        }
-        await newUserJoinGroup.remove();
+        }).lean();
       } catch (error) {
         console.log(error);
       }
@@ -73,7 +79,12 @@ io.on("connection", (socket) => {
           if (rooms[groupId].users[socket.id]) {
             socket
               .to(groupId)
-              .emit("disconnected-user", room.users[socket.id], userId, groupId);
+              .emit(
+                "disconnected-user",
+                room.users[socket.id],
+                userId,
+                groupId
+              );
             rooms[groupId].users[socket.id] = null;
           }
         });
@@ -81,14 +92,10 @@ io.on("connection", (socket) => {
     socket.on("disconnect", async () => {
       console.log("disconnect");
       try {
-        const newUserJoinGroup = await TheaterRoomMember.findOne({
-          userId,
+        await TheaterRoomMember.deleteMany({
+          email,
           groupId,
-        });
-        if (!newUserJoinGroup) {
-          return;
-        }
-        await newUserJoinGroup.remove();
+        }).lean();
       } catch (error) {
         console.log(error);
       }
@@ -103,7 +110,12 @@ io.on("connection", (socket) => {
           if (rooms[groupId].users[socket.id]) {
             socket
               .to(groupId)
-              .emit("disconnected-user", room.users[socket.id], userId, groupId);
+              .emit(
+                "disconnected-user",
+                room.users[socket.id],
+                userId,
+                groupId
+              );
             rooms[groupId].users[socket.id] = null;
           }
         });

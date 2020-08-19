@@ -85,7 +85,6 @@ socket.on("fetch-user-online", () => {
 });
 socket.on("play-video-user", (currentTime) => {
   console.log("play");
-  videoWatchElement.currentTime = currentTime;
   videoWatchElement.play();
 });
 socket.on("pause-video-user", (currentTime) => {

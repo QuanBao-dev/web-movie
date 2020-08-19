@@ -1,4 +1,3 @@
-
 import { BehaviorSubject } from "rxjs";
 import io from "socket.io-client";
 const behaviorSubject = new BehaviorSubject();
@@ -15,7 +14,7 @@ const initialState = {
 let state = initialState;
 const theaterStore = {
   initialState,
-  socket: io(`/`),
+  socket: io(`https://my-web-movie.herokuapp.com`),
   subscribe: (setState) => behaviorSubject.subscribe(setState),
   currentState: () => {
     let temp;
@@ -62,9 +61,8 @@ const theaterStore = {
       ...state,
       usersOnline: [...users],
     };
-    behaviorSubject.next(state)
+    behaviorSubject.next(state);
   },
-
 };
 
 export const updateAllowFetchRooms = (bool) => {

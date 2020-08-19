@@ -41,7 +41,7 @@ socket.on("user-join", async (username, userId, roomId) => {
     );
     navigator.mediaDevices
       .getUserMedia({
-        // video: true,
+        video: true,
         audio: true,
       })
       .then((stream) => {
@@ -85,11 +85,11 @@ socket.on("fetch-user-online", () => {
 });
 socket.on("play-video-user", (currentTime) => {
   console.log("play");
+  videoWatchElement.currentTime = currentTime;
   videoWatchElement.play();
 });
 socket.on("pause-video-user", (currentTime) => {
   console.log("pause");
-  videoWatchElement.currentTime = currentTime;
   videoWatchElement.pause();
 });
 
@@ -127,7 +127,7 @@ const TheaterWatch = (props) => {
     if (theaterState.isSignIn) {
       navigator.mediaDevices
         .getUserMedia({
-          // video: true,
+          video: true,
           audio: true,
         })
         .then((stream) => {

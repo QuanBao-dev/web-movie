@@ -10,12 +10,12 @@
   color:blue;
 }
 
-.container-video-call{
+.container-audio-call{
   display: flex;
   flex-wrap: wrap;
 }
 
-.container-video-call video{
+.container-audio-call video{
   width: 100px;
   height: 100px;
 }

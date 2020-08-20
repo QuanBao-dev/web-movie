@@ -17,7 +17,7 @@ const socket = theaterStream.socket;
 const peers = {};
 let myPeer;
 let notificationE;
-let videoCallE;
+let audioCallE;
 let idCartoonUser;
 let groupId;
 let user;
@@ -38,7 +38,7 @@ socket.on("user-join", async (username, userId, roomId) => {
         audio: true,
       })
       .then((stream) => {
-        connectToNewUser(userId, stream, videoCallE);
+        connectToNewUser(userId, stream, audioCallE);
       });
   }
 });
@@ -60,9 +60,9 @@ socket.on("disconnected-user", async (username, userId, roomId) => {
       peers[userId].close();
       // delete peers[userId];
     } else {
-      const videoCallChildList = [...videoCallE.childNodes];
+      const audioCallChildList = [...audioCallE.childNodes];
       // console.log(videoCallChildList);
-      videoCallChildList.forEach((child) => {
+      audioCallChildList.forEach((child) => {
         if (!child.id) {
           child.muted = true;
           child.remove();
@@ -113,14 +113,14 @@ const TheaterWatch = (props) => {
   const [theaterState, setTheaterState] = useState(theaterStream.initialState);
   const inputPasswordRef = useRef();
   const notificationRef = useRef();
-  const videoCallRef = useRef();
+  const audioCallRef = useRef();
   const inputVideoRef = useRef();
   const videoWatchRef = useRef();
   const [cookies] = useCookies(["idCartoonUser"]);
   useEffect(() => {
     videoWatchElement = videoWatchRef.current;
     notificationE = notificationRef.current;
-    videoCallE = videoCallRef.current;
+    audioCallE = audioCallRef.current;
     idCartoonUser = cookies.idCartoonUser;
     const subscription = theaterStream.subscribe(setTheaterState);
     theaterStream.init();
@@ -133,15 +133,17 @@ const TheaterWatch = (props) => {
         })
         .then((stream) => {
           myPeer = new Peer(nanoid(), {
-            host: "my-web-movie.herokuapp.com",
-            // host: "localhost",
-            // port: 5000,
+            // host: "my-web-movie.herokuapp.com",
+            host: "localhost",
+            port: 5000,
             path: "/peerjs",
           });
-          const myVideo = document.createElement("video");
-          myVideo.muted = true;
+          const tracks = stream.getAudioTracks();
+          console.log(tracks);
+          const myAudio = document.createElement("audio");
+          myAudio.muted = true;
           myPeer.on("open", async (id) => {
-            myVideo.id = id;
+            myAudio.id = id;
             await Axios.post(
               `/api/theater/${groupId}/members`,
               {
@@ -156,7 +158,7 @@ const TheaterWatch = (props) => {
               }
             );
             socket.emit("new-user", user.username, groupId, id, user.email);
-            addVideoStream(myVideo, stream, videoCallRef.current);
+            addAudioStream(myAudio, stream, audioCallRef.current);
             appendNewMessage(
               "Your audio is connected",
               notificationE,
@@ -165,11 +167,11 @@ const TheaterWatch = (props) => {
             // connectToNewUser(id, stream, videoCallRef.current);
             myPeer.on("call", (call) => {
               call.answer(stream); //get the video of current user to other people
-              const video = document.createElement("video");
+              const audio = document.createElement("audio");
               call.on("stream", (stream) => {
                 // console.log("stream add another video");
                 //get video of other user to the current user
-                addVideoStream(video, stream, videoCallE);
+                addAudioStream(audio, stream, audioCallE);
               });
             });
           });
@@ -204,7 +206,7 @@ const TheaterWatch = (props) => {
   ]);
   if (!theaterState.isSignIn && notificationRef.current) {
     notificationRef.current.innerHTML = "";
-    if (videoCallRef.current) {
+    if (audioCallRef.current) {
       if (theaterState.usersOnline.length === 1) {
         // console.log("delete all");
         replaySubject.pipe(first()).subscribe((groupId) => {
@@ -212,7 +214,7 @@ const TheaterWatch = (props) => {
         });
       }
       theaterState.usersOnline = [];
-      videoCallRef.current.innerHTML = "";
+      audioCallRef.current.innerHTML = "";
       socket.emit("disconnect-custom");
     }
   }
@@ -241,7 +243,7 @@ const TheaterWatch = (props) => {
               reader.readAsDataURL(inputVideoRef.current.files[0]);
             }}
           />
-          <div className="container-video-call" ref={videoCallRef}></div>
+          <div className="container-audio-call" ref={audioCallRef}></div>
         </div>
       )}
       {theaterState.isSignIn && (
@@ -294,30 +296,30 @@ async function deleteAllMembers(groupId) {
   });
 }
 
-function addVideoStream(videoElement, stream, videoGridElement) {
-  videoElement.srcObject = stream;
-  videoElement.addEventListener("loadedmetadata", () => {
-    videoElement.play();
+function addAudioStream(audioElement, stream, audioGridElement) {
+  audioElement.srcObject = stream;
+  audioElement.addEventListener("loadedmetadata", () => {
+    audioElement.play();
   });
-  if (videoGridElement) {
-    videoGridElement.append(videoElement);
+  if (audioGridElement) {
+    audioGridElement.append(audioElement);
   }
 }
 
-function connectToNewUser(userId, stream, videoGridElement) {
+function connectToNewUser(userId, stream, audioGridElement) {
   // console.log("other user", userId);
   const call = myPeer.call(userId, stream);
-  const video = document.createElement("video");
+  const audio = document.createElement("audio");
   try {
     call.on("stream", (userVideoStream) => {
-      video.id = userId;
-      addVideoStream(video, userVideoStream, videoGridElement);
+      audio.id = userId;
+      addAudioStream(audio, userVideoStream, audioGridElement);
     });
     call.on("close", () => {
-      video.remove();
-      const videoCallChildList = [...videoCallE.childNodes];
+      audio.remove();
+      const audioCallChildList = [...audioCallE.childNodes];
       // console.log(videoCallChildList);
-      videoCallChildList.forEach((child) => {
+      audioCallChildList.forEach((child) => {
         if (!child.id) {
           child.muted = true;
           child.remove();

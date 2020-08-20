@@ -1,24 +1,17 @@
-import "./TheaterWatch.css";
+import './TheaterWatch.css';
 
-import Axios from "axios";
-import { nanoid } from "nanoid";
-import Peer from "peerjs";
-import React, { useEffect, useRef, useState } from "react";
-import { useCookies } from "react-cookie";
-import { ReplaySubject } from "rxjs";
-import { first } from "rxjs/operators";
+import Axios from 'axios';
+import { nanoid } from 'nanoid';
+import Peer from 'peerjs';
+import React, { useEffect, useRef, useState } from 'react';
+import { useCookies } from 'react-cookie';
+import { ReplaySubject } from 'rxjs';
+import { first } from 'rxjs/operators';
 
-import {
-  fetchUserOnline$,
-  submitFormPasswordRoom$,
-  theaterStream,
-} from "../../epics/theater";
-import { userStream } from "../../epics/user";
-import {
-  updateAllowFetchCurrentRoomDetail,
-  updateSignIn,
-} from "../../store/theater";
-import Input from "../Input/Input";
+import { fetchUserOnline$, submitFormPasswordRoom$, theaterStream } from '../../epics/theater';
+import { userStream } from '../../epics/user';
+import { updateAllowFetchCurrentRoomDetail, updateSignIn } from '../../store/theater';
+import Input from '../Input/Input';
 
 const socket = theaterStream.socket;
 const peers = {};
@@ -30,7 +23,7 @@ let groupId;
 let user;
 let videoWatchElement;
 socket.on("user-join", async (username, userId, roomId) => {
-  console.log(roomId, groupId);
+  // console.log(roomId, groupId);
   if (roomId !== groupId) {
     return;
   }
@@ -50,7 +43,7 @@ socket.on("user-join", async (username, userId, roomId) => {
   }
 });
 socket.on("disconnected-user", async (username, userId, roomId) => {
-  console.log(roomId, groupId);
+  // console.log(roomId, groupId);
   if (roomId !== groupId) {
     return;
   }
@@ -68,7 +61,7 @@ socket.on("disconnected-user", async (username, userId, roomId) => {
       // delete peers[userId];
     } else {
       const videoCallChildList = [...videoCallE.childNodes];
-      console.log(videoCallChildList);
+      // console.log(videoCallChildList);
       videoCallChildList.forEach((child) => {
         if (!child.id) {
           child.muted = true;
@@ -84,12 +77,12 @@ socket.on("fetch-user-online", () => {
   });
 });
 socket.on("play-video-user", (currentTime) => {
-  console.log("play");
+  // console.log("play");
   videoWatchElement.currentTime = currentTime;
   videoWatchElement.play();
 });
 socket.on("pause-video-user", (currentTime) => {
-  console.log("pause");
+  // console.log("pause");
   videoWatchElement.pause();
 });
 socket.on("end-video-user", (currentTime) => {
@@ -201,7 +194,7 @@ const TheaterWatch = (props) => {
     return () => {
       subscription.unsubscribe();
       submitFormSub && submitFormSub.unsubscribe();
-      console.log("out");
+      // console.log("out");
     };
   }, [
     cookies.idCartoonUser,
@@ -213,7 +206,7 @@ const TheaterWatch = (props) => {
     notificationRef.current.innerHTML = "";
     if (videoCallRef.current) {
       if (theaterState.usersOnline.length === 1) {
-        console.log("delete all");
+        // console.log("delete all");
         replaySubject.pipe(first()).subscribe((groupId) => {
           deleteAllMembers(groupId);
         });
@@ -223,7 +216,7 @@ const TheaterWatch = (props) => {
       socket.emit("disconnect-custom");
     }
   }
-  console.log(theaterState);
+  // console.log(theaterState);
   return (
     <div className="theater-user-login">
       {theaterState.isSignIn && theaterState.currentRoomDetail && (
@@ -239,7 +232,7 @@ const TheaterWatch = (props) => {
             ref={inputVideoRef}
             onChange={() => {
               const reader = new FileReader();
-              console.log("submit");
+              // console.log("submit");
               reader.onload = function (file) {
                 const fileContent = file.target.result;
                 socket.emit("new-video", fileContent);
@@ -312,7 +305,7 @@ function addVideoStream(videoElement, stream, videoGridElement) {
 }
 
 function connectToNewUser(userId, stream, videoGridElement) {
-  console.log("other user", userId);
+  // console.log("other user", userId);
   const call = myPeer.call(userId, stream);
   const video = document.createElement("video");
   try {
@@ -323,7 +316,7 @@ function connectToNewUser(userId, stream, videoGridElement) {
     call.on("close", () => {
       video.remove();
       const videoCallChildList = [...videoCallE.childNodes];
-      console.log(videoCallChildList);
+      // console.log(videoCallChildList);
       videoCallChildList.forEach((child) => {
         if (!child.id) {
           child.muted = true;

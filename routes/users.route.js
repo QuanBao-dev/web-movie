@@ -185,8 +185,8 @@ router.delete("/:id", verifyRole("Admin"), async (req, res) => {
   const { id } = req.params;
   try {
     const user = await User.findByIdAndDelete(id, req.body);
-    const deleteBoxMovie = await BoxMovie.deleteMany({ user: id });
-    console.log(deleteBoxMovie.n);
+    await BoxMovie.deleteMany({ user: id });
+    // console.log(deleteBoxMovie.n);
     res.send({
       message: ignoreProps(["_id", "__v", "password"], user.toJSON()),
     });

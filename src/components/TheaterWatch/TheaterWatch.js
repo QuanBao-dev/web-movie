@@ -68,9 +68,9 @@ const TheaterWatch = (props) => {
         })
         .then((stream) => {
           myPeer = new Peer(nanoid(), {
-            host: "my-web-movie.herokuapp.com",
-            // host: "localhost",
-            // port: 5000,
+            // host: "my-web-movie.herokuapp.com",
+            host: "localhost",
+            port: 5000,
             path: "/peerjs",
             config: {
               iceServers: [
@@ -407,8 +407,12 @@ socket.on("upload-video", (uri) => {
 });
 
 function uploadNewVideo(fileContent, videoWatchElement) {
-  videoWatchElement.controls = true;
-  videoWatchElement.src = fileContent;
+  try {
+    videoWatchElement.controls = true;
+    videoWatchElement.src = fileContent;
+  } catch (error) {
+    console.log(error);
+  }
 }
 
 function appendNewMessage(message, notificationE, className) {

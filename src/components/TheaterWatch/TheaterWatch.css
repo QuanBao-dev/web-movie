@@ -67,7 +67,7 @@
   min-height: fit-content;
 }
 
-.message-dialog{
+.message-dialog-container{
   display: block;
   background-color: #303655;
   box-shadow: 0 0 10px 10px black;
@@ -75,4 +75,14 @@
   width: 340px;
   margin:10px;
   border-radius: 10px;
+  position: relative;
+  padding: 1rem;
+}
+
+.message-dialog{
+  height: 500px;
+}
+
+.input-message-dialog{
+  
 }

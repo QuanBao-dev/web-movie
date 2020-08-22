@@ -75,13 +75,14 @@ const Theater = (props) => {
         e.style.display = v;
       }
     });
+  
   return (
     <div className="container-theater-watch">
       <Toggle mode={theaterState.modeRoom} />
       <div
         className="container-room"
         style={{
-          display:"block",
+          display: "block",
           transition: "0.3s linear",
           transform:
             theaterState.modeRoom === 1
@@ -106,11 +107,6 @@ const Theater = (props) => {
                 >
                   <div style={{ display: "flex", paddingRight: "1.2rem" }}>
                     {room.roomName}
-                    <div style={{ margin: "0 0 0 auto" }}>
-                      {new Date(room.expiredAt).getHours() -
-                        new Date(Date.now()).getHours()}
-                      h
-                    </div>
                   </div>
                 </Link>
               );

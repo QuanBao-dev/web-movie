@@ -61,9 +61,29 @@ const TheaterWatch = (props) => {
             // host: "localhost",
             // port: 5000,
             path: "/peerjs",
-            config:{
-              iceServers:[ {urls : 'stun:stun.l.google.com:19302'} ]
-            }
+            config: {
+              iceServers: [
+                { url: "stun:stun01.sipphone.com" },
+                { url: "stun:stun.ekiga.net" },
+                { url: "stun:stunserver.org" },
+                { url: "stun:stun.softjoys.com" },
+                { url: "stun:stun.voiparound.com" },
+                { url: "stun:stun.voipbuster.com" },
+                { url: "stun:stun.voipstunt.com" },
+                { url: "stun:stun.voxgratia.org" },
+                { url: "stun:stun.xten.com" },
+                {
+                  url: "turn:192.158.29.39:3478?transport=udp",
+                  credential: "JZEOEt2V3Qb0y27GRntt2u2PAYA=",
+                  username: "28224511:1379330808",
+                },
+                {
+                  url: "turn:192.158.29.39:3478?transport=tcp",
+                  credential: "JZEOEt2V3Qb0y27GRntt2u2PAYA=",
+                  username: "28224511:1379330808",
+                },
+              ],
+            },
           });
           // const tracks = stream.getAudioTracks();
           // console.log(tracks);
@@ -213,9 +233,17 @@ const TheaterWatch = (props) => {
 };
 
 function MessageDialog() {
-  return <div className="message-dialog">
-    <div>Hello</div>
-  </div>;
+  return (
+    <div className="message-dialog-container">
+      <div className="message-dialog">
+        <span>1:03 </span>
+        <span>Hello</span>
+      </div>
+      <div className="input-message-dialog">
+        <Input label={"Your comment"} />
+      </div>
+    </div>
+  );
 }
 
 function createVideoUri(inputVideoE) {
@@ -288,15 +316,15 @@ socket.on("fetch-user-online", () => {
     theaterStream.updateUsersOnline(users);
   });
 });
-socket.on("play-video-user", () => {
+socket.on("play-video-user", (currentTime) => {
   videoWatchElement.play();
-});
-socket.on("pause-video-user", (currentTime) => {
-  videoWatchElement.pause();
   videoWatchElement.currentTime = currentTime;
 });
-socket.on("end-video-user", () => {
+socket.on("pause-video-user", () => {
   videoWatchElement.pause();
+});
+socket.on("end-video-user", () => {
+  socket.emit("pause-all-video");
 });
 
 socket.on("upload-video", (uri) => {
@@ -304,15 +332,12 @@ socket.on("upload-video", (uri) => {
   videoWatchElement.onended = () => {
     socket.emit("end-all-video");
   };
-  videoWatchElement.ontimeupdate = () => {
-    console.log(videoWatchElement.currentTime);
-  }
   videoWatchElement.oncanplay = () => {
     videoWatchElement.onplay = () => {
-      socket.emit("play-all-video");
+      socket.emit("play-all-video", videoWatchElement.currentTime);
     };
     videoWatchElement.onpause = () => {
-      socket.emit("pause-all-video", videoWatchElement.currentTime);
+      socket.emit("pause-all-video");
     };
   };
 });

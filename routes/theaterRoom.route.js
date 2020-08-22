@@ -77,13 +77,15 @@ router.delete(
 
 router.get("/", verifyRole("User", "Admin"), async (req, res) => {
   //TODO get all rooms
-  const rooms = await TheaterRoom.find().lean().select({
-    roomName: 1,
-    _id: false,
-    groupId: 1,
-    createdAt: 1,
-  });
   try {
+    await TheaterRoom.deleteMany({expiredAt:{$lte:new Date(Date.now())}});
+    const rooms = await TheaterRoom.find().lean().select({
+      roomName: 1,
+      _id: false,
+      groupId: 1,
+      createdAt: 1,
+      expiredAt:1
+    });
     res.send({ message: rooms });
   } catch (error) {
     res.status(404).send({ error: "Something went wrong" });

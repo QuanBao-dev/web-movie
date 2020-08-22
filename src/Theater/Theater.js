@@ -11,8 +11,15 @@ import {
   theaterStream,
   validateForm$,
 } from "../epics/theater";
-import { updateAllowFetchCurrentRoomDetail, updateAllowFetchRooms, updateSignIn } from "../store/theater";
+import {
+  updateAllowFetchCurrentRoomDetail,
+  updateAllowFetchRooms,
+  updateSignIn,
+} from "../store/theater";
 import Axios from "axios";
+import Toggle from "../components/Toggle/Toggle";
+import { of, timer } from "rxjs";
+import { switchMap } from "rxjs/operators";
 
 const socket = theaterStream.socket;
 const Theater = (props) => {
@@ -51,9 +58,37 @@ const Theater = (props) => {
     };
   }, [cookies.idCartoonUser, theaterState.allowFetchRooms]);
   // console.log(theaterState);
+  const e = document.querySelector(".container-room");
+  timer(300)
+    .pipe(
+      switchMap(() => {
+        // console.log(theaterState.modeRoom);
+        if (theaterState.modeRoom === 0) {
+          return of("none");
+        } else {
+          return of("block");
+        }
+      })
+    )
+    .subscribe((v) => {
+      if (e) {
+        e.style.display = v;
+      }
+    });
   return (
     <div className="container-theater-watch">
-      <div className="container-room">
+      <Toggle mode={theaterState.modeRoom} />
+      <div
+        className="container-room"
+        style={{
+          display:"block",
+          transition: "0.3s linear",
+          transform:
+            theaterState.modeRoom === 1
+              ? "translate(0,0)"
+              : "translate(-350px,0)",
+        }}
+      >
         <div className="container-room-list">
           {theaterState.rooms &&
             theaterState.rooms.map((room, index) => {
@@ -69,7 +104,14 @@ const Theater = (props) => {
                   }}
                   key={index}
                 >
-                  <div>{room.roomName}</div>
+                  <div style={{ display: "flex", paddingRight: "1.2rem" }}>
+                    {room.roomName}
+                    <div style={{ margin: "0 0 0 auto" }}>
+                      {new Date(room.expiredAt).getHours() -
+                        new Date(Date.now()).getHours()}
+                      h
+                    </div>
+                  </div>
                 </Link>
               );
             })}

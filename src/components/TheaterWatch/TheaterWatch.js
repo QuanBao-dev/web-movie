@@ -1,17 +1,24 @@
-import './TheaterWatch.css';
+import "./TheaterWatch.css";
 
-import Axios from 'axios';
-import { nanoid } from 'nanoid';
-import Peer from 'peerjs';
-import React, { useEffect, useRef, useState } from 'react';
-import { useCookies } from 'react-cookie';
-import { ReplaySubject } from 'rxjs';
-import { first } from 'rxjs/operators';
+import Axios from "axios";
+import { nanoid } from "nanoid";
+import Peer from "peerjs";
+import React, { useEffect, useRef, useState } from "react";
+import { useCookies } from "react-cookie";
+import { ReplaySubject } from "rxjs";
+import { first } from "rxjs/operators";
 
-import { fetchUserOnline$, submitFormPasswordRoom$, theaterStream } from '../../epics/theater';
-import { userStream } from '../../epics/user';
-import { updateAllowFetchCurrentRoomDetail, updateSignIn } from '../../store/theater';
-import Input from '../Input/Input';
+import {
+  fetchUserOnline$,
+  submitFormPasswordRoom$,
+  theaterStream,
+} from "../../epics/theater";
+import { userStream } from "../../epics/user";
+import {
+  updateAllowFetchCurrentRoomDetail,
+  updateSignIn,
+} from "../../store/theater";
+import Input from "../Input/Input";
 
 const socket = theaterStream.socket;
 const peers = {};
@@ -22,89 +29,6 @@ let idCartoonUser;
 let groupId;
 let user;
 let videoWatchElement;
-socket.on("user-join", async (username, userId, roomId) => {
-  // console.log(roomId, groupId);
-  if (roomId !== groupId) {
-    return;
-  }
-  if (notificationE) {
-    appendNewMessage(
-      `${username} joined at ${new Date(Date.now()).toUTCString()}`,
-      notificationE
-    );
-    navigator.mediaDevices
-      .getUserMedia({
-        // video: true,
-        audio: true,
-      })
-      .then((stream) => {
-        connectToNewUser(userId, stream, audioCallE);
-      });
-  }
-});
-socket.on("disconnected-user", async (username, userId, roomId) => {
-  // console.log(roomId, groupId);
-  if (roomId !== groupId) {
-    return;
-  }
-  if (notificationE) {
-    fetchUserOnline$(groupId, idCartoonUser).subscribe((users) => {
-      theaterStream.updateUsersOnline(users);
-    });
-    appendNewMessage(
-      `${username} left at ${new Date(Date.now()).toUTCString()}`,
-      notificationE,
-      "disconnected-danger"
-    );
-    if (peers[userId]) {
-      peers[userId].close();
-      // delete peers[userId];
-    } else {
-      const audioCallChildList = [...audioCallE.childNodes];
-      // console.log(videoCallChildList);
-      audioCallChildList.forEach((child) => {
-        if (!child.id) {
-          child.muted = true;
-          child.remove();
-        }
-      });
-    }
-  }
-});
-socket.on("fetch-user-online", () => {
-  fetchUserOnline$(groupId, idCartoonUser).subscribe((users) => {
-    theaterStream.updateUsersOnline(users);
-  });
-});
-socket.on("play-video-user", (currentTime) => {
-  // console.log("play");
-  videoWatchElement.currentTime = currentTime;
-  videoWatchElement.play();
-});
-socket.on("pause-video-user", (currentTime) => {
-  // console.log("pause");
-  videoWatchElement.pause();
-});
-socket.on("end-video-user", (currentTime) => {
-  videoWatchElement.currentTime = 0;
-  videoWatchElement.pause();
-});
-
-
-socket.on("upload-video", (uri) => {
-  uploadNewVideo(uri, videoWatchElement);
-  videoWatchElement.onended = () => {
-    socket.emit("end-all-video");
-  };
-  videoWatchElement.oncanplay = () => {
-    videoWatchElement.onplay = () => {
-      socket.emit("play-all-video", videoWatchElement.currentTime);
-    };
-    videoWatchElement.onpause = () => {
-      socket.emit("pause-all-video", videoWatchElement.currentTime);
-    };
-  };
-});
 const replaySubject = new ReplaySubject(3);
 const TheaterWatch = (props) => {
   groupId = props.match.params.groupId;
@@ -128,7 +52,7 @@ const TheaterWatch = (props) => {
     if (theaterState.isSignIn) {
       navigator.mediaDevices
         .getUserMedia({
-          // video: true,
+          video: false,
           audio: true,
         })
         .then((stream) => {
@@ -137,6 +61,9 @@ const TheaterWatch = (props) => {
             // host: "localhost",
             // port: 5000,
             path: "/peerjs",
+            config:{
+              iceServers:[ {urls : 'stun:stun.l.google.com:19302'} ]
+            }
           });
           // const tracks = stream.getAudioTracks();
           // console.log(tracks);
@@ -176,6 +103,24 @@ const TheaterWatch = (props) => {
             });
           });
           // console.log("stream add my video");
+        })
+        .catch(async (err) => {
+          const id = nanoid();
+          socket.emit("new-user", user.username, groupId, id, user.email);
+          await Axios.post(
+            `/api/theater/${groupId}/members`,
+            {
+              userId: id,
+              username: user.username,
+              email: user.email,
+            },
+            {
+              headers: {
+                authorization: `Bearer ${idCartoonUser}`,
+              },
+            }
+          );
+          console.log(err);
         });
     }
 
@@ -222,33 +167,29 @@ const TheaterWatch = (props) => {
   return (
     <div className="theater-user-login">
       {theaterState.isSignIn && theaterState.currentRoomDetail && (
-        <div>
+        <div className="section-center">
           <div className="notification-user-join" ref={notificationRef}></div>
-          {theaterState.currentRoomDetail.roomName}
-          <div> Video watch</div>
-          <div className="container-video">
-            <video ref={videoWatchRef}></video>
+          <div>
+            <h1 className="title-room">
+              {theaterState.currentRoomDetail.roomName}
+            </h1>
+            <div> Video watch</div>
+            <input
+              type="file"
+              ref={inputVideoRef}
+              onChange={() => createVideoUri(inputVideoRef.current)}
+            />
+            <div className="container-section-video">
+              <video ref={videoWatchRef}></video>
+              <MessageDialog />
+            </div>
+            <div className="container-audio-call" ref={audioCallRef}></div>
           </div>
-          <input
-            type="file"
-            ref={inputVideoRef}
-            onChange={() => {
-              const reader = new FileReader();
-              // console.log("submit");
-              reader.onload = function (file) {
-                const fileContent = file.target.result;
-                socket.emit("new-video", fileContent);
-                // uploadNewVideo(fileContent, videoWatchRef.current);
-              };
-              reader.readAsDataURL(inputVideoRef.current.files[0]);
-            }}
-          />
-          <div className="container-audio-call" ref={audioCallRef}></div>
         </div>
       )}
       {theaterState.isSignIn && (
         <div className="user-list-online">
-          Member Online
+          <div className="title-room">Member Online</div>
           {theaterState.usersOnline &&
             theaterState.usersOnline.map((member, key) => {
               return (
@@ -270,6 +211,111 @@ const TheaterWatch = (props) => {
     </div>
   );
 };
+
+function MessageDialog() {
+  return <div className="message-dialog">
+    <div>Hello</div>
+  </div>;
+}
+
+function createVideoUri(inputVideoE) {
+  const reader = new FileReader();
+  // console.log("submit");
+  reader.onload = function (file) {
+    const fileContent = file.target.result;
+    socket.emit("new-video", fileContent);
+    // uploadNewVideo(fileContent, videoWatchRef.current);
+  };
+  reader.readAsDataURL(inputVideoE.files[0]);
+  inputVideoE.value = "";
+}
+
+socket.on("user-join", async (username, userId, roomId) => {
+  // console.log(roomId, groupId);
+  if (roomId !== groupId) {
+    return;
+  }
+  if (notificationE) {
+    appendNewMessage(
+      `${username} joined at ${new Date(Date.now()).toUTCString()}`,
+      notificationE
+    );
+    navigator.mediaDevices
+      .getUserMedia({
+        video: false,
+        audio: true,
+      })
+      .then((stream) => {
+        connectToNewUser(userId, stream, audioCallE);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
+});
+
+socket.on("disconnected-user", async (username, userId, roomId) => {
+  // console.log(roomId, groupId);
+  if (roomId !== groupId) {
+    return;
+  }
+  if (notificationE) {
+    fetchUserOnline$(groupId, idCartoonUser).subscribe((users) => {
+      theaterStream.updateUsersOnline(users);
+    });
+    appendNewMessage(
+      `${username} left at ${new Date(Date.now()).toUTCString()}`,
+      notificationE,
+      "disconnected-danger"
+    );
+    if (peers[userId]) {
+      peers[userId].close();
+      // delete peers[userId];
+    } else {
+      const audioCallChildList = [...audioCallE.childNodes];
+      // console.log(videoCallChildList);
+      audioCallChildList.forEach((child) => {
+        if (!child.id) {
+          child.muted = true;
+          child.remove();
+        }
+      });
+    }
+  }
+});
+socket.on("fetch-user-online", () => {
+  fetchUserOnline$(groupId, idCartoonUser).subscribe((users) => {
+    theaterStream.updateUsersOnline(users);
+  });
+});
+socket.on("play-video-user", () => {
+  videoWatchElement.play();
+});
+socket.on("pause-video-user", (currentTime) => {
+  videoWatchElement.pause();
+  videoWatchElement.currentTime = currentTime;
+});
+socket.on("end-video-user", () => {
+  videoWatchElement.pause();
+});
+
+socket.on("upload-video", (uri) => {
+  uploadNewVideo(uri, videoWatchElement);
+  videoWatchElement.onended = () => {
+    socket.emit("end-all-video");
+  };
+  videoWatchElement.ontimeupdate = () => {
+    console.log(videoWatchElement.currentTime);
+  }
+  videoWatchElement.oncanplay = () => {
+    videoWatchElement.onplay = () => {
+      socket.emit("play-all-video");
+    };
+    videoWatchElement.onpause = () => {
+      socket.emit("pause-all-video", videoWatchElement.currentTime);
+    };
+  };
+});
 
 function uploadNewVideo(fileContent, videoWatchElement) {
   videoWatchElement.controls = true;

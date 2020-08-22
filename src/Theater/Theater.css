@@ -3,9 +3,11 @@
   color:white;
   background-color: #1f1e2c;
   margin:100px 3rem 1rem 3rem;
-  min-height: 200vh;
+  min-height: 90vh;
   box-shadow: 10px 10px 30px black;
   padding:3rem;
+  position: relative;
+  overflow: hidden;
 }
 
 .container-room{
@@ -34,7 +36,7 @@
   flex-direction: column;
   overflow-y: auto;
   overflow-x:hidden;
-  height: 90%;
+  height: 500px;
   min-width: 300px;
 }
 

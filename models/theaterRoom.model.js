@@ -20,6 +20,10 @@ const theaterRoomSchema = new mongoose.Schema({
   createdAt:{
     type:Date,
     default:Date.now
+  },
+  expiredAt:{
+    type:Date,
+    default:new Date(Date.now() + 43200000)
   }
 });
 

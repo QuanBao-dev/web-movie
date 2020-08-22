@@ -10,6 +10,7 @@ const initialState = {
   roomsLoginId: [],
   allowFetchCurrentRoomDetail: true,
   usersOnline: [],
+  modeRoom:1
 };
 let state = initialState;
 const theaterStore = {
@@ -24,6 +25,13 @@ const theaterStore = {
     return temp;
   },
   init: () => {
+    behaviorSubject.next(state);
+  },
+  updateModeRoom:(num) => {
+    state = {
+      ...state,
+      modeRoom:num
+    };
     behaviorSubject.next(state);
   },
   updateRoomsTheater: (rooms) => {

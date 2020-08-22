@@ -39,6 +39,9 @@ let rooms = {};
 io.on("connection", (socket) => {
   console.log("connected to websocket");
   socket.on("new-user", (username, groupId, userId, email) => {
+    socket.on("new-message",(username, message) => {
+      socket.to(groupId).emit("send-message-other-users", username, message);
+    })
     socket.on("new-video", (videoUri) => {
       socket.emit("upload-video", videoUri);
       socket.to(groupId).emit("upload-video", videoUri);

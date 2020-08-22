@@ -9,6 +9,7 @@ import { ReplaySubject } from "rxjs";
 import { first } from "rxjs/operators";
 
 import {
+  createNewMessageDialog$,
   fetchUserOnline$,
   submitFormPasswordRoom$,
   theaterStream,
@@ -28,6 +29,7 @@ let audioCallE;
 let idCartoonUser;
 let groupId;
 let user;
+let messageDialogE;
 let videoWatchElement;
 const replaySubject = new ReplaySubject(3);
 const TheaterWatch = (props) => {
@@ -35,8 +37,10 @@ const TheaterWatch = (props) => {
   replaySubject.next(groupId);
   user = userStream.currentState() || {};
   const [theaterState, setTheaterState] = useState(theaterStream.initialState);
+  const messageDialogRef = useRef();
   const inputPasswordRef = useRef();
   const notificationRef = useRef();
+  const inputMessageDialogRef = useRef();
   const audioCallRef = useRef();
   const inputVideoRef = useRef();
   const videoWatchRef = useRef();
@@ -45,10 +49,17 @@ const TheaterWatch = (props) => {
     videoWatchElement = videoWatchRef.current;
     notificationE = notificationRef.current;
     audioCallE = audioCallRef.current;
+    messageDialogE = messageDialogRef.current;
     idCartoonUser = cookies.idCartoonUser;
     const subscription = theaterStream.subscribe(setTheaterState);
     theaterStream.init();
     let submitFormSub;
+    if (messageDialogRef.current) {
+      messageDialogRef.current.scroll({
+        top: messageDialogRef.current.offsetHeight,
+        behavior: "smooth",
+      });
+    }
     if (theaterState.isSignIn) {
       navigator.mediaDevices
         .getUserMedia({
@@ -158,7 +169,18 @@ const TheaterWatch = (props) => {
         }
       });
     }
+    let createNewMessageSub;
+    if (inputMessageDialogRef.current) {
+      createNewMessageSub = createNewMessageDialog$(
+        inputMessageDialogRef.current
+      ).subscribe((message) => {
+        // console.log(message);
+        socket.emit("new-message", user.username,message);
+        appendNewMessageDialog(message,user.username,true,messageDialogRef.current);
+      });
+    }
     return () => {
+      createNewMessageSub && createNewMessageSub.unsubscribe();
       subscription.unsubscribe();
       submitFormSub && submitFormSub.unsubscribe();
       // console.log("out");
@@ -201,7 +223,11 @@ const TheaterWatch = (props) => {
             />
             <div className="container-section-video">
               <video ref={videoWatchRef}></video>
-              <MessageDialog />
+              <MessageDialog
+                user={user}
+                messageDialogRef={messageDialogRef}
+                inputMessageDialogRef={inputMessageDialogRef}
+              />
             </div>
             <div className="container-audio-call" ref={audioCallRef}></div>
           </div>
@@ -232,15 +258,20 @@ const TheaterWatch = (props) => {
   );
 };
 
-function MessageDialog() {
+function MessageDialog({ user, messageDialogRef, inputMessageDialogRef }) {
   return (
     <div className="message-dialog-container">
-      <div className="message-dialog">
-        <span>1:03 </span>
-        <span>Hello</span>
+      <div className="message-dialog" ref={messageDialogRef}>
+        <div className="flex-start-message message-dialog-item current-user-message">
+          <span className="content-message">Welcome to theater, enjoy and have a good day</span>
+          <span className="username-message">Robot</span>
+        </div>
+      </div>
+      <div style={{ display: "flex", justifyContent: "center" }}>
+        <i className="fab fa-apple"></i>
       </div>
       <div className="input-message-dialog">
-        <Input label={"Your comment"} />
+        <Input label={"Your comment"} input={inputMessageDialogRef} />
       </div>
     </div>
   );
@@ -257,6 +288,39 @@ function createVideoUri(inputVideoE) {
   reader.readAsDataURL(inputVideoE.files[0]);
   inputVideoE.value = "";
 }
+
+function appendNewMessageDialog(
+  message,
+  username,
+  isYourMessage,
+  messageDialogContainerE
+) {
+  const newElement = document.createElement("div");
+  const newSpanContentMessage = document.createElement("span");
+  const newSpanUsernameMessage = document.createElement("span");
+  if (!isYourMessage) {
+    newElement.className =
+      "flex-start-message message-dialog-item current-user-message";
+  } else {
+    newElement.className =
+      "flex-end-message message-dialog-item other-user-message";
+  }
+  newSpanContentMessage.className = "content-message";
+  newSpanContentMessage.innerText = message;
+  newSpanUsernameMessage.className = "username-message";
+  newSpanUsernameMessage.innerText = username;
+  newElement.append(newSpanContentMessage);
+  newElement.append(newSpanUsernameMessage);
+  messageDialogContainerE.append(newElement);
+  messageDialogContainerE.scroll({
+    top:messageDialogContainerE.scrollHeight,
+    behavior:"smooth"
+  })
+}
+
+socket.on("send-message-other-users",(username, message) => {
+  appendNewMessageDialog(message,username,false,messageDialogE);
+})
 
 socket.on("user-join", async (username, userId, roomId) => {
   // console.log(roomId, groupId);

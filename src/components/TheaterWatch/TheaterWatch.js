@@ -176,7 +176,7 @@ const TheaterWatch = (props) => {
       ).subscribe((message) => {
         // console.log(message);
         socket.emit("new-message", user.username,message);
-        appendNewMessageDialog(message,user.username,true,messageDialogRef.current);
+        appendNewMessageDialog(message,"You",true,messageDialogRef.current);
       });
     }
     return () => {

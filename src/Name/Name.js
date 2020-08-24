@@ -373,6 +373,7 @@ function FormSubmitCrawl({
             linkWatchingInputRef.current.value =
               updateMovie.data.message.source || "";
           } catch (error) {
+            console.log(error);
             alert("something went wrong");
           }
         }}

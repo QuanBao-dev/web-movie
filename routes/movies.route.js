@@ -127,7 +127,7 @@ router.put("/:malId/episodes/crawl", verifyRole("Admin"), async (req, res) => {
       },
     });
   } catch (error) {
-    res.status(404).send({ error: "Something went wrong" });
+    res.status(404).send({ error: error });
   }
 });
 

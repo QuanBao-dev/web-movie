@@ -1,28 +1,19 @@
-import "./Name.css";
+import './Name.css';
 
-import Axios from "axios";
-import React, { useEffect, useRef, useState } from "react";
-import { useCookies } from "react-cookie";
-import { Link } from "react-router-dom";
+import Axios from 'axios';
+import { orderBy } from 'lodash';
+import React, { useEffect, useRef, useState } from 'react';
+import { useCookies } from 'react-cookie';
+import { Link } from 'react-router-dom';
+import { from, fromEvent, timer } from 'rxjs';
+import { ajax } from 'rxjs/ajax';
+import { catchError, debounceTime, exhaustMap, filter, map, pluck, switchMap } from 'rxjs/operators';
 
-import Input from "../components/Input/Input";
-import { userStream } from "../epics/user";
-import { allowUpdatedMovie } from "../store/home";
-
-import { ajax } from "rxjs/ajax";
-import { timer, from, fromEvent } from "rxjs";
-import {
-  exhaustMap,
-  pluck,
-  catchError,
-  map,
-  filter,
-  debounceTime,
-  switchMap,
-} from "rxjs/operators";
-import { allowShouldFetchComment } from "../store/comment";
-import { orderBy } from "lodash";
-import { allowShouldFetchEpisodeMovie } from "../store/pageWatch";
+import Input from '../components/Input/Input';
+import { userStream } from '../epics/user';
+import { allowShouldFetchComment } from '../store/comment';
+import { allowUpdatedMovie } from '../store/home';
+import { allowShouldFetchEpisodeMovie } from '../store/pageWatch';
 
 const Name = (props) => {
   const { name } = props.match.params;
@@ -56,27 +47,29 @@ const Name = (props) => {
         }
       })
       .then(async (anime) => {
-        const api = await fetchDataVideo(anime.mal_id);
-        setData({
-          ...anime,
-          dataPromo: api,
-        });
-        return anime.mal_id;
+        try {
+          const api = await fetchDataVideo(anime.mal_id);
+          setData({
+            ...anime,
+            dataPromo: api,
+          });
+          return anime.mal_id;
+        } catch (error) {
+          return anime.mal_id;
+        }
       })
       .then(async (malId) => {
         try {
           const api = await fetchEpisodeDataVideo(malId);
-          // console.log(api);
-          linkWatchingInputRef.current.value = api.message.source;
+          if (linkWatchingInputRef.current)
+            linkWatchingInputRef.current.value = api.message.source;
           setEpisodeData(api.message.episodes);
-          return malId;
         } catch (error) {}
       })
       .then(async () => {
         try {
           const api = await fetchBoxMovieOneMovie(name, cookies.idCartoonUser);
           controlBoxMovieRef.current.style.display = "inline";
-          console.log(api.message);
           setBoxMovie(api.message);
           subscription = handleDeleteBoxMovie(
             addMovieRef,
@@ -86,9 +79,8 @@ const Name = (props) => {
             name
           );
         } catch (error) {
-          if(controlBoxMovieRef.current){
+          if (controlBoxMovieRef.current)
             controlBoxMovieRef.current.style.display = "inline";
-          }
           subscription = handleAddBoxMovie(
             addMovieRef,
             deleteMovieRef,
@@ -126,7 +118,7 @@ const Name = (props) => {
         : false;
     });
   }
-  // console.log(boxMovie);
+  // console.log(episodeData);
   return (
     findingAnime && (
       <div className="anime-name-info layout">
@@ -349,7 +341,6 @@ function FormSubmitCrawl({
             alert("start, end and watch url are required");
             return;
           }
-          console.log(start, end, url, name);
           try {
             buttonSubmitCrawlInputRef.current.disabled = true;
             const updateMovie = await Axios.put(
@@ -554,7 +545,7 @@ function handleAddBoxMovie(
       })
     )
     .subscribe((v) => {
-      console.log(v);
+      // console.log(v);
       setBoxMovie(v);
       handleDeleteBoxMovie(
         addMovieRef,

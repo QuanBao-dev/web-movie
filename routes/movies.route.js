@@ -34,7 +34,6 @@ router.get("/latest", async (req, res) => {
   }
 });
 
-
 router.get("/:malId/episodes", async (req, res) => {
   try {
     const movie = await Movie.findOne({ malId: req.params.malId });
@@ -92,54 +91,51 @@ router.put("/admin/:malId", verifyRole("Admin"), async (req, res) => {
   }
 });
 
-router.put(
-  "/:malId/episodes/crawl",
-  verifyRole("Admin"),
-  async (req, res) => {
-    const { start, end, url } = req.body;
-    const { malId } = req.params;
-    let movie = await Movie.findOne({ malId });
-    if(movie){
-      movie.sourceFilm = url;
-    } else {
-      movie = new Movie({
-        sourceFilm:url,
-        malId:malId,
-      })
-    }
-    try {
-      const dataCrawl = await crawl(parseInt(start),parseInt(end), url);
-      addMovieUpdated(malId);
-      const listAvailableEpisodes = movie.episodes.map(
-        (movie) => movie.episode
-      );
-      dataCrawl.forEach((data) => {
-        if (!listAvailableEpisodes.includes(data.episode)) {
-          movie.episodes.push(data);
-        }
-      });
-      movie.episodes.sort((a, b) => a.episode - b.episode);
-      const savedMovie = await movie.save();
-      res.send({
-        message: {
-          source: movie.sourceFilm,
-          episodes: savedMovie.episodes.map((episode) =>
-            ignoreProps(["_id", "__v"], episode.toJSON())
-          ),
-        },
-      });
-    } catch (error) {
-      res.status(404).send({ error: "Something went wrong" });
-    }
+router.put("/:malId/episodes/crawl", verifyRole("Admin"), async (req, res) => {
+  const { start, end, url } = req.body;
+  const { malId } = req.params;
+  let movie = await Movie.findOne({ malId });
+  if (movie) {
+    movie.sourceFilm = url;
+  } else {
+    movie = new Movie({
+      sourceFilm: url,
+      malId: malId,
+    });
   }
-);
+  try {
+    const dataCrawl = await crawl(parseInt(start), parseInt(end), url);
+    dataCrawl.forEach((data) => {
+      const index = movie.episodes.findIndex(
+        (dataEp) => dataEp.episode === data.episode
+      );
+      if (index < 0) {
+        movie.episodes.push(data);
+      } else {
+        movie.episodes[index] = data;
+      }
+    });
+    movie.episodes.sort((a, b) => a.episode - b.episode);
+    const savedMovie = await movie.save();
+    addMovieUpdated(malId);
+    res.send({
+      message: {
+        source: movie.sourceFilm,
+        episodes: savedMovie.episodes.map((episode) =>
+          ignoreProps(["_id", "__v"], episode.toJSON())
+        ),
+      },
+    });
+  } catch (error) {
+    res.status(404).send({ error: "Something went wrong" });
+  }
+});
 
 router.put(
   "/:malId/episode/:episode",
   verifyRole("Admin"),
   async (req, res) => {
     const { malId, episode } = req.params;
-    addMovieUpdated(malId);
     const dataUpdated = req.body;
     dataUpdated.episode = episode;
     try {
@@ -164,6 +160,7 @@ router.put(
         movie.episodes.sort((a, b) => a.episode - b.episode);
       }
       const savedMovie = await movie.save();
+      addMovieUpdated(malId);
       res.send(
         savedMovie.episodes.map((episode) => {
           return ignoreProps(["_id", "__v"], episode.toJSON());

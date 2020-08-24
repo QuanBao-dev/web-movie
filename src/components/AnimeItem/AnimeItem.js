@@ -14,7 +14,6 @@ const AnimeItem = ({ anime, imageRef }) => {
       subscription.unsubscribe();
     };
   }, [anime.imageUrl, anime.image_url, imageRef]);
-  console.log(anime);
   return (
     <div
       className="anime-item"

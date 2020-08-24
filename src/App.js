@@ -23,24 +23,43 @@ import EditUser from "./EditUser/EditUser";
 import Theater from "./Theater/Theater";
 import { theaterStream } from "./epics/theater";
 import { allowUpdatedMovie } from "./store/home";
+import navBarStore from "./store/navbar";
 function App() {
   const navLoginRef = useRef();
   const navRegisterRef = useRef();
   const [user, setUser] = useState(userStream.initialState);
   // eslint-disable-next-line no-unused-vars
   const [cookies, setCookie] = useCookies(["idCartoonUser"]);
-
+  const [toggleLockState, setToggleBlockState] = useState(
+    navBarStore.initialState
+  );
   useEffect(() => {
+    const subscriptionLock = navBarStore.subscribe(setToggleBlockState);
+    navBarStore.init();
+    if (toggleLockState.isShowBlockPopUp) {
+      document.getElementsByTagName("body").item(0).className = "hidden-scroll";
+    } else {
+      document.getElementsByTagName("body").item(0).className = "";
+    }
     const subscription = userStream.subscribe(setUser);
     const fetchingUserSub = fetchingUser$(cookies.idCartoonUser).subscribe();
     return () => {
       fetchingUserSub.unsubscribe();
       subscription.unsubscribe();
+      subscriptionLock.unsubscribe();
     };
-  }, [cookies.idCartoonUser]);
-  // console.log(userStream.currentState());
+  }, [cookies.idCartoonUser, toggleLockState.isShowBlockPopUp]);
+  console.log(toggleLockState);
   return (
     <Router>
+      {toggleLockState.isShowBlockPopUp && (
+        <div className="block-pop-up">
+          <div className="loading-block">
+            <i className="fas fa-spinner fa-9x fa-spin"></i>
+            <h1 className="loading-message">Waiting...</h1>
+          </div>
+        </div>
+      )}
       <nav>
         <ul className="nav-bar__app">
           <li>

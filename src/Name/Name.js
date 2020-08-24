@@ -22,6 +22,7 @@ import { userStream } from "../epics/user";
 import { allowShouldFetchComment } from "../store/comment";
 import { allowUpdatedMovie } from "../store/home";
 import { allowShouldFetchEpisodeMovie } from "../store/pageWatch";
+import navBarStore from "../store/navbar";
 
 const Name = (props) => {
   const { name } = props.match.params;
@@ -349,10 +350,9 @@ function FormSubmitCrawl({
             alert("start, end and watch url are required");
             return;
           }
-          startEpisodeInputRef.current.value = "";
-          endEpisodeInputRef.current.value = "";
           try {
             buttonSubmitCrawlInputRef.current.disabled = true;
+            navBarStore.updateIsShowBlockPopUp(true);
             const updateMovie = await Axios.put(
               `/api/movies/${name}/episodes/crawl`,
               {
@@ -366,18 +366,25 @@ function FormSubmitCrawl({
                 },
               }
             );
-            allowUpdatedMovie(true);
-            setEpisodeData(updateMovie.data.message.episodes);
-            //TODO
-            linkWatchingInputRef.current.value =
-              updateMovie.data.message.source || "";
+            setTimeout(() => {
+              allowUpdatedMovie(true);
+              setEpisodeData(updateMovie.data.message.episodes);
+              startEpisodeInputRef.current.value = "";
+              endEpisodeInputRef.current.value = "";
+              navBarStore.updateIsShowBlockPopUp(false);
+              buttonSubmitCrawlInputRef.current.disabled = false;
+              linkWatchingInputRef.current.value =
+                updateMovie.data.message.source || "";
+            }, 5000);
           } catch (error) {
-            alert(
-              "Successfully. You don't need to wait for uploading Episodes process, You can do whatever you want now"
-            );
-            allowUpdatedMovie(true);
+            setTimeout(() => {
+              startEpisodeInputRef.current.value = "";
+              endEpisodeInputRef.current.value = "";
+              navBarStore.updateIsShowBlockPopUp(false);
+              buttonSubmitCrawlInputRef.current.disabled = false;
+              allowUpdatedMovie(true);
+            }, 5000);
           }
-          buttonSubmitCrawlInputRef.current.disabled = false;
         }}
       >
         Submit

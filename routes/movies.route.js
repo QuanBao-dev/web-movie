@@ -94,7 +94,6 @@ router.put("/admin/:malId", verifyRole("Admin"), async (req, res) => {
 router.put("/:malId/episodes/crawl", verifyRole("Admin"), async (req, res) => {
   const { start, end, url } = req.body;
   const { malId } = req.params;
-  await addMovieUpdated(malId);
   let movie = await Movie.findOne({ malId });
   if (movie) {
     movie.sourceFilm = url;
@@ -105,7 +104,10 @@ router.put("/:malId/episodes/crawl", verifyRole("Admin"), async (req, res) => {
     });
   }
   try {
-    const dataCrawl = await crawl(parseInt(start), parseInt(end), url);
+    const [dataCrawl] = await Promise.all([
+      crawl(parseInt(start), parseInt(end), url),
+      addMovieUpdated(malId),
+    ]);
     dataCrawl.forEach((data) => {
       const index = movie.episodes.findIndex(
         (dataEp) => dataEp.episode === data.episode
@@ -139,16 +141,18 @@ router.put(
     const { malId, episode } = req.params;
     const dataUpdated = req.body;
     dataUpdated.episode = episode;
-    await addMovieUpdated(malId);
     try {
-      const movie = await Movie.findOneAndUpdate(
-        { malId },
-        {},
-        {
-          new: true,
-          upsert: true,
-        }
-      );
+      const [movie] = await Promise.all([
+        Movie.findOneAndUpdate(
+          { malId },
+          {},
+          {
+            new: true,
+            upsert: true,
+          }
+        ),
+        addMovieUpdated(malId),
+      ]);
       let check = false;
       movie.episodes = movie.episodes.map((data) => {
         if (data.episode === parseInt(episode)) {

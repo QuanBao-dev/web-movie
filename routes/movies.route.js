@@ -94,6 +94,7 @@ router.put("/admin/:malId", verifyRole("Admin"), async (req, res) => {
 router.put("/:malId/episodes/crawl", verifyRole("Admin"), async (req, res) => {
   const { start, end, url } = req.body;
   const { malId } = req.params;
+  addMovieUpdated(malId);
   let movie = await Movie.findOne({ malId });
   if (movie) {
     movie.sourceFilm = url;
@@ -117,7 +118,6 @@ router.put("/:malId/episodes/crawl", verifyRole("Admin"), async (req, res) => {
     });
     movie.episodes.sort((a, b) => a.episode - b.episode);
     const savedMovie = await movie.save();
-    addMovieUpdated(malId);
     res.send({
       message: {
         source: movie.sourceFilm,
@@ -139,6 +139,7 @@ router.put(
     const { malId, episode } = req.params;
     const dataUpdated = req.body;
     dataUpdated.episode = episode;
+    addMovieUpdated(malId);
     try {
       const movie = await Movie.findOneAndUpdate(
         { malId },
@@ -161,7 +162,6 @@ router.put(
         movie.episodes.sort((a, b) => a.episode - b.episode);
       }
       const savedMovie = await movie.save();
-      addMovieUpdated(malId);
       res.send(
         savedMovie.episodes.map((episode) => {
           return ignoreProps(["_id", "__v"], episode.toJSON());

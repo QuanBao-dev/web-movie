@@ -6,9 +6,9 @@ const path = require("path");
 const app = express();
 const port = process.env.PORT || 5000;
 const server = require("http").Server(app);
-const io = require("socket.io")(server,{
-  pingTimeout:3000,
-  pingInterval:2000
+const io = require("socket.io")(server, {
+  pingTimeout: 3000,
+  pingInterval: 2000,
 });
 const { ExpressPeerServer } = require("peer");
 
@@ -42,9 +42,9 @@ let rooms = {};
 io.on("connection", (socket) => {
   console.log("connected to websocket");
   socket.on("new-user", (username, groupId, userId, email) => {
-    socket.on("new-message",(username, message) => {
+    socket.on("new-message", (username, message) => {
       socket.to(groupId).emit("send-message-other-users", username, message);
-    })
+    });
     socket.on("new-video", (videoUri) => {
       socket.emit("upload-video", videoUri);
       socket.to(groupId).emit("upload-video", videoUri);
@@ -153,6 +153,7 @@ app.use("/api/movies", moviesRoute);
 app.use("/api/users", usersRoute);
 app.use("/api/", tokenRoute);
 app.use("/", renderRoute);
-server.listen(port, () =>
-  console.log(`Example app listening on port ${port}!`)
-);
+server.listen(port, () => {
+  let port = server.address().port;
+  console.log(`Example app listening on port ${port}!`);
+});

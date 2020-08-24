@@ -103,8 +103,8 @@ router.put("/:malId/episodes/crawl", verifyRole("Admin"), async (req, res) => {
       malId: malId,
     });
   }
+  const dataCrawl = await crawl(parseInt(start), parseInt(end), url);
   try {
-    const dataCrawl = await crawl(parseInt(start), parseInt(end), url);
     dataCrawl.forEach((data) => {
       const index = movie.episodes.findIndex(
         (dataEp) => dataEp.episode === data.episode
@@ -127,7 +127,7 @@ router.put("/:malId/episodes/crawl", verifyRole("Admin"), async (req, res) => {
       },
     });
   } catch (error) {
-    res.status(404).send({ error: error });
+    res.status(404).send({ error: "Something went wrong" });
   }
 });
 

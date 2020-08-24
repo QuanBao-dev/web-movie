@@ -3,7 +3,7 @@ const UpdatedMovie = require("../models/updatedMovie");
 const ignoreProps = require("../validations/ignore.validation");
 const { verifyRole } = require("../middleware/verify-role");
 const { default: Axios } = require("axios");
-const puppeteer = require("puppeteer-core");
+const puppeteer = require("puppeteer");
 
 const router = require("express").Router();
 
@@ -103,8 +103,8 @@ router.put("/:malId/episodes/crawl", verifyRole("Admin"), async (req, res) => {
       malId: malId,
     });
   }
-  const dataCrawl = await crawl(parseInt(start), parseInt(end), url);
   try {
+    const dataCrawl = await crawl(parseInt(start), parseInt(end), url);
     dataCrawl.forEach((data) => {
       const index = movie.episodes.findIndex(
         (dataEp) => dataEp.episode === data.episode
@@ -127,6 +127,7 @@ router.put("/:malId/episodes/crawl", verifyRole("Admin"), async (req, res) => {
       },
     });
   } catch (error) {
+    console.error(error);
     res.status(404).send({ error: "Something went wrong" });
   }
 });
@@ -221,8 +222,8 @@ async function addMovieUpdated(malId) {
 async function crawl(start, end, url) {
   const browser = await puppeteer.launch({
     headless: true,
-    executablePath:
-      "C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe", // because we are using puppeteer-core so we must define this option
+    // executablePath:
+    //   "C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe", // because we are using puppeteer-core so we must define this option
     args: ["--no-sandbox", "--disable-setuid-sandbox"],
   });
   const page = await browser.newPage();

@@ -14,6 +14,7 @@ const AnimeItem = ({ anime, imageRef }) => {
       subscription.unsubscribe();
     };
   }, [anime.imageUrl, anime.image_url, imageRef]);
+  console.log(anime);
   return (
     <div
       className="anime-item"
@@ -21,7 +22,7 @@ const AnimeItem = ({ anime, imageRef }) => {
     >
       {anime.airing_start &&
         new Date(anime.airing_start).getTime() <=
-          new Date(Date.now()).getTime() && (
+          new Date(Date.now()-2592000000).getTime() && (
           <div className="anime-airing-symbol">Airing</div>
         )}
       <img

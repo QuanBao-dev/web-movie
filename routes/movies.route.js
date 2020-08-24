@@ -3,6 +3,7 @@ const UpdatedMovie = require("../models/updatedMovie");
 const ignoreProps = require("../validations/ignore.validation");
 const { verifyRole } = require("../middleware/verify-role");
 const { default: Axios } = require("axios");
+const puppeteer = require("puppeteer-core");
 
 const router = require("express").Router();
 
@@ -33,14 +34,18 @@ router.get("/latest", async (req, res) => {
   }
 });
 
+
 router.get("/:malId/episodes", async (req, res) => {
   try {
     const movie = await Movie.findOne({ malId: req.params.malId });
     const episodes = movie.episodes;
     res.send({
-      message: episodes.map((message) => {
-        return ignoreProps(["_id", "__v"], message.toJSON());
-      }),
+      message: {
+        source: movie.sourceFilm || "",
+        episodes: episodes.map((message) => {
+          return ignoreProps(["_id", "__v"], message.toJSON());
+        }),
+      },
     });
   } catch (error) {
     res.status(404).send({ error: "Something went wrong" });
@@ -86,6 +91,48 @@ router.put("/admin/:malId", verifyRole("Admin"), async (req, res) => {
     res.status(404).send({ error: "Something went wrong" });
   }
 });
+
+router.put(
+  "/:malId/episodes/crawl",
+  verifyRole("Admin"),
+  async (req, res) => {
+    const { start, end, url } = req.body;
+    const { malId } = req.params;
+    let movie = await Movie.findOne({ malId });
+    if(movie){
+      movie.sourceFilm = url;
+    } else {
+      movie = new Movie({
+        sourceFilm:url,
+        malId:malId,
+      })
+    }
+    try {
+      const dataCrawl = await crawl(parseInt(start),parseInt(end), url);
+      addMovieUpdated(malId);
+      const listAvailableEpisodes = movie.episodes.map(
+        (movie) => movie.episode
+      );
+      dataCrawl.forEach((data) => {
+        if (!listAvailableEpisodes.includes(data.episode)) {
+          movie.episodes.push(data);
+        }
+      });
+      movie.episodes.sort((a, b) => a.episode - b.episode);
+      const savedMovie = await movie.save();
+      res.send({
+        message: {
+          source: movie.sourceFilm,
+          episodes: savedMovie.episodes.map((episode) =>
+            ignoreProps(["_id", "__v"], episode.toJSON())
+          ),
+        },
+      });
+    } catch (error) {
+      res.status(404).send({ error: "Something went wrong" });
+    }
+  }
+);
 
 router.put(
   "/:malId/episode/:episode",
@@ -172,6 +219,65 @@ async function addMovieUpdated(malId) {
   try {
     await newUpdatedMovie.save();
   } catch (error) {}
+}
+
+async function crawl(start, end, url) {
+  const browser = await puppeteer.launch({
+    headless: true,
+    executablePath:
+      "C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe", // because we are using puppeteer-core so we must define this option
+    args: ["--remote-debugging-port=9222"],
+  });
+  const page = await browser.newPage();
+  await page.setDefaultNavigationTimeout(0);
+  const options = {
+    waitUntil: "networkidle0",
+    timeout: 0,
+  };
+  await page.goto(url, options);
+  const linkWatching = await page.evaluate(() => {
+    const link = document.querySelector(
+      ".ah-pif-ftool.ah-bg-bd.ah-clear-both > .ah-float-left > span"
+    ).childNodes[0].href;
+    return link;
+  });
+
+  await page.goto(linkWatching, options);
+  const listLinkWatchEpisode = await page.evaluate(() => {
+    let listLink = document.querySelectorAll(".ah-wf-body ul li a");
+    listLink = [...listLink];
+    return listLink.map((link) => link.href);
+  });
+  let listSrc = [];
+  const startEpisode = start <= 0 ? 1 : start;
+  const endEpisode =
+    end > listLinkWatchEpisode.length ? listLinkWatchEpisode.length : end;
+  for (let i = startEpisode - 1; i < endEpisode; i++) {
+    listSrc.push({
+      embedUrl: await extractSourceVideo(
+        page,
+        listLinkWatchEpisode[i],
+        options
+      ),
+      episode: i + 1,
+    });
+  }
+  await browser.close();
+  return listSrc;
+}
+
+async function extractSourceVideo(page, linkWatching, options) {
+  await page.goto(linkWatching, options);
+  const episodeLink = await page.evaluate(() => {
+    let listSv = document.querySelector("#list_sv").childNodes;
+    listSv = [...listSv];
+    listSv.find((sv) => sv.id === "serverMoe").click();
+    const linkEpisodeAnime = document.querySelector(
+      ".film-player.ah-bg-bd iframe"
+    ).src;
+    return linkEpisodeAnime;
+  });
+  return episodeLink;
 }
 
 module.exports = router;

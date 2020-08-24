@@ -9,6 +9,9 @@ const movieSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+  sourceFilm:{
+    type:String,
+  },
   malId: {
     type: String,
     require: true,

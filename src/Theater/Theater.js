@@ -57,25 +57,7 @@ const Theater = (props) => {
       validationFormSub.unsubscribe();
     };
   }, [cookies.idCartoonUser, theaterState.allowFetchRooms]);
-  // console.log(theaterState);
-  const e = document.querySelector(".container-room");
-  timer(300)
-    .pipe(
-      switchMap(() => {
-        // console.log(theaterState.modeRoom);
-        if (theaterState.modeRoom === 0) {
-          return of("none");
-        } else {
-          return of("block");
-        }
-      })
-    )
-    .subscribe((v) => {
-      if (e) {
-        e.style.display = v;
-      }
-    });
-  
+  toggleAnimation(theaterState);
   return (
     <div className="container-theater-watch">
       <Toggle mode={theaterState.modeRoom} />
@@ -90,59 +72,13 @@ const Theater = (props) => {
               : "translate(-350px,0)",
         }}
       >
-        <div className="container-room-list">
-          {theaterState.rooms &&
-            theaterState.rooms.map((room, index) => {
-              return (
-                <Link
-                  to={`/theater/${room.groupId}`}
-                  className={`room-link-item${
-                    locationPath === room.groupId ? " active-link" : ""
-                  }`}
-                  onClick={() => {
-                    updateSignIn(false);
-                    updateAllowFetchCurrentRoomDetail(true);
-                  }}
-                  key={index}
-                >
-                  <div style={{ display: "flex", paddingRight: "1.2rem" }}>
-                    {room.roomName}
-                  </div>
-                </Link>
-              );
-            })}
-        </div>
-        <div className="input-room-layout">
-          <Input label="Room Name" input={inputRoomNameRef} />
-          <Input label="Password" type="password" input={inputPasswordRef} />
-          <button
-            className="btn btn-primary"
-            onClick={async () => {
-              const data = {
-                roomName: inputRoomNameRef.current.value,
-                password: inputPasswordRef.current.value,
-              };
-              inputRoomNameRef.current.value = "";
-              inputPasswordRef.current.value = "";
-              buttonSubmitRef.current.disabled = true;
-              try {
-                const res = await Axios.post("/api/theater", data, {
-                  headers: {
-                    authorization: `Bearer ${cookies.idCartoonUser}`,
-                  },
-                });
-                socket.emit("create-new-room");
-                updateAllowFetchRooms(true);
-                theaterStream.addRoomTheater(res.data.message);
-              } catch (error) {
-                console.error(error);
-              }
-            }}
-            ref={buttonSubmitRef}
-          >
-            Submit
-          </button>
-        </div>
+        <RoomList rooms={theaterState.rooms} locationPath={locationPath} />
+        <InputCreateRoom
+          inputRoomNameRef={inputRoomNameRef}
+          inputPasswordRef={inputPasswordRef}
+          buttonSubmitRef={buttonSubmitRef}
+          cookies={cookies}
+        />
       </div>
       <div className="container-watch-interface">
         <Switch>
@@ -152,5 +88,92 @@ const Theater = (props) => {
     </div>
   );
 };
+
+function toggleAnimation(theaterState) {
+  const e = document.querySelector(".container-room");
+  timer(300)
+    .pipe(
+      switchMap(() => {
+        // console.log(theaterState.modeRoom);
+        if (theaterState.modeRoom === 0) {
+          return of("none");
+        };
+        return of("block");
+      })
+    )
+    .subscribe((v) => {
+      if (e) {
+        e.style.display = v;
+      }
+    });
+}
+
+function RoomList({ rooms, locationPath }) {
+  return (
+    <div className="container-room-list">
+      {rooms &&
+        rooms.map((room, index) => {
+          return (
+            <Link
+              to={`/theater/${room.groupId}`}
+              className={`room-link-item${
+                locationPath === room.groupId ? " active-link" : ""
+              }`}
+              onClick={() => {
+                updateSignIn(false);
+                updateAllowFetchCurrentRoomDetail(true);
+              }}
+              key={index}
+            >
+              <div style={{ display: "flex", paddingRight: "1.2rem" }}>
+                {room.roomName}
+              </div>
+            </Link>
+          );
+        })}
+    </div>
+  );
+}
+
+function InputCreateRoom({
+  inputRoomNameRef,
+  inputPasswordRef,
+  buttonSubmitRef,
+  cookies,
+}) {
+  return (
+    <div className="input-room-layout">
+      <Input label="Room Name" input={inputRoomNameRef} />
+      <Input label="Password" type="password" input={inputPasswordRef} />
+      <button
+        className="btn btn-primary"
+        onClick={async () => {
+          const data = {
+            roomName: inputRoomNameRef.current.value,
+            password: inputPasswordRef.current.value,
+          };
+          inputRoomNameRef.current.value = "";
+          inputPasswordRef.current.value = "";
+          buttonSubmitRef.current.disabled = true;
+          try {
+            const res = await Axios.post("/api/theater", data, {
+              headers: {
+                authorization: `Bearer ${cookies.idCartoonUser}`,
+              },
+            });
+            socket.emit("create-new-room");
+            updateAllowFetchRooms(true);
+            theaterStream.addRoomTheater(res.data.message);
+          } catch (error) {
+            console.error(error);
+          }
+        }}
+        ref={buttonSubmitRef}
+      >
+        Submit
+      </button>
+    </div>
+  );
+}
 
 export default Theater;

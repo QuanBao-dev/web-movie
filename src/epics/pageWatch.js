@@ -10,7 +10,7 @@ export const fetchEpisodesOfMovie$ = (malId) => {
       ajax({
         url: `/api/movies/${malId}/episodes`,
       }).pipe(
-        pluck("response", "message"),
+        pluck("response", "message","episodes"),
         catchError(() => {
           return of([]);
         })

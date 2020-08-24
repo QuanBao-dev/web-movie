@@ -175,8 +175,8 @@ const TheaterWatch = (props) => {
         inputMessageDialogRef.current
       ).subscribe((message) => {
         // console.log(message);
-        socket.emit("new-message", user.username,message);
-        appendNewMessageDialog(message,"You",true,messageDialogRef.current);
+        socket.emit("new-message", user.username, message);
+        appendNewMessageDialog(message, "You", true, messageDialogRef.current);
       });
     }
     return () => {
@@ -224,7 +224,6 @@ const TheaterWatch = (props) => {
             <div className="container-section-video">
               <video ref={videoWatchRef}></video>
               <MessageDialog
-                user={user}
                 messageDialogRef={messageDialogRef}
                 inputMessageDialogRef={inputMessageDialogRef}
               />
@@ -234,17 +233,7 @@ const TheaterWatch = (props) => {
         </div>
       )}
       {theaterState.isSignIn && (
-        <div className="user-list-online">
-          <div className="title-room">Member Online</div>
-          {theaterState.usersOnline &&
-            theaterState.usersOnline.map((member, key) => {
-              return (
-                <div key={key}>
-                  <p>{member.username}</p>
-                </div>
-              );
-            })}
-        </div>
+        <UserListOnline usersOnline={theaterState.usersOnline} />
       )}
 
       <div style={{ width: "300px" }} hidden={theaterState.isSignIn}>
@@ -258,12 +247,30 @@ const TheaterWatch = (props) => {
   );
 };
 
-function MessageDialog({ user, messageDialogRef, inputMessageDialogRef }) {
+function UserListOnline({ usersOnline }) {
+  return (
+    <div className="user-list-online">
+      <div className="title-room">Member Online</div>
+      {usersOnline &&
+        usersOnline.map((member, key) => {
+          return (
+            <div key={key}>
+              <p>{member.username}</p>
+            </div>
+          );
+        })}
+    </div>
+  );
+}
+
+function MessageDialog({ messageDialogRef, inputMessageDialogRef }) {
   return (
     <div className="message-dialog-container">
       <div className="message-dialog" ref={messageDialogRef}>
         <div className="flex-start-message message-dialog-item current-user-message">
-          <span className="content-message">Welcome to theater, enjoy and have a good day</span>
+          <span className="content-message">
+            Welcome to theater, enjoy and have a good day
+          </span>
           <span className="username-message">Robot</span>
         </div>
       </div>
@@ -279,11 +286,9 @@ function MessageDialog({ user, messageDialogRef, inputMessageDialogRef }) {
 
 function createVideoUri(inputVideoE) {
   const reader = new FileReader();
-  // console.log("submit");
   reader.onload = function (file) {
     const fileContent = file.target.result;
     socket.emit("new-video", fileContent);
-    // uploadNewVideo(fileContent, videoWatchRef.current);
   };
   reader.readAsDataURL(inputVideoE.files[0]);
   inputVideoE.value = "";
@@ -313,14 +318,14 @@ function appendNewMessageDialog(
   newElement.append(newSpanUsernameMessage);
   messageDialogContainerE.append(newElement);
   messageDialogContainerE.scroll({
-    top:messageDialogContainerE.scrollHeight,
-    behavior:"smooth"
-  })
+    top: messageDialogContainerE.scrollHeight,
+    behavior: "smooth",
+  });
 }
 
-socket.on("send-message-other-users",(username, message) => {
-  appendNewMessageDialog(message,username,false,messageDialogE);
-})
+socket.on("send-message-other-users", (username, message) => {
+  appendNewMessageDialog(message, username, false, messageDialogE);
+});
 
 socket.on("user-join", async (username, userId, roomId) => {
   // console.log(roomId, groupId);

@@ -223,7 +223,7 @@ async function crawl(start, end, url) {
     headless: true,
     executablePath:
       "C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe", // because we are using puppeteer-core so we must define this option
-    args: ["--remote-debugging-port=9222"],
+    args: ["--no-sandbox", "--disable-setuid-sandbox"],
   });
   const page = await browser.newPage();
   await page.setDefaultNavigationTimeout(0);

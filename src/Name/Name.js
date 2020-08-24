@@ -364,7 +364,6 @@ function FormSubmitCrawl({
                 },
               }
             );
-            buttonSubmitCrawlInputRef.current.disabled = false;
             allowUpdatedMovie(true);
             setEpisodeData(updateMovie.data.message.episodes);
             //TODO
@@ -373,9 +372,9 @@ function FormSubmitCrawl({
             linkWatchingInputRef.current.value =
               updateMovie.data.message.source || "";
           } catch (error) {
-            console.log(error);
             alert("something went wrong");
           }
+          buttonSubmitCrawlInputRef.current.disabled = false;
         }}
       >
         Submit

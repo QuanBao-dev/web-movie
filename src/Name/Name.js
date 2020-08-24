@@ -1,19 +1,27 @@
-import './Name.css';
+import "./Name.css";
 
-import Axios from 'axios';
-import { orderBy } from 'lodash';
-import React, { useEffect, useRef, useState } from 'react';
-import { useCookies } from 'react-cookie';
-import { Link } from 'react-router-dom';
-import { from, fromEvent, timer } from 'rxjs';
-import { ajax } from 'rxjs/ajax';
-import { catchError, debounceTime, exhaustMap, filter, map, pluck, switchMap } from 'rxjs/operators';
+import Axios from "axios";
+import { orderBy } from "lodash";
+import React, { useEffect, useRef, useState } from "react";
+import { useCookies } from "react-cookie";
+import { Link } from "react-router-dom";
+import { from, fromEvent, timer } from "rxjs";
+import { ajax } from "rxjs/ajax";
+import {
+  catchError,
+  debounceTime,
+  exhaustMap,
+  filter,
+  map,
+  pluck,
+  switchMap,
+} from "rxjs/operators";
 
-import Input from '../components/Input/Input';
-import { userStream } from '../epics/user';
-import { allowShouldFetchComment } from '../store/comment';
-import { allowUpdatedMovie } from '../store/home';
-import { allowShouldFetchEpisodeMovie } from '../store/pageWatch';
+import Input from "../components/Input/Input";
+import { userStream } from "../epics/user";
+import { allowShouldFetchComment } from "../store/comment";
+import { allowUpdatedMovie } from "../store/home";
+import { allowShouldFetchEpisodeMovie } from "../store/pageWatch";
 
 const Name = (props) => {
   const { name } = props.match.params;
@@ -357,6 +365,7 @@ function FormSubmitCrawl({
               }
             );
             buttonSubmitCrawlInputRef.current.disabled = false;
+            allowUpdatedMovie(true);
             setEpisodeData(updateMovie.data.message.episodes);
             //TODO
             startEpisodeInputRef.current.value = "";
@@ -364,7 +373,7 @@ function FormSubmitCrawl({
             linkWatchingInputRef.current.value =
               updateMovie.data.message.source || "";
           } catch (error) {
-            console.log("something went wrong");
+            alert("something went wrong");
           }
         }}
       >

@@ -11,7 +11,10 @@
 
 .list-episode-movie{
   display: flex;
-  flex-wrap: nowrap;
+  max-height: 500px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  flex-wrap: wrap;
   justify-content: center;
 }
 

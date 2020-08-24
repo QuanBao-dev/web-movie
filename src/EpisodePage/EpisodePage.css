@@ -27,6 +27,18 @@
   background-color: #1c2129;
 }
 
+.list-episode-movie::-webkit-scrollbar{
+  width: 5px;
+  background-color: black;
+}
+
+.list-episode-movie::-webkit-scrollbar-thumb{
+  width: 5px;
+  border-radius: 10px;
+  background-color: rgb(60, 56, 109);
+}
+
+
 .section-play-movie{
   background-color: #262c41;
   box-shadow: 0 0 10px 5px #000000;

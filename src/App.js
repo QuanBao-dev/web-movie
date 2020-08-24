@@ -22,6 +22,7 @@ import { allowShouldFetchAllUser } from "./store/admin";
 import EditUser from "./EditUser/EditUser";
 import Theater from "./Theater/Theater";
 import { theaterStream } from "./epics/theater";
+import { allowUpdatedMovie } from "./store/home";
 function App() {
   const navLoginRef = useRef();
   const navRegisterRef = useRef();
@@ -53,6 +54,7 @@ function App() {
                   behavior: "smooth",
                 });
                 theaterStream.socket.emit("disconnect-custom");
+                allowUpdatedMovie(true);
               }}
               exact
             >

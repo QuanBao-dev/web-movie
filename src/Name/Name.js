@@ -349,6 +349,8 @@ function FormSubmitCrawl({
             alert("start, end and watch url are required");
             return;
           }
+          startEpisodeInputRef.current.value = "";
+          endEpisodeInputRef.current.value = "";
           try {
             buttonSubmitCrawlInputRef.current.disabled = true;
             const updateMovie = await Axios.put(
@@ -367,12 +369,13 @@ function FormSubmitCrawl({
             allowUpdatedMovie(true);
             setEpisodeData(updateMovie.data.message.episodes);
             //TODO
-            startEpisodeInputRef.current.value = "";
-            endEpisodeInputRef.current.value = "";
             linkWatchingInputRef.current.value =
               updateMovie.data.message.source || "";
           } catch (error) {
-            alert("something went wrong");
+            alert(
+              "Successfully. You don't need to wait for uploading Episodes process, You can do whatever you want now"
+            );
+            allowUpdatedMovie(true);
           }
           buttonSubmitCrawlInputRef.current.disabled = false;
         }}

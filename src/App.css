@@ -47,13 +47,9 @@
     flex-direction: column;
   }
   .left-nav-item{
-    margin: 0 10px!important;
-    padding-left:1.2rem!important;
+    margin: 0!important;
   }
-  .nav-bar__app .nav-bar__item{
-    border:1px solid white;
-  }
-
+  
   .toggle-show__nav{
     display: block; 
   }
@@ -64,7 +60,6 @@
 }
 
 .nav-bar__app .nav-bar__item{
-  margin: 0 10px;
   padding: 10px;
   font-size: 1.3rem;
 }

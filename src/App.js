@@ -27,7 +27,7 @@ import navBarStore from "./store/navbar";
 
 window.addEventListener("resize", () => {
   const e = document.getElementsByClassName("child-nav-bar__app").item(0);
-  if(document.body.offsetWidth > 697){
+  if (document.body.offsetWidth > 697) {
     e.style.display = "flex";
   } else {
     e.style.display = "none";
@@ -122,8 +122,8 @@ function App() {
               </li>
             )}
 
-            <li className="nav-bar__item">
-              {user && (
+            {user && (
+              <li className="nav-bar__item">
                 <Link
                   to="/theater"
                   activeClassName="active"
@@ -133,8 +133,8 @@ function App() {
                 >
                   Theater
                 </Link>
-              )}
-            </li>
+              </li>
+            )}
 
             <li className="left-nav-item nav-bar__item" ref={navLoginRef}>
               {!user && (

@@ -42,6 +42,9 @@
     margin: 100px auto;
     width: 80%;
   }
+  .anime-name-info .box-content{
+    width: 100%!important;
+  }  
   
   .anime-name-info .box{
     display: flex;

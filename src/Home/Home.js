@@ -82,8 +82,8 @@ function Home() {
     }
     return () => {
       subscription7 && subscription7.unsubscribe();
-      subscription8 && subscription8.unsubscribe()
-      subscription9 && subscription9.unsubscribe()
+      subscription8 && subscription8.unsubscribe();
+      subscription9 && subscription9.unsubscribe();
       unsubscribeSubscription(
         subscription,
         subscription2,
@@ -109,7 +109,12 @@ function Home() {
   ]);
   middleWare(homeState);
   const { elementOptions, elementsLi } = pipeData();
-  // console.log(homeState);
+  if (limitShowRecentlyUpdated === homeState.updatedMovie.length) {
+    const e = document.getElementById("button-see-more__home");
+    if (e) {
+      e.style.display = "none";
+    }
+  }
   return (
     <div className="home-page">
       <div className="recently-updated-movie">
@@ -146,49 +151,52 @@ function Home() {
             padding: "1rem",
             cursor: "pointer",
           }}
+          id="button-see-more__home"
           onClick={() => showMoreAnime()}
         >
           <div>See more</div>
         </div>
       </div>
-      <SelectFilterAnime
-        targetScroll={targetScroll}
-        homeState={homeState}
-        selectSeason={selectSeason}
-        selectYear={selectYear}
-        elementOptions={elementOptions}
-      />
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          backgroundColor: "#242847",
-          paddingBottom: "1rem",
-          boxShadow: "0 20px 10px 10px #242847",
-        }}
-      >
-        <div style={{ width: "300px" }}>
-          <Input label="Search" input={searchInput} />
-        </div>
-      </div>
+      <AnimeSchedule />
       <SearchedAnimeList homeState={homeState} />
       <div className="container-anime-list">
-        <UpcomingAnimeList homeState={homeState} />
-        <div className="anime-pagination">
-          <AnimeList
-            data={homeState.dataDetail}
-            error={homeState.error || null}
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            paddingBottom: "1rem",
+            flexDirection: "column",
+            alignItems: "center",
+          }}
+        >
+          <SelectFilterAnime
+            targetScroll={targetScroll}
+            homeState={homeState}
+            selectSeason={selectSeason}
+            selectYear={selectYear}
+            elementOptions={elementOptions}
           />
-          <div style={{ margin: "auto", width: "50%", textAlign: "center" }}>
-            <PageNavList
-              elementsLi={elementsLi}
-              stream={stream}
-              homeState={homeState}
-            />
+          <div style={{ width: "300px" }}>
+            <Input label="Search" input={searchInput} />
           </div>
         </div>
+        <div className="container-display-anime__home">
+          <div className="anime-pagination">
+            <AnimeList
+              data={homeState.dataDetail}
+              error={homeState.error || null}
+            />
+            <div style={{ margin: "auto", width: "50%", textAlign: "center" }}>
+              <PageNavList
+                elementsLi={elementsLi}
+                stream={stream}
+                homeState={homeState}
+              />
+            </div>
+          </div>
+          <UpcomingAnimeList homeState={homeState} />
+        </div>
       </div>
-      <AnimeSchedule />
     </div>
   );
 
@@ -268,10 +276,9 @@ function unsubscribeSubscription(...subscriptions) {
   });
 }
 
-
 function SubNavBar({ subNavToggle, setSubNavToggle, user }) {
   return (
-    <div className="sub-nav-bar" style={{ display: "flex" }}>
+    <div className="sub-nav-bar">
       <h1
         className={`sub-nav-item${subNavToggle === 0 ? " sub-nav-active" : ""}`}
         onClick={() => setSubNavToggle(0)}
@@ -307,7 +314,6 @@ function SelectFilterAnime({
       style={{
         marginTop: "10px",
         textAlign: "center",
-        backgroundColor: "#242847",
       }}
       ref={targetScroll}
     >
@@ -361,17 +367,17 @@ function UpcomingAnimeList({ homeState }) {
       <ul className="upcoming-anime-list">
         {homeState.dataTopMovie &&
           homeState.dataTopMovie.map((movie, index) => (
-            <div key={index}>
+            <li key={index}>
               <h2>Rank {movie.rank}</h2>
-              <li>
+              <div>
                 <div className="upcoming-anime-list-info">
                   <Link to={"/anime/" + movie.mal_id}>
                     <img src={movie.image_url} alt="Preview" />
                   </Link>
                   <div className="title">{movie.title}</div>
                 </div>
-              </li>
-            </div>
+              </div>
+            </li>
           ))}
       </ul>
     </div>

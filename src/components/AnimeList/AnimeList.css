@@ -3,5 +3,6 @@
   flex-wrap: wrap;
   border-top-left-radius: 30px;
   border-bottom-left-radius: 30px;
+  justify-content: center;
 }
 

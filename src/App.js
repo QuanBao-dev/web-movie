@@ -24,19 +24,30 @@ import Theater from "./Theater/Theater";
 import { theaterStream } from "./epics/theater";
 import { allowUpdatedMovie } from "./store/home";
 import navBarStore from "./store/navbar";
+
+window.addEventListener("resize", () => {
+  const e = document.getElementsByClassName("child-nav-bar__app").item(0);
+  if(document.body.offsetWidth > 697){
+    e.style.display = "flex";
+  } else {
+    e.style.display = "none";
+  }
+});
+
 function App() {
   const navLoginRef = useRef();
   const navRegisterRef = useRef();
   const [user, setUser] = useState(userStream.initialState);
   // eslint-disable-next-line no-unused-vars
   const [cookies, setCookie] = useCookies(["idCartoonUser"]);
-  const [toggleLockState, setToggleBlockState] = useState(
+  const [toggleNavBarState, setToggleNavBarState] = useState(
     navBarStore.initialState
   );
+
   useEffect(() => {
-    const subscriptionLock = navBarStore.subscribe(setToggleBlockState);
+    const subscriptionLock = navBarStore.subscribe(setToggleNavBarState);
     navBarStore.init();
-    if (toggleLockState.isShowBlockPopUp) {
+    if (toggleNavBarState.isShowBlockPopUp) {
       document.getElementsByTagName("body").item(0).className = "hidden-scroll";
     } else {
       document.getElementsByTagName("body").item(0).className = "";
@@ -48,11 +59,10 @@ function App() {
       subscription.unsubscribe();
       subscriptionLock.unsubscribe();
     };
-  }, [cookies.idCartoonUser, toggleLockState.isShowBlockPopUp]);
-  console.log(toggleLockState);
+  }, [cookies.idCartoonUser, toggleNavBarState.isShowBlockPopUp]);
   return (
     <Router>
-      {toggleLockState.isShowBlockPopUp && (
+      {toggleNavBarState.isShowBlockPopUp && (
         <div className="block-pop-up">
           <div className="loading-block">
             <i className="fas fa-spinner fa-9x fa-spin"></i>
@@ -60,103 +70,126 @@ function App() {
           </div>
         </div>
       )}
-      <nav>
+      <nav className="nav-bar">
         <ul className="nav-bar__app">
-          <li>
-            <Link
-              to="/"
-              activeClassName="active"
-              onClick={() => {
-                // eslint-disable-next-line no-restricted-globals
-                scroll({
-                  top: 0,
-                  behavior: "smooth",
-                });
-                theaterStream.socket.emit("disconnect-custom");
-                allowUpdatedMovie(true);
-              }}
-              exact
-            >
-              Home
-            </Link>
-          </li>
-          {user && user.role === "Admin" && (
-            <li>
+          <div
+            className="toggle-show__nav"
+            onClick={() => {
+              const e = document
+                .getElementsByClassName("child-nav-bar__app")
+                .item(0);
+              if (e.style.display === "none") {
+                e.style.display = "flex";
+              } else {
+                e.style.display = "none";
+              }
+            }}
+          >
+            <i className="fas fa-bars fa-2x"></i>
+          </div>
+          <ul className="child-nav-bar__app">
+            <li className="nav-bar__item">
               <Link
-                to="/admin"
-                onClick={() => {
-                  allowShouldFetchAllUser(true);
-                  theaterStream.socket.emit("disconnect-custom");
-                }}
+                to="/"
                 activeClassName="active"
+                onClick={() => {
+                  // eslint-disable-next-line no-restricted-globals
+                  scroll({
+                    top: 0,
+                    behavior: "smooth",
+                  });
+                  theaterStream.socket.emit("disconnect-custom");
+                  allowUpdatedMovie(true);
+                }}
+                exact
               >
-                Admin
+                Home
               </Link>
             </li>
-          )}
-          <li>
-            {user && (
-              <Link
-                to="/theater"
-                activeClassName="active"
-                onClick={() => {
-                  theaterStream.socket.emit("disconnect-custom");
-                }}
-              >
-                Theater
-              </Link>
-            )}
-          </li>
-          <li ref={navLoginRef} style={{ margin: "0 0 0 auto" }}>
-            {!user && (
-              <Link
-                to="/auth/login"
-                activeClassName="active"
-                onClick={() => {
-                  theaterStream.socket.emit("disconnect-custom");
-                }}
-              >
-                Login
-              </Link>
-            )}
-            {user && (
-              <div
-                style={{ color: "white", cursor: "pointer" }}
-                onClick={() => {
-                  logoutUser(setCookie, cookies.idCartoonUser);
-                  theaterStream.socket.emit("disconnect-custom");
-                }}
-              >
-                Logout
-              </div>
-            )}
-          </li>
 
-          {!user && (
-            <li ref={navRegisterRef}>
-              <Link
-                to="/auth/register"
-                activeClassName="active"
-                onClick={() => {
-                  theaterStream.socket.emit("disconnect-custom");
-                }}
-              >
-                Register
-              </Link>
+            {user && user.role === "Admin" && (
+              <li className="nav-bar__item">
+                <Link
+                  to="/admin"
+                  onClick={() => {
+                    allowShouldFetchAllUser(true);
+                    theaterStream.socket.emit("disconnect-custom");
+                  }}
+                  activeClassName="active"
+                >
+                  Admin
+                </Link>
+              </li>
+            )}
+
+            <li className="nav-bar__item">
+              {user && (
+                <Link
+                  to="/theater"
+                  activeClassName="active"
+                  onClick={() => {
+                    theaterStream.socket.emit("disconnect-custom");
+                  }}
+                >
+                  Theater
+                </Link>
+              )}
             </li>
-          )}
-          {user && (
-            <li style={{ color: "white", cursor: "pointer" }}>
-              <Link
-                to={`/edit`}
-                onClick={() => {
-                  theaterStream.socket.emit("disconnect-custom");
-                }}
-              >
-                {user.username}
-              </Link>
+
+            <li className="left-nav-item nav-bar__item" ref={navLoginRef}>
+              {!user && (
+                <Link
+                  to="/auth/login"
+                  activeClassName="active"
+                  onClick={() => {
+                    theaterStream.socket.emit("disconnect-custom");
+                  }}
+                >
+                  Login
+                </Link>
+              )}
+              {user && (
+                <div
+                  style={{ color: "white", cursor: "pointer" }}
+                  onClick={() => {
+                    logoutUser(setCookie, cookies.idCartoonUser);
+                    theaterStream.socket.emit("disconnect-custom");
+                  }}
+                >
+                  Logout
+                </div>
+              )}
             </li>
-          )}
+
+            {!user && (
+              <li ref={navRegisterRef} className="nav-bar__item">
+                <Link
+                  to="/auth/register"
+                  activeClassName="active"
+                  onClick={() => {
+                    theaterStream.socket.emit("disconnect-custom");
+                  }}
+                >
+                  Register
+                </Link>
+              </li>
+            )}
+            {user && (
+              <li
+                style={{ color: "white", cursor: "pointer" }}
+                className="nav-bar__item"
+              >
+                <Link
+                  to={`/edit`}
+                  onClick={() => {
+                    theaterStream.socket.emit("disconnect-custom");
+                  }}
+                >
+                  {user.username}
+                </Link>
+              </li>
+            )}
+          </ul>
         </ul>
       </nav>
       <Switch>

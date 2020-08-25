@@ -32,6 +32,7 @@ const AnimeSchedule = () => {
   return (
     <div className="container-week-schedule-movie">
       <ul className="week-schedule-movie">
+        <h1>Schedule</h1>
         {week.map((date, index) => {
           return (
             <li key={index} className="day-schedule-movie">
@@ -75,9 +76,12 @@ const AnimeSchedule = () => {
                         </div>
                         <div className="schedule-movie-rating">
                           <div className="episodes">
-                            {anime.episodes || "???"} ep{anime.episodes > 1 && "s"}
+                            {anime.episodes || "???"} ep
+                            {anime.episodes > 1 && "s"}
                           </div>
-                          <div className="score">{anime.score || "??"} / 10</div>
+                          <div className="score">
+                            {anime.score || "??"} / 10
+                          </div>
                         </div>
                         <img
                           className="schedule-movie-img"

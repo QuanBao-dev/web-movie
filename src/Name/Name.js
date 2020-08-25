@@ -40,6 +40,7 @@ const Name = (props) => {
   const endEpisodeInputRef = useRef();
   const linkWatchingInputRef = useRef();
   const buttonSubmitCrawlInputRef = useRef();
+  const selectCrawlInputRef = useRef();
   useEffect(() => {
     // eslint-disable-next-line no-restricted-globals
     scroll({
@@ -204,6 +205,7 @@ const Name = (props) => {
                   endEpisodeInputRef={endEpisodeInputRef}
                   startEpisodeInputRef={startEpisodeInputRef}
                   linkWatchingInputRef={linkWatchingInputRef}
+                  selectCrawlInputRef= {selectCrawlInputRef}
                   name={name}
                   setEpisodeData={setEpisodeData}
                   cookies={cookies}
@@ -321,6 +323,7 @@ function FormSubmitCrawl({
   endEpisodeInputRef,
   linkWatchingInputRef,
   buttonSubmitCrawlInputRef,
+  selectCrawlInputRef,
   name,
   setEpisodeData,
   cookies,
@@ -331,6 +334,10 @@ function FormSubmitCrawl({
         <Input label="start" type="number" input={startEpisodeInputRef} />
         <Input label="end" type="number" input={endEpisodeInputRef} />
       </div>
+      <select defaultValue="serverMoe" ref={selectCrawlInputRef}>
+        <option value="serverLt">Lot</option>
+        <option value="serverMoe">Moe</option>
+      </select>
       <Input label="Watch Url" input={linkWatchingInputRef} />
       <button
         className="btn btn-success"
@@ -339,6 +346,7 @@ function FormSubmitCrawl({
           const start = startEpisodeInputRef.current.value;
           const end = endEpisodeInputRef.current.value;
           const url = linkWatchingInputRef.current.value;
+          const server = selectCrawlInputRef.current.value;
           if (
             startEpisodeInputRef.current.value === "" ||
             !startEpisodeInputRef.current.value ||
@@ -359,6 +367,7 @@ function FormSubmitCrawl({
                 start,
                 end,
                 url,
+                server
               },
               {
                 headers: {

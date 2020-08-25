@@ -20,6 +20,8 @@ const EpisodePage = (props) => {
     if (pageWatchState.shouldFetchEpisodeMovie) {
       fetchEpisodesSub = fetchEpisodesOfMovie$(malId).subscribe((v) => {
         pageWatchStream.updateEpisodes(v);
+        const e = document.getElementsByClassName("active-episode").item(0);
+        e.scrollIntoView();
         allowShouldFetchEpisodeMovie(false);
       });
     }
@@ -41,8 +43,9 @@ const EpisodePage = (props) => {
       <div className="section-play-movie">
         {currentEpisode && (
           <iframe
+            className="video-player"
             width="100%"
-            height="500px"
+            height="900px"
             src={currentEpisode.embedUrl}
             title={currentEpisode.episode}
             allowFullScreen

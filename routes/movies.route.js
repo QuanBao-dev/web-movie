@@ -92,7 +92,7 @@ router.put("/admin/:malId", verifyRole("Admin"), async (req, res) => {
 });
 
 router.put("/:malId/episodes/crawl", verifyRole("Admin"), async (req, res) => {
-  const { start, end, url } = req.body;
+  const { start, end, url, server } = req.body;
   const { malId } = req.params;
   let movie = await Movie.findOne({ malId });
   if (movie) {
@@ -105,7 +105,7 @@ router.put("/:malId/episodes/crawl", verifyRole("Admin"), async (req, res) => {
   }
   try {
     const [dataCrawl] = await Promise.all([
-      crawl(parseInt(start), parseInt(end), url),
+      crawl(parseInt(start), parseInt(end), url, server),
       addMovieUpdated(malId),
     ]);
     dataCrawl.forEach((data) => {
@@ -223,7 +223,7 @@ async function addMovieUpdated(malId) {
   } catch (error) {}
 }
 
-async function crawl(start, end, url) {
+async function crawl(start, end, url, server) {
   const browser = await puppeteer.launch({
     headless: true,
     // executablePath:
@@ -259,6 +259,7 @@ async function crawl(start, end, url) {
       embedUrl: await extractSourceVideo(
         page,
         listLinkWatchEpisode[i],
+        server,
         options
       ),
       episode: i + 1,
@@ -268,17 +269,17 @@ async function crawl(start, end, url) {
   return listSrc;
 }
 
-async function extractSourceVideo(page, linkWatching, options) {
+async function extractSourceVideo(page, linkWatching, server, options) {
   await page.goto(linkWatching, options);
-  const episodeLink = await page.evaluate(() => {
+  const episodeLink = await page.evaluate((server) => {
     let listSv = document.querySelector("#list_sv").childNodes;
     listSv = [...listSv];
-    listSv.find((sv) => sv.id === "serverMoe").click();
+    listSv.find((sv) => sv.id === server).click();
     const linkEpisodeAnime = document.querySelector(
       ".film-player.ah-bg-bd iframe"
     ).src;
     return linkEpisodeAnime;
-  });
+  },server);
   return episodeLink;
 }
 

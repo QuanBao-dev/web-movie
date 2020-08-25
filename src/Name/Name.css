@@ -6,8 +6,6 @@
 .anime-name-info{
   background-color: #282b38;
   color: white;
-  margin: 100px auto;
-  width: 80%;
   box-shadow: 0 0 5px 5px black;
   z-index: 1;
   padding: 30px;
@@ -23,8 +21,10 @@
 .anime-name-info .image{
   display: block;
   margin: 15px auto;
-  width: 500px;
-  height: 600px;
+  width: 100%;
+  height: 100%;
+  max-height: 600px;
+  max-width: 500px;
   text-align: center;
 }
 
@@ -37,8 +37,60 @@
   box-shadow: 0 0 5px 5px black,0 0 5px 5px white;
 }
 
+@media (min-width:950px){
+  .anime-name-info{
+    margin: 100px auto;
+    width: 80%;
+  }
+  
+  .anime-name-info .box{
+    display: flex;
+    position: relative;
+    top:10px;
+    box-shadow:0 0 5px 5px black;
+    border-radius: 10px;
+    flex-direction: row;
+  }
+
+  .anime-name-info .box-info{
+    width:40%;
+  }
+
+  .anime-name-info .box-content{
+    width: 59%;
+  }  
+}
+
+@media (max-width:950px){
+  .anime-name-info{
+    margin: 100px 0;
+    width: 100%;
+  }
+
+  .anime-name-info .box-content {
+    padding-bottom: 50px;
+  }
+
+  .anime-name-info .box{
+    display: flex;
+    position: relative;
+    top:10px;
+    box-shadow:0 0 5px 5px black;
+    border-radius: 10px;
+    flex-direction: column;
+    }
+
+  .anime-name-info .box-info{
+    width:100%;
+  }
+
+  .anime-name-info .box-content{
+    width: 100%;
+  }  
+}
+
 .anime-name-info .box-info{
-  width:40%;
+  /* width:40%; */
   box-shadow: 2px 0 10px 1px black;
   font-size: larger;
   text-align: center;
@@ -65,17 +117,8 @@
   font-family: 'Times New Roman', Times, serif;
 }
 
-
-.anime-name-info .box{
-  display: flex;
-  position: relative;
-  top:10px;
-  box-shadow:0 0 5px 5px black;
-  border-radius: 10px;
-}
-
 .anime-name-info .box-content{
-  width: 100%;
+  width: inherit;
   margin-left: 10px;
   box-shadow: 0 0 5px 5px black;
 }

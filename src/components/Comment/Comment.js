@@ -78,7 +78,17 @@ function Comment({ malId }) {
     inputRefs,
     malId,
   ]);
-
+  const e = document.getElementsByClassName("comment-button-see").item(0);
+  if (e) {
+    if (
+      chatState.messages.length <
+      chatState.currentPage * chatState.numberCommentOfEachPage
+    ) {
+      e.style.display = "none";
+    } else {
+      e.style.display = "block";
+    }
+  }
   // console.log(chatState);
   return (
     <div

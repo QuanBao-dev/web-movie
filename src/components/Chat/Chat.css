@@ -1,0 +1,73 @@
+.message-dialog-container{
+  display: block;
+  background-color: #303655;
+  box-shadow: 0 0 10px 10px black;
+  height: 500px;
+  width: 340px;
+  margin:10px;
+  border-radius: 10px;
+  padding: 1rem;
+}
+
+.message-dialog{
+  height: 420px;
+  margin-bottom: 10px;
+  background-color: #000000;
+  padding:1px 0;
+  overflow-y: auto;
+}
+
+.message-dialog::-webkit-scrollbar{
+  border-radius: 10px;
+  width:5px;
+}
+
+.message-dialog::-webkit-scrollbar-thumb{
+  border-radius: 10px;
+  background-color: #484f70;
+  width:5px;
+}
+
+.message-dialog::-webkit-scrollbar-track{
+  border-radius: 10px;
+  width:5px;
+}
+
+.flex-start-message{
+  justify-content: flex-start;
+  align-items: flex-start;
+}
+
+.flex-end-message{
+  justify-content: flex-end;
+  align-items: flex-end;
+}
+
+.message-dialog-item{
+  padding:1rem;
+  margin:5px;
+  display: flex;
+  flex-direction: column;
+}
+
+.current-user-message > .content-message{
+  padding:1rem;
+  border-radius: 10px;
+  background-color: rgb(39, 39, 197);
+}
+
+.current-user-message > .username-message{
+  color:#aa9c9c;
+  font-size: small;
+}
+
+.other-user-message > .content-message{
+  padding:1rem;
+  border-radius: 10px;
+  background-color: #278bc5;
+}
+
+.other-user-message > .username-message{
+  color:#aa9c9c;
+  font-size: small;
+}

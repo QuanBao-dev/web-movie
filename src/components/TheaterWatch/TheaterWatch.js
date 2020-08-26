@@ -9,7 +9,6 @@ import { ReplaySubject } from "rxjs";
 import { first } from "rxjs/operators";
 
 import {
-  createNewMessageDialog$,
   fetchUserOnline$,
   submitFormPasswordRoom$,
   theaterStream,
@@ -20,6 +19,7 @@ import {
   updateSignIn,
 } from "../../store/theater";
 import Input from "../Input/Input";
+import Chat from "../Chat/Chat";
 
 const socket = theaterStream.socket;
 const peers = {};
@@ -29,7 +29,6 @@ let audioCallE;
 let idCartoonUser;
 let groupId;
 let user;
-let messageDialogE;
 let videoWatchElement;
 const replaySubject = new ReplaySubject(3);
 const TheaterWatch = (props) => {
@@ -37,10 +36,8 @@ const TheaterWatch = (props) => {
   replaySubject.next(groupId);
   user = userStream.currentState() || {};
   const [theaterState, setTheaterState] = useState(theaterStream.initialState);
-  const messageDialogRef = useRef();
   const inputPasswordRef = useRef();
   const notificationRef = useRef();
-  const inputMessageDialogRef = useRef();
   const audioCallRef = useRef();
   const inputVideoRef = useRef();
   const videoWatchRef = useRef();
@@ -49,17 +46,10 @@ const TheaterWatch = (props) => {
     videoWatchElement = videoWatchRef.current;
     notificationE = notificationRef.current;
     audioCallE = audioCallRef.current;
-    messageDialogE = messageDialogRef.current;
     idCartoonUser = cookies.idCartoonUser;
     const subscription = theaterStream.subscribe(setTheaterState);
     theaterStream.init();
     let submitFormSub;
-    if (messageDialogRef.current) {
-      messageDialogRef.current.scroll({
-        top: messageDialogRef.current.offsetHeight,
-        behavior: "smooth",
-      });
-    }
     if (theaterState.isSignIn) {
       navigator.mediaDevices
         .getUserMedia({
@@ -68,33 +58,10 @@ const TheaterWatch = (props) => {
         })
         .then((stream) => {
           myPeer = new Peer(nanoid(), {
-            host: "my-web-movie.herokuapp.com",
-            // host: "localhost",
-            // port: 5000,
+            // host: "my-web-movie.herokuapp.com",
+            host: "localhost",
+            port: 5000,
             path: "/peerjs",
-            config: {
-              iceServers: [
-                { url: "stun:stun01.sipphone.com" },
-                { url: "stun:stun.ekiga.net" },
-                { url: "stun:stunserver.org" },
-                { url: "stun:stun.softjoys.com" },
-                { url: "stun:stun.voiparound.com" },
-                { url: "stun:stun.voipbuster.com" },
-                { url: "stun:stun.voipstunt.com" },
-                { url: "stun:stun.voxgratia.org" },
-                { url: "stun:stun.xten.com" },
-                {
-                  url: "turn:192.158.29.39:3478?transport=udp",
-                  credential: "JZEOEt2V3Qb0y27GRntt2u2PAYA=",
-                  username: "28224511:1379330808",
-                },
-                {
-                  url: "turn:192.158.29.39:3478?transport=tcp",
-                  credential: "JZEOEt2V3Qb0y27GRntt2u2PAYA=",
-                  username: "28224511:1379330808",
-                },
-              ],
-            },
           });
           // const tracks = stream.getAudioTracks();
           // console.log(tracks);
@@ -169,18 +136,7 @@ const TheaterWatch = (props) => {
         }
       });
     }
-    let createNewMessageSub;
-    if (inputMessageDialogRef.current) {
-      createNewMessageSub = createNewMessageDialog$(
-        inputMessageDialogRef.current
-      ).subscribe((message) => {
-        // console.log(message);
-        socket.emit("new-message", user.username, message);
-        appendNewMessageDialog(message, "You", true, messageDialogRef.current);
-      });
-    }
     return () => {
-      createNewMessageSub && createNewMessageSub.unsubscribe();
       subscription.unsubscribe();
       submitFormSub && submitFormSub.unsubscribe();
       // console.log("out");
@@ -219,15 +175,14 @@ const TheaterWatch = (props) => {
             <input
               type="file"
               ref={inputVideoRef}
-              onChange={() => createVideoUri(inputVideoRef.current)}
+              onChange={() => {
+                createVideoUri(inputVideoRef.current);
+              }}
             />
             <div className="container-section-video">
               <video ref={videoWatchRef}></video>
-              <MessageDialog
-                messageDialogRef={messageDialogRef}
-                inputMessageDialogRef={inputMessageDialogRef}
-              />
             </div>
+            <Chat groupId={groupId} user={user} />
             <div className="container-audio-call" ref={audioCallRef}></div>
           </div>
         </div>
@@ -263,69 +218,17 @@ function UserListOnline({ usersOnline }) {
   );
 }
 
-function MessageDialog({ messageDialogRef, inputMessageDialogRef }) {
-  return (
-    <div className="message-dialog-container">
-      <div className="message-dialog" ref={messageDialogRef}>
-        <div className="flex-start-message message-dialog-item current-user-message">
-          <span className="content-message">
-            Welcome to theater, enjoy and have a good day
-          </span>
-          <span className="username-message">Robot</span>
-        </div>
-      </div>
-      <div style={{ display: "flex", justifyContent: "center" }}>
-        <i className="fab fa-apple"></i>
-      </div>
-      <div className="input-message-dialog">
-        <Input label={"Your comment"} input={inputMessageDialogRef} />
-      </div>
-    </div>
-  );
-}
-
 function createVideoUri(inputVideoE) {
   const reader = new FileReader();
   reader.onload = function (file) {
     const fileContent = file.target.result;
-    socket.emit("new-video", fileContent);
+    console.log(videoWatchElement);
+    uploadNewVideo(fileContent, videoWatchElement);
+    socket.emit("new-video", fileContent, groupId);
   };
   reader.readAsDataURL(inputVideoE.files[0]);
   inputVideoE.value = "";
 }
-
-function appendNewMessageDialog(
-  message,
-  username,
-  isYourMessage,
-  messageDialogContainerE
-) {
-  const newElement = document.createElement("div");
-  const newSpanContentMessage = document.createElement("span");
-  const newSpanUsernameMessage = document.createElement("span");
-  if (!isYourMessage) {
-    newElement.className =
-      "flex-start-message message-dialog-item current-user-message";
-  } else {
-    newElement.className =
-      "flex-end-message message-dialog-item other-user-message";
-  }
-  newSpanContentMessage.className = "content-message";
-  newSpanContentMessage.innerText = message;
-  newSpanUsernameMessage.className = "username-message";
-  newSpanUsernameMessage.innerText = username;
-  newElement.append(newSpanContentMessage);
-  newElement.append(newSpanUsernameMessage);
-  messageDialogContainerE.append(newElement);
-  messageDialogContainerE.scroll({
-    top: messageDialogContainerE.scrollHeight,
-    behavior: "smooth",
-  });
-}
-
-socket.on("send-message-other-users", (username, message) => {
-  appendNewMessageDialog(message, username, false, messageDialogE);
-});
 
 socket.on("user-join", async (username, userId, roomId) => {
   // console.log(roomId, groupId);
@@ -385,30 +288,34 @@ socket.on("fetch-user-online", () => {
     theaterStream.updateUsersOnline(users);
   });
 });
-socket.on("play-video-user", (currentTime) => {
-  videoWatchElement.play();
-  videoWatchElement.currentTime = currentTime;
+socket.on("play-video-user", (currentTime, idGroup) => {
+  if (idGroup === groupId) {
+    videoWatchElement.play();
+    videoWatchElement.currentTime = currentTime;
+  }
 });
-socket.on("pause-video-user", () => {
-  videoWatchElement.pause();
-});
-socket.on("end-video-user", () => {
-  socket.emit("pause-all-video");
+socket.on("pause-video-user", (idGroup) => {
+  if (idGroup === groupId) {
+    videoWatchElement.pause();
+  }
 });
 
-socket.on("upload-video", (uri) => {
-  uploadNewVideo(uri, videoWatchElement);
-  videoWatchElement.onended = () => {
-    socket.emit("end-all-video");
-  };
-  videoWatchElement.oncanplay = () => {
-    videoWatchElement.onplay = () => {
-      socket.emit("play-all-video", videoWatchElement.currentTime);
+socket.on("upload-video", (uri, idGroup) => {
+  console.log("Group send",idGroup,"Group current", groupId);
+  if (idGroup === groupId) {
+    uploadNewVideo(uri, videoWatchElement);
+    videoWatchElement.oncanplay = () => {
+      videoWatchElement.onended = () => {
+        socket.emit("pause-all-video");
+      };
+      videoWatchElement.onplay = () => {
+        socket.emit("play-all-video", videoWatchElement.currentTime, groupId);
+      };
+      videoWatchElement.onpause = () => {
+        socket.emit("pause-all-video");
+      };
     };
-    videoWatchElement.onpause = () => {
-      socket.emit("pause-all-video");
-    };
-  };
+  }
 });
 
 function uploadNewVideo(fileContent, videoWatchElement) {

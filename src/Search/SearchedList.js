@@ -25,7 +25,7 @@ const SearchedList = (props) => {
       {dataSearchedAnimeState && (
         <AnimeList
           data={dataSearchedAnimeState.filter((data) =>
-            !["Rx", "R+"].includes(data.rated)
+            !["Rx"].includes(data.rated)
           )}
           error={null}
         />

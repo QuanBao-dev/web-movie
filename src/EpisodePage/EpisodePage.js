@@ -7,7 +7,7 @@ import { fetchEpisodesOfMovie$, pageWatchStream } from "../epics/pageWatch";
 import { allowShouldFetchEpisodeMovie } from "../store/pageWatch";
 import { Link } from "react-router-dom";
 import { allowShouldFetchComment } from "../store/comment";
-
+// import Chat from "../components/Chat/Chat";
 const EpisodePage = (props) => {
   const { malId, episode } = props.match.params;
   const [pageWatchState, setPageWatchState] = useState(
@@ -40,6 +40,7 @@ const EpisodePage = (props) => {
   // console.log(currentEpisode);
   return (
     <div className="container-episode-movie">
+      {/* <Chat groupId={malId} /> */}
       <div className="section-play-movie">
         {currentEpisode && (
           <iframe

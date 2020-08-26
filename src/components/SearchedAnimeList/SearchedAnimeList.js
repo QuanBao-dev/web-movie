@@ -6,7 +6,7 @@ import SearchedAnime from "../SearchedAnime/SearchedAnime";
 
 const SearchedAnimeList = ({ homeState }) => {
   homeState.dataFilter = homeState.dataFilter.filter((data) => {
-    return !["Rx", "R+"].includes(data.rated);
+    return !["Rx"].includes(data.rated);
   });
   return (
     <>

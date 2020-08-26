@@ -7,8 +7,8 @@ const app = express();
 const port = process.env.PORT || 5000;
 const server = require("http").Server(app);
 const io = require("socket.io")(server, {
-  pingTimeout: 3000,
-  pingInterval: 2000,
+  pingTimeout: 2000,
+  pingInterval: 1000,
 });
 const { ExpressPeerServer } = require("peer");
 
@@ -41,28 +41,29 @@ mongoose.connect(
 let rooms = {};
 io.on("connection", (socket) => {
   console.log("connected to websocket");
+  socket.on("new-message", (username, message, groupId) => {
+    socket
+      .to(groupId)
+      .emit("send-message-other-users", username, message, groupId);
+  });
   socket.on("new-user", (username, groupId, userId, email) => {
-    socket.on("new-message", (username, message) => {
-      socket.to(groupId).emit("send-message-other-users", username, message);
-    });
-    socket.on("new-video", (videoUri) => {
-      socket.emit("upload-video", videoUri);
-      socket.to(groupId).emit("upload-video", videoUri);
+    socket.on("new-video", (videoUri, groupId) => {
+      socket.to(groupId).emit("upload-video", videoUri, groupId);
     });
     socket.on("play-all-video", (currentTime) => {
-      socket.to(groupId).emit("play-video-user", currentTime);
+      socket.to(groupId).emit("play-video-user", currentTime, groupId);
     });
-    socket.on("pause-all-video", (currentTime) => {
-      socket.to(groupId).emit("pause-video-user", currentTime);
+    socket.on("pause-all-video", () => {
+      socket.to(groupId).emit("pause-video-user", groupId);
     });
     socket.emit("fetch-user-online");
     socket.to(groupId).emit("fetch-user-online");
-    console.log(groupId);
     socket.join(groupId);
     if (!rooms[groupId]) {
       rooms[groupId] = { users: {} };
     }
-    rooms[groupId].users[socket.id] = username;
+    rooms[groupId].users[userId] = username;
+    console.log(rooms);
     socket.to(groupId).emit("user-join", username, userId, groupId);
     socket.on("disconnect-custom", async () => {
       try {
@@ -75,27 +76,53 @@ io.on("connection", (socket) => {
       }
       Object.entries(rooms)
         .reduce((disconnectedUsers, [groupId, room]) => {
-          if (rooms[groupId].users[socket.id]) {
+          if (rooms[groupId].users[userId]) {
             disconnectedUsers.push({ room, groupId });
           }
           return disconnectedUsers;
         }, [])
         .forEach(({ room, groupId }) => {
-          console.log(room.users[socket.id]);
-          if (rooms[groupId].users[socket.id]) {
+          console.log(room.users[userId]);
+          if (rooms[groupId].users[userId]) {
             socket
               .to(groupId)
-              .emit(
-                "disconnected-user",
-                room.users[socket.id],
-                userId,
-                groupId
-              );
-            rooms[groupId].users[socket.id] = null;
+              .emit("disconnected-user", room.users[userId], userId, groupId);
+            console.log("disconnect", room.users[userId]);
+
+            delete rooms[groupId].users[userId];
           }
         });
     });
     socket.on("disconnect", async () => {
+      try {
+        await TheaterRoomMember.deleteMany({
+          email,
+          groupId,
+        }).lean();
+      } catch (error) {
+        console.log(error);
+      }
+      Object.entries(rooms)
+        .reduce((disconnectedUsers, [groupId, room]) => {
+          if (rooms[groupId].users[userId]) {
+            disconnectedUsers.push({ room, groupId });
+          }
+          return disconnectedUsers;
+        }, [])
+        .forEach(({ room, groupId }) => {
+          if (rooms[groupId].users[userId]) {
+            socket
+              .to(groupId)
+              .emit("disconnected-user", room.users[userId], userId, groupId);
+            console.log("disconnect", room.users[userId]);
+            delete rooms[groupId].users[userId];
+            if (Object.keys(rooms[groupId].users).length === 0) {
+              delete rooms[groupId];
+            }
+          }
+        });
+    });
+    socket.on("disconnect-custom", async () => {
       console.log("disconnect");
       try {
         await TheaterRoomMember.deleteMany({
@@ -107,22 +134,20 @@ io.on("connection", (socket) => {
       }
       Object.entries(rooms)
         .reduce((disconnectedUsers, [groupId, room]) => {
-          if (rooms[groupId].users[socket.id]) {
+          if (rooms[groupId].users[userId]) {
             disconnectedUsers.push({ room, groupId });
           }
           return disconnectedUsers;
         }, [])
         .forEach(({ room, groupId }) => {
-          if (rooms[groupId].users[socket.id]) {
+          if (rooms[groupId].users[userId]) {
             socket
               .to(groupId)
-              .emit(
-                "disconnected-user",
-                room.users[socket.id],
-                userId,
-                groupId
-              );
-            rooms[groupId].users[socket.id] = null;
+              .emit("disconnected-user", room.users[userId], userId, groupId);
+            delete rooms[groupId].users[userId];
+            if (Object.keys(rooms[groupId].users).length === 0) {
+              delete rooms[groupId];
+            }
           }
         });
     });

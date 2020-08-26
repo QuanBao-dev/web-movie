@@ -47,7 +47,7 @@
     flex-direction: column;
   }
   .left-nav-item{
-    margin: 0!important;
+    margin: 10px!important;
   }
   
   .toggle-show__nav{

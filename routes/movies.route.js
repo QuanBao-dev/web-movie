@@ -106,8 +106,8 @@ router.put("/:malId/episodes/crawl", verifyRole("Admin"), async (req, res) => {
   try {
     const [dataCrawl] = await Promise.all([
       crawl(parseInt(start), parseInt(end), url, server),
-      addMovieUpdated(malId),
     ]);
+    addMovieUpdated(malId);
     dataCrawl.forEach((data) => {
       const index = movie.episodes.findIndex(
         (dataEp) => dataEp.episode === data.episode
@@ -194,7 +194,12 @@ router.put("/:malId", async (req, res) => {
 router.delete("/:malId", verifyRole("Admin"), async (req, res) => {
   const { malId } = req.params;
   try {
-    const movie = await Movie.findOneAndRemove({ malId });
+    const [movie, updatedMovie] = await Promise.all([
+      Movie.findOne({ malId }),
+      UpdatedMovie.findOne({ malId })
+    ]);
+    movie && movie.remove();
+    updatedMovie && updatedMovie.remove();
     res.send({ message: ignoreProps(["_id", "__v"], movie.toJSON()) });
   } catch {
     res.status(404).send({ error: "Something went wrong" });
@@ -279,7 +284,7 @@ async function extractSourceVideo(page, linkWatching, server, options) {
       ".film-player.ah-bg-bd iframe"
     ).src;
     return linkEpisodeAnime;
-  },server);
+  }, server);
   return episodeLink;
 }
 

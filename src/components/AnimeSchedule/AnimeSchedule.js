@@ -62,35 +62,37 @@ const AnimeSchedule = () => {
                 ref={movieRefs[index]}
               >
                 {homeState.dataScheduleMovie[date] &&
-                  homeState.dataScheduleMovie[date].map((anime, index) => {
-                    return (
-                      <div
-                        className="schedule-movie"
-                        key={index}
-                        onClick={() => {
-                          history.push(`/anime/${anime.mal_id}`);
-                        }}
-                      >
-                        <div className="schedule-movie-content">
-                          <div className="title">{anime.title}</div>
-                        </div>
-                        <div className="schedule-movie-rating">
-                          <div className="episodes">
-                            {anime.episodes || "???"} ep
-                            {anime.episodes > 1 && "s"}
+                  homeState.dataScheduleMovie[date]
+                    .filter((data) => limitAdultGenre(data.genres))
+                    .map((anime, index) => {
+                      return (
+                        <div
+                          className="schedule-movie"
+                          key={index}
+                          onClick={() => {
+                            history.push(`/anime/${anime.mal_id}`);
+                          }}
+                        >
+                          <div className="schedule-movie-content">
+                            <div className="title">{anime.title}</div>
                           </div>
-                          <div className="score">
-                            {anime.score || "??"} / 10
+                          <div className="schedule-movie-rating">
+                            <div className="episodes">
+                              {anime.episodes || "???"} ep
+                              {anime.episodes > 1 && "s"}
+                            </div>
+                            <div className="score">
+                              {anime.score || "??"} / 10
+                            </div>
                           </div>
+                          <img
+                            className="schedule-movie-img"
+                            src={anime.image_url}
+                            alt="Preview"
+                          />
                         </div>
-                        <img
-                          className="schedule-movie-img"
-                          src={anime.image_url}
-                          alt="Preview"
-                        />
-                      </div>
-                    );
-                  })}
+                      );
+                    })}
               </div>
             </li>
           );
@@ -99,5 +101,15 @@ const AnimeSchedule = () => {
     </div>
   );
 };
+
+function limitAdultGenre(genres) {
+  let check = true;
+  genres.forEach((genre) => {
+    if (genre.name === "Hentai") {
+      check = false;
+    }
+  });
+  return check;
+}
 
 export default AnimeSchedule;

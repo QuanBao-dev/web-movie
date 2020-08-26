@@ -24,6 +24,7 @@ import Theater from "./Theater/Theater";
 import { theaterStream } from "./epics/theater";
 import { allowUpdatedMovie } from "./store/home";
 import navBarStore from "./store/navbar";
+import SearchedList from "./Search/SearchedList";
 
 window.addEventListener("resize", () => {
   const e = document.getElementsByClassName("child-nav-bar__app").item(0);
@@ -150,7 +151,11 @@ function App() {
               )}
               {user && (
                 <div
-                  style={{ color: "white", cursor: "pointer" }}
+                  style={{
+                    color: "white",
+                    cursor: "pointer",
+                    display: "inline",
+                  }}
                   onClick={() => {
                     logoutUser(setCookie, cookies.idCartoonUser);
                     theaterStream.socket.emit("disconnect-custom");
@@ -197,6 +202,7 @@ function App() {
         {user && user.role === "Admin" && (
           <Route path="/admin" component={AdminManager} exact />
         )}
+        <Route path="/anime/search/:key" component={SearchedList} />
         <Route path="/anime/:malId/watch/:episode" component={EpisodePage} />
         <Route path="/anime/:name" component={Name} />
         {user && <Route path="/theater" component={Theater} />}

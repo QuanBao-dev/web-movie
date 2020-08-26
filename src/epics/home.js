@@ -268,3 +268,10 @@ export const fetchBoxMovie$ = (idCartoonUser) => {
     })
   );
 };
+
+export const listenSearchInputPressEnter$ = (searchInputE) => {
+  return fromEvent(searchInputE,"keydown").pipe(
+    filter(e => e.keyCode === 13),
+    pluck("target","value")
+  )
+}

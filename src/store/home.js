@@ -1,28 +1,28 @@
 /* eslint-disable no-unused-vars */
 import { BehaviorSubject } from "rxjs";
-let today = (new Date(Date.now())).getMonth()+1;
+let today = new Date(Date.now()).getMonth() + 1;
 let currentSeason;
-let numSeason = parseInt(((today+1)/3).toString())
+let numSeason = parseInt(((today + 1) / 3).toString());
 
-switch (numSeason){
+switch (numSeason) {
   case 2:
-    currentSeason = "spring"
-    break
+    currentSeason = "spring";
+    break;
   case 3:
-    currentSeason = "summer"
-    break
+    currentSeason = "summer";
+    break;
   case 4:
-    currentSeason = "fall"
-    break
+    currentSeason = "fall";
+    break;
   case 1:
-    currentSeason = "winter"
-    break
+    currentSeason = "winter";
+    break;
   default:
-    break
-};
+    break;
+}
 const initialState = {
   dataDetail: [],
-  dataDetailOriginal:[],
+  dataDetailOriginal: [],
   currentPage: 1,
   numberOfProduct: 12,
   year: 2020,
@@ -31,15 +31,15 @@ const initialState = {
   isLoading: true,
   dataFilter: [],
   textSearch: "",
-  dataTopMovie:[],
-  error:null,
+  dataTopMovie: [],
+  error: null,
   dataScheduleMovie: {},
-  dateSchedule:Array.from(Array(7).keys()).map(() => false),
-  updatedMovie:[],
-  boxMovie:[],
-  shouldFetchLatestUpdatedMovie:true,
-  shouldFetchBoxMovie:false,
-  shouldScrollToSeeMore:false,
+  dateSchedule: Array.from(Array(7).keys()).map(() => false),
+  updatedMovie: [],
+  boxMovie: [],
+  shouldFetchLatestUpdatedMovie: true,
+  shouldFetchBoxMovie: false,
+  shouldScrollToSeeMore: false,
 };
 
 const subject = new BehaviorSubject(initialState);
@@ -49,26 +49,31 @@ let state = initialState;
 const homeStore = {
   initialState,
   subscribe: (setState) => subject.pipe().subscribe((v) => setState(v)),
+  currentState: () => {
+    let ans;
+    subject.subscribe((v) => (ans = v));
+    return ans;
+  },
   init: () => {
     subject.next(state);
   },
 
-  updateDate:(date) => {
+  updateDate: (date) => {
     state = {
       ...state,
-      dateSchedule:[...date]
-    }
+      dateSchedule: [...date],
+    };
     subject.next(state);
   },
 
-  updateDataSchedule:(data) =>{
-    state={
+  updateDataSchedule: (data) => {
+    state = {
       ...state,
-      dataScheduleMovie:{
+      dataScheduleMovie: {
         ...state.dataScheduleMovie,
-        ...data
-      }
-    }
+        ...data,
+      },
+    };
     subject.next(state);
   },
 
@@ -80,10 +85,10 @@ const homeStore = {
     subject.next(state);
   },
 
-  catchingError:(error) => {
+  catchingError: (error) => {
     state = {
       ...state,
-      error:error,
+      error: error,
     };
     subject.next(state);
   },
@@ -141,27 +146,27 @@ const homeStore = {
   },
 
   updateTopMovie: (data) => {
-    state={
+    state = {
       ...state,
-      dataTopMovie:[...data]
+      dataTopMovie: [...data],
     };
     subject.next(state);
   },
-  updateUpdatedMovie:(data) => {
-    state={
+  updateUpdatedMovie: (data) => {
+    state = {
       ...state,
-      updatedMovie:[...data]
+      updatedMovie: [...data],
     };
     subject.next(state);
   },
 
-  updateBoxMovie:(data) => {
+  updateBoxMovie: (data) => {
     state = {
       ...state,
-      boxMovie:[...data]
+      boxMovie: [...data],
     };
-    subject.next(state)
-  }
+    subject.next(state);
+  },
 };
 
 export const updateMaxPage = (max) => {
@@ -172,24 +177,23 @@ export const updateIsLoading = (bool) => {
   state.isLoading = bool;
 };
 
-export const updateOriginalData = (data) =>{
-  state.dataDetailOriginal = data
-}
+export const updateOriginalData = (data) => {
+  state.dataDetailOriginal = data;
+};
 
 export const savingTextSearch = (text) => {
   state.textSearch = text;
 };
 
-export const allowUpdatedMovie =(bool) => {
+export const allowUpdatedMovie = (bool) => {
   state.shouldFetchLatestUpdatedMovie = bool;
 };
 
-export const allowBoxMovie =(bool) => {
+export const allowBoxMovie = (bool) => {
   state.shouldFetchBoxMovie = bool;
 };
 
-
-export const allowScrollToSeeMore =(bool) => {
+export const allowScrollToSeeMore = (bool) => {
   state.shouldScrollToSeeMore = bool;
 };
 

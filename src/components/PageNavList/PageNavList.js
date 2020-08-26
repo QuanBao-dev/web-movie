@@ -1,9 +1,22 @@
-import './PageNavList.css';
+import "./PageNavList.css";
 
-import React from 'react';
-import { allowScrollToSeeMore } from '../../store/home';
+import React from "react";
+import { allowScrollToSeeMore } from "../../store/home";
 
-const PageNavList = ({ elementsLi, stream, homeState }) => {
+const PageNavList = ({ numberOfPagesDisplay, stream, homeState }) => {
+  const elementsLi = Array.from(Array(numberOfPagesDisplay).keys()).map((v) => {
+    if (homeState.currentPage <= Math.floor(numberOfPagesDisplay / 2)) {
+      return v + 1;
+    }
+    if (
+      homeState.currentPage >=
+      homeState.maxPage - Math.floor(numberOfPagesDisplay / 2)
+    ) {
+      return homeState.maxPage - numberOfPagesDisplay + (v + 1);
+    }
+    return homeState.currentPage - Math.floor(numberOfPagesDisplay / 2) + v;
+  });
+
   return (
     <ul className="page-nav-list">
       <li

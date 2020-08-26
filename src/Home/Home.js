@@ -3,7 +3,7 @@ import "./Home.css";
 import { orderBy } from "lodash";
 import React, { useEffect, useRef, useState } from "react";
 import { useCookies } from "react-cookie";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 
 import AnimeList from "../components/AnimeList/AnimeList";
 import AnimeSchedule from "../components/AnimeSchedule/AnimeSchedule";
@@ -19,6 +19,7 @@ import {
   fetchBoxMovie$,
   fetchTopMovie$,
   fetchUpdatedMovie$,
+  listenSearchInputPressEnter$,
   stream,
 } from "../epics/home";
 import { userStream } from "../epics/user";
@@ -36,6 +37,7 @@ function Home() {
     numberOfMovieShown
   );
   const user = userStream.currentState();
+  const history = useHistory();
   const [cookies] = useCookies(["idCartoonUser"]);
   const [subNavToggle, setSubNavToggle] = useState(0);
   const searchInput = useRef(null);
@@ -80,6 +82,11 @@ function Home() {
     if (subNavToggle === 1 && !user) {
       setSubNavToggle(0);
     }
+    const subscription10 = listenSearchInputPressEnter$(
+      searchInput.current
+    ).subscribe((v) => {
+      history.push("/anime/search/" + v);
+    });
     return () => {
       subscription7 && subscription7.unsubscribe();
       subscription8 && subscription8.unsubscribe();
@@ -90,7 +97,8 @@ function Home() {
         subscription3,
         subscription4,
         subscription5,
-        subscription6
+        subscription6,
+        subscription10
       );
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -105,16 +113,20 @@ function Home() {
     homeState.shouldScrollToSeeMore,
     homeState.textSearch,
     homeState.year,
-    user,
   ]);
   middleWare(homeState);
-  const { elementOptions, elementsLi } = pipeData();
+  const startYear = 2000;
+  const endYear = new Date(Date.now()).getFullYear();
+  const numberOfYears = endYear - startYear + 1;
+  const numberOfPagesDisplay = homeState.maxPage < 5 ? homeState.maxPage : 5;
+
   if (limitShowRecentlyUpdated === homeState.updatedMovie.length) {
     const e = document.getElementById("button-see-more__home");
     if (e) {
       e.style.display = "none";
     }
   }
+  // console.log(stream.currentState());
   return (
     <div className="home-page">
       <div className="recently-updated-movie">
@@ -158,7 +170,6 @@ function Home() {
         </div>
       </div>
       <AnimeSchedule />
-      <SearchedAnimeList homeState={homeState} />
       <div className="container-anime-list">
         <div
           style={{
@@ -169,26 +180,27 @@ function Home() {
             alignItems: "center",
           }}
         >
-          <SelectFilterAnime
-            targetScroll={targetScroll}
-            homeState={homeState}
-            selectSeason={selectSeason}
-            selectYear={selectYear}
-            elementOptions={elementOptions}
-          />
           <div style={{ width: "300px" }}>
-            <Input label="Search" input={searchInput} />
+            <Input label="Search Anime" input={searchInput} />
           </div>
+          <SearchedAnimeList homeState={homeState} />
         </div>
         <div className="container-display-anime__home">
           <div className="anime-pagination">
+            <SelectFilterAnime
+              targetScroll={targetScroll}
+              homeState={homeState}
+              selectSeason={selectSeason}
+              selectYear={selectYear}
+              numberOfYears={numberOfYears}
+            />
             <AnimeList
               data={homeState.dataDetail}
               error={homeState.error || null}
             />
             <div style={{ margin: "auto", width: "50%", textAlign: "center" }}>
               <PageNavList
-                elementsLi={elementsLi}
+                numberOfPagesDisplay={numberOfPagesDisplay}
                 stream={stream}
                 homeState={homeState}
               />
@@ -218,31 +230,6 @@ function Home() {
       searchInput.current.value = homeState.textSearch;
     }
     return subscription;
-  }
-
-  function pipeData() {
-    const startYear = 2000;
-    const endYear = new Date(Date.now()).getFullYear();
-    const numberOfYears = endYear - startYear + 1;
-    const numberOfPagesDisplay = homeState.maxPage < 5 ? homeState.maxPage : 5;
-    const elementOptions = Array.from(Array(numberOfYears).keys()).map(
-      (v) => new Date(Date.now()).getFullYear() - v
-    );
-    const elementsLi = Array.from(Array(numberOfPagesDisplay).keys()).map(
-      (v) => {
-        if (homeState.currentPage <= Math.floor(numberOfPagesDisplay / 2)) {
-          return v + 1;
-        }
-        if (
-          homeState.currentPage >=
-          homeState.maxPage - Math.floor(numberOfPagesDisplay / 2)
-        ) {
-          return homeState.maxPage - numberOfPagesDisplay + (v + 1);
-        }
-        return homeState.currentPage - Math.floor(numberOfPagesDisplay / 2) + v;
-      }
-    );
-    return { elementOptions, elementsLi };
   }
 
   function showMoreAnime() {
@@ -277,6 +264,7 @@ function unsubscribeSubscription(...subscriptions) {
 }
 
 function SubNavBar({ subNavToggle, setSubNavToggle, user }) {
+  
   return (
     <div className="sub-nav-bar">
       <h1
@@ -307,8 +295,11 @@ function SelectFilterAnime({
   homeState,
   selectSeason,
   selectYear,
-  elementOptions,
+  numberOfYears,
 }) {
+  const elementOptions = Array.from(Array(numberOfYears).keys()).map(
+    (v) => new Date(Date.now()).getFullYear() - v
+  );
   return (
     <div
       style={{

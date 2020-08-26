@@ -41,6 +41,7 @@ const Name = (props) => {
   const linkWatchingInputRef = useRef();
   const buttonSubmitCrawlInputRef = useRef();
   const selectCrawlInputRef = useRef();
+  const buttonDeleteCrawlInputRef = useRef();
   useEffect(() => {
     // eslint-disable-next-line no-restricted-globals
     scroll({
@@ -191,6 +192,31 @@ const Name = (props) => {
             <div className="content">{findingAnime.synopsis}</div>
             {user && user.role === "Admin" && (
               <div className="admin-section">
+                <button
+                  className="btn btn-danger"
+                  ref={buttonDeleteCrawlInputRef}
+                  onClick={async () => {
+                    buttonDeleteCrawlInputRef.current.disabled = true;
+                    navBarStore.updateIsShowBlockPopUp(true);
+                    try {
+                      await Axios.delete(`/api/movies/${name}`, {
+                        headers: {
+                          authorization: `Bearer ${cookies.idCartoonUser}`,
+                        },
+                      });
+                      allowUpdatedMovie(true);
+                      navBarStore.updateIsShowBlockPopUp(false);
+                      setEpisodeData([]);      
+                      buttonDeleteCrawlInputRef.current.disabled = false;
+                    } catch (error) {
+                      navBarStore.updateIsShowBlockPopUp(false);
+                      buttonDeleteCrawlInputRef.current.disabled = false;
+                    }
+                  }}
+                >
+                  Reset
+                </button>
+
                 <h1 className="title">Adding episode url</h1>
                 <FormSubmit
                   inputEpisodeRef={inputEpisodeRef}
@@ -205,7 +231,7 @@ const Name = (props) => {
                   endEpisodeInputRef={endEpisodeInputRef}
                   startEpisodeInputRef={startEpisodeInputRef}
                   linkWatchingInputRef={linkWatchingInputRef}
-                  selectCrawlInputRef= {selectCrawlInputRef}
+                  selectCrawlInputRef={selectCrawlInputRef}
                   name={name}
                   setEpisodeData={setEpisodeData}
                   cookies={cookies}
@@ -347,6 +373,9 @@ function FormSubmitCrawl({
           const end = endEpisodeInputRef.current.value;
           const url = linkWatchingInputRef.current.value;
           const server = selectCrawlInputRef.current.value;
+          if (!url.includes("http://animehay.tv/phim/")) {
+            return alert("Invalid url");
+          }
           if (
             startEpisodeInputRef.current.value === "" ||
             !startEpisodeInputRef.current.value ||
@@ -367,7 +396,7 @@ function FormSubmitCrawl({
                 start,
                 end,
                 url,
-                server
+                server,
               },
               {
                 headers: {

@@ -264,7 +264,6 @@ function unsubscribeSubscription(...subscriptions) {
 }
 
 function SubNavBar({ subNavToggle, setSubNavToggle, user }) {
-  
   return (
     <div className="sub-nav-bar">
       <h1
@@ -353,7 +352,14 @@ function SelectFilterAnime({
 
 function UpcomingAnimeList({ homeState }) {
   return (
-    <div className="upcoming-anime-list-container">
+    <div
+      className="upcoming-anime-list-container"
+      style={{
+        height: document.querySelector(".anime-pagination")
+          ? document.querySelector(".anime-pagination").offsetHeight
+          : "",
+      }}
+    >
       <h2>Top Anime</h2>
       <ul className="upcoming-anime-list">
         {homeState.dataTopMovie &&

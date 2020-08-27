@@ -86,8 +86,12 @@ export const fetchAnimeSeason$ = (year, season, page, numberOfProducts) => {
       ajax(`https://api.jikan.moe/v3/season/${year}/${season}`).pipe(
         pluck("response", "anime"),
         map((anime) => {
-          anime = anime.filter((movie) => movie.airing_start && limitAdultGenre(movie.genres));
-          updateMaxPage(Math.ceil(anime.length / 12));
+          anime = anime.filter(
+            (movie) => movie.airing_start && limitAdultGenre(movie.genres)
+          );
+          updateMaxPage(
+            Math.ceil(anime.length / stream.initialState.numberOfProduct)
+          );
           updateOriginalData(anime);
           updateIsLoading(false);
           stream.catchingError(null);
@@ -110,14 +114,14 @@ export const fetchAnimeSeason$ = (year, season, page, numberOfProducts) => {
   );
 };
 
-function limitAdultGenre(genres){
+function limitAdultGenre(genres) {
   let check = true;
-  genres.forEach((genre) =>{
-    if(genre.name === "Hentai"){
-      check=false
+  genres.forEach((genre) => {
+    if (genre.name === "Hentai") {
+      check = false;
     }
-  })
-  return check
+  });
+  return check;
 }
 
 export const changeCurrentPage$ = () => {
@@ -259,19 +263,19 @@ export const fetchBoxMovie$ = (idCartoonUser) => {
           authorization: `Bearer ${idCartoonUser}`,
         },
       }).pipe(
-        pluck("response","message"),
+        pluck("response", "message"),
         catchError((err) => from([]))
       )
     ),
-    tap(v => {
+    tap((v) => {
       stream.updateBoxMovie(v);
     })
   );
 };
 
 export const listenSearchInputPressEnter$ = (searchInputE) => {
-  return fromEvent(searchInputE,"keydown").pipe(
-    filter(e => e.keyCode === 13),
-    pluck("target","value")
-  )
-}
+  return fromEvent(searchInputE, "keydown").pipe(
+    filter((e) => e.keyCode === 13),
+    pluck("target", "value")
+  );
+};

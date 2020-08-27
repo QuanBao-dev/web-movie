@@ -45,6 +45,7 @@
   max-height: 900px;
   width: 190px;
   text-align: center;
+  justify-content: center;
 }
 
 .title-room{

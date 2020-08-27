@@ -39,6 +39,7 @@ const TheaterWatch = (props) => {
   const inputPasswordRef = useRef();
   const notificationRef = useRef();
   const audioCallRef = useRef();
+  const inputVideoRef = useRef();
   const videoWatchRef = useRef();
   const videoUrlUpload = useRef();
   const [cookies] = useCookies(["idCartoonUser"]);
@@ -57,14 +58,15 @@ const TheaterWatch = (props) => {
           audio: true,
         })
         .then((stream) => {
-          myPeer = new Peer(nanoid(), {
+          let options = {
             host: "my-web-movie.herokuapp.com",
-            // host: "localhost",
-            // port: 5000,
             path: "/peerjs",
-          });
-          // const tracks = stream.getAudioTracks();
-          // console.log(tracks);
+          };
+          if (process.env.NODE_ENV === "development") {
+            options.host = "localhost";
+            options.port = 5000;
+          }
+          myPeer = new Peer(nanoid(), options);
           const myAudio = document.createElement("audio");
           myAudio.muted = true;
           myPeer.on("open", async (id) => {
@@ -171,28 +173,19 @@ const TheaterWatch = (props) => {
             <h1 className="title-room">
               {theaterState.currentRoomDetail.roomName}
             </h1>
-            <button
-              className="btn btn-danger"
-              onClick={async () => {
-                if (videoWatchElement && videoWatchElement.src) {
-                  videoWatchElement.controls = true;
-                  addEventListenerVideoElement(videoWatchElement);
-                  await updateUserKeepRemote(groupId, user.email);
-                  socket.emit("user-keep-remote-changed", groupId);
-                }
+            <div
+              style={{
+                width: "90%",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "flex-end",
               }}
             >
-              Get Remote
-            </button>
-            <div>
               <Input label={"Video url"} input={videoUrlUpload} />
               <button
                 onClick={() => {
-                  console.log(videoUrlUpload.current.value);
-                  if (
-                    videoUrlUpload.current.value !== "" &&
-                    videoUrlUpload.current.value.includes("http")
-                  ) {
+                  if (videoUrlUpload.current.value !== "") {
+                    console.log(videoUrlUpload.current.value);
                     createNewVideo(videoUrlUpload.current.value);
                     videoUrlUpload.current.value = "";
                   }
@@ -201,8 +194,30 @@ const TheaterWatch = (props) => {
                 Upload
               </button>
             </div>
+            <input
+              type="file"
+              ref={inputVideoRef}
+              onChange={() => {
+                createVideoUri(inputVideoRef.current);
+              }}
+            />
             <div className="container-section-video">
-              <video width="500px" height="500px" ref={videoWatchRef}></video>
+              <div>
+                <video width="500px" height="500px" ref={videoWatchRef}></video>
+                <button
+                  className="btn btn-danger"
+                  onClick={async () => {
+                    if (videoWatchElement && videoWatchElement.src) {
+                      videoWatchElement.controls = true;
+                      addEventListenerVideoElement(videoWatchElement);
+                      await updateUserKeepRemote(groupId, user.email);
+                      socket.emit("user-keep-remote-changed", groupId);
+                    }
+                  }}
+                >
+                  Get Remote
+                </button>
+              </div>
               <Chat groupId={groupId} user={user} />
             </div>
             <div className="container-audio-call" ref={audioCallRef}></div>
@@ -244,6 +259,16 @@ function UserListOnline({ usersOnline }) {
         })}
     </div>
   );
+}
+
+function createVideoUri(inputVideoE) {
+  if(inputVideoE.files[0].type === "video/mp4"){
+    console.log(inputVideoE.files[0]);
+    console.log(URL.createObjectURL(inputVideoE.files[0]));
+    createNewVideo(URL.createObjectURL(inputVideoE.files[0]));
+  } else {
+    alert("required file mp4")
+  }
 }
 
 async function createNewVideo(source) {
@@ -365,7 +390,7 @@ socket.on("pause-video-user", (currentTime, idGroup) => {
 
 socket.on("upload-video", (uri, idGroup) => {
   if (idGroup === groupId) {
-    uploadNewVideo(uri, videoWatchElement);
+    // uploadNewVideo(uri, videoWatchElement);
     removeEventListenerVideoElement(videoWatchElement);
   }
 });

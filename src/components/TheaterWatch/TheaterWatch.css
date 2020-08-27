@@ -59,7 +59,7 @@
 
 .container-section-video{
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
 }
 
 .container-section-video video{

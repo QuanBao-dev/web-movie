@@ -39,8 +39,8 @@ const TheaterWatch = (props) => {
   const inputPasswordRef = useRef();
   const notificationRef = useRef();
   const audioCallRef = useRef();
-  const inputVideoRef = useRef();
   const videoWatchRef = useRef();
+  const videoUrlUpload = useRef();
   const [cookies] = useCookies(["idCartoonUser"]);
   useEffect(() => {
     videoWatchElement = videoWatchRef.current;
@@ -173,8 +173,8 @@ const TheaterWatch = (props) => {
             </h1>
             <button
               className="btn btn-danger"
-              onClick={async() => {
-                if(videoWatchElement && videoWatchElement.src){
+              onClick={async () => {
+                if (videoWatchElement && videoWatchElement.src) {
                   videoWatchElement.controls = true;
                   addEventListenerVideoElement(videoWatchElement);
                   await updateUserKeepRemote(groupId, user.email);
@@ -184,16 +184,25 @@ const TheaterWatch = (props) => {
             >
               Get Remote
             </button>
-            <div> Video watch</div>
-            <input
-              type="file"
-              ref={inputVideoRef}
-              onChange={() => {
-                createVideoUri(inputVideoRef.current);
-              }}
-            />
+            <div>
+              <Input label={"Video url"} input={videoUrlUpload} />
+              <button
+                onClick={() => {
+                  console.log(videoUrlUpload.current.value);
+                  if (
+                    videoUrlUpload.current.value !== "" &&
+                    videoUrlUpload.current.value.includes("http")
+                  ) {
+                    createNewVideo(videoUrlUpload.current.value);
+                    videoUrlUpload.current.value = "";
+                  }
+                }}
+              >
+                Upload
+              </button>
+            </div>
             <div className="container-section-video">
-              <video ref={videoWatchRef}></video>
+              <video width="500px" height="500px" ref={videoWatchRef}></video>
               <Chat groupId={groupId} user={user} />
             </div>
             <div className="container-audio-call" ref={audioCallRef}></div>
@@ -237,19 +246,12 @@ function UserListOnline({ usersOnline }) {
   );
 }
 
-function createVideoUri(inputVideoE) {
-  const reader = new FileReader();
-  reader.onload = async function (file) {
-    const fileContent = file.target.result;
-    // console.log(videoWatchElement);
-    uploadNewVideo(fileContent, videoWatchElement, true);
-    addEventListenerVideoElement(videoWatchElement);
-    await updateUserKeepRemote(groupId, user.email);
-    // removeEventListenerVideoElement(videoWatchElement);
-    socket.emit("new-video", fileContent, groupId);
-  };
-  reader.readAsDataURL(inputVideoE.files[0]);
-  inputVideoE.value = "";
+async function createNewVideo(source) {
+  uploadNewVideo(source, videoWatchElement, true);
+  addEventListenerVideoElement(videoWatchElement);
+  await updateUserKeepRemote(groupId, user.email);
+  // removeEventListenerVideoElement(videoWatchElement);
+  socket.emit("new-video", source, groupId);
 }
 
 async function updateUserKeepRemote(groupId, email) {

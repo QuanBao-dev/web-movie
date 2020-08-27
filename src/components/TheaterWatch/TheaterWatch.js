@@ -58,9 +58,9 @@ const TheaterWatch = (props) => {
         })
         .then((stream) => {
           myPeer = new Peer(nanoid(), {
-            host: "my-web-movie.herokuapp.com",
-            // host: "localhost",
-            // port: 5000,
+            // host: "my-web-movie.herokuapp.com",
+            host: "localhost",
+            port: 5000,
             path: "/peerjs",
           });
           // const tracks = stream.getAudioTracks();
@@ -194,8 +194,8 @@ const TheaterWatch = (props) => {
             />
             <div className="container-section-video">
               <video ref={videoWatchRef}></video>
+              <Chat groupId={groupId} user={user} />
             </div>
-            <Chat groupId={groupId} user={user} />
             <div className="container-audio-call" ref={audioCallRef}></div>
           </div>
         </div>

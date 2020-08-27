@@ -4,6 +4,10 @@ const theaterMemberRoomSchema = new mongoose.Schema({
     type:String,
     required:true,
   },
+  keepRemote:{
+    type:Boolean,
+    default:false
+  },
   joinAt:{
     type:Number,
     default:Date.now

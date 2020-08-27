@@ -47,14 +47,21 @@ io.on("connection", (socket) => {
       .emit("send-message-other-users", username, message, groupId);
   });
   socket.on("new-user", (username, groupId, userId, email) => {
+    socket.on("fetch-updated-user-online", () => {
+      socket.emit("fetch-user-online");
+      socket.to(groupId).emit("fetch-user-online");
+    });
     socket.on("new-video", (videoUri, groupId) => {
       socket.to(groupId).emit("upload-video", videoUri, groupId);
     });
-    socket.on("play-all-video", (currentTime) => {
+    socket.on("user-keep-remote-changed", (groupId) => {
+      socket.to(groupId).emit("change-user-keep-remote", groupId);
+    })
+    socket.on("play-all-video", (currentTime, groupId) => {
       socket.to(groupId).emit("play-video-user", currentTime, groupId);
     });
-    socket.on("pause-all-video", () => {
-      socket.to(groupId).emit("pause-video-user", groupId);
+    socket.on("pause-all-video", (currentTime, groupId) => {
+      socket.to(groupId).emit("pause-video-user", currentTime, groupId);
     });
     socket.emit("fetch-user-online");
     socket.to(groupId).emit("fetch-user-online");

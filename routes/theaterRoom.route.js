@@ -23,6 +23,45 @@ router.get(
   }
 );
 
+router.put(
+  "/:groupId/members",
+  verifyRole("User", "Admin"),
+  async (req, res) => {
+    const { keepRemote, email } = req.body;
+    const { groupId } = req.params;
+    try {
+      const [updatedMember] = await Promise.all([
+        TheaterRoomMember.findOneAndUpdate(
+          { email, groupId },
+          {
+            keepRemote,
+          },
+          { new: true }
+        )
+          .lean()
+          .select({ _id: false, __v: false }),
+        TheaterRoomMember.updateMany(
+          {
+            groupId,
+            email: { $ne: email },
+          },
+          {
+            keepRemote: false,
+          },
+          {
+            new: true,
+          }
+        )
+          .lean()
+          .select({ _id: false, __v: false }),
+      ]);
+      res.send({ message: updatedMember });
+    } catch (error) {
+      res.status(404).send({ error: "Something went wrong" });
+    }
+  }
+);
+
 router.post(
   "/:groupId/members",
   verifyRole("User", "Admin"),
@@ -38,6 +77,7 @@ router.post(
         {
           username,
           joinAt: Date.now(),
+          keepRemote:false
         },
         {
           upsert: true,
@@ -78,13 +118,13 @@ router.delete(
 router.get("/", verifyRole("User", "Admin"), async (req, res) => {
   //TODO get all rooms
   try {
-    await TheaterRoom.deleteMany({expiredAt:{$lte:new Date(Date.now())}});
+    await TheaterRoom.deleteMany({ expiredAt: { $lte: new Date(Date.now()) } });
     const rooms = await TheaterRoom.find().lean().select({
       roomName: 1,
       _id: false,
       groupId: 1,
       createdAt: 1,
-      expiredAt:1
+      expiredAt: 1,
     });
     res.send({ message: rooms });
   } catch (error) {

@@ -58,9 +58,9 @@ const TheaterWatch = (props) => {
         })
         .then((stream) => {
           myPeer = new Peer(nanoid(), {
-            // host: "my-web-movie.herokuapp.com",
-            host: "localhost",
-            port: 5000,
+            host: "my-web-movie.herokuapp.com",
+            // host: "localhost",
+            // port: 5000,
             path: "/peerjs",
           });
           // const tracks = stream.getAudioTracks();
@@ -171,6 +171,19 @@ const TheaterWatch = (props) => {
             <h1 className="title-room">
               {theaterState.currentRoomDetail.roomName}
             </h1>
+            <button
+              className="btn btn-danger"
+              onClick={async() => {
+                if(videoWatchElement && videoWatchElement.src){
+                  videoWatchElement.controls = true;
+                  addEventListenerVideoElement(videoWatchElement);
+                  await updateUserKeepRemote(groupId, user.email);
+                  socket.emit("user-keep-remote-changed", groupId);
+                }
+              }}
+            >
+              Get Remote
+            </button>
             <div> Video watch</div>
             <input
               type="file"
@@ -210,7 +223,13 @@ function UserListOnline({ usersOnline }) {
         usersOnline.map((member, key) => {
           return (
             <div key={key}>
-              <p>{member.username}</p>
+              <p
+                style={{
+                  color: member.keepRemote ? "red" : "",
+                }}
+              >
+                {member.username}
+              </p>
             </div>
           );
         })}
@@ -220,14 +239,54 @@ function UserListOnline({ usersOnline }) {
 
 function createVideoUri(inputVideoE) {
   const reader = new FileReader();
-  reader.onload = function (file) {
+  reader.onload = async function (file) {
     const fileContent = file.target.result;
-    console.log(videoWatchElement);
-    uploadNewVideo(fileContent, videoWatchElement);
+    // console.log(videoWatchElement);
+    uploadNewVideo(fileContent, videoWatchElement, true);
+    addEventListenerVideoElement(videoWatchElement);
+    await updateUserKeepRemote(groupId, user.email);
+    // removeEventListenerVideoElement(videoWatchElement);
     socket.emit("new-video", fileContent, groupId);
   };
   reader.readAsDataURL(inputVideoE.files[0]);
   inputVideoE.value = "";
+}
+
+async function updateUserKeepRemote(groupId, email) {
+  await Axios.put(
+    `/api/theater/${groupId}/members`,
+    {
+      email: email,
+      keepRemote: true,
+    },
+    {
+      headers: {
+        authorization: `Bearer ${idCartoonUser}`,
+      },
+    }
+  );
+  socket.emit("fetch-updated-user-online");
+}
+
+function addEventListenerVideoElement(videoWatchElement) {
+  videoWatchElement.addEventListener("pause", socketPauseAll);
+  videoWatchElement.addEventListener("play", socketPlayAll);
+  videoWatchElement.addEventListener("ended", socketPauseAll);
+}
+
+function removeEventListenerVideoElement(videoWatchElement) {
+  videoWatchElement.controls = false;
+  videoWatchElement.removeEventListener("pause", socketPauseAll);
+  videoWatchElement.removeEventListener("play", socketPlayAll);
+  videoWatchElement.removeEventListener("ended", socketPauseAll);
+}
+
+function socketPauseAll() {
+  socket.emit("pause-all-video", videoWatchElement.currentTime, groupId);
+}
+
+function socketPlayAll() {
+  socket.emit("play-all-video", videoWatchElement.currentTime, groupId);
 }
 
 socket.on("user-join", async (username, userId, roomId) => {
@@ -294,33 +353,30 @@ socket.on("play-video-user", (currentTime, idGroup) => {
     videoWatchElement.currentTime = currentTime;
   }
 });
-socket.on("pause-video-user", (idGroup) => {
+socket.on("pause-video-user", (currentTime, idGroup) => {
+  // console.log("group", idGroup, "current", groupId);
   if (idGroup === groupId) {
     videoWatchElement.pause();
+    videoWatchElement.currentTime = currentTime;
   }
 });
 
 socket.on("upload-video", (uri, idGroup) => {
-  console.log("Group send",idGroup,"Group current", groupId);
   if (idGroup === groupId) {
     uploadNewVideo(uri, videoWatchElement);
-    videoWatchElement.oncanplay = () => {
-      videoWatchElement.onended = () => {
-        socket.emit("pause-all-video");
-      };
-      videoWatchElement.onplay = () => {
-        socket.emit("play-all-video", videoWatchElement.currentTime, groupId);
-      };
-      videoWatchElement.onpause = () => {
-        socket.emit("pause-all-video");
-      };
-    };
+    removeEventListenerVideoElement(videoWatchElement);
   }
 });
 
-function uploadNewVideo(fileContent, videoWatchElement) {
+socket.on("change-user-keep-remote", (idGroup) => {
+  if (idGroup === groupId) {
+    removeEventListenerVideoElement(videoWatchElement);
+  }
+});
+
+function uploadNewVideo(fileContent, videoWatchElement, isControls = false) {
   try {
-    videoWatchElement.controls = true;
+    videoWatchElement.controls = isControls;
     videoWatchElement.src = fileContent;
   } catch (error) {
     console.log(error);

@@ -46,7 +46,7 @@ const EpisodePage = (props) => {
           <iframe
             className="video-player"
             width="100%"
-            height="900px"
+            height="640px"
             src={currentEpisode.embedUrl}
             title={currentEpisode.episode}
             allowFullScreen

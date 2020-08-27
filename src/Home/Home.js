@@ -350,16 +350,9 @@ function SelectFilterAnime({
   );
 }
 
-function UpcomingAnimeList({ homeState }) {
+function UpcomingAnimeList({ homeState, upcomingAnimeContainer }) {
   return (
-    <div
-      className="upcoming-anime-list-container"
-      style={{
-        height: document.querySelector(".anime-pagination")
-          ? document.querySelector(".anime-pagination").offsetHeight
-          : "",
-      }}
-    >
+    <div className="upcoming-anime-list-container" ref={upcomingAnimeContainer}>
       <h2>Top Anime</h2>
       <ul className="upcoming-anime-list">
         {homeState.dataTopMovie &&

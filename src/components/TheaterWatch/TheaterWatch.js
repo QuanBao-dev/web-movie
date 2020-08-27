@@ -106,7 +106,6 @@ const TheaterWatch = (props) => {
         })
         .catch(async (err) => {
           const id = nanoid();
-          socket.emit("new-user", user.username, groupId, id, user.email);
           await Axios.post(
             `/api/theater/${groupId}/members`,
             {
@@ -120,6 +119,7 @@ const TheaterWatch = (props) => {
               },
             }
           );
+          socket.emit("new-user", user.username, groupId, id, user.email);
           console.log(err);
         });
     }

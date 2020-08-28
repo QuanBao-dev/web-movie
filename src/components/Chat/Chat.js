@@ -12,12 +12,6 @@ const Chat = ({ groupId, user }) => {
   const messageDialogRef = useRef();
   useEffect(() => {
     messageDialogE = messageDialogRef.current;
-    if (messageDialogRef.current) {
-      messageDialogRef.current.scroll({
-        top: messageDialogRef.current.offsetHeight,
-        behavior: "smooth",
-      });
-    }
     let createNewMessageSub;
     if (inputMessageDialogRef.current) {
       createNewMessageSub = createNewMessageDialog$(
@@ -84,8 +78,7 @@ function appendNewMessageDialog(
   newElement.append(newSpanContentMessage);
   newElement.append(newSpanUsernameMessage);
   messageDialogContainerE.append(newElement);
-  messageDialogContainerE.scroll({
-    top: messageDialogContainerE.scrollHeight,
+  newSpanContentMessage.scrollIntoView({
     behavior: "smooth",
   });
 }

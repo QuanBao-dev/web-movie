@@ -296,16 +296,20 @@ async function updateUserKeepRemote(groupId, email) {
 }
 
 function addEventListenerVideoElement(videoWatchElement) {
-  videoWatchElement.addEventListener("pause", socketPauseAll);
-  videoWatchElement.addEventListener("play", socketPlayAll);
-  videoWatchElement.addEventListener("ended", socketPauseAll);
+  if(videoWatchElement && videoWatchElement.src){
+    videoWatchElement.addEventListener("pause", socketPauseAll);
+    videoWatchElement.addEventListener("play", socketPlayAll);
+    videoWatchElement.addEventListener("ended", socketPauseAll);
+  }
 }
 
 function removeEventListenerVideoElement(videoWatchElement) {
-  videoWatchElement.controls = false;
-  videoWatchElement.removeEventListener("pause", socketPauseAll);
-  videoWatchElement.removeEventListener("play", socketPlayAll);
-  videoWatchElement.removeEventListener("ended", socketPauseAll);
+  if(videoWatchElement && videoWatchElement.src){
+    videoWatchElement.controls = false;
+    videoWatchElement.removeEventListener("pause", socketPauseAll);
+    videoWatchElement.removeEventListener("play", socketPlayAll);
+    videoWatchElement.removeEventListener("ended", socketPauseAll);
+  }
 }
 
 function socketPauseAll() {
@@ -383,8 +387,10 @@ socket.on("play-video-user", (currentTime, idGroup) => {
 socket.on("pause-video-user", (currentTime, idGroup) => {
   // console.log("group", idGroup, "current", groupId);
   if (idGroup === groupId) {
-    videoWatchElement.pause();
-    videoWatchElement.currentTime = currentTime;
+    videoWatchElement.play().then(() => {
+      videoWatchElement.pause();
+      videoWatchElement.currentTime = currentTime;
+    })
   }
 });
 

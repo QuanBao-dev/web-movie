@@ -142,6 +142,8 @@ const TheaterWatch = (props) => {
       subscription.unsubscribe();
       submitFormSub && submitFormSub.unsubscribe();
       // console.log("out");
+      videoWatchElement && videoWatchElement.remove();
+      videoWatchElement && (videoWatchElement.muted = true);
     };
   }, [
     cookies.idCartoonUser,
@@ -203,13 +205,21 @@ const TheaterWatch = (props) => {
             />
             <div className="container-section-video">
               <div>
-                <video width="500px" height="500px" ref={videoWatchRef}></video>
+                <video
+                  width="600px"
+                  height="500px"
+                  poster="https://videopromotion.club/assets/images/default-video-thumbnail.jpg"
+                  ref={videoWatchRef}
+                ></video>
                 <button
+                  id="button-get-remote"
                   className="btn btn-danger"
-                  onClick={async () => {
+                  onClick={async (e) => {
                     if (videoWatchElement && videoWatchElement.src) {
                       videoWatchElement.controls = true;
+                      const element = e.target;
                       addEventListenerVideoElement(videoWatchElement);
+                      element.disabled = true;
                       await updateUserKeepRemote(groupId, user.email);
                       socket.emit("user-keep-remote-changed", groupId);
                     }
@@ -262,18 +272,20 @@ function UserListOnline({ usersOnline }) {
 }
 
 function createVideoUri(inputVideoE) {
-  if(inputVideoE.files[0].type === "video/mp4"){
+  if (inputVideoE.files[0] && inputVideoE.files[0].type === "video/mp4") {
     // console.log(inputVideoE.files[0]);
     console.log(URL.createObjectURL(inputVideoE.files[0]));
     createNewVideo(URL.createObjectURL(inputVideoE.files[0]));
+    inputVideoE.value = "";
   } else {
-    alert("required file mp4")
+    alert("required file mp4");
   }
 }
 
 async function createNewVideo(source) {
   uploadNewVideo(source, videoWatchElement, true);
   addEventListenerVideoElement(videoWatchElement);
+  document.getElementById("button-get-remote").disabled = true;
   await updateUserKeepRemote(groupId, user.email);
   // removeEventListenerVideoElement(videoWatchElement);
   socket.emit("new-video", source, groupId);
@@ -296,7 +308,7 @@ async function updateUserKeepRemote(groupId, email) {
 }
 
 function addEventListenerVideoElement(videoWatchElement) {
-  if(videoWatchElement && videoWatchElement.src){
+  if (videoWatchElement && videoWatchElement.src) {
     videoWatchElement.addEventListener("pause", socketPauseAll);
     videoWatchElement.addEventListener("play", socketPlayAll);
     videoWatchElement.addEventListener("ended", socketPauseAll);
@@ -304,7 +316,7 @@ function addEventListenerVideoElement(videoWatchElement) {
 }
 
 function removeEventListenerVideoElement(videoWatchElement) {
-  if(videoWatchElement && videoWatchElement.src){
+  if (videoWatchElement && videoWatchElement.src) {
     videoWatchElement.controls = false;
     videoWatchElement.removeEventListener("pause", socketPauseAll);
     videoWatchElement.removeEventListener("play", socketPlayAll);
@@ -379,31 +391,37 @@ socket.on("fetch-user-online", () => {
   });
 });
 socket.on("play-video-user", (currentTime, idGroup) => {
-  if (idGroup === groupId) {
+  if (idGroup === groupId && videoWatchElement) {
     videoWatchElement.play();
     videoWatchElement.currentTime = currentTime;
   }
 });
 socket.on("pause-video-user", (currentTime, idGroup) => {
   // console.log("group", idGroup, "current", groupId);
-  if (idGroup === groupId) {
+  if (idGroup === groupId && videoWatchElement) {
     videoWatchElement.play().then(() => {
       videoWatchElement.pause();
       videoWatchElement.currentTime = currentTime;
-    })
+    }).catch((err) => {
+      console.log(err);
+    });
   }
 });
 
 socket.on("upload-video", (uri, idGroup) => {
-  if (idGroup === groupId) {
+  if (idGroup === groupId && videoWatchElement) {
     // uploadNewVideo(uri, videoWatchElement);
+    document.getElementById("button-get-remote").disabled = false;
     removeEventListenerVideoElement(videoWatchElement);
   }
 });
 
 socket.on("change-user-keep-remote", (idGroup) => {
-  if (idGroup === groupId) {
+  if (idGroup === groupId && videoWatchElement) {
     removeEventListenerVideoElement(videoWatchElement);
+    if(document.getElementById("button-get-remote")){
+      document.getElementById("button-get-remote").disabled = false;
+    }
   }
 });
 

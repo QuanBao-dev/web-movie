@@ -78,7 +78,8 @@ function appendNewMessageDialog(
   newElement.append(newSpanContentMessage);
   newElement.append(newSpanUsernameMessage);
   messageDialogContainerE.append(newElement);
-  newSpanContentMessage.scrollIntoView({
+  messageDialogContainerE.scroll({
+    top: messageDialogContainerE.scrollHeight,
     behavior: "smooth",
   });
 }

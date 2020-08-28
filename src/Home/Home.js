@@ -85,7 +85,7 @@ function Home() {
     const subscription10 = listenSearchInputPressEnter$(
       searchInput.current
     ).subscribe((v) => {
-      history.push("/anime/search/" + v);
+      history.push("/anime/search?key=" + v);
     });
     return () => {
       subscription7 && subscription7.unsubscribe();
@@ -119,11 +119,27 @@ function Home() {
   const endYear = new Date(Date.now()).getFullYear();
   const numberOfYears = endYear - startYear + 1;
   const numberOfPagesDisplay = homeState.maxPage < 5 ? homeState.maxPage : 5;
-
-  if (limitShowRecentlyUpdated === homeState.updatedMovie.length) {
+  if (subNavToggle === 0) {
     const e = document.getElementById("button-see-more__home");
-    if (e) {
-      e.style.display = "none";
+    if (limitShowRecentlyUpdated === homeState.updatedMovie.length) {
+      if (e) {
+        e.style.display = "none";
+      }
+    } else {
+      if (e) {
+        e.style.display = "flex";
+      }
+    }
+  } else {
+    const e = document.getElementById("button-see-more__home");
+    if (limitShowRecentlyUpdated === homeState.boxMovie.length) {
+      if (e) {
+        e.style.display = "none";
+      }
+    } else {
+      if (e) {
+        e.style.display = "flex";
+      }
     }
   }
   // console.log(stream.currentState());

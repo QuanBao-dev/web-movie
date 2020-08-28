@@ -5,7 +5,7 @@ import Axios from "axios";
 import AnimeList from "../components/AnimeList/AnimeList";
 
 const SearchedList = (props) => {
-  const { key } = props.match.params;
+  const key  = props.location.search.replace("?key=","");
   const { dataFilter } = stream.currentState();
   const [dataSearchedAnimeState, setDataSearchedAnimeState] = useState();
   useEffect(() => {

@@ -202,7 +202,7 @@ function App() {
         {user && user.role === "Admin" && (
           <Route path="/admin" component={AdminManager} exact />
         )}
-        <Route path="/anime/search/:key" component={SearchedList} />
+        <Route path="/anime/search" component={SearchedList} />
         <Route path="/anime/:malId/watch/:episode" component={EpisodePage} />
         <Route path="/anime/:name" component={Name} />
         {user && <Route path="/theater" component={Theater} />}

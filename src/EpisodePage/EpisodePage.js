@@ -7,17 +7,23 @@ import { fetchEpisodesOfMovie$, pageWatchStream } from "../epics/pageWatch";
 import { allowShouldFetchEpisodeMovie } from "../store/pageWatch";
 import { Link } from "react-router-dom";
 import { allowShouldFetchComment } from "../store/comment";
-// import Chat from "../components/Chat/Chat";
+import { userStream } from "../epics/user";
+import Chat from "../components/Chat/Chat";
+import { theaterStream } from "../epics/theater";
 const EpisodePage = (props) => {
   const { malId, episode } = props.match.params;
   const [pageWatchState, setPageWatchState] = useState(
     pageWatchStream.initialState
   );
+  const user = userStream.currentState();
   useEffect(() => {
     const subscription = pageWatchStream.subscribe(setPageWatchState);
     pageWatchStream.init();
     let fetchEpisodesSub;
     if (pageWatchState.shouldFetchEpisodeMovie) {
+      if(user){
+        theaterStream.socket.emit("user-join-watch", malId, user.username)
+      }
       fetchEpisodesSub = fetchEpisodesOfMovie$(malId).subscribe((v) => {
         pageWatchStream.updateEpisodes(v);
         const e = document.getElementsByClassName("active-episode").item(0);
@@ -29,7 +35,7 @@ const EpisodePage = (props) => {
       subscription.unsubscribe();
       fetchEpisodesSub && fetchEpisodesSub.unsubscribe();
     };
-  }, [malId, pageWatchState.shouldFetchEpisodeMovie]);
+  }, [malId, pageWatchState.shouldFetchEpisodeMovie, user]);
   let currentEpisode = {};
   const { episodes } = pageWatchState;
   if (episodes) {
@@ -40,7 +46,7 @@ const EpisodePage = (props) => {
   // console.log(currentEpisode);
   return (
     <div className="container-episode-movie">
-      {/* <Chat groupId={malId} /> */}
+      {user && <Chat groupId={malId} user={user} />}
       <div className="section-play-movie">
         {currentEpisode && (
           <iframe
@@ -57,7 +63,9 @@ const EpisodePage = (props) => {
             episodes.map((ep, index) => {
               return (
                 <Link
-                  className={`episode-link-movie${ep.episode === parseInt(episode) ? " active-episode":""}`}
+                  className={`episode-link-movie${
+                    ep.episode === parseInt(episode) ? " active-episode" : ""
+                  }`}
                   to={`/anime/${malId}/watch/${ep.episode}`}
                   key={index}
                   onClick={() => allowShouldFetchComment(true)}

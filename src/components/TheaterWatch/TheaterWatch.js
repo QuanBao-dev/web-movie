@@ -185,7 +185,7 @@ const TheaterWatch = (props) => {
               <button
                 onClick={() => {
                   if (videoUrlUpload.current.value !== "") {
-                    console.log(videoUrlUpload.current.value);
+                    // console.log(videoUrlUpload.current.value);
                     createNewVideo(videoUrlUpload.current.value);
                     videoUrlUpload.current.value = "";
                   }
@@ -263,7 +263,7 @@ function UserListOnline({ usersOnline }) {
 
 function createVideoUri(inputVideoE) {
   if(inputVideoE.files[0].type === "video/mp4"){
-    console.log(inputVideoE.files[0]);
+    // console.log(inputVideoE.files[0]);
     console.log(URL.createObjectURL(inputVideoE.files[0]));
     createNewVideo(URL.createObjectURL(inputVideoE.files[0]));
   } else {

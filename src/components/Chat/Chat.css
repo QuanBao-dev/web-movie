@@ -2,7 +2,6 @@
   display: block;
   background-color: #303655;
   box-shadow: 0 0 10px 10px black;
-  height: 500px;
   width: 340px;
   margin:10px;
   border-radius: 10px;
@@ -70,4 +69,9 @@
 .other-user-message > .username-message{
   color:#aa9c9c;
   font-size: small;
+}
+
+.file-message-dialog{
+  outline:none;
+  border-radius: 50px;
 }

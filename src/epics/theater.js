@@ -100,7 +100,7 @@ export const fetchUserOnline$ = (groupId, idCartoonUser) => {
 
 export const createNewMessageDialog$ = (inputElement) => {
   return fromEvent(inputElement, "keydown").pipe(
-    filter((event) =>event.keyCode === 13),
+    filter((event) =>event.keyCode === 13 && event.target.value !== ""),
     pluck("target","value"),
     tap(() => inputElement.value = "")
   )

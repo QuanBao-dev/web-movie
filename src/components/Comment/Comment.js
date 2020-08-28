@@ -96,6 +96,7 @@ function Comment({ malId }) {
       className="wrapper-messages"
       ref={wrapperMessage}
     >
+      <h2>Comments</h2>
       <div
         style={{
           marginBottom: "50px",
@@ -103,7 +104,7 @@ function Comment({ malId }) {
           flexDirection: "column",
         }}
       >
-        <Input label={"Author"} input={inputAuthor} />
+        <Input label={"Name"} input={inputAuthor} />
         <Input label={"Your text"} input={input} />
         <button
           className="btn btn-danger button-submit-comment"

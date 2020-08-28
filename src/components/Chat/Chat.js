@@ -6,7 +6,7 @@ const socket = theaterStream.socket;
 let messageDialogE;
 let idGroup;
 
-const Chat = ({groupId, user}) => {
+const Chat = ({ groupId, user }) => {
   idGroup = groupId;
   const inputMessageDialogRef = useRef();
   const messageDialogRef = useRef();
@@ -24,37 +24,39 @@ const Chat = ({groupId, user}) => {
         inputMessageDialogRef.current
       ).subscribe((message) => {
         // console.log(message);
-        console.log("idGroup", idGroup);
+        // console.log("idGroup", idGroup);
         socket.emit("new-message", user.username, message, idGroup);
         appendNewMessageDialog(message, "You", true, messageDialogRef.current);
       });
     }
     return () => {
       createNewMessageSub && createNewMessageSub.unsubscribe();
-    }
-  })
+    };
+  });
   return (
     <div className="message-dialog-container">
       <div className="message-dialog" ref={messageDialogRef}>
         <div className="flex-start-message message-dialog-item current-user-message">
           <span className="content-message">
-            Welcome to theater, enjoy and have a good day
+            Welcome to AnimeFun, enjoy and have a good day
           </span>
           <span className="username-message">Robot</span>
         </div>
       </div>
-      <div style={{ display: "flex", justifyContent: "center" }}>
+      <div
+        style={{ display: "flex", justifyContent: "center", fontSize: "2rem" }}
+      >
         <i className="fab fa-apple"></i>
       </div>
       <div className="input-message-dialog">
-        <Input label={"Your comment"} input={inputMessageDialogRef} />
+        <Input label={"Your message"} input={inputMessageDialogRef} />
       </div>
     </div>
   );
 };
 socket.on("send-message-other-users", (username, message, groupId) => {
-  console.log(username,"sends", groupId);
-  if(groupId === idGroup){
+  // console.log(username,"sends", groupId);
+  if (groupId === idGroup) {
     appendNewMessageDialog(message, username, false, messageDialogE);
   }
 });

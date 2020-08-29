@@ -239,28 +239,44 @@ async function crawl(start, end, url, webName) {
   };
   await page.goto(url, options);
   const linkWatching = await page.evaluate((webName) => {
-    if(webName === "animehay"){
-      const link = document.querySelector(
-        ".ah-pif-ftool.ah-bg-bd.ah-clear-both > .ah-float-left > span"
-      ).childNodes[0].href;
-      return link;
+    if (webName === "animehay") {
+      try {
+        const link = document.querySelector(
+          ".ah-pif-ftool.ah-bg-bd.ah-clear-both > .ah-float-left > span"
+        ).childNodes[0].href;
+        return link;
+      } catch (error) {
+        console.error(error);
+      }
     }
-    if(webName === "animevsub"){
-      const link = document.querySelector(".watch_button_more").href;
-      return link;  
+    if (webName === "animevsub") {
+      try {
+        const link = document.querySelector(".watch_button_more").href;
+        return link;
+      } catch (error) {
+        console.error(error);
+      }
     }
   }, webName);
 
   await page.goto(linkWatching, options);
   const listLinkWatchEpisode = await page.evaluate((webName) => {
-    if(webName === "animehay"){
-      let listLink = document.querySelectorAll(".ah-wf-body ul li a");
-      listLink = [...listLink];
-      return listLink.map((link) => link.href);
+    if (webName === "animehay") {
+      try {
+        let listLink = document.querySelectorAll(".ah-wf-body ul li a");
+        listLink = [...listLink];
+        return listLink.map((link) => link.href);
+      } catch (error) {
+        console.error(error);
+      }
     }
-    if(webName === "animevsub"){
-      let links = [...document.querySelectorAll(".list-server a")];
-      return links.map((v) => v.href);  
+    if (webName === "animevsub") {
+      try {
+        let links = [...document.querySelectorAll(".list-server a")];
+        return links.map((v) => v.href);
+      } catch (error) {
+        console.error(error);
+      }
     }
   }, webName);
   let listSrc = [];
@@ -285,22 +301,30 @@ async function crawl(start, end, url, webName) {
 async function extractSourceVideo(page, linkWatching, options, webName) {
   await page.goto(linkWatching, options);
   const episodeLink = await page.evaluate((webName) => {
-    if(webName === "animehay"){
-      let listSv = document.querySelector("#list_sv").childNodes;
-      listSv = [...listSv];
-      listSv.find((sv) => sv.id === "serverMoe").click();
-      const linkEpisodeAnime = document.querySelector(
-        ".film-player.ah-bg-bd iframe"
-      ).src;
-      return linkEpisodeAnime;
-    }
-    if(webName === "animevsub"){
-      let e = document.querySelector(".media-player video");
-      if (!e) {
-        e = document.querySelector(".media-player iframe");
+    if (webName === "animehay") {
+      try {
+        let listSv = document.querySelector("#list_sv").childNodes;
+        listSv = [...listSv];
+        listSv.find((sv) => sv.id === "serverMoe").click();
+        const linkEpisodeAnime = document.querySelector(
+          ".film-player.ah-bg-bd iframe"
+        ).src;
+        return linkEpisodeAnime;
+      } catch (error) {
+        console.error(error);
       }
-      const linkEpisodeAnime = e.src;
-      return linkEpisodeAnime;  
+    }
+    if (webName === "animevsub") {
+      try {
+        let e = document.querySelector(".media-player video");
+        if (!e) {
+          e = document.querySelector(".media-player iframe");
+        }
+        const linkEpisodeAnime = e.src;
+        return linkEpisodeAnime;
+      } catch (error) {
+        console.error(error);
+      }
     }
   }, webName);
   return episodeLink;

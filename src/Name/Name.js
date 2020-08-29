@@ -32,7 +32,6 @@ const Name = (props) => {
   const [data, setData] = useState({});
   const [episodeData, setEpisodeData] = useState();
   const [boxMovie, setBoxMovie] = useState();
-  const [webNameState, setWebNameState] = useState("animehay");
 
   const controlBoxMovieRef = useRef();
   const deleteMovieRef = useRef();
@@ -45,7 +44,6 @@ const Name = (props) => {
   const buttonSubmitCrawlInputRef = useRef();
   const selectCrawlInputRef = useRef();
   const buttonDeleteCrawlInputRef = useRef();
-  const selectWebNameRef = useRef();
   useEffect(() => {
     // eslint-disable-next-line no-restricted-globals
     scroll({
@@ -239,9 +237,6 @@ const Name = (props) => {
                   name={name}
                   setEpisodeData={setEpisodeData}
                   cookies={cookies}
-                  selectWebNameRef={selectWebNameRef}
-                  setWebNameState={setWebNameState}
-                  webNameState={webNameState}
                 />
               </div>
             )}
@@ -360,30 +355,14 @@ function FormSubmitCrawl({
   name,
   setEpisodeData,
   cookies,
-  selectWebNameRef,
-  setWebNameState,
-  webNameState,
 }) {
   return (
     <div className="form-submit">
-      <select
-        defaultValue="animehay"
-        ref={selectWebNameRef}
-        onChange={(e) => setWebNameState(e.target.value)}
-      >
-        <option value="animehay">animehay</option>
-        <option value="animevsub">animevsub</option>
-      </select>
-
       <div className="form-limit-episode">
         <Input label="start" type="number" input={startEpisodeInputRef} />
         <Input label="end" type="number" input={endEpisodeInputRef} />
       </div>
-      <select
-        defaultValue="serverMoe"
-        ref={selectCrawlInputRef}
-        hidden={webNameState !== "animehay"}
-      >
+      <select defaultValue="serverMoe" ref={selectCrawlInputRef}>
         <option value="serverLt">Lot</option>
         <option value="serverMoe">Moe</option>
       </select>
@@ -396,19 +375,8 @@ function FormSubmitCrawl({
           const end = endEpisodeInputRef.current.value;
           const url = linkWatchingInputRef.current.value;
           const server = selectCrawlInputRef.current.value;
-          switch (webNameState) {
-            case "animehay":
-              if (!url.includes("http://animehay.tv/phim/")) {
-                return alert("Invalid url");
-              }
-              break;
-            case "animevsub":
-              if (!url.includes("http://animevsub.tv/phim/")) {
-                return alert("Invalid url");
-              }
-              break;
-            default:
-              break;
+          if (!url.includes("http://animehay.tv/phim/")) {
+            return alert("Invalid url");
           }
           if (
             startEpisodeInputRef.current.value === "" ||
@@ -431,7 +399,6 @@ function FormSubmitCrawl({
                 end,
                 url,
                 server,
-                webName: webNameState,
               },
               {
                 headers: {
@@ -439,24 +406,20 @@ function FormSubmitCrawl({
                 },
               }
             );
-            setTimeout(() => {
-              allowUpdatedMovie(true);
-              setEpisodeData(updateMovie.data.message.episodes);
-              startEpisodeInputRef.current.value = "";
-              endEpisodeInputRef.current.value = "";
-              navBarStore.updateIsShowBlockPopUp(false);
-              buttonSubmitCrawlInputRef.current.disabled = false;
-              linkWatchingInputRef.current.value =
-                updateMovie.data.message.source || "";
-            }, 5000);
+            allowUpdatedMovie(true);
+            setEpisodeData(updateMovie.data.message.episodes);
+            startEpisodeInputRef.current.value = "";
+            endEpisodeInputRef.current.value = "";
+            navBarStore.updateIsShowBlockPopUp(false);
+            buttonSubmitCrawlInputRef.current.disabled = false;
+            linkWatchingInputRef.current.value =
+              updateMovie.data.message.source || "";
           } catch (error) {
-            setTimeout(() => {
-              startEpisodeInputRef.current.value = "";
-              endEpisodeInputRef.current.value = "";
-              navBarStore.updateIsShowBlockPopUp(false);
-              buttonSubmitCrawlInputRef.current.disabled = false;
-              allowUpdatedMovie(true);
-            }, 5000);
+            startEpisodeInputRef.current.value = "";
+            endEpisodeInputRef.current.value = "";
+            navBarStore.updateIsShowBlockPopUp(false);
+            buttonSubmitCrawlInputRef.current.disabled = false;
+            allowUpdatedMovie(true);
           }
         }}
       >

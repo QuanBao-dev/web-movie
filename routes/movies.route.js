@@ -239,8 +239,6 @@ async function addMovieUpdated(malId) {
 async function crawl(start, end, url, server) {
   const browser = await puppeteer.launch({
     headless: true,
-    // executablePath:
-    //   "C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe", // because we are using puppeteer-core so we must define this option
     args: ["--no-sandbox", "--disable-setuid-sandbox"],
   });
   const page = await browser.newPage();
@@ -299,9 +297,7 @@ async function extractSourceVideo(page, linkWatching, server, options) {
 async function crawlAnimevsub(start, end, url) {
   const browser = await puppeteer.launch({
     headless: true,
-    executablePath:
-      "C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe", // because we are using puppeteer-core so we must define this option
-    args: ["--remote-debugging-port=9222"],
+    args: ["--no-sandbox", "--disable-setuid-sandbox"],
   });
   const page = await browser.newPage();
   await page.setDefaultNavigationTimeout(0);

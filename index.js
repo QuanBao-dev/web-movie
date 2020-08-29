@@ -7,8 +7,8 @@ const app = express();
 const port = process.env.PORT || 5000;
 const server = require("http").Server(app);
 const io = require("socket.io")(server, {
-  pingTimeout: 2000,
-  pingInterval: 1000,
+  pingTimeout: 5000,
+  pingInterval: 3000,
 });
 const { ExpressPeerServer } = require("peer");
 

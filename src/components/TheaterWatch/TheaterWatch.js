@@ -144,6 +144,7 @@ const TheaterWatch = (props) => {
       // console.log("out");
       videoWatchElement && videoWatchElement.remove();
       videoWatchElement && (videoWatchElement.muted = true);
+      videoWatchElement && removeEventListenerVideoElement(videoWatchElement);
     };
   }, [
     cookies.idCartoonUser,
@@ -399,12 +400,15 @@ socket.on("play-video-user", (currentTime, idGroup) => {
 socket.on("pause-video-user", (currentTime, idGroup) => {
   // console.log("group", idGroup, "current", groupId);
   if (idGroup === groupId && videoWatchElement) {
-    videoWatchElement.play().then(() => {
-      videoWatchElement.pause();
-      videoWatchElement.currentTime = currentTime;
-    }).catch((err) => {
-      console.log(err);
-    });
+    const playPromise = videoWatchElement.play();
+    if(playPromise){
+      playPromise.then(() => {
+        videoWatchElement.pause();
+        videoWatchElement.currentTime = currentTime;
+      }).catch((err) => {
+        console.log(err);
+      });
+    }
   }
 });
 

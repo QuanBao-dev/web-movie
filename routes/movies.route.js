@@ -92,7 +92,7 @@ router.put("/admin/:malId", verifyRole("Admin"), async (req, res) => {
 });
 
 router.put("/:malId/episodes/crawl", verifyRole("Admin"), async (req, res) => {
-  const { start, end, url, server } = req.body;
+  const { start, end, url, server, webName } = req.body;
   const { malId } = req.params;
   let movie = await Movie.findOne({ malId });
   if (movie) {
@@ -104,9 +104,17 @@ router.put("/:malId/episodes/crawl", verifyRole("Admin"), async (req, res) => {
     });
   }
   try {
-    const [dataCrawl] = await Promise.all([
-      crawl(parseInt(start), parseInt(end), url, server),
-    ]);
+    let dataCrawl;
+    switch (webName) {
+      case "animehay":
+        dataCrawl = await crawl(parseInt(start), parseInt(end), url, server);
+        break;
+      case "animevsub":
+        dataCrawl = await crawlAnimevsub(parseInt(start), parseInt(end), url);
+        break;
+      default:
+        break;
+    }
     addMovieUpdated(malId);
     dataCrawl.forEach((data) => {
       const index = movie.episodes.findIndex(
@@ -196,7 +204,7 @@ router.delete("/:malId", verifyRole("Admin"), async (req, res) => {
   try {
     const [movie, updatedMovie] = await Promise.all([
       Movie.findOne({ malId }),
-      UpdatedMovie.findOne({ malId })
+      UpdatedMovie.findOne({ malId }),
     ]);
     movie && movie.remove();
     updatedMovie && updatedMovie.remove();
@@ -285,6 +293,61 @@ async function extractSourceVideo(page, linkWatching, server, options) {
     ).src;
     return linkEpisodeAnime;
   }, server);
+  return episodeLink;
+}
+
+async function crawlAnimevsub(start, end, url) {
+  const browser = await puppeteer.launch({
+    headless: true,
+    executablePath:
+      "C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe", // because we are using puppeteer-core so we must define this option
+    args: ["--remote-debugging-port=9222"],
+  });
+  const page = await browser.newPage();
+  await page.setDefaultNavigationTimeout(0);
+  const options = {
+    waitUntil: "networkidle0",
+    timeout: 0,
+  };
+  await page.goto(url, options);
+  const linkWatching = await page.evaluate(() => {
+    const link = document.querySelector(".watch_button_more").href;
+    return link;
+  });
+  await page.goto(linkWatching, options);
+  const listLinkWatchEpisode = await page.evaluate(() => {
+    let links = [...document.querySelectorAll(".list-server a")];
+    return links.map((v) => v.href);
+  });
+  let listSrc = [];
+  const startEpisode = start <= 0 ? 1 : start;
+  const endEpisode =
+    end > listLinkWatchEpisode.length ? listLinkWatchEpisode.length : end;
+  for (let i = startEpisode - 1; i < endEpisode; i++) {
+    listSrc.push({
+      embedUrl: await extractSourceVideoAnimevsub(
+        page,
+        listLinkWatchEpisode[i],
+        options
+      ),
+      episode: i + 1,
+    });
+  }
+  await browser.close();
+  // return listLinkWatchEpisode;
+  return listSrc;
+}
+
+async function extractSourceVideoAnimevsub(page, linkWatching, options) {
+  await page.goto(linkWatching, options);
+  const episodeLink = await page.evaluate(() => {
+    let e = document.querySelector(".media-player video");
+    if (!e) {
+      e = document.querySelector(".media-player iframe");
+    }
+    const linkEpisodeAnime = e.src;
+    return linkEpisodeAnime;
+  });
   return episodeLink;
 }
 

@@ -358,14 +358,14 @@ function FormSubmitCrawl({
 }) {
   return (
     <div className="form-submit">
+      <select defaultValue="animehay" ref={selectCrawlInputRef}>
+        <option value="animehay">animehay</option>
+        <option value="animevsub">animevsub</option>
+      </select>
       <div className="form-limit-episode">
         <Input label="start" type="number" input={startEpisodeInputRef} />
         <Input label="end" type="number" input={endEpisodeInputRef} />
       </div>
-      <select defaultValue="serverMoe" ref={selectCrawlInputRef}>
-        <option value="serverLt">Lot</option>
-        <option value="serverMoe">Moe</option>
-      </select>
       <Input label="Watch Url" input={linkWatchingInputRef} />
       <button
         className="btn btn-success"
@@ -374,9 +374,20 @@ function FormSubmitCrawl({
           const start = startEpisodeInputRef.current.value;
           const end = endEpisodeInputRef.current.value;
           const url = linkWatchingInputRef.current.value;
-          const server = selectCrawlInputRef.current.value;
-          if (!url.includes("http://animehay.tv/phim/")) {
-            return alert("Invalid url");
+          const serverWeb = selectCrawlInputRef.current.value;
+          switch (serverWeb) {
+            case "animehay":
+              if (!url.includes("animehay.tv/phim/")) {
+                return alert("Invalid url");
+              }
+              break;
+            case "animevsub":
+              if (!url.includes("animevsub.tv/phim/")) {
+                return alert("Invalid url");
+              }
+              break;
+            default:
+              break;
           }
           if (
             startEpisodeInputRef.current.value === "" ||
@@ -398,7 +409,7 @@ function FormSubmitCrawl({
                 start,
                 end,
                 url,
-                server,
+                serverWeb,
               },
               {
                 headers: {

@@ -92,7 +92,7 @@ router.put("/admin/:malId", verifyRole("Admin"), async (req, res) => {
 });
 
 router.put("/:malId/episodes/crawl", verifyRole("Admin"), async (req, res) => {
-  const { start, end, url, webName } = req.body;
+  const { start, end, url, server } = req.body;
   const { malId } = req.params;
   let movie = await Movie.findOne({ malId });
   if (movie) {
@@ -104,7 +104,7 @@ router.put("/:malId/episodes/crawl", verifyRole("Admin"), async (req, res) => {
     });
   }
   try {
-    const dataCrawl = await crawl(parseInt(start), parseInt(end), url, webName);
+    const dataCrawl = await crawl(parseInt(start), parseInt(end), url, server);
     addMovieUpdated(malId);
     dataCrawl.forEach((data) => {
       const index = movie.episodes.findIndex(
@@ -226,10 +226,10 @@ async function addMovieUpdated(malId) {
   } catch (error) {}
 }
 
-async function crawl(start, end, url, webName) {
+async function crawl(start, end, url, server) {
   const browser = await puppeteer.launch({
     headless: true,
-    args: ["--no-sandbox"],
+    args: ["--no-sandbox", "--disable-setuid-sandbox"],
   });
   const page = await browser.newPage();
   await page.setDefaultNavigationTimeout(0);
@@ -238,48 +238,19 @@ async function crawl(start, end, url, webName) {
     timeout: 0,
   };
   await page.goto(url, options);
-  const linkWatching = await page.evaluate((webName) => {
-    if (webName === "animehay") {
-      try {
-        const link = document.querySelector(
-          ".ah-pif-ftool.ah-bg-bd.ah-clear-both > .ah-float-left > span"
-        ).childNodes[0].href;
-        return link;
-      } catch (error) {
-        console.error(error);
-      }
-    }
-    if(webName === "animevsub"){
-      try {
-        const link = document.querySelector(".watch_button_more").href;
-        return link;  
-      } catch (error) {
-        console.error(error);
-      }
-    }
-  }, webName);
+  const linkWatching = await page.evaluate(() => {
+    const link = document.querySelector(
+      ".ah-pif-ftool.ah-bg-bd.ah-clear-both > .ah-float-left > span"
+    ).childNodes[0].href;
+    return link;
+  });
+
   await page.goto(linkWatching, options);
-  let listLinkWatchEpisode;
-  if (webName === "animehay") {
-    listLinkWatchEpisode = await page.evaluate(() => {
-      try {
-        let listLink = document.querySelectorAll(".ah-wf-body ul li a");
-        listLink = [...listLink];
-        return listLink.map((link) => link.href);
-      } catch (error) {
-        console.error(error);
-      }
-    });
-  } else {
-    listLinkWatchEpisode = await page.evaluate(() => {
-      try {
-        let links = [...document.querySelectorAll(".list-server a")];
-        return links.map((v) => v.href);
-      } catch (error) {
-        console.error(error);
-      }
-    });
-  }
+  const listLinkWatchEpisode = await page.evaluate(() => {
+    let listLink = document.querySelectorAll(".ah-wf-body ul li a");
+    listLink = [...listLink];
+    return listLink.map((link) => link.href);
+  });
   let listSrc = [];
   const startEpisode = start <= 0 ? 1 : start;
   const endEpisode =
@@ -289,8 +260,8 @@ async function crawl(start, end, url, webName) {
       embedUrl: await extractSourceVideo(
         page,
         listLinkWatchEpisode[i],
-        options,
-        webName
+        server,
+        options
       ),
       episode: i + 1,
     });
@@ -299,35 +270,17 @@ async function crawl(start, end, url, webName) {
   return listSrc;
 }
 
-async function extractSourceVideo(page, linkWatching, options, webName) {
+async function extractSourceVideo(page, linkWatching, server, options) {
   await page.goto(linkWatching, options);
-  const episodeLink = await page.evaluate((webName) => {
-    if (webName === "animehay") {
-      try {
-        let listSv = document.querySelector("#list_sv").childNodes;
-        listSv = [...listSv];
-        listSv.find((sv) => sv.id === "serverMoe").click();
-        const linkEpisodeAnime = document.querySelector(
-          ".film-player.ah-bg-bd iframe"
-        ).src;
-        return linkEpisodeAnime;
-      } catch (error) {
-        console.error(error);
-      }
-    }
-    if (webName === "animevsub") {
-      try {
-        let e = document.querySelector(".media-player video");
-        if (!e) {
-          e = document.querySelector(".media-player iframe");
-        }
-        const linkEpisodeAnime = e.src;
-        return linkEpisodeAnime;
-      } catch (error) {
-        console.error(error);
-      }
-    }
-  }, webName);
+  const episodeLink = await page.evaluate((server) => {
+    let listSv = document.querySelector("#list_sv").childNodes;
+    listSv = [...listSv];
+    listSv.find((sv) => sv.id === server).click();
+    const linkEpisodeAnime = document.querySelector(
+      ".film-player.ah-bg-bd iframe"
+    ).src;
+    return linkEpisodeAnime;
+  }, server);
   return episodeLink;
 }
 

@@ -32,7 +32,6 @@ const Name = (props) => {
   const [data, setData] = useState({});
   const [episodeData, setEpisodeData] = useState();
   const [boxMovie, setBoxMovie] = useState();
-  const [webName, setWebName] = useState("animehay");
 
   const controlBoxMovieRef = useRef();
   const deleteMovieRef = useRef();
@@ -238,8 +237,6 @@ const Name = (props) => {
                   name={name}
                   setEpisodeData={setEpisodeData}
                   cookies={cookies}
-                  webName={webName}
-                  setWebName={setWebName}
                 />
               </div>
             )}
@@ -354,25 +351,21 @@ function FormSubmitCrawl({
   endEpisodeInputRef,
   linkWatchingInputRef,
   buttonSubmitCrawlInputRef,
+  selectCrawlInputRef,
   name,
   setEpisodeData,
   cookies,
-  webName,
-  setWebName,
 }) {
   return (
     <div className="form-submit">
-      <select
-        defaultValue="animehay"
-        onChange={(e) => setWebName(e.target.value)}
-      >
-        <option>animehay</option>
-        <option>animevsub</option>
-      </select>
       <div className="form-limit-episode">
         <Input label="start" type="number" input={startEpisodeInputRef} />
         <Input label="end" type="number" input={endEpisodeInputRef} />
       </div>
+      <select defaultValue="serverMoe" ref={selectCrawlInputRef}>
+        <option value="serverLt">Lot</option>
+        <option value="serverMoe">Moe</option>
+      </select>
       <Input label="Watch Url" input={linkWatchingInputRef} />
       <button
         className="btn btn-success"
@@ -381,15 +374,9 @@ function FormSubmitCrawl({
           const start = startEpisodeInputRef.current.value;
           const end = endEpisodeInputRef.current.value;
           const url = linkWatchingInputRef.current.value;
-          if (webName === "animehay") {
-            if (!url.includes("animehay.tv/phim/")) {
-              return alert("Invalid url");
-            }
-          }
-          if (webName === "animevsub") {
-            if (!url.includes("animevsub.tv/phim/")) {
-              return alert("Invalid url");
-            }
+          const server = selectCrawlInputRef.current.value;
+          if (!url.includes("http://animehay.tv/phim/")) {
+            return alert("Invalid url");
           }
           if (
             startEpisodeInputRef.current.value === "" ||
@@ -411,7 +398,7 @@ function FormSubmitCrawl({
                 start,
                 end,
                 url,
-                webName,
+                server,
               },
               {
                 headers: {

@@ -7,6 +7,7 @@ import {
   startWith,
   catchError,
   exhaustMap,
+  tap
 } from "rxjs/operators";
 import { ajax } from "rxjs/ajax";
 export const adminStream = adminStore;
@@ -29,6 +30,7 @@ export const listenChangeFilter$ = (
   });
   return from(source$).pipe(
     combineAll(),
+    tap(v => console.log(v)),
     map(([eventUsername, eventRole, eventDateStart, eventDateEnd]) => {
       let dataFilter = createDataFilter(
         eventUsername.target,

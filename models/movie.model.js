@@ -32,6 +32,7 @@ const movieSchema = new mongoose.Schema({
       {
         episode:Number,
         embedUrl:String,
+        typeVideo:Boolean
       }
     ],
     default:[],

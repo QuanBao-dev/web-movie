@@ -229,7 +229,12 @@ async function addMovieUpdated(malId) {
 async function crawl(start, end, url, server) {
   const browser = await puppeteer.launch({
     headless: true,
-    args: ["--no-sandbox", "--disable-setuid-sandbox"],
+    args: [
+      "--no-sandbox",
+      "--disable-setuid-sandbox",
+      "--ignore-certificate-errors",
+    ],
+    ignoreHTTPSErrors: true,
   });
   const page = await browser.newPage();
   await page.setDefaultNavigationTimeout(0);
@@ -257,13 +262,15 @@ async function crawl(start, end, url, server) {
     end > listLinkWatchEpisode.length ? listLinkWatchEpisode.length : end;
   for (let i = startEpisode - 1; i < endEpisode; i++) {
     listSrc.push({
-      embedUrl: await extractSourceVideo(
-        page,
-        listLinkWatchEpisode[i],
-        server,
-        options
-      ),
+      embedUrl:
+        (await extractSourceVideo(
+          page,
+          listLinkWatchEpisode[i],
+          server,
+          options
+        )) || "",
       episode: i + 1,
+      typeVideo: false,
     });
   }
   await browser.close();
@@ -275,7 +282,11 @@ async function extractSourceVideo(page, linkWatching, server, options) {
   const episodeLink = await page.evaluate((server) => {
     let listSv = document.querySelector("#list_sv").childNodes;
     listSv = [...listSv];
-    listSv.find((sv) => sv.id === server).click();
+    let serverCrawl = listSv.find((sv) => sv.id === server);
+    if (!serverCrawl) {
+      return null;
+    }
+    serverCrawl.click();
     const linkEpisodeAnime = document.querySelector(
       ".film-player.ah-bg-bd iframe"
     ).src;

@@ -21,8 +21,8 @@ const EpisodePage = (props) => {
     pageWatchStream.init();
     let fetchEpisodesSub;
     if (pageWatchState.shouldFetchEpisodeMovie) {
-      if(user){
-        theaterStream.socket.emit("user-join-watch", malId, user.username)
+      if (user) {
+        theaterStream.socket.emit("user-join-watch", malId, user.username);
       }
       fetchEpisodesSub = fetchEpisodesOfMovie$(malId).subscribe((v) => {
         pageWatchStream.updateEpisodes(v);
@@ -43,12 +43,12 @@ const EpisodePage = (props) => {
       return ep.episode === parseInt(episode);
     });
   }
-  // console.log(currentEpisode);
+  console.log(currentEpisode);
   return (
     <div className="container-episode-movie">
       {user && <Chat groupId={malId} user={user} />}
       <div className="section-play-movie">
-        {currentEpisode && (
+        {currentEpisode && !currentEpisode.typeVideo && (
           <iframe
             className="video-player"
             width="100%"
@@ -57,6 +57,28 @@ const EpisodePage = (props) => {
             title={currentEpisode.episode}
             allowFullScreen
           />
+        )}
+        {currentEpisode && currentEpisode.typeVideo && (
+          <div className="video-container__episode">
+            <button
+              className="btn btn-primary"
+              onClick={() => {
+                document.addEventListener("copy", (e) => {
+                  copyToClipboard(e, currentEpisode);
+                });
+                document.execCommand("copy");
+              }}
+            >
+              Copy Video Url for theater
+            </button>
+            <video
+              className="video-player"
+              width="100%"
+              height="640px"
+              src={currentEpisode.embedUrl}
+              controls={true}
+            ></video>
+          </div>
         )}
         <div className="list-episode-movie">
           {episodes &&
@@ -80,5 +102,8 @@ const EpisodePage = (props) => {
     </div>
   );
 };
-
+const copyToClipboard = (event, currentEpisode) => {
+  event.clipboardData.setData("text", currentEpisode.embedUrl);
+  event.preventDefault();
+};
 export default EpisodePage;

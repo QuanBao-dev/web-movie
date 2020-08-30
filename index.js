@@ -101,8 +101,8 @@ io.on("connection", (socket) => {
       socket.emit("fetch-user-online");
       socket.to(groupId).emit("fetch-user-online");
     });
-    socket.on("new-video", (videoUri, groupId) => {
-      socket.to(groupId).emit("upload-video", videoUri, groupId);
+    socket.on("new-video", (videoUri, groupId, uploadOtherVideo) => {
+      socket.to(groupId).emit("upload-video", videoUri, groupId, uploadOtherVideo);
     });
     socket.on("user-keep-remote-changed", (groupId) => {
       socket.to(groupId).emit("change-user-keep-remote", groupId);

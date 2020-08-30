@@ -119,25 +119,19 @@ function Home() {
   const endYear = new Date(Date.now()).getFullYear();
   const numberOfYears = endYear - startYear + 1;
   const numberOfPagesDisplay = homeState.maxPage < 5 ? homeState.maxPage : 5;
-  if (subNavToggle === 0) {
-    const e = document.getElementById("button-see-more__home");
-    if (limitShowRecentlyUpdated === homeState.updatedMovie.length) {
-      if (e) {
+  const e = document.getElementById("button-see-more__home");
+  if (e) {
+    if (subNavToggle === 0) {
+      if (limitShowRecentlyUpdated >= homeState.updatedMovie.length) {
         e.style.display = "none";
-      }
-    } else {
-      if (e) {
+      } else {
         e.style.display = "flex";
       }
-    }
-  } else {
-    const e = document.getElementById("button-see-more__home");
-    if (limitShowRecentlyUpdated === homeState.boxMovie.length) {
-      if (e) {
-        e.style.display = "none";
-      }
     } else {
-      if (e) {
+      const e = document.getElementById("button-see-more__home");
+      if (limitShowRecentlyUpdated >= homeState.boxMovie.length) {
+        e.style.display = "none";
+      } else {
         e.style.display = "flex";
       }
     }

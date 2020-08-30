@@ -238,7 +238,9 @@ async function crawl(start, end, url, serverWeb) {
       "--no-sandbox",
       "--disable-setuid-sandbox",
       "--ignore-certificate-errors",
+      "--start-maximized",
     ],
+    defaultViewport: null,
     ignoreHTTPSErrors: true,
   });
   const page = await browser.newPage();

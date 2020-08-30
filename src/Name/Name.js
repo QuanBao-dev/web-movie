@@ -382,12 +382,12 @@ function FormSubmitCrawl({
           const end = endEpisodeInputRef.current.value;
           const url = linkWatchingInputRef.current.value;
           if (webName === "animehay") {
-            if (!url.includes("http://animehay.tv/phim/")) {
+            if (!url.includes("animehay.tv/phim/")) {
               return alert("Invalid url");
             }
           }
           if (webName === "animevsub") {
-            if (!url.includes("http://animevsub.tv/phim/")) {
+            if (!url.includes("animevsub.tv/phim/")) {
               return alert("Invalid url");
             }
           }

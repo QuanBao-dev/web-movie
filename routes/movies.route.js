@@ -249,19 +249,19 @@ async function crawl(start, end, url, webName) {
         console.error(error);
       }
     }
-    if (webName === "animevsub") {
+    if(webName === "animevsub"){
       try {
         const link = document.querySelector(".watch_button_more").href;
-        return link;
+        return link;  
       } catch (error) {
         console.error(error);
       }
     }
   }, webName);
-
   await page.goto(linkWatching, options);
-  const listLinkWatchEpisode = await page.evaluate((webName) => {
-    if (webName === "animehay") {
+  let listLinkWatchEpisode;
+  if (webName === "animehay") {
+    listLinkWatchEpisode = await page.evaluate(() => {
       try {
         let listLink = document.querySelectorAll(".ah-wf-body ul li a");
         listLink = [...listLink];
@@ -269,16 +269,17 @@ async function crawl(start, end, url, webName) {
       } catch (error) {
         console.error(error);
       }
-    }
-    if (webName === "animevsub") {
+    });
+  } else {
+    listLinkWatchEpisode = await page.evaluate(() => {
       try {
         let links = [...document.querySelectorAll(".list-server a")];
         return links.map((v) => v.href);
       } catch (error) {
         console.error(error);
       }
-    }
-  }, webName);
+    });
+  }
   let listSrc = [];
   const startEpisode = start <= 0 ? 1 : start;
   const endEpisode =

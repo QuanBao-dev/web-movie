@@ -255,26 +255,25 @@ async function crawl(start, end, url, serverWeb) {
       timeout: 0,
     };
     await page.goto(url, options);
-    const linkWatching = await page.evaluate((serverWeb) => {
-      let link = null;
-      switch (serverWeb) {
-        case "animehay":
-          link = document.querySelector(
-            ".ah-pif-ftool.ah-bg-bd.ah-clear-both > .ah-float-left > span"
-          ).childNodes[0].href;
-          break;
-        case "animevsub":
-          link = document.querySelector(
-            ".Content .TpRwCont .TPost.Single > header > .Image > .watch_button_more"
-          ).href;
-          break;
-        default:
-          break;
-      }
-      return link;
-    }, serverWeb);
+    let linkWatching;
+    if(serverWeb === "animehay"){
+      linkWatching = await page.evaluate((serverWeb) => {
+        let link = null;
+        switch (serverWeb) {
+          case "animehay":
+            link = document.querySelector(
+              ".ah-pif-ftool.ah-bg-bd.ah-clear-both > .ah-float-left > span"
+            ).childNodes[0].href;
+            break;
+          default:
+            break;
+        }
+        return link;
+      }, serverWeb);
+    } else {
+      linkWatching = url;
+    }
     console.log(linkWatching);
-
     await page.goto(linkWatching, options);
     const listLinkWatchEpisode = await page.evaluate((serverWeb) => {
       let listLink;

@@ -263,7 +263,7 @@ async function crawl(start, end, url, serverWeb) {
           break;
         case "animevsub":
           link = document.querySelector(
-            ".Content .TpRwCont .TPost.Single > header > .Image > .watch_button_more"
+            ".Content .TpRwCont .Image > a.watch_button_more"
           ).href;
           break;
         default:

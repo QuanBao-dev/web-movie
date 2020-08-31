@@ -239,8 +239,9 @@ async function crawl(start, end, url, serverWeb) {
       stealth: true,
     },
     headless: true,
-    args: ["--no-sandbox", "--ignore-certificate-errors", "--start-maximized"],
+    args: ["--no-sandbox", "--start-maximized"],
     defaultViewport: null,
+    timeout:0,
   });
   try {
     const page = await browser.newPage();
@@ -259,9 +260,9 @@ async function crawl(start, end, url, serverWeb) {
           ).childNodes[0].href;
           break;
         case "animevsub":
-          link = document.querySelector(
+          link = document.querySelectorAll(
             ".Content .TpRwCont .Image > a.watch_button_more"
-          ).href;
+          )[0].href;
           break;
         default:
           break;

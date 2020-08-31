@@ -248,7 +248,7 @@ async function crawl(start, end, url, serverWeb) {
       "--disable-popup-blocking",
       "--disable-permissions-api",
       "--unsafely-treat-insecure-origin-as-secure",
-      "--no-sand-box"
+      "--no-sandbox"
     ],
     defaultViewport: null,
     timeout: 0,

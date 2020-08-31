@@ -62,6 +62,7 @@ const EpisodePage = (props) => {
           <div className="video-container__episode">
             <button
               className="btn btn-primary"
+              style={{backgroundColor:"black"}}
               onClick={() => {
                 document.addEventListener("copy", (e) => {
                   copyToClipboard(e, currentEpisode);

@@ -239,15 +239,25 @@ async function crawl(start, end, url, serverWeb) {
       stealth: true,
     },
     headless: true,
-    args: ["--no-sandbox", "--start-maximized"],
+    args: [
+      "--start-maximized",
+      "--allow-insecure-localhost",
+      "--allow-http-background-page",
+      "--allow-loopback-in-peer-connection",
+      "--disable-extensions",
+      "--disable-popup-blocking",
+      "--disable-setuid-sandbox",
+      "--disable-permissions-api",
+      "--unsafely-treat-insecure-origin-as-secure"
+    ],
     defaultViewport: null,
-    timeout:0,
+    timeout: 0,
   });
   try {
     const page = await browser.newPage();
     await page.setDefaultNavigationTimeout(0);
     const options = {
-      waitUntil: "networkidle0",
+      waitUntil: "networkidle2",
       timeout: 0,
     };
     await page.goto(url, options);
@@ -303,12 +313,12 @@ async function crawl(start, end, url, serverWeb) {
         typeVideo: data ? data.typeVideo : false,
       });
     }
-    await browser.close();
+    browser.close();
     return listSrc;
   } catch (error) {
     console.log(error);
     if (browser) {
-      await browser.close();
+      browser.close();
     }
   }
 }

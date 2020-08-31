@@ -236,19 +236,22 @@ async function addMovieUpdated(malId) {
 }
 
 async function crawl(start, end, url, serverWeb) {
+  const fakeUserAgent =
+    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36";
   puppeteer.use(StealthPlugin());
   const browser = await puppeteer.launch({
     headless: true,
-    args: ["--no-sandbox", "--ignore-certificate-errors", "--start-maximized"],
+    args: [
+      "--no-sandbox",
+      "--ignore-certificate-errors",
+      "--start-maximized",
+      "--user-agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36",
+    ],
     defaultViewport: null,
     ignoreHTTPSErrors: true,
   });
-  console.log(await browser.userAgent());
   try {
     const page = await browser.newPage();
-    await page.setUserAgent(
-      "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36"
-    );
     await page.setDefaultNavigationTimeout(0);
     const options = {
       waitUntil: "networkidle0",
@@ -256,6 +259,7 @@ async function crawl(start, end, url, serverWeb) {
     };
 
     await page.goto(url, options);
+    await page.setUserAgent(fakeUserAgent);
     const linkWatching = await page.evaluate((serverWeb) => {
       let link = null;
       switch (serverWeb) {
@@ -273,7 +277,9 @@ async function crawl(start, end, url, serverWeb) {
       return link;
     }, serverWeb);
     console.log(linkWatching);
+
     await page.goto(linkWatching, options);
+    await page.setUserAgent(fakeUserAgent);
     const listLinkWatchEpisode = await page.evaluate((serverWeb) => {
       let listLink;
       switch (serverWeb) {

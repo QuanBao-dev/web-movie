@@ -239,27 +239,23 @@ async function crawl(start, end, url, serverWeb) {
   puppeteer.use(StealthPlugin());
   const browser = await puppeteer.launch({
     headless: true,
-    args: [
-      "--no-sandbox",
-      "--disable-setuid-sandbox",
-      "--ignore-certificate-errors",
-      "--start-maximized",
-    ],
+    args: ["--no-sandbox", "--ignore-certificate-errors", "--start-maximized"],
     defaultViewport: null,
     ignoreHTTPSErrors: true,
   });
+  console.log(await browser.userAgent());
   try {
     const page = await browser.newPage();
+    await page.setUserAgent(
+      "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36"
+    );
     await page.setDefaultNavigationTimeout(0);
     const options = {
       waitUntil: "networkidle0",
       timeout: 0,
     };
-  
+
     await page.goto(url, options);
-    if (serverWeb === "animevsub") {
-      await page.waitForSelector(".watch_button_more");
-    }
     const linkWatching = await page.evaluate((serverWeb) => {
       let link = null;
       switch (serverWeb) {
@@ -309,10 +305,11 @@ async function crawl(start, end, url, serverWeb) {
         typeVideo: data ? data.typeVideo : "",
       });
     }
-    await browser.close();  
+    await browser.close();
     return listSrc;
   } catch (error) {
-    if(browser){
+    console.log(error);
+    if (browser) {
       await browser.close();
     }
   }

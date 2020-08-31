@@ -236,7 +236,7 @@ async function addMovieUpdated(malId) {
 
 async function crawl(start, end, url, serverWeb) {
   const browser = await puppeteer.launch({
-    headless: true,
+    headless: false,
     args: [
       "--no-sandbox",
       "--disable-setuid-sandbox",

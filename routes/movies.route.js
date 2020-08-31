@@ -3,7 +3,7 @@ const UpdatedMovie = require("../models/updatedMovie");
 const ignoreProps = require("../validations/ignore.validation");
 const { verifyRole } = require("../middleware/verify-role");
 const { default: Axios } = require("axios");
-const puppeteer = require("puppeteer-extra");
+const puppeteer = require("puppeteer");
 const router = require("express").Router();
 
 router.get("/", verifyRole("Admin"), async (req, res) => {
@@ -234,8 +234,6 @@ async function addMovieUpdated(malId) {
 }
 
 async function crawl(start, end, url, serverWeb) {
-  const pluginStealth = require("puppeteer-extra-plugin-stealth")();
-  puppeteer.use(pluginStealth);
   const browser = await puppeteer.launch({
     headless: true,
     args: [
@@ -274,6 +272,11 @@ async function crawl(start, end, url, serverWeb) {
       linkWatching = url;
     }
     console.log(linkWatching);
+    await page.setBypassCSP(true);
+    await page.setCacheEnabled(true);
+    await page.setUserAgent(
+      "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3803.0 Safari/537.36"
+    );
     await page.goto(linkWatching, options);
     let listLinkWatchEpisode;
     if (serverWeb === "animehay") {
@@ -283,6 +286,7 @@ async function crawl(start, end, url, serverWeb) {
         return listLink.map((link) => link.href);
       });
     } else {
+      await page.waitForSelector(".Content #list-server");
       listLinkWatchEpisode = await page.evaluate(() => {
         let listLink;
         listLink = [...document.querySelectorAll(".Content #list-server a")];

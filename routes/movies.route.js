@@ -3,7 +3,7 @@ const UpdatedMovie = require("../models/updatedMovie");
 const ignoreProps = require("../validations/ignore.validation");
 const { verifyRole } = require("../middleware/verify-role");
 const { default: Axios } = require("axios");
-const puppeteer = require("puppeteer");
+const puppeteer = require("@scaleleap/puppeteer");
 const router = require("express").Router();
 
 router.get("/", verifyRole("Admin"), async (req, res) => {
@@ -235,14 +235,11 @@ async function addMovieUpdated(malId) {
 
 async function crawl(start, end, url, serverWeb) {
   const browser = await puppeteer.launch({
+    extra: {
+      stealth: true,
+    },
     headless: true,
-    args: [
-      "--no-sandbox",
-      "--ignore-certificate-errors",
-      "--start-maximized",
-      "--user-agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3803.0 Safari/537.36",
-      "--lang=en-US,en,vi;q=0.9",
-    ],
+    args: ["--no-sandbox", "--ignore-certificate-errors", "--start-maximized"],
     defaultViewport: null,
   });
   try {

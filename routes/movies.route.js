@@ -5,6 +5,7 @@ const { verifyRole } = require("../middleware/verify-role");
 const { default: Axios } = require("axios");
 const puppeteer = require("@scaleleap/puppeteer");
 const router = require("express").Router();
+const cloudflareScraper = require("cloudflare-scraper");
 
 router.get("/", verifyRole("Admin"), async (req, res) => {
   ///TODO get all movie
@@ -234,6 +235,13 @@ async function addMovieUpdated(malId) {
 }
 
 async function crawl(start, end, url, serverWeb) {
+  if (serverWeb === "animevsub") {
+    try {
+      console.log(await cloudflareScraper.get(url));
+    } catch (error) {
+      console.log(error);
+    }
+  }
   const browser = await puppeteer.launch({
     extra: {
       stealth: true,
@@ -248,7 +256,7 @@ async function crawl(start, end, url, serverWeb) {
       "--disable-popup-blocking",
       "--disable-permissions-api",
       "--unsafely-treat-insecure-origin-as-secure",
-      "--no-sandbox"
+      "--no-sandbox",
     ],
     defaultViewport: null,
     timeout: 0,

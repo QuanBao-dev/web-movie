@@ -4,8 +4,6 @@ const ignoreProps = require("../validations/ignore.validation");
 const { verifyRole } = require("../middleware/verify-role");
 const { default: Axios } = require("axios");
 const puppeteer = require("puppeteer-extra");
-const StealthPlugin = require("puppeteer-extra-plugin-stealth");
-
 const router = require("express").Router();
 
 router.get("/", verifyRole("Admin"), async (req, res) => {
@@ -236,17 +234,12 @@ async function addMovieUpdated(malId) {
 }
 
 async function crawl(start, end, url, serverWeb) {
-  const fakeUserAgent =
-    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36";
-  puppeteer.use(StealthPlugin());
+  const pluginStealth = require("puppeteer-extra-plugin-stealth")();
+  console.log(pluginStealth.availableEvasions);
+  puppeteer.use(pluginStealth);
   const browser = await puppeteer.launch({
     headless: true,
-    args: [
-      "--no-sandbox",
-      "--ignore-certificate-errors",
-      "--start-maximized",
-      "--user-agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.108 Safari/537.36",
-    ],
+    args: ["--no-sandbox", "--ignore-certificate-errors", "--start-maximized"],
     defaultViewport: null,
     ignoreHTTPSErrors: true,
   });
@@ -257,12 +250,6 @@ async function crawl(start, end, url, serverWeb) {
       waitUntil: "networkidle0",
       timeout: 0,
     };
-
-    await page.setUserAgent(fakeUserAgent);
-    // Get current cookies from the page for certain URL
-    const cookies = await page.cookies(url);
-    // And remove them
-    await page.deleteCookie(...cookies);
     await page.goto(url, options);
     const linkWatching = await page.evaluate((serverWeb) => {
       let link = null;
@@ -282,11 +269,6 @@ async function crawl(start, end, url, serverWeb) {
     }, serverWeb);
     console.log(linkWatching);
 
-    await page.setUserAgent(fakeUserAgent);
-    // Get current cookies from the page for certain URL
-    const cookies2 = await page.cookies(url);
-    // And remove them
-    await page.deleteCookie(...cookies2);
     await page.goto(linkWatching, options);
     const listLinkWatchEpisode = await page.evaluate((serverWeb) => {
       let listLink;
@@ -316,7 +298,7 @@ async function crawl(start, end, url, serverWeb) {
       listSrc.push({
         embedUrl: data ? data.url : "",
         episode: i + 1,
-        typeVideo: data ? data.typeVideo : "",
+        typeVideo: data ? data.typeVideo : false,
       });
     }
     await browser.close();

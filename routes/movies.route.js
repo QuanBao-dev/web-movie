@@ -265,7 +265,8 @@ async function crawl(start, end, url, serverWeb) {
           ).childNodes[0].href;
           break;
         case "animevsub":
-          link = document.querySelector(".watch_button_more").href;
+          link = document.querySelector(".Content .Image > .watch_button_more")
+            .href;
           break;
         default:
           break;
@@ -282,7 +283,7 @@ async function crawl(start, end, url, serverWeb) {
           listLink = [...document.querySelectorAll(".ah-wf-body ul li a")];
           break;
         case "animevsub":
-          listLink = [...document.querySelectorAll(".list-server a")];
+          listLink = [...document.querySelectorAll(".Content main #list-server a")];
           break;
         default:
           break;
@@ -334,10 +335,14 @@ async function extractSourceVideo(page, linkWatching, serverWeb, options) {
         };
       case "animevsub":
         let typeVideo = true;
-        let e = document.querySelector(".media-player video");
+        let e = document.querySelector(
+          ".Content .watch-block #media-player-box > #media-player video"
+        );
         if (!e) {
           typeVideo = false;
-          e = document.querySelector(".media-player iframe");
+          e = document.querySelector(
+            ".Content .watch-block #media-player-box > #media-player iframe"
+          );
         }
         if (!e) {
           return null;

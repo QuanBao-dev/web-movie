@@ -253,47 +253,41 @@ async function crawl(start, end, url, serverWeb) {
       timeout: 0,
     };
     await page.goto(url, options);
-    let linkWatching;
-    if (serverWeb === "animehay") {
-      linkWatching = await page.evaluate((serverWeb) => {
-        let link = null;
-        switch (serverWeb) {
-          case "animehay":
-            link = document.querySelector(
-              ".ah-pif-ftool.ah-bg-bd.ah-clear-both > .ah-float-left > span"
-            ).childNodes[0].href;
-            break;
-          default:
-            break;
-        }
-        return link;
-      }, serverWeb);
-    } else {
-      linkWatching = url;
-    }
+    const linkWatching = await page.evaluate((serverWeb) => {
+      let link = null;
+      switch (serverWeb) {
+        case "animehay":
+          link = document.querySelector(
+            ".ah-pif-ftool.ah-bg-bd.ah-clear-both > .ah-float-left > span"
+          ).childNodes[0].href;
+          break;
+        case "animevsub":
+          link = document.querySelector(
+            ".Content .TpRwCont .TPost.Single > header > .Image > .watch_button_more"
+          ).href;
+          break;
+        default:
+          break;
+      }
+      return link;
+    }, serverWeb);
     console.log(linkWatching);
-    await page.setBypassCSP(true);
-    await page.setCacheEnabled(true);
-    await page.setUserAgent(
-      "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3803.0 Safari/537.36"
-    );
+
     await page.goto(linkWatching, options);
-    let listLinkWatchEpisode;
-    if (serverWeb === "animehay") {
-      listLinkWatchEpisode = await page.evaluate(() => {
-        let listLink;
-        listLink = [...document.querySelectorAll(".ah-wf-body ul li a")];
-        return listLink.map((link) => link.href);
-      });
-    } else {
-      await page.waitForSelector(".Content #list-server");
-      listLinkWatchEpisode = await page.evaluate(() => {
-        let listLink;
-        listLink = [...document.querySelectorAll(".Content #list-server a")];
-        return listLink.map((link) => link.href);
-      });
-    }
-    console.log(listLinkWatchEpisode);
+    const listLinkWatchEpisode = await page.evaluate((serverWeb) => {
+      let listLink;
+      switch (serverWeb) {
+        case "animehay":
+          listLink = [...document.querySelectorAll(".ah-wf-body ul li a")];
+          break;
+        case "animevsub":
+          listLink = [...document.querySelectorAll(".Content #list-server a")];
+          break;
+        default:
+          break;
+      }
+      return listLink.map((link) => link.href);
+    }, serverWeb);
     let listSrc = [];
     const startEpisode = start <= 0 ? 1 : start;
     const endEpisode =
@@ -323,36 +317,36 @@ async function crawl(start, end, url, serverWeb) {
 
 async function extractSourceVideo(page, linkWatching, serverWeb, options) {
   await page.goto(linkWatching, options);
-  let episodeLink;
-  if (serverWeb === "animehay") {
-    episodeLink = await page.evaluate(() => {
-      let listSv = document.querySelector("#list_sv").childNodes;
-      listSv = [...listSv];
-      let serverCrawl = listSv.find((sv) => sv.id === "serverMoe");
-      if (!serverCrawl) {
-        return null;
-      }
-      serverCrawl.click();
-      return {
-        url: document.querySelector(".film-player.ah-bg-bd iframe").src,
-        typeVideo: false,
-      };
-    });
-  } else {
-    episodeLink = await page.evaluate(() => {
-      let typeVideo = true;
-      let e = document.querySelector(".media-player video");
-      if (!e) {
-        typeVideo = false;
-        e = document.querySelector(".media-player iframe");
-      }
-      if (!e) {
-        return null;
-      }
-      const linkEpisodeAnime = e.src;
-      return { url: linkEpisodeAnime, typeVideo: typeVideo };
-    });
-  }
+  const episodeLink = await page.evaluate((serverWeb) => {
+    switch (serverWeb) {
+      case "animehay":
+        let listSv = document.querySelector("#list_sv").childNodes;
+        listSv = [...listSv];
+        let serverCrawl = listSv.find((sv) => sv.id === "serverMoe");
+        if (!serverCrawl) {
+          return null;
+        }
+        serverCrawl.click();
+        return {
+          url: document.querySelector(".film-player.ah-bg-bd iframe").src,
+          typeVideo: false,
+        };
+      case "animevsub":
+        let typeVideo = true;
+        let e = document.querySelector(".media-player video");
+        if (!e) {
+          typeVideo = false;
+          e = document.querySelector(".media-player iframe");
+        }
+        if (!e) {
+          return null;
+        }
+        const linkEpisodeAnime = e.src;
+        return { url: linkEpisodeAnime, typeVideo: typeVideo };
+      default:
+        return;
+    }
+  }, serverWeb);
   return episodeLink;
 }
 

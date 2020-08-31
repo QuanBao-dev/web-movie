@@ -246,9 +246,9 @@ async function crawl(start, end, url, serverWeb) {
       "--allow-loopback-in-peer-connection",
       "--disable-extensions",
       "--disable-popup-blocking",
-      "--disable-setuid-sandbox",
       "--disable-permissions-api",
-      "--unsafely-treat-insecure-origin-as-secure"
+      "--unsafely-treat-insecure-origin-as-secure",
+      "--no-sand-box"
     ],
     defaultViewport: null,
     timeout: 0,

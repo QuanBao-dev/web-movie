@@ -235,11 +235,16 @@ async function addMovieUpdated(malId) {
 
 async function crawl(start, end, url, serverWeb) {
   const pluginStealth = require("puppeteer-extra-plugin-stealth")();
-  console.log(pluginStealth.availableEvasions);
   puppeteer.use(pluginStealth);
   const browser = await puppeteer.launch({
     headless: true,
-    args: ["--no-sandbox", "--ignore-certificate-errors", "--start-maximized"],
+    args: [
+      "--no-sandbox",
+      "--ignore-certificate-errors",
+      "--start-maximized",
+      "--user-agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3803.0 Safari/537.36",
+      "--lang=en-US,en,vi;q=0.9",
+    ],
     defaultViewport: null,
     ignoreHTTPSErrors: true,
   });

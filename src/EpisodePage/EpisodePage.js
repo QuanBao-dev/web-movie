@@ -43,7 +43,7 @@ const EpisodePage = (props) => {
       return ep.episode === parseInt(episode);
     });
   }
-  console.log(currentEpisode);
+  // console.log(currentEpisode);
   return (
     <div className="container-episode-movie">
       {user && <Chat groupId={malId} user={user} />}

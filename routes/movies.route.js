@@ -258,8 +258,12 @@ async function crawl(start, end, url, serverWeb) {
       timeout: 0,
     };
 
-    await page.goto(url, options);
     await page.setUserAgent(fakeUserAgent);
+    // Get current cookies from the page for certain URL
+    const cookies = await page.cookies(url);
+    // And remove them
+    await page.deleteCookie(...cookies);
+    await page.goto(url, options);
     const linkWatching = await page.evaluate((serverWeb) => {
       let link = null;
       switch (serverWeb) {
@@ -278,8 +282,12 @@ async function crawl(start, end, url, serverWeb) {
     }, serverWeb);
     console.log(linkWatching);
 
-    await page.goto(linkWatching, options);
     await page.setUserAgent(fakeUserAgent);
+    // Get current cookies from the page for certain URL
+    const cookies2 = await page.cookies(url);
+    // And remove them
+    await page.deleteCookie(...cookies2);
+    await page.goto(linkWatching, options);
     const listLinkWatchEpisode = await page.evaluate((serverWeb) => {
       let listLink;
       switch (serverWeb) {

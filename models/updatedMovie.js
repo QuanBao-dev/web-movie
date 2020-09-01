@@ -7,6 +7,7 @@ const updatedMovieSchema = new mongoose.Schema({
   numEpisodes: String,
   score: String,
   updatedAt: { type: Date, default: Date.now },
+  synopsis:String
 });
 
 updatedMovieSchema.pre("save",function(next){

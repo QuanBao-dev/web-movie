@@ -30,7 +30,7 @@ import {
 } from "../store/home";
 
 let shouldFetchTopMovie = true;
-const numberOfMovieShown = 4;
+const numberOfMovieShown = 8;
 function Home() {
   const [homeState, setHomeState] = useState(stream.initialState);
   const [limitShowRecentlyUpdated, setLimitShowRecentlyUpdated] = useState(

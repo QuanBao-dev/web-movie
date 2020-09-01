@@ -51,58 +51,57 @@ const Name = (props) => {
       behavior: "smooth",
     });
     let subscription;
-    fetchData(name)
-      .then((v) => {
-        if (v.status !== 403) {
-          setData(v);
-          // console.log({ v });
-          return v;
-        }
-      })
-      .then(async (anime) => {
-        try {
-          const api = await fetchDataVideo(anime.mal_id);
-          setData({
-            ...anime,
-            dataPromo: api,
-          });
-          return anime.mal_id;
-        } catch (error) {
-          return anime.mal_id;
-        }
-      })
-      .then(async (malId) => {
-        try {
-          const api = await fetchEpisodeDataVideo(malId);
-          if (linkWatchingInputRef.current)
-            linkWatchingInputRef.current.value = api.message.source;
-          setEpisodeData(api.message.episodes);
-        } catch (error) {}
-      })
-      .then(async () => {
-        try {
-          const api = await fetchBoxMovieOneMovie(name, cookies.idCartoonUser);
+    fetchData(name).then((v) => {
+      if (v.status !== 403) {
+        setData(v);
+        // console.log({ v });
+        return v;
+      }
+    });
+    fetchData(name).then(async (anime) => {
+      try {
+        const api = await fetchDataVideo(anime.mal_id);
+        setData({
+          ...anime,
+          dataPromo: api,
+        });
+        return anime.mal_id;
+      } catch (error) {
+        return anime.mal_id;
+      }
+    });
+    fetchData(name).then(async () => {
+      try {
+        const api = await fetchEpisodeDataVideo(name);
+        if (linkWatchingInputRef.current)
+          linkWatchingInputRef.current.value = api.message.source;
+        setEpisodeData(api.message.episodes);
+      } catch (error) {}
+    });
+    fetchData(name).then(async () => {
+      try {
+        const api = await fetchBoxMovieOneMovie(name, cookies.idCartoonUser);
+        controlBoxMovieRef.current.style.display = "inline";
+        setBoxMovie(api.message);
+        subscription = handleDeleteBoxMovie(
+          addMovieRef,
+          deleteMovieRef,
+          cookies.idCartoonUser,
+          setBoxMovie,
+          name
+        );
+      } catch (error) {
+        if (controlBoxMovieRef.current)
           controlBoxMovieRef.current.style.display = "inline";
-          setBoxMovie(api.message);
-          subscription = handleDeleteBoxMovie(
-            addMovieRef,
-            deleteMovieRef,
-            cookies.idCartoonUser,
-            setBoxMovie,
-            name
-          );
-        } catch (error) {
-          if (controlBoxMovieRef.current)
-            controlBoxMovieRef.current.style.display = "inline";
-          subscription = handleAddBoxMovie(
-            addMovieRef,
-            deleteMovieRef,
-            cookies.idCartoonUser,
-            setBoxMovie,
-            name
-          );
-        }
-      });
+        subscription = handleAddBoxMovie(
+          addMovieRef,
+          deleteMovieRef,
+          cookies.idCartoonUser,
+          setBoxMovie,
+          name
+        );
+      }
+    });
     return () => {
       if (subscription) {
         subscription.unsubscribe();
@@ -176,15 +175,14 @@ const Name = (props) => {
         </div>
         <div className="box">
           <div className="box-info">
-            <h3
+            <h1
               style={{
-                borderBottom: "2px solid red",
                 margin: "0",
               }}
               className="title"
             >
               About
-            </h3>
+            </h1>
             <ListInformation arrKeys={arrKeys} />
           </div>
           <div className="box-content">
@@ -292,13 +290,7 @@ function ListInformation({ arrKeys }) {
                 const array = findingAnime[v].map((anime) => anime.name);
                 return (
                   <li key={index}>
-                    <span
-                      style={{
-                        color: "white",
-                      }}
-                    >
-                      {capitalizeFirstLetter(v)}:{" "}
-                    </span>
+                    <span>{capitalizeFirstLetter(v)}: </span>
                     {`${array.join(" || ")}`}
                   </li>
                 );
@@ -307,13 +299,7 @@ function ListInformation({ arrKeys }) {
                 <li key={index}>
                   {!/themes/g.test(v) && (
                     <ul>
-                      <span
-                        style={{
-                          color: "white",
-                        }}
-                      >
-                        {capitalizeFirstLetter(v)}:{" "}
-                      </span>
+                      <span>{capitalizeFirstLetter(v)}: </span>
                       {`${findingAnime[v].join(" <||> ")}`}
                     </ul>
                   )}
@@ -567,6 +553,7 @@ const fetchBoxMovieOneMovie = async (malId, idCartoonUser) => {
 let findingAnime;
 
 function capitalizeFirstLetter(string) {
+  string = string.replace("_"," ");
   return string.charAt(0).toUpperCase() + string.slice(1);
 }
 

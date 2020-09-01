@@ -112,6 +112,7 @@ router.put("/:malId/episodes/crawl", verifyRole("Admin"), async (req, res) => {
     if (!dataCrawl) {
       return res.status(404).send({ error: "crawling web fail" });
     }
+    console.log("Done");
     addMovieUpdated(malId);
     dataCrawl.forEach((data) => {
       const index = movie.episodes.findIndex(
@@ -212,25 +213,32 @@ router.delete("/:malId", verifyRole("Admin"), async (req, res) => {
 });
 
 async function addMovieUpdated(malId) {
-  const api = await Axios.get(`https://api.jikan.moe/v3/anime/${malId}`);
-  const dataApi = api.data;
+  let dataApi;
   try {
+    const api = await Axios.get(`https://api.jikan.moe/v3/anime/${malId}`);
+    dataApi = api.data;
     const movie = await UpdatedMovie.findOne({ malId });
     if (movie) {
       return await movie.save();
     }
-  } catch (error) {}
+  } catch (error) {
+    console.log("Can't add updated movie");
+    return;
+  }
   const newUpdatedMovie = new UpdatedMovie({
     malId,
     title: dataApi.title,
     imageUrl: dataApi.image_url,
     numEpisodes: dataApi.episodes,
     score: dataApi.score,
+    synopsis: dataApi.synopsis,
   });
 
   try {
     await newUpdatedMovie.save();
-  } catch (error) {}
+  } catch (error) {
+    console.log("Can't add updated movie");
+  }
 }
 
 async function crawl(start, end, url, serverWeb) {
@@ -244,7 +252,8 @@ async function crawl(start, end, url, serverWeb) {
     timeout: 0,
   });
   try {
-    const page = await browser.newPage();
+    const context = await browser.createIncognitoBrowserContext();
+    const page = await context.newPage();
     await page.setDefaultNavigationTimeout(0);
     const options = {
       waitUntil: "networkidle2",

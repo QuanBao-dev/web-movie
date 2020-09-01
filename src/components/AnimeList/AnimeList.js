@@ -1,18 +1,17 @@
 import './AnimeList.css';
 
-import React, { createRef } from 'react';
+import React from 'react';
 
 import AnimeItem from '../AnimeItem/AnimeItem';
 
 const AnimeList = ({ data, error }) => {
-  const imageRefs = Array.from(Array(data.length)).map(() => createRef());
   return (
     <div className="list-anime">
       {data &&
         !error &&
         data.map((anime, index) => {
           return (
-            <AnimeItem key={index} anime={anime} imageRef={imageRefs[index]} />
+            <AnimeItem key={index} anime={anime} />
           );
         })}
       {error && (

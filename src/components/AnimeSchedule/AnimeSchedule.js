@@ -1,7 +1,10 @@
-import React, { createRef, useEffect, useState } from "react";
-import { useHistory } from "react-router-dom";
-import { fetchAnimeSchedule$, stream } from "../../epics/home";
-import "./AnimeSchedule.css";
+import './AnimeSchedule.css';
+
+import React, { createRef, useEffect, useState } from 'react';
+import { useHistory } from 'react-router-dom';
+
+import { fetchAnimeSchedule$, stream } from '../../epics/home';
+
 const AnimeSchedule = () => {
   const history = useHistory();
   const week = [

@@ -16,7 +16,7 @@ let state = initialState;
 const theaterStore = {
   initialState,
   socket: io.connect(`/`,{
-    upgrade:true,
+    upgrade:false,
   }),
   subscribe: (setState) => behaviorSubject.subscribe(setState),
   currentState: () => {

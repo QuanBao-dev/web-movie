@@ -5,6 +5,7 @@ const { verifyRole } = require("../middleware/verify-role");
 const { default: Axios } = require("axios");
 const puppeteer = require("@scaleleap/puppeteer");
 const router = require("express").Router();
+const hooman = require("hooman");
 
 router.get("/", verifyRole("Admin"), async (req, res) => {
   ///TODO get all movie
@@ -234,6 +235,14 @@ async function addMovieUpdated(malId) {
 }
 
 async function crawl(start, end, url, serverWeb) {
+  try {
+    const response = await hooman.get(
+      "http://animevsub.tv/phim/kyokou-suiri-a3778/tap-01-70336.html"
+    );
+    console.log(response.body);
+  } catch (error) {
+    console.log(error);
+  }
   const browser = await puppeteer.launch({
     extra: {
       stealth: true,

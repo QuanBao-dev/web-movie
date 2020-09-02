@@ -14,6 +14,7 @@ import {
   changeCurrentPage$,
   changeSearchInput$,
   changeSeason$,
+  changeSeasonYear$,
   changeYear$,
   fetchAnimeSeason$,
   fetchBoxMovie$,
@@ -53,9 +54,16 @@ function Home() {
       homeState.currentPage,
       homeState.numberOfProduct
     ).subscribe();
+
     const subscription3 = changeCurrentPage$().subscribe();
-    const subscription4 = changeYear$(selectYear.current).subscribe();
-    const subscription5 = changeSeason$(selectSeason.current).subscribe();
+
+    const subscription4 = changeSeasonYear$(
+      selectYear.current,
+      selectSeason.current
+    ).subscribe(([year, season]) => {
+      stream.updateSeasonYear(season, year);
+    });
+
     const subscription6 = changeSearchInput$(searchInput.current).subscribe();
     let subscription7;
     if (homeState.shouldFetchTopMovie === true) {
@@ -115,7 +123,6 @@ function Home() {
         subscription2,
         subscription3,
         subscription4,
-        subscription5,
         subscription6,
         subscription10
       );
@@ -125,15 +132,14 @@ function Home() {
     cookies.idCartoonUser,
     subNavToggle,
     homeState.currentPage,
-    homeState.numberOfProduct,
     homeState.season,
+    homeState.year,
     homeState.dataTopMovie.length,
     homeState.shouldFetchBoxMovie,
     homeState.shouldFetchLatestUpdatedMovie,
-    homeState.shouldScrollToSeeMore,
     homeState.shouldFetchTopMovie,
+    homeState.shouldScrollToSeeMore,
     homeState.textSearch,
-    homeState.year,
   ]);
   middleWare(homeState);
   const startYear = 2000;

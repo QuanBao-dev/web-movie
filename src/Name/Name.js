@@ -66,9 +66,7 @@ const Name = (props) => {
           dataPromo: api,
         });
         return anime.mal_id;
-      } catch (error) {
-        return anime.mal_id;
-      }
+      } catch (error) {}
     });
     fetchData(name).then(async () => {
       try {

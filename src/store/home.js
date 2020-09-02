@@ -131,19 +131,12 @@ const homeStore = {
     subject.next(state);
   },
 
-  updateSeason: (season) => {
-    state = {
+  updateSeasonYear:(season,year) => {
+    state={
       ...state,
-      season: season,
-    };
-    subject.next(state);
-  },
-
-  updateYear: (year) => {
-    state = {
-      ...state,
-      year: year,
-    };
+      season:season,
+      year:year
+    }
     subject.next(state);
   },
 

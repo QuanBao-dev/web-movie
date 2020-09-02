@@ -12,6 +12,8 @@ import {
   map,
   mergeMap,
   pluck,
+  retry,
+  startWith,
   switchMap,
   switchMapTo,
   tap,
@@ -102,6 +104,7 @@ export const fetchAnimeSeason$ = (year, season, page, numberOfProducts) => {
             page * numberOfProducts
           );
         }),
+        retry(5),
         catchError((error) => {
           updateIsLoading(false);
           stream.catchingError(error);
@@ -147,29 +150,19 @@ export const changeCurrentPage$ = () => {
   );
 };
 
-export const changeYear$ = (selectYearElement) => {
-  const year$ = fromEvent(selectYearElement, "change");
-  return year$.pipe(
+export const changeSeasonYear$ = (selectYearElement, selectSeasonElement) => {
+  const listenEventYear$ = fromEvent(selectYearElement, "change").pipe(
     pluck("target", "value"),
-    tap((year) => {
-      stream.updateYear(parseInt(year));
-    }),
-    catchError((err) => {
-      return of("");
-    })
+    map((v) => parseInt(v))
   );
-};
-
-export const changeSeason$ = (selectSeasonElement) => {
-  const year$ = fromEvent(selectSeasonElement, "change");
-  return year$.pipe(
-    pluck("target", "value"),
-    tap((season) => {
-      stream.updateSeason(season);
-    }),
-    catchError((err) => {
-      return of("");
-    })
+  const listenEventSeason$ = fromEvent(selectSeasonElement, "change").pipe(
+    pluck("target", "value")
+  );
+  return from([
+    listenEventYear$.pipe(startWith(stream.currentState().year)),
+    listenEventSeason$.pipe(startWith(stream.currentState().season)),
+  ]).pipe(
+    combineAll(),
   );
 };
 
@@ -180,6 +173,7 @@ export const changeSearchInput$ = (searchInputElement) => {
   return searchedInput$.pipe(
     pluck("target", "value"),
     tap((text) => savingTextSearch(text)),
+    retry(20),
     catchError((err) => {
       return of("");
     }),
@@ -191,6 +185,7 @@ export const changeSearchInput$ = (searchInputElement) => {
               const dataSearched = data;
               return dataSearched;
             }),
+            retry(20),
             catchError((err) => {
               return of([]);
             })
@@ -210,11 +205,12 @@ export const fetchTopMovie$ = () => {
         }/airing`,
       }).pipe(
         pluck("response", "top"),
+        retry(20),
         catchError((err) => {
-          return of([]);
+          return of(stream.currentState().dataTopMovie);
         })
       )
-    ),
+    )
   );
 };
 
@@ -228,6 +224,7 @@ export const fetchUpdatedMovie$ = () => {
         tap((updatedMovie) => {
           stream.updateUpdatedMovie(updatedMovie);
         }),
+        retry(20),
         catchError(() => of([]))
       )
     )
@@ -250,6 +247,7 @@ export const fetchAnimeSchedule$ = (weekIndex) => {
     mergeMap((day) =>
       ajax(`https://api.jikan.moe/v3/schedule/${day}`).pipe(
         pluck("response", day),
+        retry(20),
         catchError((err) => {
           return of([]);
         }),
@@ -269,6 +267,7 @@ export const fetchBoxMovie$ = (idCartoonUser) => {
         },
       }).pipe(
         pluck("response", "message"),
+        retry(20),
         catchError((err) => from([]))
       )
     ),
@@ -293,7 +292,8 @@ export const topMovieUpdatedScrolling$ = (topAnimeElement) => {
     }),
     filter(
       () =>
-        topAnimeElement.scrollTop - (topAnimeElement.scrollHeight - 4700) > 0
-    )
+        topAnimeElement.scrollTop - (topAnimeElement.scrollHeight - 9000) > 0
+    ),
+    tap(v => console.log(v)),
   );
 };

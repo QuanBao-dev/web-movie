@@ -40,6 +40,8 @@ const initialState = {
   shouldFetchLatestUpdatedMovie: true,
   shouldFetchBoxMovie: false,
   shouldScrollToSeeMore: false,
+  shouldFetchTopMovie:true,
+  pageTopMovie: 1,
 };
 
 const subject = new BehaviorSubject(initialState);
@@ -55,6 +57,14 @@ const homeStore = {
     return ans;
   },
   init: () => {
+    subject.next(state);
+  },
+
+  updatePageTopMovie: (num) => {
+    state = {
+      ...state,
+      pageTopMovie: num,
+    };
     subject.next(state);
   },
 
@@ -148,7 +158,7 @@ const homeStore = {
   updateTopMovie: (data) => {
     state = {
       ...state,
-      dataTopMovie: [...data],
+      dataTopMovie: [...state.dataTopMovie,...data],
     };
     subject.next(state);
   },
@@ -195,6 +205,10 @@ export const allowBoxMovie = (bool) => {
 
 export const allowScrollToSeeMore = (bool) => {
   state.shouldScrollToSeeMore = bool;
+};
+
+export const allowFetchTopMovie = (bool) => {
+  state.shouldFetchTopMovie = bool;
 };
 
 export default homeStore;

@@ -9,7 +9,6 @@ const server = require("http").Server(app);
 const io = require("socket.io")(server, {
   pingTimeout: 5000,
   pingInterval: 3000,
-  wsEngine:"ws"
 });
 const { ExpressPeerServer } = require("peer");
 
@@ -253,7 +252,6 @@ app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Headers", "*");
   res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
-  res.setHeader("Access-Control-Allow-Credentials", true);
   next();
 });
 app.use("/peerjs", peerServer);

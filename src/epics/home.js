@@ -1,12 +1,13 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-useless-escape */
 import { orderBy } from "lodash";
-import { from, fromEvent, of, timer } from "rxjs";
+import { asyncScheduler, from, fromEvent, of, timer } from "rxjs";
 import { ajax } from "rxjs/ajax";
 import {
   catchError,
   combineAll,
   debounceTime,
+  exhaustMap,
   filter,
   map,
   mergeMap,
@@ -14,6 +15,7 @@ import {
   switchMap,
   switchMapTo,
   tap,
+  throttleTime,
 } from "rxjs/operators";
 
 import homeStore, {
@@ -201,9 +203,11 @@ export const changeSearchInput$ = (searchInputElement) => {
 
 export const fetchTopMovie$ = () => {
   return timer(0).pipe(
-    switchMapTo(
+    exhaustMap(() =>
       ajax({
-        url: "https://api.jikan.moe/v3/top/anime/1/airing",
+        url: `https://api.jikan.moe/v4/top/anime/${
+          stream.currentState().pageTopMovie
+        }/airing`,
       }).pipe(
         pluck("response", "top"),
         catchError((err) => {
@@ -211,7 +215,6 @@ export const fetchTopMovie$ = () => {
         })
       )
     ),
-    tap((topMovieList) => stream.updateTopMovie(topMovieList))
   );
 };
 
@@ -279,5 +282,18 @@ export const listenSearchInputPressEnter$ = (searchInputE) => {
   return fromEvent(searchInputE, "keydown").pipe(
     filter((e) => e.keyCode === 13),
     pluck("target", "value")
+  );
+};
+
+export const topMovieUpdatedScrolling$ = (topAnimeElement) => {
+  return fromEvent(topAnimeElement, "scroll").pipe(
+    throttleTime(1000, asyncScheduler, {
+      leading: true,
+      trailing: true,
+    }),
+    filter(
+      () =>
+        topAnimeElement.scrollTop - (topAnimeElement.scrollHeight - 4700) > 0
+    )
   );
 };

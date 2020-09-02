@@ -21,15 +21,16 @@ import {
   fetchUpdatedMovie$,
   listenSearchInputPressEnter$,
   stream,
+  topMovieUpdatedScrolling$,
 } from "../epics/home";
 import { userStream } from "../epics/user";
 import {
   allowBoxMovie,
   allowScrollToSeeMore,
   allowUpdatedMovie,
+  allowFetchTopMovie,
 } from "../store/home";
 
-let shouldFetchTopMovie = true;
 const numberOfMovieShown = 8;
 function Home() {
   const [homeState, setHomeState] = useState(stream.initialState);
@@ -57,10 +58,12 @@ function Home() {
     const subscription5 = changeSeason$(selectSeason.current).subscribe();
     const subscription6 = changeSearchInput$(searchInput.current).subscribe();
     let subscription7;
-    if (shouldFetchTopMovie === true) {
-      subscription7 = fetchTopMovie$().subscribe(
-        () => (shouldFetchTopMovie = false)
-      );
+    if (homeState.shouldFetchTopMovie === true) {
+      subscription7 = fetchTopMovie$().subscribe((topMovieList) => {
+        console.log("fetch top movie");
+        stream.updateTopMovie(topMovieList);
+        allowFetchTopMovie(false);
+      });
     }
 
     let subscription8;
@@ -82,15 +85,31 @@ function Home() {
     if (subNavToggle === 1 && !user) {
       setSubNavToggle(0);
     }
+
     const subscription10 = listenSearchInputPressEnter$(
       searchInput.current
     ).subscribe((v) => {
       history.push("/anime/search?key=" + v);
     });
+
+    const topAnimeElement = document.querySelector(
+      ".upcoming-anime-list-container"
+    );
+    let subscription11;
+    if (topAnimeElement) {
+      subscription11 = topMovieUpdatedScrolling$(topAnimeElement)
+        .pipe()
+        .subscribe((v) => {
+          let page = stream.currentState().pageTopMovie;
+          allowFetchTopMovie(true);
+          stream.updatePageTopMovie(page + 1);
+        });
+    }
     return () => {
       subscription7 && subscription7.unsubscribe();
       subscription8 && subscription8.unsubscribe();
       subscription9 && subscription9.unsubscribe();
+      subscription11 && subscription11.unsubscribe();
       unsubscribeSubscription(
         subscription,
         subscription2,
@@ -108,9 +127,11 @@ function Home() {
     homeState.currentPage,
     homeState.numberOfProduct,
     homeState.season,
+    homeState.dataTopMovie.length,
     homeState.shouldFetchBoxMovie,
     homeState.shouldFetchLatestUpdatedMovie,
     homeState.shouldScrollToSeeMore,
+    homeState.shouldFetchTopMovie,
     homeState.textSearch,
     homeState.year,
   ]);
@@ -136,7 +157,7 @@ function Home() {
       }
     }
   }
-  // console.log(stream.currentState());
+  // console.log(homeState);
   return (
     <div className="home-page">
       <div className="recently-updated-movie">
@@ -360,9 +381,9 @@ function SelectFilterAnime({
   );
 }
 
-function UpcomingAnimeList({ homeState, upcomingAnimeContainer }) {
+function UpcomingAnimeList({ homeState }) {
   return (
-    <div className="upcoming-anime-list-container" ref={upcomingAnimeContainer}>
+    <div className="upcoming-anime-list-container">
       <h2>Top Anime</h2>
       <ul className="upcoming-anime-list">
         {homeState.dataTopMovie &&

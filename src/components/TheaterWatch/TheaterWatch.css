@@ -41,13 +41,28 @@
   gap: 1rem;
   margin-left: 1rem;
   margin: 0 0 0 auto;
-  overflow-x: hidden;
-  overflow-y: auto;
+  overflow-x: auto;
+  overflow-y: hidden;
   max-height: 900px;
   width: 100%;
+  max-width: 1311px;
   text-align: center;
   justify-content: flex-start;
   margin:2rem 0;
+  align-items: center;
+}
+
+.user-list-online::-webkit-scrollbar{
+  background-color: black;
+}
+
+.user-list-online::-webkit-scrollbar-thumb{
+  background-color: rgb(39, 60, 99);
+  border-radius: 10px;
+}
+
+.user-list-online p{
+  white-space: nowrap;
 }
 
 .title-room{

@@ -34,18 +34,20 @@
 
 .user-list-online{
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   box-shadow: 0 0 5px 5px black;
   background-color: #1f2238e5;
   padding:1rem;
+  gap: 1rem;
   margin-left: 1rem;
   margin: 0 0 0 auto;
   overflow-x: hidden;
   overflow-y: auto;
   max-height: 900px;
-  width: 190px;
+  width: 100%;
   text-align: center;
-  justify-content: center;
+  justify-content: flex-start;
+  margin:2rem 0;
 }
 
 .title-room{
@@ -53,17 +55,34 @@
   text-align: center;
   text-transform: capitalize;
   /* background-color: #1b252c; */
-  border-bottom:1px solid #ffffffa2;
+  border-right:1px solid #ffffff4f;
   min-width: 150px;
   box-shadow: 0 3px 0.2px 0.2px #000000;
 }
 
 .container-section-video{
   display: flex;
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
 }
 
-.container-section-video video{
-  min-width: 650px;
-  min-height: fit-content;
+.wrapper-video-button{
+  display: flex;
+  max-width: 918px;
+  flex-direction: column;
+  flex-grow: 100;
+  align-items: flex-start;
+}
+
+.container-message-dialog{
+  flex-grow: 1;
+}
+
+.container-input-section{
+  background-color: #32363f;
+  box-shadow: 0 0 10px 10px black;
+  margin:10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1em;
 }

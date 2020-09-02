@@ -36,7 +36,7 @@ const SearchedList = (props) => {
 
 async function fetchDataApi(text) {
   const data = await Axios.get(
-    "https://api.jikan.moe/v3/search/anime?q=" + text
+    "https://api.jikan.moe/v4/search/anime?q=" + text
   );
   return data.data;
 }

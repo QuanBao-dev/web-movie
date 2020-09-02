@@ -182,16 +182,18 @@ export const changeSearchInput$ = (searchInputElement) => {
       return of("");
     }),
     switchMap((text) =>
-      ajax("https://api.jikan.moe/v3/search/anime?q=" + text).pipe(
-        pluck("response", "results"),
-        map((data) => {
-          const dataSearched = data;
-          return dataSearched;
-        }),
-        catchError((err) => {
-          return of([]);
-        })
-      )
+      text
+        ? ajax("https://api.jikan.moe/v4/search/anime?q=" + text).pipe(
+            pluck("response", "results"),
+            map((data) => {
+              const dataSearched = data;
+              return dataSearched;
+            }),
+            catchError((err) => {
+              return of([]);
+            })
+          )
+        : of([])
     ),
     tap((data) => stream.updateDataFilter(data))
   );

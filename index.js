@@ -9,6 +9,7 @@ const server = require("http").Server(app);
 const io = require("socket.io")(server, {
   pingTimeout: 5000,
   pingInterval: 3000,
+  wsEngine:"ws"
 });
 const { ExpressPeerServer } = require("peer");
 
@@ -42,18 +43,61 @@ let rooms = {};
 io.on("connection", (socket) => {
   console.log("connected to websocket");
   socket.on("new-message", (username, message, groupId) => {
-    socket
-      .to(groupId)
-      .emit("send-message-other-users", username, message, groupId);
-  });
-  socket.on("user-join-watch",(malId, username) => {
-    if(!rooms[malId]){
-      rooms[malId] = { users:{}}
+    try {
+      socket
+        .to(groupId)
+        .emit("send-message-other-users", username, message, groupId);
+    } catch (error) {
+      console.log(error);
     }
-    rooms[malId].users[socket.id] = username;
-    console.log(rooms);
-    socket.join(malId);
-  })
+  });
+  socket.on("user-join-watch", (malId, username) => {
+    try {
+      if (!rooms[malId]) {
+        rooms[malId] = { users: {} };
+      }
+      rooms[malId].users[socket.id] = username;
+      console.log(rooms);
+      socket.join(malId);
+    } catch (error) {
+      console.log(error);
+    }
+  });
+  socket.on("create-new-room", () => {
+    socket.broadcast.emit("fetch-data-rooms");
+  });
+
+  socket.on("disconnect-custom", async () => {
+    console.log("disconnect user");
+    try {
+      Object.entries(rooms)
+        .reduce((disconnectedUsers, [malId, room]) => {
+          if (rooms[malId].users[socket.id]) {
+            disconnectedUsers.push({ room, malId: malId });
+          }
+          return disconnectedUsers;
+        }, [])
+        .forEach(({ room, malId }) => {
+          if (rooms[malId].users[socket.id]) {
+            socket
+              .to(malId)
+              .emit(
+                "disconnected-user",
+                room.users[socket.id],
+                socket.id,
+                malId
+              );
+            delete rooms[malId].users[socket.id];
+            if (Object.keys(rooms[malId].users).length === 0) {
+              delete rooms[malId];
+            }
+          }
+        });
+    } catch (error) {
+      console.log("disconnect", error);
+    }
+  });
+
   socket.on("disconnect", async () => {
     console.log("disconnect user");
     Object.entries(rooms)
@@ -75,53 +119,63 @@ io.on("connection", (socket) => {
         }
       });
   });
-  socket.on("disconnect-custom", async () => {
-    console.log("disconnect user");
-    Object.entries(rooms)
-      .reduce((disconnectedUsers, [malId, room]) => {
-        if (rooms[malId].users[socket.id]) {
-          disconnectedUsers.push({ room, malId: malId });
-        }
-        return disconnectedUsers;
-      }, [])
-      .forEach(({ room, malId }) => {
-        if (rooms[malId].users[socket.id]) {
-          socket
-            .to(malId)
-            .emit("disconnected-user", room.users[socket.id], socket.id, malId);
-          delete rooms[malId].users[socket.id];
-          if (Object.keys(rooms[malId].users).length === 0) {
-            delete rooms[malId];
-          }
-        }
-      });
-  });
+
   socket.on("new-user", (username, groupId, userId, email) => {
-    socket.on("fetch-updated-user-online", () => {
+    try {
       socket.emit("fetch-user-online");
       socket.to(groupId).emit("fetch-user-online");
+      socket.join(groupId);
+      if (!rooms[groupId]) {
+        rooms[groupId] = { users: {} };
+      }
+    } catch (error) {
+      console.log("new-user", error);
+    }
+    socket.on("fetch-updated-user-online", () => {
+      try {
+        socket.emit("fetch-user-online");
+        socket.to(groupId).emit("fetch-user-online");
+      } catch (error) {
+        console.log("fetch-updated-user-online error", error);
+      }
     });
     socket.on("new-video", (videoUri, groupId, uploadOtherVideo) => {
-      socket.to(groupId).emit("upload-video", videoUri, groupId, uploadOtherVideo);
+      try {
+        socket
+          .to(groupId)
+          .emit("upload-video", videoUri, groupId, uploadOtherVideo);
+      } catch (error) {
+        console.log("new-video", error);
+      }
     });
     socket.on("user-keep-remote-changed", (groupId) => {
-      socket.to(groupId).emit("change-user-keep-remote", groupId);
-    })
+      try {
+        socket.to(groupId).emit("change-user-keep-remote", groupId);
+      } catch (error) {
+        console.log("user-keep-remote-changed", error);
+      }
+    });
     socket.on("play-all-video", (currentTime, groupId) => {
-      socket.to(groupId).emit("play-video-user", currentTime, groupId);
+      try {
+        socket.to(groupId).emit("play-video-user", currentTime, groupId);
+      } catch (error) {
+        console.log("play-all-video error", error);
+      }
     });
     socket.on("pause-all-video", (currentTime, groupId) => {
-      socket.to(groupId).emit("pause-video-user", currentTime, groupId);
+      try {
+        socket.to(groupId).emit("pause-video-user", currentTime, groupId);
+      } catch (error) {
+        console.log("pause-all-video", error);
+      }
     });
-    socket.emit("fetch-user-online");
-    socket.to(groupId).emit("fetch-user-online");
-    socket.join(groupId);
-    if (!rooms[groupId]) {
-      rooms[groupId] = { users: {} };
+    try {
+      rooms[groupId].users[userId] = username;
+      console.log(rooms);
+      socket.to(groupId).emit("user-join", username, userId, groupId);
+    } catch (error) {
+      console.log("user-join", error);
     }
-    rooms[groupId].users[userId] = username;
-    console.log(rooms);
-    socket.to(groupId).emit("user-join", username, userId, groupId);
     socket.on("disconnect", async () => {
       try {
         await TheaterRoomMember.deleteMany({
@@ -131,25 +185,29 @@ io.on("connection", (socket) => {
       } catch (error) {
         console.log(error);
       }
-      Object.entries(rooms)
-        .reduce((disconnectedUsers, [groupId, room]) => {
-          if (rooms[groupId].users[userId]) {
-            disconnectedUsers.push({ room, groupId });
-          }
-          return disconnectedUsers;
-        }, [])
-        .forEach(({ room, groupId }) => {
-          if (rooms[groupId].users[userId]) {
-            socket
-              .to(groupId)
-              .emit("disconnected-user", room.users[userId], userId, groupId);
-            console.log("disconnect", room.users[userId]);
-            delete rooms[groupId].users[userId];
-            if (Object.keys(rooms[groupId].users).length === 0) {
-              delete rooms[groupId];
+      try {
+        Object.entries(rooms)
+          .reduce((disconnectedUsers, [groupId, room]) => {
+            if (rooms[groupId].users[userId]) {
+              disconnectedUsers.push({ room, groupId });
             }
-          }
-        });
+            return disconnectedUsers;
+          }, [])
+          .forEach(({ room, groupId }) => {
+            if (rooms[groupId].users[userId]) {
+              socket
+                .to(groupId)
+                .emit("disconnected-user", room.users[userId], userId, groupId);
+              console.log("disconnect", room.users[userId]);
+              delete rooms[groupId].users[userId];
+              if (Object.keys(rooms[groupId].users).length === 0) {
+                delete rooms[groupId];
+              }
+            }
+          });
+      } catch (error) {
+        console.log(error);
+      }
     });
     socket.on("disconnect-custom", async () => {
       console.log("disconnect");
@@ -161,31 +219,29 @@ io.on("connection", (socket) => {
       } catch (error) {
         console.log(error);
       }
-      Object.entries(rooms)
-        .reduce((disconnectedUsers, [groupId, room]) => {
-          if (rooms[groupId].users[userId]) {
-            disconnectedUsers.push({ room, groupId });
-          }
-          return disconnectedUsers;
-        }, [])
-        .forEach(({ room, groupId }) => {
-          if (rooms[groupId].users[userId]) {
-            socket
-              .to(groupId)
-              .emit("disconnected-user", room.users[userId], userId, groupId);
-            delete rooms[groupId].users[userId];
-            if (Object.keys(rooms[groupId].users).length === 0) {
-              delete rooms[groupId];
+      try {
+        Object.entries(rooms)
+          .reduce((disconnectedUsers, [groupId, room]) => {
+            if (rooms[groupId].users[userId]) {
+              disconnectedUsers.push({ room, groupId });
             }
-          }
-        });
+            return disconnectedUsers;
+          }, [])
+          .forEach(({ room, groupId }) => {
+            if (rooms[groupId].users[userId]) {
+              socket
+                .to(groupId)
+                .emit("disconnected-user", room.users[userId], userId, groupId);
+              delete rooms[groupId].users[userId];
+              if (Object.keys(rooms[groupId].users).length === 0) {
+                delete rooms[groupId];
+              }
+            }
+          });
+      } catch (error) {
+        console.log("disconnect user", error);
+      }
     });
-  });
-  socket.on("create-new-room", () => {
-    socket.broadcast.emit("fetch-data-rooms");
-  });
-  socket.on("greeting", (hello) => {
-    console.log(hello);
   });
 });
 app.use(express.json());

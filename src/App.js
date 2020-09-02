@@ -25,7 +25,8 @@ import { theaterStream } from "./epics/theater";
 import { allowUpdatedMovie } from "./store/home";
 import navBarStore from "./store/navbar";
 import SearchedList from "./Search/SearchedList";
-
+import { ReplaySubject } from "rxjs";
+const scrollSaveSubject = new ReplaySubject(3);
 window.addEventListener("resize", () => {
   const e = document.getElementsByClassName("child-nav-bar__app").item(0);
   if (document.body.offsetWidth > 697) {
@@ -33,6 +34,20 @@ window.addEventListener("resize", () => {
   } else {
     e.style.display = "none";
   }
+});
+
+window.addEventListener("scroll", () => {
+  scrollSaveSubject.next(window.scrollY);
+  scrollSaveSubject.subscribe((v) => {
+    const navBarE = document.querySelector(".nav-bar__app");
+    if (window.scrollY === 0) {
+      navBarE.style.transform = "translateY(0)";
+    } else if (v - window.scrollY < -1) {
+      navBarE.style.transform = "translateY(-100px)";
+    } else if (v - window.scrollY > 1) {
+      navBarE.style.transform = "translateY(0)";
+    }
+  });
 });
 
 function App() {

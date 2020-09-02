@@ -133,6 +133,7 @@ const TheaterWatch = (props) => {
       subscription.unsubscribe();
       submitFormSub && submitFormSub.unsubscribe();
       // console.log("out");
+      videoWatchElement && (videoWatchElement.src = "");
       videoWatchElement && videoWatchElement.remove();
       videoWatchElement && (videoWatchElement.muted = true);
       videoWatchElement && removeEventListenerVideoElement(videoWatchElement);
@@ -167,38 +168,42 @@ const TheaterWatch = (props) => {
             <h1 className="title-room">
               {theaterState.currentRoomDetail.roomName}
             </h1>
-            <div
-              style={{
-                width: "90%",
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "flex-end",
-              }}
-            >
-              <Input label={"Video url"} input={videoUrlUpload} />
-              <button
-                onClick={() => {
-                  if (videoUrlUpload.current.value !== "") {
-                    // console.log(videoUrlUpload.current.value);
-                    createNewVideo(videoUrlUpload.current.value, true);
-                    videoUrlUpload.current.value = "";
-                  }
+            <div className="container-input-section">
+              <div
+                style={{
+                  width: "90%",
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "flex-end",
                 }}
               >
-                Upload
-              </button>
+                <Input label={"Video url"} input={videoUrlUpload} />
+                <button
+                  onClick={() => {
+                    if (videoUrlUpload.current.value !== "") {
+                      // console.log(videoUrlUpload.current.value);
+                      createNewVideo(videoUrlUpload.current.value, true);
+                      videoUrlUpload.current.value = "";
+                    }
+                  }}
+                >
+                  Upload
+                </button>
+              </div>
+              <input
+                type="file"
+                ref={inputVideoRef}
+                onChange={() => {
+                  createVideoUri(inputVideoRef.current);
+                }}
+              />
             </div>
-            <input
-              type="file"
-              ref={inputVideoRef}
-              onChange={() => {
-                createVideoUri(inputVideoRef.current);
-              }}
-            />
+            {theaterState.isSignIn && (
+              <UserListOnline usersOnline={theaterState.usersOnline} />
+            )}
             <div className="container-section-video">
-              <div>
+              <div className="wrapper-video-button">
                 <video
-                  width="600px"
                   height="500px"
                   poster="https://videopromotion.club/assets/images/default-video-thumbnail.jpg"
                   ref={videoWatchRef}
@@ -220,16 +225,14 @@ const TheaterWatch = (props) => {
                   Get Remote
                 </button>
               </div>
-              <Chat groupId={groupId} user={user} />
+              <div className="container-message-dialog">
+                <Chat groupId={groupId} user={user} />
+              </div>
             </div>
             <div className="container-audio-call" ref={audioCallRef}></div>
           </div>
         </div>
       )}
-      {theaterState.isSignIn && (
-        <UserListOnline usersOnline={theaterState.usersOnline} />
-      )}
-
       <div style={{ width: "300px" }} hidden={theaterState.isSignIn}>
         <Input
           label={"Password Room"}
@@ -402,8 +405,16 @@ socket.on("fetch-user-online", () => {
 });
 socket.on("play-video-user", (currentTime, idGroup) => {
   if (idGroup === groupId && videoWatchElement) {
-    videoWatchElement.play();
-    videoWatchElement.currentTime = currentTime;
+    if (videoWatchElement.src && videoWatchElement.src !== "") {
+      videoWatchElement
+        .play()
+        .then(() => {
+          videoWatchElement.currentTime = currentTime;
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    }
   }
 });
 socket.on("pause-video-user", (currentTime, idGroup) => {

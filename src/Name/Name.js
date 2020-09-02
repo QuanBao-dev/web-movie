@@ -148,7 +148,10 @@ const Name = (props) => {
           {episodeData && episodeData.length > 0 && (
             <Link
               className="btn btn-success"
-              onClick={() => allowShouldFetchComment(true)}
+              onClick={() => {
+                allowShouldFetchComment(true);
+                allowShouldFetchEpisodeMovie(true);
+              }}
               to={
                 "/anime/" +
                 findingAnime.mal_id +
@@ -553,7 +556,7 @@ const fetchBoxMovieOneMovie = async (malId, idCartoonUser) => {
 let findingAnime;
 
 function capitalizeFirstLetter(string) {
-  string = string.replace("_"," ");
+  string = string.replace("_", " ");
   return string.charAt(0).toUpperCase() + string.slice(1);
 }
 

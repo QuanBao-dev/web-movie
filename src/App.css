@@ -9,6 +9,7 @@
   position: fixed;
   top:0;
   color: white;
+  transition: 0.3s;
 }
 
 .child-nav-bar__app{

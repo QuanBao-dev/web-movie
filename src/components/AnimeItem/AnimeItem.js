@@ -25,22 +25,20 @@ const AnimeItem = ({ anime }) => {
       <div className="anime-item-synopsis">
         <p className="text-synopsis">
           {anime.synopsis === " " && "No content."}
-          {anime.synopsis ? anime.synopsis.slice(0,200) : "No content."}
+          {anime.synopsis ? anime.synopsis.slice(0, 200) : "No content."}
           {anime.synopsis &&
-          anime.synopsis.length > anime.synopsis.slice(0,220).length
+          anime.synopsis.length > anime.synopsis.slice(0, 220).length
             ? "..."
             : ""}
         </p>
       </div>
       <div className="anime-item-info">
-        <h3>{anime.title}</h3>
-        {anime.updatedAt && (
-          <h3>
-            Time: {new Date(anime.updatedAt).getMonth() + 1}-
-            {new Date(anime.updatedAt).getDate()}-
-            {new Date(anime.updatedAt).getFullYear()}
-          </h3>
-        )}
+        <h3>
+          {anime.title.slice(0, 52)}
+          {anime.title.length > anime.title.slice(0, 52).length
+            ? "..."
+            : ""}
+        </h3>
         {anime.airing_start && (
           <h3>
             {new Date(anime.airing_start).getMonth() + 1}-

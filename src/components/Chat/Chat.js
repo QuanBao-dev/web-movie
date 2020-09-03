@@ -72,7 +72,7 @@ function appendNewMessageDialog(
       "flex-end-message message-dialog-item other-user-message";
   }
   newSpanContentMessage.className = "content-message";
-  newSpanContentMessage.innerText = message;
+  newSpanContentMessage.innerHTML = `<p>${message}</p>`;
   newSpanUsernameMessage.className = "username-message";
   newSpanUsernameMessage.innerText = username;
   newElement.append(newSpanContentMessage);

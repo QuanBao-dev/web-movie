@@ -179,7 +179,7 @@ export const changeSearchInput$ = (searchInputElement) => {
     }),
     switchMap((text) =>
       text
-        ? ajax("https://api.jikan.moe/v4/search/anime?q=" + text).pipe(
+        ? ajax("https://api.jikan.moe/v3/search/anime?q=" + text).pipe(
             pluck("response", "results"),
             map((data) => {
               const dataSearched = data;
@@ -200,7 +200,7 @@ export const fetchTopMovie$ = () => {
   return timer(0).pipe(
     exhaustMap(() =>
       ajax({
-        url: `https://api.jikan.moe/v4/top/anime/${
+        url: `https://api.jikan.moe/v3/top/anime/${
           stream.currentState().pageTopMovie
         }/airing`,
       }).pipe(

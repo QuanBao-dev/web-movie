@@ -13,9 +13,7 @@ import SearchedAnimeList from "../components/SearchedAnimeList/SearchedAnimeList
 import {
   changeCurrentPage$,
   changeSearchInput$,
-  changeSeason$,
   changeSeasonYear$,
-  changeYear$,
   fetchAnimeSeason$,
   fetchBoxMovie$,
   fetchTopMovie$,
@@ -80,6 +78,7 @@ function Home() {
       homeState.shouldFetchLatestUpdatedMovie === true
     ) {
       subscription8 = fetchUpdatedMovie$().subscribe(() => {
+        console.log("updated movie");
         allowUpdatedMovie(false);
       });
     }

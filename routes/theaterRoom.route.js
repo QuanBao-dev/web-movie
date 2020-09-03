@@ -70,11 +70,11 @@ router.post(
     try {
       const newUserJoinGroup = await TheaterRoomMember.findOneAndUpdate(
         {
-          userId,
           email,
           groupId: req.params.groupId,
         },
         {
+          userId,
           username,
           joinAt: Date.now(),
           keepRemote:false

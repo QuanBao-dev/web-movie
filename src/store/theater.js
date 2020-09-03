@@ -10,13 +10,15 @@ const initialState = {
   roomsLoginId: [],
   allowFetchCurrentRoomDetail: true,
   usersOnline: [],
-  modeRoom:1
+  modeRoom:1,
+  userId:null,
 };
 let state = initialState;
 const theaterStore = {
   initialState,
   socket: io.connect(`/`,{
     upgrade:false,
+    forceNew:true
   }),
   subscribe: (setState) => behaviorSubject.subscribe(setState),
   currentState: () => {
@@ -86,5 +88,9 @@ export const updateSignIn = (bool) => {
 export const updateAllowFetchCurrentRoomDetail = (bool) => {
   state.allowFetchCurrentRoomDetail = bool;
 };
+
+export const updateUserIdNow = (string) => {
+  state.userId = string;
+}
 
 export default theaterStore;

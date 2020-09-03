@@ -8,12 +8,20 @@
   padding: 1rem;
 }
 
+.content-message p{
+  max-width: 225px;
+  word-wrap: break-word;
+  padding:0;
+  margin:0;
+}
+
 .message-dialog{
   height: 420px;
   margin-bottom: 10px;
   background-color: #000000;
   padding:1px 0;
   overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .message-dialog::-webkit-scrollbar{

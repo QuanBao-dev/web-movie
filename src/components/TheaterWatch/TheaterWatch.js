@@ -17,6 +17,7 @@ import { userStream } from "../../epics/user";
 import {
   updateAllowFetchCurrentRoomDetail,
   updateSignIn,
+  updateUserIdNow,
 } from "../../store/theater";
 import Input from "../Input/Input";
 import Chat from "../Chat/Chat";
@@ -31,6 +32,7 @@ let groupId;
 let user;
 let videoWatchElement;
 const replaySubject = new ReplaySubject(3);
+
 const TheaterWatch = (props) => {
   groupId = props.match.params.groupId;
   replaySubject.next(groupId);
@@ -52,67 +54,7 @@ const TheaterWatch = (props) => {
     theaterStream.init();
     let submitFormSub;
     if (theaterState.isSignIn) {
-      try {
-        navigator.mediaDevices
-          .getUserMedia({
-            video: false,
-            audio: true,
-          })
-          .then((stream) => {
-            let options = {
-              host: "my-web-movie.herokuapp.com",
-              path: "/peerjs",
-            };
-            if (process.env.NODE_ENV === "development") {
-              options.host = "localhost";
-              options.port = 5000;
-            }
-            myPeer = new Peer(nanoid(), options);
-            const myAudio = document.createElement("audio");
-            myAudio.muted = true;
-            myPeer.on("open", async (id) => {
-              myAudio.id = id;
-              await Axios.post(
-                `/api/theater/${groupId}/members`,
-                {
-                  userId: id,
-                  username: user.username,
-                  email: user.email,
-                },
-                {
-                  headers: {
-                    authorization: `Bearer ${idCartoonUser}`,
-                  },
-                }
-              );
-              socket.emit("new-user", user.username, groupId, id, user.email);
-              addAudioStream(myAudio, stream, audioCallRef.current);
-              appendNewMessage(
-                "Your audio is connected",
-                notificationE,
-                "audio-connected"
-              );
-              // connectToNewUser(id, stream, videoCallRef.current);
-              myPeer.on("call", (call) => {
-                call.answer(stream); //get the video of current user to other people
-                const audio = document.createElement("audio");
-                call.on("stream", (stream) => {
-                  // console.log("stream add another video");
-                  //get video of other user to the current user
-                  addAudioStream(audio, stream, audioCallE);
-                });
-              });
-            });
-            // console.log("stream add my video");
-          })
-          .catch(async (err) => {
-            await newUserJoin();
-            console.log(err);
-          });
-      } catch (error) {
-        newUserJoin();
-        console.log(error);
-      }
+      newUserJoinHandleVideo(audioCallRef.current);
     }
 
     if (inputPasswordRef && inputPasswordRef.current) {
@@ -155,10 +97,11 @@ const TheaterWatch = (props) => {
       }
       theaterState.usersOnline = [];
       audioCallRef.current.innerHTML = "";
+      updateSignIn(false);
       socket.emit("disconnect-custom");
     }
   }
-  // console.log(theaterState);
+  // console.log({ theaterState });
   return (
     <div className="theater-user-login">
       {theaterState.isSignIn && theaterState.currentRoomDetail && (
@@ -244,22 +187,90 @@ const TheaterWatch = (props) => {
   );
 };
 
-async function newUserJoin() {
-  const id = nanoid();
-  await Axios.post(
-    `/api/theater/${groupId}/members`,
-    {
-      userId: id,
-      username: user.username,
-      email: user.email,
-    },
-    {
-      headers: {
-        authorization: `Bearer ${idCartoonUser}`,
-      },
+socket.on("greeting", async () => {
+  console.log("hello");
+  if (theaterStream.currentState()) {
+    const { isSignIn } = theaterStream.currentState();
+    if (isSignIn) {
+      await newUserJoinHandleVideo(audioCallE);
     }
-  );
+  }
+});
+
+socket.on("reconnect", async () => {
+  console.log("reconnect");
+  if (theaterStream.currentState()) {
+    const { isSignIn } = theaterStream.currentState(); /////check if sign in = true then ...
+    if (isSignIn) {
+      await newUserJoinHandleVideo(audioCallE);
+    }
+  }
+});
+
+socket.on("mongo-change-watch",() => {
+  fetchUserOnline$(groupId, idCartoonUser).subscribe((users) => {
+    theaterStream.updateUsersOnline(users);
+  });
+})
+
+function newUserJoinHandleVideo(audioCallE) {
+  const id = nanoid();
+  updateUserIdNow(id);
+  try {
+    navigator.mediaDevices
+      .getUserMedia({
+        video: false,
+        audio: true,
+      })
+      .then((stream) => {
+        let options = {
+          host: "my-web-movie.herokuapp.com",
+          path: "/peerjs",
+        };
+        if (process.env.NODE_ENV === "development") {
+          options.host = "localhost";
+          options.port = 5000;
+        }
+        myPeer = new Peer(id, options);
+        const myAudio = document.createElement("audio");
+        myAudio.muted = true;
+        myPeer.on("open", async (id) => {
+          myAudio.id = id;
+          console.log(groupId);
+          socket.emit("new-user", user.username, groupId, id, user.email);
+          addAudioStream(myAudio, stream, audioCallE);
+          appendNewMessage(
+            "Your audio is connected",
+            notificationE,
+            "audio-connected"
+          );
+          // connectToNewUser(id, stream, videoCallRef.current);
+          myPeer.on("call", (call) => {
+            call.answer(stream); //get the video of current user to other people
+            const audio = document.createElement("audio");
+            call.on("stream", (stream) => {
+              // console.log("stream add another video");
+              //get video of other user to the current user
+              addAudioStream(audio, stream, audioCallE);
+            });
+          });
+        });
+        // console.log("stream add my video");
+      })
+      .catch(async (err) => {
+        await newUserJoin(id, groupId);
+        console.log(err);
+      });
+  } catch (error) {
+    newUserJoin(id, groupId);
+    console.log(error);
+  }
+}
+
+async function newUserJoin(id, groupId) {
+  console.log(user.username, groupId, id, user.email);
   socket.emit("new-user", user.username, groupId, id, user.email);
+  socket.emit("fetch-updated-user-online");
 }
 
 function UserListOnline({ usersOnline }) {
@@ -317,7 +328,6 @@ async function updateUserKeepRemote(groupId, email) {
       },
     }
   );
-  socket.emit("fetch-updated-user-online");
 }
 
 function addEventListenerVideoElement(videoWatchElement) {

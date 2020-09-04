@@ -44,6 +44,7 @@ const Name = (props) => {
   const buttonSubmitCrawlInputRef = useRef();
   const selectCrawlInputRef = useRef();
   const buttonDeleteCrawlInputRef = useRef();
+  const typeVideoSelectRef = useRef();
   useEffect(() => {
     // eslint-disable-next-line no-restricted-globals
     scroll({
@@ -225,6 +226,7 @@ const Name = (props) => {
                   cookies={cookies}
                   name={name}
                   setEpisodeData={setEpisodeData}
+                  typeVideoSelectRef={typeVideoSelectRef}
                 />
                 <h1 className="title">Crawl episode</h1>
                 <FormSubmitCrawl
@@ -433,9 +435,14 @@ function FormSubmit({
   cookies,
   name,
   setEpisodeData,
+  typeVideoSelectRef,
 }) {
   return (
     <div className="form-submit">
+      <select ref={typeVideoSelectRef} defaultValue="video">
+        <option value="video">video</option>
+        <option value="iframe">iframe</option>
+      </select>
       <Input label="Number" type="number" input={inputEpisodeRef} />
       <Input label={"Video url"} input={inputVideoUrlRef} />
       <button
@@ -444,6 +451,7 @@ function FormSubmit({
         onClick={async () => {
           const episode = parseInt(inputEpisodeRef.current.value);
           const embedUrl = inputVideoUrlRef.current.value;
+          const typeVideo = typeVideoSelectRef.current.value === "video";
           const { idCartoonUser } = cookies;
           if (!episode || episode === "" || !embedUrl || embedUrl === "") {
             alert("Episode and Url are required");
@@ -454,6 +462,7 @@ function FormSubmit({
               `/api/movies/${name}/episode/${episode}`,
               {
                 embedUrl,
+                typeVideo,
               },
               {
                 headers: {

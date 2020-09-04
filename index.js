@@ -57,7 +57,6 @@ io.on("connection", (socket) => {
     socket.emit("fetch-user-online");
     socket.to(groupId).emit("fetch-user-online");
     rooms[groupId].users[userId] = username;
-    socket.to(groupId).emit("user-join", username, userId, groupId);
 
     await TheaterRoomMember.findOneAndUpdate(
       {
@@ -77,15 +76,19 @@ io.on("connection", (socket) => {
     )
       .lean()
       .select({ _id: false, __v: false });
+    socket.to(groupId).emit("user-join", username, userId, groupId);
     socket.on("fetch-updated-user-online", () => {
       socket.emit("fetch-user-online");
       socket.to(groupId).emit("fetch-user-online");
     });
 
     socket.on("new-video", (videoUri, groupId, uploadOtherVideo) => {
-      socket
-        .broadcast
-        .emit("upload-video", videoUri, groupId, uploadOtherVideo);
+      socket.broadcast.emit(
+        "upload-video",
+        videoUri,
+        groupId,
+        uploadOtherVideo
+      );
     });
     socket.on("user-keep-remote-changed", (groupId) => {
       socket.broadcast.emit("change-user-keep-remote", groupId);

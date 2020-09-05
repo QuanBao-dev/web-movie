@@ -105,7 +105,9 @@ const TheaterWatch = (props) => {
     <div className="theater-user-login">
       {theaterState.isSignIn && theaterState.currentRoomDetail && (
         <div className="section-center">
-          <h2 className="notification-user-join" ref={notificationRef}> </h2>
+          <h2 className="notification-user-join" ref={notificationRef}>
+            {" "}
+          </h2>
           <div>
             <h1 className="title-room">
               {theaterState.currentRoomDetail.roomName}
@@ -140,28 +142,28 @@ const TheaterWatch = (props) => {
             {theaterState.isSignIn && (
               <UserListOnline usersOnline={theaterState.usersOnline} />
             )}
+            <button
+              id="button-get-remote"
+              className="btn btn-danger"
+              onClick={async (e) => {
+                if (videoWatchElement && videoWatchElement.src) {
+                  videoWatchElement.controls = true;
+                  const element = e.target;
+                  addEventListenerVideoElement(videoWatchElement);
+                  element.disabled = true;
+                  await updateUserKeepRemote(groupId, user.email);
+                  socket.emit("user-keep-remote-changed", groupId);
+                }
+              }}
+            >
+              Get Remote
+            </button>
             <div className="container-section-video">
               <div className="wrapper-video-player">
                 <video
                   poster="https://videopromotion.club/assets/images/default-video-thumbnail.jpg"
                   ref={videoWatchRef}
                 ></video>
-                <button
-                  id="button-get-remote"
-                  className="btn btn-danger"
-                  onClick={async (e) => {
-                    if (videoWatchElement && videoWatchElement.src) {
-                      videoWatchElement.controls = true;
-                      const element = e.target;
-                      addEventListenerVideoElement(videoWatchElement);
-                      element.disabled = true;
-                      await updateUserKeepRemote(groupId, user.email);
-                      socket.emit("user-keep-remote-changed", groupId);
-                    }
-                  }}
-                >
-                  Get Remote
-                </button>
               </div>
               <div className="container-message-dialog">
                 <Chat groupId={groupId} user={user} />

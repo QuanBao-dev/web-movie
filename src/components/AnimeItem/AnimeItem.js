@@ -39,13 +39,6 @@ const AnimeItem = ({ anime }) => {
             ? "..."
             : ""}
         </h3>
-        {anime.airing_start && (
-          <h3>
-            {new Date(anime.airing_start).getMonth() + 1}-
-            {new Date(anime.airing_start).getDate()}-
-            {new Date(anime.airing_start).getFullYear()}
-          </h3>
-        )}
       </div>
     </div>
   );

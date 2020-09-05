@@ -19,9 +19,7 @@
 }
 
 .anime-item:hover .anime-item-info{
-  display: block;
-  transition: 0.3s;
-  opacity: 1;
+  text-shadow: 3px 3px rgb(98, 12, 109);
 }
 
 .anime-item-info{
@@ -33,7 +31,6 @@
   border-radius: 10px;
   text-align: center;
   transition: 0.5s;
-  opacity: 0;
   max-height: 140px;
 }
 

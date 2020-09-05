@@ -43,13 +43,14 @@
   background-color: #1f2238e5;
   padding:1rem;
   gap: 1rem;
+  width: 100%;
   margin-left: 1rem;
   margin: 0 0 0 auto;
   overflow-x: auto;
   overflow-y: hidden;
   max-height: 900px;
-  width: 100%;
-  max-width: 1311px;
+  width: inherit;
+  max-width: 1511px;
   text-align: center;
   justify-content: flex-start;
   margin:2rem 0;
@@ -73,7 +74,6 @@
   padding: 1rem 0;
   text-align: center;
   text-transform: capitalize;
-  /* background-color: #1b252c; */
   border-right:1px solid #ffffff4f;
   min-width: 150px;
   box-shadow: 0 3px 0.2px 0.2px #000000;
@@ -84,12 +84,17 @@
   flex-wrap: wrap;
 }
 
-.wrapper-video-button{
+.wrapper-video-player{
   display: flex;
-  max-width: 918px;
+  max-width: 1118px;
   flex-direction: column;
   flex-grow: 100;
   align-items: flex-start;
+}
+
+.wrapper-video-player video{
+  width: 100%!important;
+  height: 100%;
 }
 
 .container-message-dialog{

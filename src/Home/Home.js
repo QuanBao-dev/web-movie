@@ -107,6 +107,7 @@ function Home() {
       subscription11 = topMovieUpdatedScrolling$(topAnimeElement)
         .pipe()
         .subscribe((v) => {
+          console.log("fetch Top movie");
           let page = stream.currentState().pageTopMovie;
           allowFetchTopMovie(true);
           stream.updatePageTopMovie(page + 1);

@@ -13,7 +13,7 @@
   background-color: rgb(71, 65, 65);
 }
 
-.message{
+.comment{
   border: 1px solid black;
   padding: 10px;
   box-shadow: 0 0 1px 1px black;
@@ -22,27 +22,28 @@
 }
 
 .delete-symbol{
+  color:white;
   position: absolute;
   right: 0;
   top: 0;
   cursor: pointer;
 }
 
-.message .author{
+.comment .author{
   color: aqua;
   margin-bottom: 10px;
 }
 
-.message .content-message{
+.comment .content-message{
   color: aliceblue;
 }
 
-.content-message .link{
+.content-comment .link{
   cursor: pointer;
   display: inline-block;
 }
 
-.content-message .link:hover{
+.content-comment .link:hover{
   text-decoration: underline;
 }
 

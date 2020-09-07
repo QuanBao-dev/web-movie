@@ -46,7 +46,7 @@ const EpisodePage = (props) => {
   // console.log(currentEpisode);
   return (
     <div className="container-episode-movie">
-      {user && <Chat groupId={malId} user={user} />}
+      <Chat groupId={malId} user={user}/>
       <div className="section-play-movie">
         {currentEpisode && !currentEpisode.typeVideo && (
           <iframe
@@ -62,7 +62,7 @@ const EpisodePage = (props) => {
           <div className="video-container__episode">
             <button
               className="btn btn-primary"
-              style={{backgroundColor:"black"}}
+              style={{ backgroundColor: "black" }}
               onClick={() => {
                 document.addEventListener("copy", (e) => {
                   copyToClipboard(e, currentEpisode);
@@ -99,7 +99,7 @@ const EpisodePage = (props) => {
             })}
         </div>
       </div>
-      <Comment malId={malId} />
+      <Comment malId={malId} user={user} />
     </div>
   );
 };

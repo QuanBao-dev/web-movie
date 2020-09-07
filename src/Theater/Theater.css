@@ -18,7 +18,8 @@
 
 .container-watch-interface{
   flex-grow: 3;
-  padding-left:1rem
+  padding-left:0.5em;
+  padding-bottom: 3rem;
 }
 
 .input-room-layout{

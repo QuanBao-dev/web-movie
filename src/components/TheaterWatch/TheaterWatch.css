@@ -37,33 +37,35 @@
 }
 
 .user-list-online{
-  display: flex;
-  flex-direction: row;
   box-shadow: 0 0 5px 5px black;
   background-color: #1f2238e5;
   padding:1rem;
-  gap: 1rem;
-  width: 100%;
   margin-left: 1rem;
   margin: 0 0 0 auto;
   overflow-x: auto;
   overflow-y: hidden;
   max-height: 900px;
-  width: inherit;
   max-width: 1511px;
-  text-align: center;
-  justify-content: flex-start;
+  width: inherit;
+  text-align: start;
   margin:2rem 0;
   align-items: center;
+  white-space: nowrap;
 }
 
 .user-list-online::-webkit-scrollbar{
   background-color: black;
+  height: 3px;
 }
 
 .user-list-online::-webkit-scrollbar-thumb{
   background-color: rgb(39, 60, 99);
   border-radius: 10px;
+}
+
+.user-list-online div{
+  display: inline-block;
+  margin-right: 1em;
 }
 
 .user-list-online p{

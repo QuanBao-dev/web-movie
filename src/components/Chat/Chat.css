@@ -2,7 +2,7 @@
   display: block;
   background-color: #303655;
   box-shadow: 0 0 10px 10px black;
-  width: 340px;
+  width: 300px;
   margin:10px;
   border-radius: 10px;
   padding: 1rem;
@@ -57,15 +57,20 @@
   flex-direction: column;
 }
 
+
+
 .current-user-message > .content-message{
   padding:1rem;
   border-radius: 10px;
   background-color: rgb(39, 39, 197);
 }
 
-.current-user-message > .username-message{
+.username-message{
   color:#aa9c9c;
   font-size: small;
+  max-width: 200px;
+  word-wrap: break-word;
+  margin: 0;
 }
 
 .other-user-message > .content-message{
@@ -74,12 +79,54 @@
   background-color: #278bc5;
 }
 
-.other-user-message > .username-message{
-  color:#aa9c9c;
-  font-size: small;
-}
-
 .file-message-dialog{
   outline:none;
   border-radius: 50px;
+}
+
+.pop-up{
+  max-width: 200px;
+}
+
+.pop-up img{
+  cursor: zoom-in;
+  display: block;
+  margin:auto;
+  transition: 0.4s ease-in-out;
+}
+
+.container-popup-img{
+  transition: 0.4s;
+  width: 100%;
+  transform: scale(0);
+  opacity: 0;
+  height: 100%;
+  position: fixed;
+  top:0;
+  left: 0;
+  z-index: 20;
+  align-items: center;
+  justify-content: center;
+  cursor: zoom-out;
+}
+
+.pop-up-active{
+  max-width: 90%;
+  max-height: 90%;
+}
+
+.file-submit-input{
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.symbol-choose-picture{
+  cursor: pointer;
+  margin:10px;
+}
+
+.input-message-dialog{
+  display: flex;
+  align-items: flex-start;
 }

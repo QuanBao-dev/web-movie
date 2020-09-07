@@ -9,6 +9,7 @@ import {
   pluck,
   switchMap,
   switchMapTo,
+  startWith,
 } from "rxjs/operators";
 
 import theaterStore from "../store/theater";
@@ -100,8 +101,42 @@ export const fetchUserOnline$ = (groupId, idCartoonUser) => {
 
 export const createNewMessageDialog$ = (inputElement) => {
   return fromEvent(inputElement, "keydown").pipe(
-    filter((event) =>event.keyCode === 13 && event.target.value !== ""),
-    pluck("target","value"),
-    tap(() => inputElement.value = "")
-  )
-}
+    filter((event) => event.keyCode === 13 && event.target.value !== ""),
+    pluck("target", "value"),
+    tap(() => (inputElement.value = ""))
+  );
+};
+
+export const createNewMessageNotSignIn$ = (user, ...elements) => {
+  const elementsListen = elements.map((element) => fromEvent(element, "input"));
+  elementsListen[0] = elementsListen[0].pipe(
+    pluck("target", "value"),
+    startWith(user ? user.username:"")
+  );
+  elementsListen[1] = elementsListen[1].pipe(
+    pluck("target", "value"),
+    startWith("")
+  );
+  return from(elementsListen).pipe(
+    combineAll(),
+    map((texts) => {
+      const blankExistIndex = texts.findIndex((text) => text.trim() === "");
+      return { blankExistIndex, texts };
+    }),
+    filter(({ blankExistIndex }) => blankExistIndex < 0),
+    switchMap(({ texts }) =>
+      fromEvent(document, "keydown").pipe(
+        filter((e) => {
+          if (e.keyCode !== 13) {
+            return false;
+          }
+          const blankExistIndex = elements.findIndex(
+            (element) => element.value.trim() === ""
+          );
+          return blankExistIndex >= 0 ? false : true;
+        }),
+        map(() => texts)
+      )
+    )
+  );
+};

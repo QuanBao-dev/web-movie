@@ -286,14 +286,13 @@ export const listenSearchInputPressEnter$ = (searchInputE) => {
 
 export const topMovieUpdatedScrolling$ = (topAnimeElement) => {
   return fromEvent(topAnimeElement, "scroll").pipe(
-    throttleTime(1000, asyncScheduler, {
+    debounceTime(1000, asyncScheduler, {
       leading: true,
       trailing: true,
     }),
     filter(
       () =>
-        topAnimeElement.scrollTop - (topAnimeElement.scrollHeight - 9000) > 0
+        topAnimeElement.scrollTop - (topAnimeElement.scrollHeight - 5000) > 0
     ),
-    tap(v => console.log(v)),
   );
 };

@@ -1,6 +1,13 @@
 import { fromEvent, timer, of, from } from "rxjs";
 import { ajax } from "rxjs/ajax";
-import { map, switchMapTo, catchError, combineAll } from "rxjs/operators";
+import {
+  map,
+  switchMapTo,
+  catchError,
+  combineAll,
+  pluck,
+  startWith,
+} from "rxjs/operators";
 
 import chatStore from "../store/comment";
 
@@ -9,17 +16,25 @@ export const chatStream = chatStore;
 export const validateInput$ = (
   inputElement,
   inputAuthorElement,
-  buttonSubmitElement
+  buttonSubmitElement,
+  user
 ) => {
   buttonSubmitElement.disabled = true;
-  const input$ = fromEvent(inputElement, "input");
-  const inputAuthor$ = fromEvent(inputAuthorElement, "input");
-  return from([input$, inputAuthor$]).pipe(
+  const inputAuthor$ = fromEvent(inputAuthorElement, "input").pipe(
+    pluck("target", "value"),
+    startWith(user.username),
+  );
+  const input$ = fromEvent(inputElement, "input").pipe(
+    pluck("target", "value"),
+    startWith("")
+  );
+  return from([inputAuthor$,input$]).pipe(
     combineAll(),
-    map(([input, authorInput]) => {
-      const text = input.target.value;
-      const textAuthor = authorInput.target.value;
-      if (text === "" || textAuthor === "") {
+    map(([inputAuthor, input]) => {
+      const text = input;
+      const textAuthor = inputAuthor;
+      console.log(text, textAuthor);
+      if (text.trim() === "" || textAuthor.trim() === "") {
         buttonSubmitElement.disabled = true;
       } else {
         buttonSubmitElement.disabled = false;

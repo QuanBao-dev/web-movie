@@ -166,7 +166,7 @@ const TheaterWatch = (props) => {
                 ></video>
               </div>
               <div className="container-message-dialog">
-                <Chat groupId={groupId} user={user} />
+                <Chat groupId={groupId} user={user} withoutName={true} />
               </div>
             </div>
             <div className="container-audio-call" ref={audioCallRef}></div>

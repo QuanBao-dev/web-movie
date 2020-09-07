@@ -45,6 +45,7 @@ const Name = (props) => {
   const selectCrawlInputRef = useRef();
   const buttonDeleteCrawlInputRef = useRef();
   const typeVideoSelectRef = useRef();
+  const selectCrawlServerVideo = useRef();
   useEffect(() => {
     // eslint-disable-next-line no-restricted-globals
     scroll({
@@ -238,6 +239,7 @@ const Name = (props) => {
                   name={name}
                   setEpisodeData={setEpisodeData}
                   cookies={cookies}
+                  selectCrawlServerVideo={selectCrawlServerVideo}
                 />
               </div>
             )}
@@ -344,12 +346,27 @@ function FormSubmitCrawl({
   name,
   setEpisodeData,
   cookies,
+  selectCrawlServerVideo,
 }) {
   return (
     <div className="form-submit">
-      <select defaultValue="animehay" ref={selectCrawlInputRef}>
+      <select
+        defaultValue="animehay"
+        ref={selectCrawlInputRef}
+        onChange={(e) => {
+          if (e.target.value === "animehay") {
+            selectCrawlServerVideo.current.style.display = "block";
+          } else {
+            selectCrawlServerVideo.current.style.display = "none";
+          }
+        }}
+      >
         <option value="animehay">animehay</option>
         <option value="animevsub">animevsub</option>
+      </select>
+      <select defaultValue="serverMoe" ref={selectCrawlServerVideo}>
+        <option value="serverMoe">Moe</option>
+        <option value="serverICQ">Kol</option>
       </select>
       <div className="form-limit-episode">
         <Input label="start" type="number" input={startEpisodeInputRef} />
@@ -364,6 +381,7 @@ function FormSubmitCrawl({
           const end = endEpisodeInputRef.current.value;
           const url = linkWatchingInputRef.current.value;
           const serverWeb = selectCrawlInputRef.current.value;
+          const serverVideo = selectCrawlServerVideo.current.value;
           switch (serverWeb) {
             case "animehay":
               if (!url.includes("animehay.tv/phim/")) {
@@ -379,11 +397,11 @@ function FormSubmitCrawl({
               break;
           }
           if (
-            startEpisodeInputRef.current.value === "" ||
+            startEpisodeInputRef.current.value.trim() === "" ||
             !startEpisodeInputRef.current.value ||
-            endEpisodeInputRef.current.value === "" ||
+            endEpisodeInputRef.current.value.trim() === "" ||
             !endEpisodeInputRef.current.value ||
-            linkWatchingInputRef.current.value === "" ||
+            linkWatchingInputRef.current.value.trim() === "" ||
             !linkWatchingInputRef.current.value
           ) {
             alert("start, end and watch url are required");
@@ -399,6 +417,7 @@ function FormSubmitCrawl({
                 end,
                 url,
                 serverWeb,
+                serverVideo
               },
               {
                 headers: {
@@ -453,7 +472,7 @@ function FormSubmit({
           const embedUrl = inputVideoUrlRef.current.value;
           const typeVideo = typeVideoSelectRef.current.value === "video";
           const { idCartoonUser } = cookies;
-          if (!episode || episode === "" || !embedUrl || embedUrl === "") {
+          if (!episode || !embedUrl || embedUrl.trim() === "") {
             alert("Episode and Url are required");
             return;
           }

@@ -137,6 +137,14 @@ io.on("connection", (socket) => {
       groupId
     );
   });
+  socket.on("new-message-photo", (username, uri, groupId) => {
+    socket.broadcast.emit(
+      "send-message-photo-other-users",
+      username,
+      uri,
+      groupId
+    );
+  });
   socket.on("user-join-watch", (malId, username) => {
     if (!rooms[malId]) {
       rooms[malId] = { users: {} };

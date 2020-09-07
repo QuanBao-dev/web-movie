@@ -91,7 +91,7 @@ router.put("/admin/:malId", verifyRole("Admin"), async (req, res) => {
 });
 
 router.put("/:malId/episodes/crawl", verifyRole("Admin"), async (req, res) => {
-  const { start, end, url, serverWeb } = req.body;
+  const { start, end, url, serverWeb, serverVideo } = req.body;
   const { malId } = req.params;
   let movie = await Movie.findOne({ malId });
   if (movie) {
@@ -107,7 +107,8 @@ router.put("/:malId/episodes/crawl", verifyRole("Admin"), async (req, res) => {
       parseInt(start),
       parseInt(end),
       url,
-      serverWeb
+      serverWeb,
+      serverVideo
     );
     if (!dataCrawl) {
       return res.status(404).send({ error: "crawling web fail" });
@@ -241,7 +242,7 @@ async function addMovieUpdated(malId) {
   }
 }
 
-async function crawl(start, end, url, serverWeb) {
+async function crawl(start, end, url, serverWeb, serverVideo) {
   const browser = await puppeteer.launch({
     extra: {
       stealth: true,
@@ -304,6 +305,7 @@ async function crawl(start, end, url, serverWeb) {
         page,
         listLinkWatchEpisode[i],
         serverWeb,
+        serverVideo,
         options
       );
       listSrc.push({
@@ -322,38 +324,77 @@ async function crawl(start, end, url, serverWeb) {
   }
 }
 
-async function extractSourceVideo(page, linkWatching, serverWeb, options) {
+async function extractSourceVideo(
+  page,
+  linkWatching,
+  serverWeb,
+  serverVideo,
+  options
+) {
   await page.goto(linkWatching, options);
-  const episodeLink = await page.evaluate((serverWeb) => {
-    switch (serverWeb) {
-      case "animehay":
-        let listSv = document.querySelector("#list_sv").childNodes;
-        listSv = [...listSv];
-        let serverCrawl = listSv.find((sv) => sv.id === "serverMoe");
-        if (!serverCrawl) {
-          return null;
-        }
-        serverCrawl.click();
-        return {
-          url: document.querySelector(".film-player.ah-bg-bd iframe").src,
-          typeVideo: false,
-        };
-      case "animevsub":
-        let typeVideo = true;
-        let e = document.querySelector(".media-player video");
-        if (!e) {
-          typeVideo = false;
-          e = document.querySelector(".media-player iframe");
-        }
-        if (!e) {
-          return null;
-        }
-        const linkEpisodeAnime = e.src;
-        return { url: linkEpisodeAnime, typeVideo: typeVideo };
-      default:
-        return;
-    }
-  }, serverWeb);
+  let episodeLink;
+  if (serverVideo === "serverMoe")
+    episodeLink = await page.evaluate((serverWeb) => {
+      switch (serverWeb) {
+        case "animehay":
+          let listSv = document.querySelector("#list_sv").childNodes;
+          listSv = [...listSv];
+          let serverCrawl = listSv.find((sv) => sv.id === "serverMoe");
+          if (!serverCrawl) {
+            return null;
+          }
+          serverCrawl.click();
+          return {
+            url: document.querySelector(".film-player.ah-bg-bd iframe").src,
+            typeVideo: false,
+          };
+        case "animevsub":
+          let typeVideo = true;
+          let e = document.querySelector(".media-player video");
+          if (!e) {
+            typeVideo = false;
+            e = document.querySelector(".media-player iframe");
+          }
+          if (!e) {
+            return null;
+          }
+          const linkEpisodeAnime = e.src;
+          return { url: linkEpisodeAnime, typeVideo: typeVideo };
+        default:
+          return;
+      }
+    }, serverWeb);
+  else if (serverVideo === "serverICQ")
+    episodeLink = await page.evaluate((serverWeb) => {
+      switch (serverWeb) {
+        case "animehay":
+          let listSv = document.querySelector("#list_sv").childNodes;
+          listSv = [...listSv];
+          let serverCrawl = listSv.find((sv) => sv.id === "serverICQ");
+          if (!serverCrawl) {
+            return null;
+          }
+          serverCrawl.click();
+          return {
+            url: document.querySelector(".film-player.ah-bg-bd iframe").src,
+            typeVideo: false,
+          };
+        case "animevsub":
+          let typeVideo = true;
+          let e = document.querySelector(".media-player video");
+          if (!e) {
+            typeVideo = false;
+            e = document.querySelector(".media-player iframe");
+          }
+          if (!e) {
+            return null;
+          }
+          const linkEpisodeAnime = e.src;
+          return { url: linkEpisodeAnime, typeVideo: typeVideo };
+        default:
+          return;
+      }
+    }, serverWeb);
   return episodeLink;
 }
 

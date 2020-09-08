@@ -267,7 +267,8 @@ const TheaterWatch = (props) => {
                     const e = document.querySelector(".container-message-zoom");
                     const chatBot = document.querySelector(".chat-bot");
                     if (e) {
-                      if (e.style.transform === "scale(0)") {
+                      console.log(chatBot.style.transform)
+                      if (chatBot.style.transform === "scale(0)") {
                         e.style.transform = "scale(1)";
                         chatBot.style.transform = "scale(1)";
                         chatBot.scroll({

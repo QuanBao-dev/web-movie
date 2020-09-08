@@ -19,54 +19,86 @@ const Chat = ({ groupId, user, withoutName = false, isZoom = false }) => {
   }, [user, withoutName]);
 
   return (
-    <div className={`chat-bot${isZoom ? " chat-watch-zoom":""}`}>
+    <div>
       <div className="container-popup-img">
         <img className="pop-up-active" src="" alt="" />
       </div>
-      <div className="message-dialog-container">
-        <div className="block-pop-up" style={{ display: "none" }}></div>
-        <div className="message-dialog" ref={messageDialogRef}>
-          <div className="flex-start-message message-dialog-item current-user-message">
-            <span className="content-message">
-              Welcome to AnimeFun, enjoy and have a good day
-            </span>
-            <span className="username-message">Robot</span>
+      <div className="block-pop-up" style={{ display: "none" }}></div>
+      <div className={`chat-bot${isZoom ? " chat-watch-zoom" : ""}`}>
+        <div className="message-dialog-container">
+          <div className="message-dialog" ref={messageDialogRef}>
+            <div className="flex-start-message message-dialog-item current-user-message">
+              <span className="content-message">
+                Welcome to AnimeFun, enjoy and have a good day
+              </span>
+              <span className="username-message">Robot</span>
+            </div>
           </div>
-        </div>
-        {!withoutName && <Input label={"Name"} input={inputNameDialogRef} />}
-        <div className="input-message-dialog">
-          <i
-            className="fas fa-images fa-2x symbol-choose-picture"
-            onClick={() => inputRefFile.current.click()}
-          ></i>
-          <MessageInput
-            appendNewMessageDialog={appendNewMessageDialog}
-            appendNewPhotoMessage={appendNewPhotoMessage}
-            inputNameDialogRef={inputNameDialogRef}
-            idGroup={idGroup}
-            socket={socket}
-            user={user}
-            messageDialogE={messageDialogE}
-          />
-          <input
-            multiple
-            type="file"
-            ref={inputRefFile}
-            className="file-submit-input"
-            onChange={async () => {
-              try {
-                for (let i = 0; i < inputRefFile.current.files.length; i++) {
-                  const uri = await base64DataUrl(
-                    inputRefFile.current.files[i]
-                  );
-                  messageInputStream.updateImgsMessage(uri);
+          {!withoutName && <Input label={"Name"} input={inputNameDialogRef} />}
+          <div className="input-message-dialog">
+            <i
+              className="fas fa-images fa-2x symbol-choose-picture"
+              onClick={() => inputRefFile.current.click()}
+            ></i>
+            <MessageInput
+              appendNewMessageDialog={appendNewMessageDialog}
+              appendNewPhotoMessage={appendNewPhotoMessage}
+              inputNameDialogRef={inputNameDialogRef}
+              idGroup={idGroup}
+              socket={socket}
+              user={user}
+              messageDialogE={messageDialogE}
+            />
+            <input
+              multiple
+              type="file"
+              ref={inputRefFile}
+              className="file-submit-input"
+              onChange={async () => {
+                try {
+                  for (let i = 0; i < inputRefFile.current.files.length; i++) {
+                    const uri = await base64DataUrl(
+                      inputRefFile.current.files[i]
+                    );
+                    messageInputStream.updateImgsMessage(uri);
+                    if (isZoom) {
+                      document.querySelector("#root").allowfullscreen = true;
+                      if (document.querySelector("#root").requestFullscreen) {
+                        document
+                          .querySelector("#root")
+                          .requestFullscreen()
+                          .catch(() => {});
+                      } else if (
+                        document.querySelector("#root").webkitRequestFullScreen
+                      ) {
+                        document
+                          .querySelector("#root")
+                          .webkitRequestFullScreen()
+                          .catch(() => {});
+                      } else if (
+                        document.querySelector("#root").mozRequestFullScreen
+                      ) {
+                        document
+                          .querySelector("#root")
+                          .mozRequestFullScreen()
+                          .catch(() => {});
+                      } else if (
+                        document.querySelector("#root").msRequestFullScreen
+                      ) {
+                        document
+                          .querySelector("#root")
+                          .msRequestFullScreen()
+                          .catch(() => {});
+                      }
+                    }
+                  }
+                  inputRefFile.current.value = "";
+                } catch (error) {
+                  alert(error);
                 }
-                inputRefFile.current.value = "";
-              } catch (error) {
-                alert(error);
-              }
-            }}
-          />
+              }}
+            />
+          </div>
         </div>
       </div>
     </div>
@@ -128,8 +160,8 @@ function appendNewMessageDialog(
     behavior: "smooth",
   });
   const e = document.querySelector(".chat-watch-zoom");
-  if(e && e.style.transform === "scale(0)"){
-    const numMessage= theaterStream.currentState().unreadMessage;
+  if (e && e.style.transform === "scale(0)") {
+    const numMessage = theaterStream.currentState().unreadMessage;
     theaterStream.updateUnreadMessage(numMessage + 1);
   }
 }
@@ -191,8 +223,8 @@ function appendNewPhotoMessage(
     behavior: "smooth",
   });
   const e = document.querySelector(".chat-watch-zoom");
-  if(e && e.style.transform === "scale(0)"){
-    const numMessage= theaterStream.currentState().unreadMessage;
+  if (e && e.style.transform === "scale(0)") {
+    const numMessage = theaterStream.currentState().unreadMessage;
     theaterStream.updateUnreadMessage(numMessage + 1);
   }
 }

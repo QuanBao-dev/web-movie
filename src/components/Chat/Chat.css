@@ -108,7 +108,7 @@
   position: fixed;
   top:0;
   left: 0;
-  z-index: 20;
+  z-index: 2000;
   align-items: center;
   justify-content: center;
   cursor: zoom-out;
@@ -137,7 +137,7 @@
 
 .chat-watch-zoom{
   transition: 0.4s;
-  z-index: 10000;
+  z-index: 1000;
   position: fixed;
   top: 70px;
   right: 0;

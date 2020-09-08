@@ -83,15 +83,17 @@
 
 .container-section-video{
   display: flex;
+  align-items: flex-start;
   flex-wrap: wrap;
 }
 
 .wrapper-video-player{
   display: flex;
-  max-width: 1118px;
+  max-width: 1160px;
   flex-direction: column;
   flex-grow: 100;
   align-items: flex-start;
+  height: 100%;
 }
 
 .wrapper-video-player video{
@@ -111,4 +113,48 @@
   flex-direction: column;
   align-items: center;
   padding: 1em;
+}
+
+.video-zoom{
+  position: fixed;
+  top: 0;
+  bottom : 0;
+  left : 0;
+  right : 0;
+  object-fit:  contain;
+  background-color : black;
+}
+
+.container-message-zoom{
+  transform: scale(1);
+  transition: 0.4s;
+  z-index :1000;
+  position : fixed;
+  top : 0;
+  right : 0;
+  overflow: auto;
+  max-height: 60%;
+  padding:10px;
+  border-radius: 10px;
+  background-color: rgb(14, 14, 97);
+}
+
+.button-display-control{
+  position: fixed;
+  top:0;
+  left:0;
+  z-index: 1001;
+  cursor: pointer;
+}
+
+.number-unread-message{
+  border-radius: 50%;
+  padding: 5px;
+  background-color: red;
+  width: 1rem;
+  height: 1rem;
+  position: absolute;
+  left: 0;
+  text-align: center;
+  font-family: emoji;
 }

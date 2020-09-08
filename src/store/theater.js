@@ -10,15 +10,18 @@ const initialState = {
   roomsLoginId: [],
   allowFetchCurrentRoomDetail: true,
   usersOnline: [],
-  modeRoom:1,
-  userId:null,
+  modeRoom: 1,
+  userId: null,
+  allowRemoveVideoWatch: true,
+  allowUserJoin: true,
+  unreadMessage: 0,
 };
 let state = initialState;
 const theaterStore = {
   initialState,
-  socket: io.connect(`/`,{
-    upgrade:false,
-    forceNew:true
+  socket: io.connect(`/`, {
+    upgrade: false,
+    forceNew: true,
   }),
   subscribe: (setState) => behaviorSubject.subscribe(setState),
   currentState: () => {
@@ -29,10 +32,19 @@ const theaterStore = {
   init: () => {
     behaviorSubject.next(state);
   },
-  updateModeRoom:(num) => {
+
+  updateUnreadMessage: (number) => {
     state = {
       ...state,
-      modeRoom:num
+      unreadMessage: number,
+    };
+    behaviorSubject.next(state);
+  },
+
+  updateModeRoom: (num) => {
+    state = {
+      ...state,
+      modeRoom: num,
     };
     behaviorSubject.next(state);
   },
@@ -91,6 +103,14 @@ export const updateAllowFetchCurrentRoomDetail = (bool) => {
 
 export const updateUserIdNow = (string) => {
   state.userId = string;
-}
+};
+
+export const updateAllowRemoveVideoWatch = (bool) => {
+  state.allowRemoveVideoWatch = bool;
+};
+
+export const updateAllowUserJoin = (bool) => {
+  state.allowUserJoin = bool;
+};
 
 export default theaterStore;

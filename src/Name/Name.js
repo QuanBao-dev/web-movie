@@ -5,7 +5,7 @@ import { orderBy } from "lodash";
 import React, { useEffect, useRef, useState } from "react";
 import { useCookies } from "react-cookie";
 import { Link } from "react-router-dom";
-import { from, fromEvent, timer } from "rxjs";
+import { from, fromEvent, of, timer } from "rxjs";
 import { ajax } from "rxjs/ajax";
 import {
   catchError,
@@ -13,7 +13,9 @@ import {
   exhaustMap,
   filter,
   map,
+  mergeMap,
   pluck,
+  retry,
   switchMap,
 } from "rxjs/operators";
 
@@ -47,40 +49,35 @@ const Name = (props) => {
   const typeVideoSelectRef = useRef();
   const selectCrawlServerVideo = useRef();
   useEffect(() => {
-    // eslint-disable-next-line no-restricted-globals
-    scroll({
+    window.scroll({
       top: 0,
       behavior: "smooth",
     });
     let subscription;
-    fetchData(name).then((v) => {
-      if (v.status !== 403) {
-        setData(v);
-        // console.log({ v });
-        return v;
-      }
-    });
-    fetchData(name).then(async (anime) => {
-      try {
-        const api = await fetchDataVideo(anime.mal_id);
+    let fetchSub;
+    fetchSub = fetchData$(name)
+      .pipe(
+        mergeMap((anime) =>
+          fetchDataVideo$(name).pipe(map((api) => ({ anime, api })))
+        )
+      )
+      .subscribe(({ anime, api }) => {
         setData({
           ...anime,
           dataPromo: api,
         });
-        return anime.mal_id;
-      } catch (error) {}
-    });
-    fetchData(name).then(async () => {
-      try {
-        const api = await fetchEpisodeDataVideo(name);
+      });
+    fetchEpisodeDataVideo(name)
+      .then((api) => {
         if (linkWatchingInputRef.current)
           linkWatchingInputRef.current.value = api.message.source;
         setEpisodeData(api.message.episodes);
-      } catch (error) {}
-    });
-    fetchData(name).then(async () => {
-      try {
-        const api = await fetchBoxMovieOneMovie(name, cookies.idCartoonUser);
+      })
+      .catch(() => {
+        console.log("Don't have episode");
+      });
+    fetchBoxMovieOneMovie(name, cookies.idCartoonUser)
+      .then(async (api) => {
         controlBoxMovieRef.current.style.display = "inline";
         setBoxMovie(api.message);
         subscription = handleDeleteBoxMovie(
@@ -90,7 +87,8 @@ const Name = (props) => {
           setBoxMovie,
           name
         );
-      } catch (error) {
+      })
+      .catch(() => {
         if (controlBoxMovieRef.current)
           controlBoxMovieRef.current.style.display = "inline";
         subscription = handleAddBoxMovie(
@@ -100,12 +98,11 @@ const Name = (props) => {
           setBoxMovie,
           name
         );
-      }
-    });
+      });
     return () => {
-      if (subscription) {
-        subscription.unsubscribe();
-      }
+      subscription && subscription.unsubscribe();
+
+      fetchSub && fetchSub.unsubscribe();
     };
   }, [cookies.idCartoonUser, name]);
 
@@ -417,7 +414,7 @@ function FormSubmitCrawl({
                 end,
                 url,
                 serverWeb,
-                serverVideo
+                serverVideo,
               },
               {
                 headers: {
@@ -551,16 +548,20 @@ function VideoPromotionList({ data }) {
   );
 }
 
-const fetchData = async (name) => {
-  let data = await fetch(`https://api.jikan.moe/v3/anime/${name}`);
-  data = await data.json();
-  return data;
+const fetchData$ = (name) => {
+  return ajax(`https://api.jikan.moe/v3/anime/${name}`).pipe(
+    retry(20),
+    pluck("response"),
+    catchError(() => of({}))
+  );
 };
 
-const fetchDataVideo = async (malId) => {
-  let data = await fetch(`https://api.jikan.moe/v3/anime/${malId}/videos`);
-  data = await data.json();
-  return data;
+const fetchDataVideo$ = (malId) => {
+  return ajax(`https://api.jikan.moe/v3/anime/${malId}/videos`).pipe(
+    retry(20),
+    pluck("response"),
+    catchError(() => of({}))
+  );
 };
 
 const fetchEpisodeDataVideo = async (malId) => {

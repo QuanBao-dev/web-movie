@@ -89,6 +89,10 @@
 }
 
 .pop-up img{
+  border-radius: 10px;
+}
+
+.pop-up img{
   cursor: zoom-in;
   display: block;
   margin:auto;
@@ -129,4 +133,14 @@
 .input-message-dialog{
   display: flex;
   align-items: flex-start;
+}
+
+.chat-watch-zoom{
+  transition: 0.4s;
+  z-index: 10000;
+  position: fixed;
+  top: 70px;
+  right: 0;
+  max-height: 60%;
+  overflow: auto;
 }

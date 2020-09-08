@@ -8,7 +8,7 @@ const socket = theaterStream.socket;
 let messageDialogE;
 let idGroup;
 
-const Chat = ({ groupId, user, withoutName = false }) => {
+const Chat = ({ groupId, user, withoutName = false, isZoom = false }) => {
   idGroup = groupId;
   const inputNameDialogRef = useRef();
   const messageDialogRef = useRef();
@@ -19,7 +19,7 @@ const Chat = ({ groupId, user, withoutName = false }) => {
   }, [user, withoutName]);
 
   return (
-    <div>
+    <div className={`chat-bot${isZoom ? " chat-watch-zoom":""}`}>
       <div className="container-popup-img">
         <img className="pop-up-active" src="" alt="" />
       </div>
@@ -127,6 +127,11 @@ function appendNewMessageDialog(
     top: messageDialogContainerE.scrollHeight,
     behavior: "smooth",
   });
+  const e = document.querySelector(".chat-watch-zoom");
+  if(e && e.style.transform === "scale(0)"){
+    const numMessage= theaterStream.currentState().unreadMessage;
+    theaterStream.updateUnreadMessage(numMessage + 1);
+  }
 }
 
 function appendNewPhotoMessage(
@@ -185,6 +190,11 @@ function appendNewPhotoMessage(
     top: messageDialogContainerE.scrollHeight,
     behavior: "smooth",
   });
+  const e = document.querySelector(".chat-watch-zoom");
+  if(e && e.style.transform === "scale(0)"){
+    const numMessage= theaterStream.currentState().unreadMessage;
+    theaterStream.updateUnreadMessage(numMessage + 1);
+  }
 }
 
 export default Chat;

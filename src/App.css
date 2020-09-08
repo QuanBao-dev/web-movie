@@ -9,7 +9,7 @@
   position: fixed;
   top:0;
   color: white;
-  transition: 0.3s;
+  transition: 0.3s ease-in-out;
 }
 
 .child-nav-bar__app{
@@ -37,6 +37,10 @@
   margin: 0 0 0 auto!important
 }
 
+.left-nav-item div{
+  padding:10px;
+}
+
 @media (max-width:697px){
   .nav-bar__app{
     flex-direction: column;
@@ -48,7 +52,7 @@
     flex-direction: column;
   }
   .left-nav-item{
-    margin: 10px!important;
+    margin: 0 0 auto 0!important;
   }
   
   .toggle-show__nav{

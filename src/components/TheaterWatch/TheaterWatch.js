@@ -16,6 +16,8 @@ import {
 import { userStream } from "../../epics/user";
 import {
   updateAllowFetchCurrentRoomDetail,
+  updateAllowRemoveVideoWatch,
+  updateAllowUserJoin,
   updateSignIn,
   updateUserIdNow,
 } from "../../store/theater";
@@ -39,6 +41,7 @@ const TheaterWatch = (props) => {
   replaySubject.next(groupId);
   user = userStream.currentState() || {};
   const [theaterState, setTheaterState] = useState(theaterStream.initialState);
+  const [isFullScreenState, setIsFullScreenState] = useState(null);
   const inputPasswordRef = useRef();
   const notificationRef = useRef();
   const audioCallRef = useRef();
@@ -46,6 +49,7 @@ const TheaterWatch = (props) => {
   const videoWatchRef = useRef();
   const videoUrlUpload = useRef();
   const [cookies] = useCookies(["idCartoonUser"]);
+
   useEffect(() => {
     videoWatchElement = videoWatchRef.current;
     notificationE = notificationRef.current;
@@ -55,7 +59,68 @@ const TheaterWatch = (props) => {
     theaterStream.init();
     let submitFormSub;
     if (theaterState.isSignIn) {
-      newUserJoinHandleVideo(audioCallRef.current);
+      if (theaterStream.currentState().allowUserJoin) {
+        newUserJoinHandleVideo(audioCallRef.current);
+        updateAllowUserJoin(false);
+      }
+      if (isFullScreenState) {
+        const navBar = document.querySelector(".nav-bar");
+        navBar && (navBar.style.transform = "translateY(-100px)");
+        document.querySelector("#root").allowfullscreen = true;
+        if (document.querySelector("#root").requestFullscreen) {
+          document
+            .querySelector("#root")
+            .requestFullscreen()
+            .catch(() => {});
+        } else if (document.querySelector("#root").webkitRequestFullScreen) {
+          document
+            .querySelector("#root")
+            .webkitRequestFullScreen()
+            .catch(() => {});
+        } else if (document.querySelector("#root").mozRequestFullScreen) {
+          document
+            .querySelector("#root")
+            .mozRequestFullScreen()
+            .catch(() => {});
+        } else if (document.querySelector("#root").msRequestFullScreen) {
+          document
+            .querySelector("#root")
+            .msRequestFullScreen()
+            .catch(() => {});
+        }
+
+        const video = videoWatchRef.current;
+        if (video) {
+          video.className = "video-zoom";
+        }
+
+        const containerMessageDialog = document.querySelector(
+          ".container-message-dialog"
+        );
+        if (containerMessageDialog) {
+          containerMessageDialog.className =
+            "container-message-dialog container-message-zoom";
+        }
+      } else {
+        const navBar = document.querySelector(".nav-bar");
+        const video = videoWatchRef.current;
+        const containerMessageDialog = document.querySelector(
+          ".container-message-dialog"
+        );
+        navBar && (navBar.style.transform = "");
+        video && (video.className = "");
+        containerMessageDialog &&
+          (containerMessageDialog.className = "container-message-dialog");
+        if (document.exitFullscreen) {
+          document.exitFullscreen().catch(() => {});
+        } else if (document.webkitExitFullscreen) {
+          document.webkitExitFullscreen().catch(() => {});
+        } else if (document.mozCancelFullScreen) {
+          document.mozCancelFullScreen().catch(() => {});
+        } else if (document.msExitFullscreen) {
+          document.msExitFullscreen().catch(() => {});
+        }
+      }
     }
 
     if (inputPasswordRef && inputPasswordRef.current) {
@@ -75,15 +140,21 @@ const TheaterWatch = (props) => {
     return () => {
       subscription.unsubscribe();
       submitFormSub && submitFormSub.unsubscribe();
-      videoWatchElement && (videoWatchElement.src = "");
-      videoWatchElement && videoWatchElement.remove();
-      videoWatchElement && (videoWatchElement.muted = true);
-      videoWatchElement && removeEventListenerVideoElement(videoWatchElement);
+      if (theaterStream.currentState().allowRemoveVideoWatch) {
+        videoWatchElement && (videoWatchElement.src = "");
+        videoWatchElement && videoWatchElement.remove();
+        videoWatchElement && (videoWatchElement.muted = true);
+        videoWatchElement && removeEventListenerVideoElement(videoWatchElement);
+        updateAllowUserJoin(true);
+      }
+      updateAllowRemoveVideoWatch(true);
     };
   }, [
     cookies.idCartoonUser,
+    isFullScreenState,
     props.match.params.groupId,
     theaterState.allowFetchCurrentRoomDetail,
+    theaterState.allowRemoveVideoWatch,
     theaterState.isSignIn,
   ]);
   if (!theaterState.isSignIn && notificationRef.current) {
@@ -100,7 +171,7 @@ const TheaterWatch = (props) => {
       socket.emit("disconnect-custom");
     }
   }
-  // console.log({ theaterState });
+  // console.log(theaterState);
   return (
     <div className="theater-user-login">
       {theaterState.isSignIn && theaterState.currentRoomDetail && (
@@ -126,7 +197,6 @@ const TheaterWatch = (props) => {
                   onClick={() => {
                     if (videoUrlUpload.current.value !== "") {
                       createNewVideo(videoUrlUpload.current.value, true);
-                      videoUrlUpload.current.value = "";
                     }
                   }}
                 >
@@ -142,32 +212,90 @@ const TheaterWatch = (props) => {
             {theaterState.isSignIn && (
               <UserListOnline usersOnline={theaterState.usersOnline} />
             )}
-            <button
-              id="button-get-remote"
-              className="btn btn-danger"
-              onClick={async (e) => {
-                if (videoWatchElement && videoWatchElement.src) {
-                  videoWatchElement.controls = true;
-                  const element = e.target;
-                  addEventListenerVideoElement(videoWatchElement);
-                  element.disabled = true;
-                  await updateUserKeepRemote(groupId, user.email);
-                  socket.emit("user-keep-remote-changed", groupId);
-                }
-              }}
-            >
-              Get Remote
-            </button>
             <div className="container-section-video">
               <div className="wrapper-video-player">
                 <video
                   poster="https://videopromotion.club/assets/images/default-video-thumbnail.jpg"
                   ref={videoWatchRef}
                 ></video>
+                <div className="container-message-dialog">
+                  <button
+                    id="button-get-remote"
+                    className="btn btn-danger"
+                    onClick={async (e) => {
+                      if (videoWatchElement && videoWatchElement.src) {
+                        videoWatchElement.controls = true;
+                        const element = e.target;
+                        addEventListenerVideoElement(videoWatchElement);
+                        element.disabled = true;
+                        await updateUserKeepRemote(groupId, user.email);
+                        socket.emit("user-keep-remote-changed", groupId);
+                      }
+                    }}
+                  >
+                    Get Remote
+                  </button>
+                  <button
+                    className="btn btn-primary button-zoom"
+                    onClick={() => {
+                      updateAllowRemoveVideoWatch(false);
+                      if (isFullScreenState) {
+                        document
+                        .getElementsByTagName("body")
+                        .item(0).className = "";
+                        setIsFullScreenState(false);
+                      } else {
+                        document
+                          .getElementsByTagName("body")
+                          .item(0).className = "hidden-scroll";
+                        setIsFullScreenState(true);
+                      }
+                    }}
+                  >
+                    {!isFullScreenState ? (
+                      <i className="fas fa-expand"></i>
+                    ) : (
+                      <i className="fas fa-compress"></i>
+                    )}
+                  </button>
+                </div>
               </div>
-              <div className="container-message-dialog">
-                <Chat groupId={groupId} user={user} withoutName={true} />
-              </div>
+              {isFullScreenState && (
+                <div
+                  className="button-display-control"
+                  onClick={() => {
+                    const e = document.querySelector(".container-message-zoom");
+                    const chatBot = document.querySelector(".chat-bot");
+                    if (e) {
+                      if (e.style.transform === "scale(0)") {
+                        e.style.transform = "scale(1)";
+                        chatBot.style.transform = "scale(1)";
+                        chatBot.scroll({
+                          top: chatBot.scrollHeight,
+                          behavior: "smooth",
+                        });
+                        theaterStream.updateUnreadMessage(0);
+                      } else {
+                        e.style.transform = "scale(0)";
+                        chatBot.style.transform = "scale(0)";
+                      }
+                    }
+                  }}
+                >
+                  <i className="far fa-bell fa-4x"></i>
+                  {theaterState.unreadMessage !== 0 && (
+                    <span className="number-unread-message">
+                      {theaterState.unreadMessage}
+                    </span>
+                  )}
+                </div>
+              )}
+              <Chat
+                groupId={groupId}
+                user={user}
+                withoutName={true}
+                isZoom={isFullScreenState}
+              />
             </div>
             <div className="container-audio-call" ref={audioCallRef}></div>
           </div>
@@ -233,7 +361,6 @@ function newUserJoinHandleVideo(audioCallE) {
         myAudio.muted = true;
         myPeer.on("open", async (id) => {
           myAudio.id = id;
-          console.log(groupId);
           socket.emit("new-user", user.username, groupId, id, user.email);
           addAudioStream(myAudio, stream, audioCallE);
           appendNewMessage(
@@ -260,7 +387,6 @@ function newUserJoinHandleVideo(audioCallE) {
 }
 
 async function newUserJoin(id, groupId) {
-  console.log(user.username, groupId, id, user.email);
   socket.emit("new-user", user.username, groupId, id, user.email);
   socket.emit("fetch-updated-user-online");
 }
@@ -289,7 +415,6 @@ function UserListOnline({ usersOnline }) {
 
 function createVideoUri(inputVideoE) {
   if (inputVideoE.files[0] && inputVideoE.files[0].type === "video/mp4") {
-    console.log(URL.createObjectURL(inputVideoE.files[0]));
     createNewVideo(URL.createObjectURL(inputVideoE.files[0]));
     inputVideoE.value = "";
   } else {

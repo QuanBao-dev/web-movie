@@ -110,7 +110,7 @@ function App() {
                 activeClassName="active"
                 onClick={() => {
                   // eslint-disable-next-line no-restricted-globals
-                  scroll({
+                  window.scroll({
                     top: 0,
                     behavior: "smooth",
                   });

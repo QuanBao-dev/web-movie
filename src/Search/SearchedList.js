@@ -1,22 +1,27 @@
 import "./SearchedList.css";
 import React, { useEffect, useState } from "react";
 import { stream } from "../epics/home";
-import Axios from "axios";
 import AnimeList from "../components/AnimeList/AnimeList";
+import { ajax } from "rxjs/ajax";
+import { catchError, pluck, retry } from "rxjs/operators";
+import { of } from "rxjs";
 
 const SearchedList = (props) => {
-  const key  = props.location.search.replace("?key=","");
+  const key = props.location.search.replace("?key=", "");
   const { dataFilter } = stream.currentState();
   const [dataSearchedAnimeState, setDataSearchedAnimeState] = useState();
   useEffect(() => {
+    let subscription;
     if (dataFilter.length === 0) {
-      fetchDataApi(key).then((data) => {
+      subscription = fetchDataApi$(key).subscribe((data) => {
         setDataSearchedAnimeState(data.results);
       });
     } else {
       setDataSearchedAnimeState(dataFilter);
     }
-    return () => {};
+    return () => {
+      subscription && subscription.unsubscribe();
+    };
   }, [dataFilter, dataFilter.length, key]);
   // console.log(dataSearchedAnimeState);
   return (
@@ -24,8 +29,8 @@ const SearchedList = (props) => {
       <h1 style={{ color: "white" }}>Results searched for "{key}"</h1>
       {dataSearchedAnimeState && (
         <AnimeList
-          data={dataSearchedAnimeState.filter((data) =>
-            !["Rx"].includes(data.rated)
+          data={dataSearchedAnimeState.filter(
+            (data) => !["Rx"].includes(data.rated)
           )}
           error={null}
         />
@@ -34,11 +39,12 @@ const SearchedList = (props) => {
   );
 };
 
-async function fetchDataApi(text) {
-  const data = await Axios.get(
-    "https://api.jikan.moe/v3/search/anime?q=" + text
+function fetchDataApi$(text) {
+  return ajax("https://api.jikan.moe/v3/search/anime?q=" + text).pipe(
+    retry(20),
+    pluck("response"),
+    catchError(() => of({}))
   );
-  return data.data;
 }
 
 export default SearchedList;

@@ -224,6 +224,7 @@ function Home() {
         </div>
         <div className="container-display-anime__home">
           <div className="anime-pagination">
+            <h1 style={{textAlign:"center"}}>Search Anime by season and year</h1>
             <SelectFilterAnime
               targetScroll={targetScroll}
               homeState={homeState}
@@ -235,7 +236,7 @@ function Home() {
               data={homeState.dataDetail}
               error={homeState.error || null}
             />
-            <div style={{ margin: "auto", width: "50%", textAlign: "center" }}>
+            <div style={{ width: "50%", textAlign: "center" }}>
               <PageNavList
                 numberOfPagesDisplay={numberOfPagesDisplay}
                 stream={stream}
@@ -252,9 +253,8 @@ function Home() {
   function initUIBehavior() {
     if (homeState.shouldScrollToSeeMore) {
       allowScrollToSeeMore(false);
-      // eslint-disable-next-line no-restricted-globals
-      scroll({
-        top: targetScroll.current.offsetTop - 90,
+      window.scroll({
+        top: targetScroll.current.offsetTop - 170,
         behavior: "smooth",
       });
     }

@@ -61,36 +61,6 @@ const Chat = ({ groupId, user, withoutName = false, isZoom = false }) => {
                       inputRefFile.current.files[i]
                     );
                     messageInputStream.updateImgsMessage(uri);
-                    if (isZoom) {
-                      document.querySelector("#root").allowfullscreen = true;
-                      if (document.querySelector("#root").requestFullscreen) {
-                        document
-                          .querySelector("#root")
-                          .requestFullscreen()
-                          .catch(() => {});
-                      } else if (
-                        document.querySelector("#root").webkitRequestFullScreen
-                      ) {
-                        document
-                          .querySelector("#root")
-                          .webkitRequestFullScreen()
-                          .catch(() => {});
-                      } else if (
-                        document.querySelector("#root").mozRequestFullScreen
-                      ) {
-                        document
-                          .querySelector("#root")
-                          .mozRequestFullScreen()
-                          .catch(() => {});
-                      } else if (
-                        document.querySelector("#root").msRequestFullScreen
-                      ) {
-                        document
-                          .querySelector("#root")
-                          .msRequestFullScreen()
-                          .catch(() => {});
-                      }
-                    }
                   }
                   inputRefFile.current.value = "";
                 } catch (error) {

@@ -66,41 +66,15 @@ const TheaterWatch = (props) => {
       if (isFullScreenState) {
         const navBar = document.querySelector(".nav-bar");
         navBar && (navBar.style.transform = "translateY(-100px)");
-        document.querySelector("#root").allowfullscreen = true;
-        if (document.querySelector("#root").requestFullscreen) {
-          document
-            .querySelector("#root")
-            .requestFullscreen()
-            .catch(() => {});
-        } else if (document.querySelector("#root").webkitRequestFullScreen) {
-          document
-            .querySelector("#root")
-            .webkitRequestFullScreen()
-            .catch(() => {});
-        } else if (document.querySelector("#root").mozRequestFullScreen) {
-          document
-            .querySelector("#root")
-            .mozRequestFullScreen()
-            .catch(() => {});
-        } else if (document.querySelector("#root").msRequestFullScreen) {
-          document
-            .querySelector("#root")
-            .msRequestFullScreen()
-            .catch(() => {});
-        }
-
+        allowFullscreen();
         const video = videoWatchRef.current;
-        if (video) {
-          video.className = "video-zoom";
-        }
-
+        video && (video.className = "video-zoom");
         const containerMessageDialog = document.querySelector(
           ".container-message-dialog"
         );
-        if (containerMessageDialog) {
-          containerMessageDialog.className =
-            "container-message-dialog container-message-zoom";
-        }
+        containerMessageDialog &&
+          (containerMessageDialog.className =
+            "container-message-dialog container-message-zoom");
       } else {
         const navBar = document.querySelector(".nav-bar");
         const video = videoWatchRef.current;
@@ -109,17 +83,7 @@ const TheaterWatch = (props) => {
         );
         navBar && (navBar.style.transform = "");
         video && (video.className = "");
-        containerMessageDialog &&
-          (containerMessageDialog.className = "container-message-dialog");
-        if (document.exitFullscreen) {
-          document.exitFullscreen().catch(() => {});
-        } else if (document.webkitExitFullscreen) {
-          document.webkitExitFullscreen().catch(() => {});
-        } else if (document.mozCancelFullScreen) {
-          document.mozCancelFullScreen().catch(() => {});
-        } else if (document.msExitFullscreen) {
-          document.msExitFullscreen().catch(() => {});
-        }
+        allowExitFullscreen(containerMessageDialog);
       }
     }
 
@@ -241,8 +205,8 @@ const TheaterWatch = (props) => {
                       updateAllowRemoveVideoWatch(false);
                       if (isFullScreenState) {
                         document
-                        .getElementsByTagName("body")
-                        .item(0).className = "";
+                          .getElementsByTagName("body")
+                          .item(0).className = "";
                         setIsFullScreenState(false);
                       } else {
                         document
@@ -267,7 +231,6 @@ const TheaterWatch = (props) => {
                     const e = document.querySelector(".container-message-zoom");
                     const chatBot = document.querySelector(".chat-bot");
                     if (e) {
-                      console.log(chatBot.style.transform)
                       if (chatBot.style.transform === "scale(0)") {
                         e.style.transform = "scale(1)";
                         chatBot.style.transform = "scale(1)";
@@ -338,6 +301,45 @@ socket.on("mongo-change-watch", () => {
     theaterStream.updateUsersOnline(users);
   });
 });
+
+function allowExitFullscreen(containerMessageDialog) {
+  containerMessageDialog &&
+    (containerMessageDialog.className = "container-message-dialog");
+  if (document.exitFullscreen) {
+    document.exitFullscreen().catch(() => {});
+  } else if (document.webkitExitFullscreen) {
+    document.webkitExitFullscreen().catch(() => {});
+  } else if (document.mozCancelFullScreen) {
+    document.mozCancelFullScreen().catch(() => {});
+  } else if (document.msExitFullscreen) {
+    document.msExitFullscreen().catch(() => {});
+  }
+}
+
+function allowFullscreen() {
+  document.querySelector("#root").allowfullscreen = true;
+  if (document.querySelector("#root").requestFullscreen) {
+    document
+      .querySelector("#root")
+      .requestFullscreen()
+      .catch(() => {});
+  } else if (document.querySelector("#root").webkitRequestFullScreen) {
+    document
+      .querySelector("#root")
+      .webkitRequestFullScreen()
+      .catch(() => {});
+  } else if (document.querySelector("#root").mozRequestFullScreen) {
+    document
+      .querySelector("#root")
+      .mozRequestFullScreen()
+      .catch(() => {});
+  } else if (document.querySelector("#root").msRequestFullScreen) {
+    document
+      .querySelector("#root")
+      .msRequestFullScreen()
+      .catch(() => {});
+  }
+}
 
 function newUserJoinHandleVideo(audioCallE) {
   const id = nanoid();

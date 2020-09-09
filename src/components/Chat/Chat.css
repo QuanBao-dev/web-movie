@@ -8,6 +8,11 @@
   padding: 1rem;
 }
 
+.transparent-background{
+  background-color: #30365500!important;
+  box-shadow: 0 0 10px 10px rgba(0, 0, 0, 0)!important;
+}
+
 .content-message p{
   max-width: 225px;
   word-wrap: break-word;
@@ -66,8 +71,9 @@
 }
 
 .username-message{
-  color:#aa9c9c;
-  font-size: small;
+  color:#ac9393;
+  font-size:  small;
+  font-weight: 1000;
   max-width: 200px;
   word-wrap: break-word;
   margin: 0;
@@ -132,7 +138,8 @@
 
 .input-message-dialog{
   display: flex;
-  align-items: flex-start;
+  align-items: flex-end;
+  justify-content: flex-end;
 }
 
 .chat-watch-zoom{
@@ -141,6 +148,10 @@
   position: fixed;
   top: 70px;
   right: 0;
-  max-height: 60%;
+  max-height: 75%;
   overflow: auto;
+}
+
+.chat-watch-zoom::-webkit-scrollbar{
+  width: 5px;
 }

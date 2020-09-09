@@ -25,8 +25,17 @@ const Chat = ({ groupId, user, withoutName = false, isZoom = false }) => {
       </div>
       <div className="block-pop-up" style={{ display: "none" }}></div>
       <div className={`chat-bot${isZoom ? " chat-watch-zoom" : ""}`}>
-        <div className="message-dialog-container">
-          <div className="message-dialog" ref={messageDialogRef}>
+        <div
+          className={`message-dialog-container${
+            isZoom ? " transparent-background" : ""
+          }`}
+        >
+          <div
+            className={`message-dialog${
+              isZoom ? " transparent-background" : ""
+            }`}
+            ref={messageDialogRef}
+          >
             <div className="flex-start-message message-dialog-item current-user-message">
               <span className="content-message">
                 Welcome to AnimeFun, enjoy and have a good day
@@ -62,6 +71,7 @@ const Chat = ({ groupId, user, withoutName = false, isZoom = false }) => {
                     );
                     messageInputStream.updateImgsMessage(uri);
                   }
+                  isZoom && allowFullscreen();
                   inputRefFile.current.value = "";
                 } catch (error) {
                   alert(error);
@@ -87,6 +97,31 @@ socket.on("send-message-photo-other-users", (username, uri, groupId) => {
     appendNewPhotoMessage(uri, username, false, messageDialogE);
   }
 });
+
+function allowFullscreen() {
+  document.querySelector("#root").allowfullscreen = true;
+  if (document.querySelector("#root").requestFullscreen) {
+    document
+      .querySelector("#root")
+      .requestFullscreen()
+      .catch(() => {});
+  } else if (document.querySelector("#root").webkitRequestFullScreen) {
+    document
+      .querySelector("#root")
+      .webkitRequestFullScreen()
+      .catch(() => {});
+  } else if (document.querySelector("#root").mozRequestFullScreen) {
+    document
+      .querySelector("#root")
+      .mozRequestFullScreen()
+      .catch(() => {});
+  } else if (document.querySelector("#root").msRequestFullScreen) {
+    document
+      .querySelector("#root")
+      .msRequestFullScreen()
+      .catch(() => {});
+  }
+}
 
 function base64DataUrl(file) {
   return new Promise((resolve, reject) => {

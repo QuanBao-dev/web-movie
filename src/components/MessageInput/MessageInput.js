@@ -26,6 +26,10 @@ const MessageInput = ({
   if (messageInputRef.current) {
     messageInputRef.current.innerHTML = messageInputRef.current.innerText;
   }
+  if (messageInputState.imgsMessage.length > 0) {
+    messageInputRef.current.style.transition = "0s";
+    messageInputRef.current.style.width = "220px";
+  }
   // console.log(messageInputState);
   return (
     <div>
@@ -46,10 +50,33 @@ const MessageInput = ({
       </div>
       <div
         contentEditable
+        data-placeholder="Aa"
         ref={messageInputRef}
         suppressContentEditableWarning
         className="message-input-container"
+        onFocus={(e) => {
+          e.target.style.transition = "0.4s";
+          e.target.style.width = "220px";
+        }}
+        onBlur={(e) => {
+          if (
+            e.target.innerHTML.replace(/&nbsp;( )?/g, "") === "" &&
+            messageInputState.imgsMessage.length <= 0
+          ) {
+            e.target.style.transition = "0.4s";
+            e.target.style.width = "40px";
+          } else {
+            e.target.style.transition = "0.4s";
+            e.target.style.width = "220px";
+          }
+        }}
         onInput={(e) => {
+          if (
+            e.target.innerHTML.replace(/&nbsp;( )?/g, "") !== "" ||
+            messageInputState.imgsMessage.length > 0
+          ) {
+            e.target.style.width = "220px";
+          }
           const contentHTML = e.target.innerHTML || "";
           let extractImg = contentHTML.match(
             /<img src="[a-zA-Z0-9:/;,+=@#$%^&*\\]+" alt="">/g

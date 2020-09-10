@@ -7,9 +7,10 @@ import { messageInputStream } from "../../epics/message-input";
 const socket = theaterStream.socket;
 let messageDialogE;
 let idGroup;
-
+let isWithoutName;
 const Chat = ({ groupId, user, withoutName = false, isZoom = false }) => {
   idGroup = groupId;
+  isWithoutName = withoutName;
   const inputNameDialogRef = useRef();
   const messageDialogRef = useRef();
   const inputRefFile = useRef();
@@ -84,6 +85,30 @@ const Chat = ({ groupId, user, withoutName = false, isZoom = false }) => {
     </div>
   );
 };
+
+socket.on("user-join", (username, userId, roomId) => {
+  if (roomId !== idGroup) {
+    return;
+  }
+  appendNewMessageDialog(
+    `NOTIFICATION: ${username} joined`,
+    "Robot",
+    false,
+    messageDialogE
+  );
+});
+
+socket.on("disconnected-user", async (username, userId, roomId) => {
+  if (roomId !== idGroup || !isWithoutName) {
+    return;
+  }
+  appendNewMessageDialog(
+    `NOTIFICATION: ${username} left`,
+    "Robot",
+    false,
+    messageDialogE
+  );
+})
 
 socket.on("send-message-other-users", (username, message, groupId) => {
   // console.log(username,"sends", groupId);

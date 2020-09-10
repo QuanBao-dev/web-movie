@@ -12,13 +12,9 @@ const SearchedList = (props) => {
   const [dataSearchedAnimeState, setDataSearchedAnimeState] = useState();
   useEffect(() => {
     let subscription;
-    if (dataFilter.length === 0) {
-      subscription = fetchDataApi$(key).subscribe((data) => {
-        setDataSearchedAnimeState(data.results);
-      });
-    } else {
-      setDataSearchedAnimeState(dataFilter);
-    }
+    subscription = fetchDataApi$(key).subscribe((data) => {
+      setDataSearchedAnimeState(data.results);
+    });
     return () => {
       subscription && subscription.unsubscribe();
     };
@@ -34,7 +30,10 @@ const SearchedList = (props) => {
       <h1 style={{ color: "white" }}>Results searched for "{key}"</h1>
       {dataSearchDisplay && <AnimeList data={dataSearchDisplay} error={null} />}
       {dataSearchDisplay && dataSearchDisplay.length === 0 && (
-        <h4 style={{ color: "white" }}>Not found any anime. Make sure your key search at least has 3 character</h4>
+        <h4 style={{ color: "white" }}>
+          Not found any anime. Make sure your key search at least has 3
+          character
+        </h4>
       )}
     </div>
   );

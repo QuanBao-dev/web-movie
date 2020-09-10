@@ -168,7 +168,7 @@ export const changeSeasonYear$ = (selectYearElement, selectSeasonElement) => {
 
 export const changeSearchInput$ = (searchInputElement) => {
   const searchedInput$ = fromEvent(searchInputElement, "input").pipe(
-    debounceTime(1000)
+    debounceTime(500)
   );
   return searchedInput$.pipe(
     pluck("target", "value"),

@@ -15,6 +15,9 @@ const SearchedAnimeList = ({ homeState }) => {
           {homeState.dataFilter.length} results
         </h3>
       )}
+      {homeState.textSearch && homeState.dataFilter.length === 0 && (
+        <h3 style={{ color: "white" }}>0 results</h3>
+      )}
       <div
         className="search-list-anime"
         style={{
@@ -24,7 +27,7 @@ const SearchedAnimeList = ({ homeState }) => {
               : "none",
         }}
       >
-        {homeState.dataFilter &&
+        {homeState.dataFilter.length > 0 &&
           homeState.dataFilter.map((anime, index) => {
             return (
               <SearchedAnime

@@ -28,11 +28,11 @@ const MessageInput = ({
   }
   if (messageInputState.imgsMessage.length > 0) {
     messageInputRef.current.style.transition = "0s";
-    messageInputRef.current.style.width = "220px";
+    messageInputRef.current.style.width = "100%";
   }
   // console.log(messageInputState);
   return (
-    <div>
+    <div className="message-input-wrapper">
       <div className="img-message-input">
         {messageInputState.imgsMessage.map((uri, key) => (
           <div key={key} className="img-detail-wrapper">
@@ -56,7 +56,7 @@ const MessageInput = ({
         className="message-input-container"
         onFocus={(e) => {
           e.target.style.transition = "0.4s";
-          e.target.style.width = "220px";
+          e.target.style.width = "100%";
         }}
         onBlur={(e) => {
           if (
@@ -67,7 +67,7 @@ const MessageInput = ({
             e.target.style.width = "40px";
           } else {
             e.target.style.transition = "0.4s";
-            e.target.style.width = "220px";
+            e.target.style.width = "100%";
           }
         }}
         onInput={(e) => {
@@ -75,7 +75,7 @@ const MessageInput = ({
             e.target.innerHTML.replace(/&nbsp;( )?/g, "") !== "" ||
             messageInputState.imgsMessage.length > 0
           ) {
-            e.target.style.width = "220px";
+            e.target.style.width = "100%";
           }
           const contentHTML = e.target.innerHTML || "";
           let extractImg = contentHTML.match(

@@ -104,7 +104,7 @@ export const fetchAnimeSeason$ = (year, season, page, numberOfProducts) => {
             page * numberOfProducts
           );
         }),
-        retry(5),
+        retry(20),
         catchError((error) => {
           updateIsLoading(false);
           stream.catchingError(error);

@@ -3,11 +3,21 @@
   background-color: rgb(92, 80, 80);
   border-radius: 10px;
   font-size: larger;
-  padding:10px;
   transition: 0.4s;
   width: 40px;
+  padding-top:10px;
+  padding-bottom: 10px;
   max-height: 150px;
   overflow-y: auto;
+}
+
+.message-input-wrapper{
+  width: 200px;
+}
+
+.message-input-wrapper > .img-message-input,
+.message-input-wrapper > .message-input-container{
+  padding-left:10px
 }
 
 .message-input-container:empty:before {
@@ -36,7 +46,7 @@
   border-top-right-radius: 10px;
   border-top-left-radius: 10px;
   overflow-x: auto;
-  width:240px;
+  width:100%;
 }
 
 .img-message-input::-webkit-scrollbar{
@@ -83,10 +93,14 @@
 .img-detail-wrapper::before{
   content: "";
   opacity: 0;
+  position: absolute;
   top:0;
+  padding:0;
   left: 0;
+  bottom:0;
+  right: 0;
   width: 100%;
-  height: 96%;
+  height: 100%;
   border-radius: 10px;
 }
 

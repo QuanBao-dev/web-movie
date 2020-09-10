@@ -20,7 +20,7 @@ const Chat = ({ groupId, user, withoutName = false, isZoom = false }) => {
   }, [user, withoutName]);
 
   return (
-    <div>
+    <div className="container-chat-bot">
       <div className="container-popup-img">
         <img className="pop-up-active" src="" alt="" />
       </div>
@@ -46,6 +46,24 @@ const Chat = ({ groupId, user, withoutName = false, isZoom = false }) => {
           </div>
           {!withoutName && <Input label={"Name"} input={inputNameDialogRef} />}
           <div className="input-message-dialog">
+            <i
+              className="fas fa-thumbs-up fa-2x button-like"
+              style={{color:"white"}}
+              onClick={() => {
+                appendNewMessageDialog(
+                  `<i class="fas fa-thumbs-up fa-3x button-like"></i>`,
+                  "you",
+                  true,
+                  messageDialogE
+                );
+                socket.emit(
+                  "new-message",
+                  user.username,
+                  `<i class="fas fa-thumbs-up fa-3x button-like"></i>`,
+                  idGroup
+                );
+              }}
+            ></i>
             <i
               className="fas fa-images fa-2x symbol-choose-picture"
               onClick={() => inputRefFile.current.click()}
@@ -108,7 +126,7 @@ socket.on("disconnected-user", async (username, userId, roomId) => {
     false,
     messageDialogE
   );
-})
+});
 
 socket.on("send-message-other-users", (username, message, groupId) => {
   // console.log(username,"sends", groupId);
@@ -178,7 +196,8 @@ function appendNewMessageDialog(
     newElement.className =
       "flex-end-message message-dialog-item other-user-message";
   }
-  newSpanContentMessage.className = "content-message";
+  if (!/button-like/g.test(message))
+    newSpanContentMessage.className = "content-message";
   newSpanContentMessage.innerHTML = `<p>${message}</p>`;
   newSpanUsernameMessage.className = "username-message";
   newSpanUsernameMessage.innerText = username;

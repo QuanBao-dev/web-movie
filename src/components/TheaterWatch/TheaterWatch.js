@@ -177,6 +177,12 @@ const TheaterWatch = (props) => {
               <UserListOnline usersOnline={theaterState.usersOnline} />
             )}
             <div className="container-section-video">
+              <Chat
+                groupId={groupId}
+                user={user}
+                withoutName={true}
+                isZoom={isFullScreenState}
+              />
               <div className="wrapper-video-player">
                 <video
                   poster="https://videopromotion.club/assets/images/default-video-thumbnail.jpg"
@@ -254,12 +260,6 @@ const TheaterWatch = (props) => {
                   )}
                 </div>
               )}
-              <Chat
-                groupId={groupId}
-                user={user}
-                withoutName={true}
-                isZoom={isFullScreenState}
-              />
             </div>
             <div className="container-audio-call" ref={audioCallRef}></div>
           </div>
@@ -279,7 +279,7 @@ const TheaterWatch = (props) => {
 socket.on("reconnect", async () => {
   console.log("reconnect");
   if (theaterStream.currentState()) {
-    const { isSignIn } = theaterStream.currentState(); /////check if sign in = true then ...
+    const { isSignIn } = theaterStream.currentState();
     if (isSignIn) {
       await newUserJoinHandleVideo(audioCallE);
     }

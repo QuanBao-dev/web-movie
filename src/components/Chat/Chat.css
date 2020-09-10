@@ -138,8 +138,8 @@
 
 .input-message-dialog{
   display: flex;
-  align-items: flex-end;
-  justify-content: flex-end;
+  align-items: center;
+  justify-content: flex-start;
 }
 
 .chat-watch-zoom{
@@ -154,4 +154,9 @@
 
 .chat-watch-zoom::-webkit-scrollbar{
   width: 5px;
+}
+
+.button-like{
+  cursor: pointer;
+  color:blue;
 }

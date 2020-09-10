@@ -12,12 +12,13 @@
 }
 
 .message-input-wrapper{
-  width: 200px;
+  width: 190px;
 }
 
 .message-input-wrapper > .img-message-input,
 .message-input-wrapper > .message-input-container{
-  padding-left:10px
+  padding-left:10px;
+  padding-right:10px;
 }
 
 .message-input-container:empty:before {

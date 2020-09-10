@@ -82,11 +82,10 @@
 }
 
 .container-section-video{
-  display: -webkit-flex;
-  -webkit-flex-wrap: wrap;
   align-items: flex-start;
   display: flex;
   flex-wrap: wrap;
+  justify-content: center;
 }
 
 .wrapper-video-player{
@@ -94,7 +93,7 @@
   max-width: 1160px;
   flex-direction: column;
   flex-grow: 100;
-  align-items: flex-start;
+  align-items: flex-end;
   height: 100%;
 }
 

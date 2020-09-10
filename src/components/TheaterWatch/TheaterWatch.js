@@ -276,16 +276,6 @@ const TheaterWatch = (props) => {
   );
 };
 
-socket.on("greeting", async () => {
-  console.log("hello");
-  if (theaterStream.currentState()) {
-    const { isSignIn } = theaterStream.currentState();
-    if (isSignIn) {
-      await newUserJoinHandleVideo(audioCallE);
-    }
-  }
-});
-
 socket.on("reconnect", async () => {
   console.log("reconnect");
   if (theaterStream.currentState()) {
@@ -362,11 +352,22 @@ function newUserJoinHandleVideo(audioCallE) {
         myPeer = new Peer(id, options);
         const myAudio = document.createElement(elementCall);
         myAudio.muted = true;
+        //TODO
         myPeer.on("open", async (id) => {
           myAudio.id = id;
-          socket.emit("new-user", user.username, groupId, id, user.email);
+          const buttonGetRemoteElement = document.getElementById(
+            "button-get-remote"
+          );
+          socket.emit(
+            "new-user",
+            user.username,
+            groupId,
+            id,
+            user.email,
+            buttonGetRemoteElement.disabled
+          );
           addAudioStream(myAudio, stream, audioCallE);
-          appendNewMessage(
+          appendNewMessageNotification(
             "Your " + elementCall + " is connected",
             notificationE,
             "audio-connected"
@@ -390,7 +391,16 @@ function newUserJoinHandleVideo(audioCallE) {
 }
 
 async function newUserJoin(id, groupId) {
-  socket.emit("new-user", user.username, groupId, id, user.email);
+  const buttonGetRemoteElement = document.getElementById("button-get-remote");
+  console.log(buttonGetRemoteElement);
+  socket.emit(
+    "new-user",
+    user.username,
+    groupId,
+    id,
+    user.email,
+    buttonGetRemoteElement.disabled
+  );
   socket.emit("fetch-updated-user-online");
 }
 
@@ -477,22 +487,17 @@ socket.on("user-join", async (username, userId, roomId) => {
   if (roomId !== groupId) {
     return;
   }
-  if (notificationE) {
-    let message = `${new Date(Date.now()).toUTCString()}`;
-    message = message.slice(message.length - 13, message.length - 3);
-    appendNewMessage(`${username} joined at ${message}`, notificationE);
-    navigator.mediaDevices
-      .getUserMedia({
-        video: elementCall === "video" && true,
-        audio: true,
-      })
-      .then((stream) => {
-        connectToNewUser(userId, stream, audioCallE);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  }
+  navigator.mediaDevices
+    .getUserMedia({
+      video: elementCall === "video" && true,
+      audio: true,
+    })
+    .then((stream) => {
+      connectToNewUser(userId, stream, audioCallE);
+    })
+    .catch((err) => {
+      console.log(err);
+    });
 });
 
 socket.on("disconnected-user", async (username, userId, roomId) => {
@@ -500,17 +505,10 @@ socket.on("disconnected-user", async (username, userId, roomId) => {
   if (roomId !== groupId) {
     return;
   }
-  if (notificationE) {
-    fetchUserOnline$(groupId, idCartoonUser).subscribe((users) => {
-      theaterStream.updateUsersOnline(users);
-    });
-    let message = `${new Date(Date.now()).toUTCString()}`;
-    message = message.slice(message.length - 13, message.length - 3);
-    appendNewMessage(
-      `${username} left at ${message}`,
-      notificationE,
-      "disconnected-danger"
-    );
+  fetchUserOnline$(groupId, idCartoonUser).subscribe((users) => {
+    theaterStream.updateUsersOnline(users);
+  });
+  if (audioCallE)
     if (peers[userId]) {
       peers[userId].close();
     } else {
@@ -522,8 +520,14 @@ socket.on("disconnected-user", async (username, userId, roomId) => {
         }
       });
     }
-  }
 });
+
+socket.on("disconnect", () => {
+  console.log("disconnect");
+  socket.emit("disconnect-custom");
+});
+
+
 socket.on("fetch-user-online", () => {
   fetchUserOnline$(groupId, idCartoonUser).subscribe((users) => {
     theaterStream.updateUsersOnline(users);
@@ -583,7 +587,7 @@ function uploadNewVideo(fileContent, videoWatchElement, isControls = false) {
   } catch (error) {}
 }
 
-function appendNewMessage(message, notificationE, className) {
+function appendNewMessageNotification(message, notificationE, className) {
   const messageElement = document.createElement("div");
   messageElement.innerText = message;
   messageElement.style.wordWrap = "break-word";

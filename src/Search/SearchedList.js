@@ -24,16 +24,17 @@ const SearchedList = (props) => {
     };
   }, [dataFilter, dataFilter.length, key]);
   // console.log(dataSearchedAnimeState);
+  let dataSearchDisplay;
+  if (dataSearchedAnimeState)
+    dataSearchDisplay = dataSearchedAnimeState.filter(
+      (data) => !["Rx"].includes(data.rated)
+    );
   return (
     <div>
       <h1 style={{ color: "white" }}>Results searched for "{key}"</h1>
-      {dataSearchedAnimeState && (
-        <AnimeList
-          data={dataSearchedAnimeState.filter(
-            (data) => !["Rx"].includes(data.rated)
-          )}
-          error={null}
-        />
+      {dataSearchDisplay && <AnimeList data={dataSearchDisplay} error={null} />}
+      {dataSearchDisplay && dataSearchDisplay.length === 0 && (
+        <h4 style={{ color: "white" }}>Not found any anime. Make sure your key search at least has 3 character</h4>
       )}
     </div>
   );

@@ -82,8 +82,10 @@
 }
 
 .container-section-video{
-  display: flex;
+  display: -webkit-flex;
+  -webkit-flex-wrap: wrap;
   align-items: flex-start;
+  display: flex;
   flex-wrap: wrap;
 }
 
@@ -103,6 +105,8 @@
 
 .container-message-dialog{
   flex-grow: 1;
+  display: flex;
+  align-items: flex-start;
 }
 
 .container-input-section{

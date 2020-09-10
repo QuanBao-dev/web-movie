@@ -7,7 +7,7 @@ const app = express();
 const port = process.env.PORT || 5000;
 const server = require("http").Server(app);
 const io = require("socket.io")(server, {
-  pingTimeout: 5000,
+  pingTimeout: 12000,
   pingInterval: 3000,
 });
 const { ExpressPeerServer } = require("peer");
@@ -40,14 +40,8 @@ mongoose.connect(
 );
 
 let rooms = {};
-io.on("connect", async (socket) => {
-  console.log(rooms);
-  console.log("connected to websocket", socket.id);
-  socket.emit("greeting");
-});
-
 io.on("connection", (socket) => {
-  socket.on("new-user", async (username, groupId, userId, email) => {
+  socket.on("new-user", async (username, groupId, userId, email, keepRemote) => {
     console.log(username);
     if (!rooms[groupId]) {
       rooms[groupId] = { users: {} };
@@ -67,7 +61,7 @@ io.on("connection", (socket) => {
         userId,
         username,
         joinAt: Date.now(),
-        keepRemote: false,
+        keepRemote: keepRemote,
       },
       {
         upsert: true,
@@ -106,7 +100,7 @@ io.on("connection", (socket) => {
       }).lean();
       if (rooms[groupId] && rooms[groupId].users[userId]) {
         socket.emit("disconnected-user", username, userId, groupId);
-        socket.to(groupId).emit("disconnected-user", username, userId, groupId);
+        socket.broadcast.emit("disconnected-user", username, userId, groupId);
         delete rooms[groupId].users[userId];
         if (Object.keys(rooms[groupId].users).length === 0) {
           delete rooms[groupId];
@@ -120,7 +114,7 @@ io.on("connection", (socket) => {
         groupId,
       }).lean();
       if (rooms[groupId] && rooms[groupId].users[userId]) {
-        socket.to(groupId).emit("disconnected-user", username, userId, groupId);
+        socket.broadcast.emit("disconnected-user", username, userId, groupId);
         delete rooms[groupId].users[userId];
         if (Object.keys(rooms[groupId].users).length === 0) {
           delete rooms[groupId];

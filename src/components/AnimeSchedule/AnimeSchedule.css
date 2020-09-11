@@ -28,8 +28,7 @@
 
 .all-movies-day{
   color:white;
-  grid-gap: 3rem;
-  flex-wrap: wrap;
+  grid-gap: 30px;
   margin-top: 1rem;
   flex-wrap: wrap;
   justify-content: center;

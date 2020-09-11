@@ -53,6 +53,21 @@ const MessageInput = ({
         data-placeholder="Aa"
         ref={messageInputRef}
         suppressContentEditableWarning
+        onPaste={(event) => {
+          event.preventDefault();
+          var text = (event.originalEvent || event).clipboardData.getData(
+            "text/plain"
+          );
+          if (event.clipboardData.items[0].type.indexOf("image") !== -1) {
+            var blob = event.clipboardData.items[0].getAsFile();
+            var reader = new FileReader();
+            reader.onload = function (event) {
+              messageInputStream.updateImgsMessage(event.target.result);
+            };
+            reader.readAsDataURL(blob);
+          }
+          document.execCommand("insertHTML", false, text);
+        }}
         className="message-input-container"
         onFocus={(e) => {
           e.target.style.transition = "0.4s";

@@ -31,6 +31,22 @@ import {
 } from "../store/home";
 
 const numberOfMovieShown = 8;
+window.addEventListener("resize", () => {
+  if (window.innerWidth > 697) {
+    const topAnimeElement = document.querySelector(
+      ".upcoming-anime-list-container"
+    );
+    if (topAnimeElement) {
+      topMovieUpdatedScrolling$(topAnimeElement, true).subscribe(() => {
+        updateDataTopScrolling();
+      });
+    }
+  } else {
+    topMovieUpdatedScrolling$(window, false).subscribe(() => {
+      updateDataTopScrolling();
+    });
+  }
+});
 function Home() {
   const [homeState, setHomeState] = useState(stream.initialState);
   const [limitShowRecentlyUpdated, setLimitShowRecentlyUpdated] = useState(
@@ -98,20 +114,26 @@ function Home() {
     ).subscribe((v) => {
       history.push("/anime/search?key=" + v);
     });
-
-    const topAnimeElement = document.querySelector(
-      ".upcoming-anime-list-container"
-    );
+    let topAnimeElement;
     let subscription11;
-    if (topAnimeElement) {
-      subscription11 = topMovieUpdatedScrolling$(topAnimeElement)
-        .pipe()
-        .subscribe((v) => {
-          console.log("fetch Top movie");
-          let page = stream.currentState().pageTopMovie;
-          allowFetchTopMovie(true);
-          stream.updatePageTopMovie(page + 1);
+    if (window.innerWidth > 697) {
+      topAnimeElement = document.querySelector(
+        ".upcoming-anime-list-container"
+      );
+      if (topAnimeElement) {
+        subscription11 = topMovieUpdatedScrolling$(
+          topAnimeElement,
+          true
+        ).subscribe(() => {
+          updateDataTopScrolling();
         });
+      }
+    } else {
+      subscription11 = topMovieUpdatedScrolling$(window, false).subscribe(
+        () => {
+          updateDataTopScrolling();
+        }
+      );
     }
     return () => {
       subscription7 && subscription7.unsubscribe();
@@ -145,7 +167,7 @@ function Home() {
   const startYear = 2000;
   const endYear = new Date(Date.now()).getFullYear();
   const numberOfYears = endYear - startYear + 1;
-  const numberOfPagesDisplay = homeState.maxPage < 5 ? homeState.maxPage : 5;
+  const numberOfPagesDisplay = homeState.maxPage < 4 ? homeState.maxPage : 4;
   const e = document.getElementById("button-see-more__home");
   if (e) {
     if (subNavToggle === 0) {
@@ -224,7 +246,9 @@ function Home() {
         </div>
         <div className="container-display-anime__home">
           <div className="anime-pagination">
-            <h1 style={{textAlign:"center"}}>Search Anime by season and year</h1>
+            <h1 style={{ textAlign: "center" }}>
+              Search Anime by season and year
+            </h1>
             <SelectFilterAnime
               targetScroll={targetScroll}
               homeState={homeState}
@@ -293,6 +317,14 @@ const middleWare = (homeState) => {
     homeState.currentPage = homeState.maxPage;
   }
 };
+
+function updateDataTopScrolling() {
+  let page = stream.currentState().pageTopMovie;
+  if (page < 5) {
+    allowFetchTopMovie(true);
+    stream.updatePageTopMovie(page + 1);
+  }
+}
 
 function unsubscribeSubscription(...subscriptions) {
   subscriptions.forEach((subscription) => {

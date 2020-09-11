@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-useless-escape */
 import { orderBy } from "lodash";
-import { asyncScheduler, from, fromEvent, of, timer } from "rxjs";
+import { from, fromEvent, of, timer } from "rxjs";
 import { ajax } from "rxjs/ajax";
 import {
   catchError,
@@ -17,7 +17,6 @@ import {
   switchMap,
   switchMapTo,
   tap,
-  throttleTime,
 } from "rxjs/operators";
 
 import homeStore, {
@@ -161,9 +160,7 @@ export const changeSeasonYear$ = (selectYearElement, selectSeasonElement) => {
   return from([
     listenEventYear$.pipe(startWith(stream.currentState().year)),
     listenEventSeason$.pipe(startWith(stream.currentState().season)),
-  ]).pipe(
-    combineAll(),
-  );
+  ]).pipe(combineAll());
 };
 
 export const changeSearchInput$ = (searchInputElement) => {
@@ -284,15 +281,18 @@ export const listenSearchInputPressEnter$ = (searchInputE) => {
   );
 };
 
-export const topMovieUpdatedScrolling$ = (topAnimeElement) => {
-  return fromEvent(topAnimeElement, "scroll").pipe(
-    debounceTime(1000, asyncScheduler, {
-      leading: true,
-      trailing: true,
-    }),
-    filter(
-      () =>
-        topAnimeElement.scrollTop - (topAnimeElement.scrollHeight - 5000) > 0
-    ),
+export const topMovieUpdatedScrolling$ = (topAnimeElement, isBigScreen) => {
+  if (isBigScreen)
+    return fromEvent(topAnimeElement, "scroll").pipe(
+      debounceTime(1000),
+      filter(
+        () =>
+          topAnimeElement.scrollTop - (topAnimeElement.scrollHeight - 5000) > 0
+      )
+    );
+  const window = topAnimeElement;
+  return fromEvent(window, "scroll").pipe(
+    debounceTime(1000),
+    filter(() => document.body.scrollHeight - (window.scrollY + 2000) < 0)
   );
 };

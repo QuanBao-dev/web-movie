@@ -9,6 +9,11 @@
   padding-bottom: 10px;
   max-height: 150px;
   overflow-y: auto;
+  user-select: text;
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
 }
 
 .message-input-wrapper{

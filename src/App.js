@@ -86,6 +86,17 @@ function App() {
           </div>
         </div>
       )}
+      <div
+        className="button-scroll-top"
+        onClick={() => {
+          window.scroll({
+            top: 0,
+            behavior: "smooth",
+          });
+        }}
+      >
+        <i className="fas fa-arrow-up fa-2x"></i>
+      </div>
       <nav className="nav-bar">
         <ul className="nav-bar__app">
           <div

@@ -95,14 +95,16 @@
     box-shadow:0 0 5px 5px black;
     border-radius: 10px;
     flex-direction: column;
-    }
+  }
 
   .anime-name-info .box-info{
     width:100%;
+    overflow-wrap: break-word;
   }
 
   .anime-name-info .box-content{
     width: 100%;
+    margin-left: 0!important;
   }  
 }
 

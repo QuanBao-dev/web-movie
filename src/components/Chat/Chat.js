@@ -48,7 +48,7 @@ const Chat = ({ groupId, user, withoutName = false, isZoom = false }) => {
           <div className="input-message-dialog">
             <i
               className="fas fa-thumbs-up fa-2x button-like"
-              style={{color:"white"}}
+              style={{ color: "white" }}
               onClick={() => {
                 appendNewMessageDialog(
                   `<i class="fas fa-thumbs-up fa-3x button-like"></i>`,

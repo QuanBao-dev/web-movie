@@ -31,10 +31,11 @@
   box-shadow: 0 0 10px 10px black, 0 0 10px 6px white;
   border-radius: 10px;
   background-color: rgb(49, 47, 71);
-  overflow-y: auto;
   overflow-x: hidden;
+  overflow-y: auto;
   max-height: 4434px;
   height: 100%;
+  text-align: center;
 }
 
 .upcoming-anime-list{
@@ -46,6 +47,7 @@
   flex-wrap: wrap;
   align-items: flex-start;
   justify-content: center;
+  grid-gap: 3rem;
 }
 
 .upcoming-anime-list-container::-webkit-scrollbar {
@@ -120,6 +122,10 @@
 @media (max-width:697px){
   .sub-nav-bar{
     flex-direction: column;
+  }
+  .upcoming-anime-list-container{
+    overflow-y: hidden;
+    max-height: 100%;
   }
 }
 

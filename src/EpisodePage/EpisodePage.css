@@ -1,5 +1,5 @@
 .container-episode-movie{
-  padding-top: 10rem;
+  padding-top: 4rem;
   color: white;
   background-color: #262c41;
   padding-bottom: 2rem;
@@ -15,6 +15,9 @@
   overflow-x: hidden;
   overflow-y: auto;
   flex-wrap: wrap;
+  justify-content: flex-start;
+  width: 100%;
+  margin-top:2rem;
 }
 
 .episode-link-movie{
@@ -40,12 +43,38 @@
 
 .section-play-movie{
   background-color: #262c41;
-  box-shadow: 0 0 10px 5px #000000;
-  width: 80%;
-  margin: auto;
+  position: relative;
 }
 
 .active-episode{
   transition: 0.3s;
   background-color: rgb(105, 24, 24);
+}
+
+.embed-video-player{
+  position: absolute;
+}
+
+.video-player-container{
+  width: 90%;
+  padding: 2rem;
+  box-shadow: 0 0 1px 1px black;
+  margin:1rem;
+}
+
+@media (max-width:376px){
+  .video-player-container{
+    padding: .5rem!important;
+  }
+}
+
+.video-player{
+  min-height: 400px;
+  height: 100%;
+  width: 100%!important;
+  box-shadow:0 0 1px 1px black;
+}
+
+.container-episode-movie .container-chat-bot{
+  margin:1rem;
 }

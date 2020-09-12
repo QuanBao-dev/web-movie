@@ -24,7 +24,7 @@ const initialState = {
   dataDetail: [],
   dataDetailOriginal: [],
   currentPage: 1,
-  numberOfProduct: 27,
+  numberOfProduct: 36,
   year: 2020,
   season: currentSeason,
   maxPage: 1,

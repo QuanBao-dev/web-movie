@@ -90,7 +90,7 @@
 
 .wrapper-video-player{
   display: flex;
-  max-width: 1160px;
+  max-width: 1130px;
   flex-direction: column;
   flex-grow: 100;
   align-items: flex-end;

@@ -346,7 +346,6 @@ async function handleUpdateMessage(
       messages: chatStream.currentState().messages,
     });
     allowShouldFetchComment(true);
-    inputAuthorElement.value = "";
     inputElement.value = "";
   } catch (error) {}
 }

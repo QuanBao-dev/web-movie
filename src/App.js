@@ -43,7 +43,7 @@ window.addEventListener("scroll", () => {
     if (window.scrollY === 0) {
       navBarE.style.transform = "translateY(0)";
     } else if (v - window.scrollY < -1) {
-      navBarE.style.transform = "translateY(-100px)";
+      navBarE.style.transform = "translateY(-500px)";
     } else if (v - window.scrollY > 1) {
       navBarE.style.transform = "translateY(0)";
     }

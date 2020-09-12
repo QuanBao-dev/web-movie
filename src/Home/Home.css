@@ -1,6 +1,5 @@
 .home-page{
   background-color: rgb(95, 91, 91);
-  margin-bottom: 5rem;
 }
 
 .container-anime-list{
@@ -33,7 +32,7 @@
   background-color: rgb(49, 47, 71);
   overflow-x: hidden;
   overflow-y: auto;
-  max-height: 4434px;
+  max-height: 4024px;
   height: 100%;
   text-align: center;
 }

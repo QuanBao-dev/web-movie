@@ -52,11 +52,17 @@
 }
 
 .wrapper-messages{
-  width: 80%;
-  box-shadow: 0 0 10px 5px #000000;
+  width: 90%;
+  box-shadow: 0 0 1px 1px #000000;
   display: block;
   background-color: #262c41;
-  padding: 1rem 0 0 0;
+  padding: 2rem;
+}
+
+@media(max-width:376px){
+  .wrapper-messages{
+    padding: .5rem!important;
+  }
 }
 
 .comment-button-see{

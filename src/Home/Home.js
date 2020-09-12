@@ -30,7 +30,7 @@ import {
   allowFetchTopMovie,
 } from "../store/home";
 
-const numberOfMovieShown = 8;
+const numberOfMovieShown = 18;
 window.addEventListener("resize", () => {
   stream.init();
 });

@@ -23,7 +23,6 @@
 .message-input-wrapper > .img-message-input,
 .message-input-wrapper > .message-input-container{
   padding-left:10px;
-  padding-right:10px;
 }
 
 .message-input-container:empty:before {

@@ -46,41 +46,48 @@ const EpisodePage = (props) => {
   // console.log(currentEpisode);
   return (
     <div className="container-episode-movie">
-      <Chat groupId={malId} user={user}/>
-      <div className="section-play-movie">
-        {currentEpisode && !currentEpisode.typeVideo && (
-          <iframe
-            className="video-player"
-            width="100%"
-            height="640px"
-            src={currentEpisode.embedUrl}
-            title={currentEpisode.episode}
-            allowFullScreen
-          />
-        )}
-        {currentEpisode && currentEpisode.typeVideo && (
-          <div className="video-container__episode">
-            <button
-              className="btn btn-primary"
-              style={{ backgroundColor: "black" }}
-              onClick={() => {
-                document.addEventListener("copy", (e) => {
-                  copyToClipboard(e, currentEpisode);
-                });
-                document.execCommand("copy");
-              }}
-            >
-              Copy Video Url for theater
-            </button>
-            <video
-              className="video-player"
+      <div className="video-player-container">
+        <div
+          className="section-play-movie"
+          style={{
+            paddingBottom:
+              currentEpisode && !currentEpisode.typeVideo ? "50%" : "0",
+          }}
+        >
+          {currentEpisode && !currentEpisode.typeVideo && (
+            <iframe
+              className="embed-video-player"
               width="100%"
-              height="640px"
+              height="100%"
               src={currentEpisode.embedUrl}
-              controls={true}
-            ></video>
-          </div>
-        )}
+              title={currentEpisode.episode}
+              allowFullScreen
+            />
+          )}
+          {currentEpisode && currentEpisode.typeVideo && (
+            <div className="video-container__episode">
+              <button
+                className="btn btn-primary"
+                style={{ backgroundColor: "black" }}
+                onClick={() => {
+                  document.addEventListener("copy", (e) => {
+                    copyToClipboard(e, currentEpisode);
+                  });
+                  document.execCommand("copy");
+                }}
+              >
+                Copy Video Url for theater
+              </button>
+              <video
+                className="video-player"
+                width="100%"
+                height="100%"
+                src={currentEpisode.embedUrl}
+                controls={true}
+              ></video>
+            </div>
+          )}
+        </div>
         <div className="list-episode-movie">
           {episodes &&
             episodes.map((ep, index) => {
@@ -100,6 +107,7 @@ const EpisodePage = (props) => {
         </div>
       </div>
       <Comment malId={malId} user={user} />
+      <Chat groupId={malId} user={user} />
     </div>
   );
 };

@@ -31,9 +31,12 @@ const AnimeItem = ({ anime }) => {
       <div className="anime-item-synopsis">
         <p className="text-synopsis">
           {anime.synopsis === " " && "No content."}
-          {anime.synopsis ? anime.synopsis.slice(0, 200) : "No content."}
+          {anime.synopsis
+            ? anime.synopsis.slice(0, window.innerWidth <= 700 ? 85 : 200)
+            : "No content."}
           {anime.synopsis &&
-          anime.synopsis.length > anime.synopsis.slice(0, 220).length
+          anime.synopsis.length >
+            anime.synopsis.slice(0, window.innerWidth <= 700 ? 85 : 220).length
             ? "..."
             : ""}
         </p>

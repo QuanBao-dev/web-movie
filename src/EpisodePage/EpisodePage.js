@@ -88,22 +88,25 @@ const EpisodePage = (props) => {
             </div>
           )}
         </div>
-        <div className="list-episode-movie">
-          {episodes &&
-            episodes.map((ep, index) => {
-              return (
-                <Link
-                  className={`episode-link-movie${
-                    ep.episode === parseInt(episode) ? " active-episode" : ""
-                  }`}
-                  to={`/anime/${malId}/watch/${ep.episode}`}
-                  key={index}
-                  onClick={() => allowShouldFetchComment(true)}
-                >
-                  {ep.episode}
-                </Link>
-              );
-            })}
+        <div className="section-episodes-display">
+          <h1>All Episodes</h1>
+          <div className="list-episode-movie">
+            {episodes &&
+              episodes.map((ep, index) => {
+                return (
+                  <Link
+                    className={`episode-link-movie${
+                      ep.episode === parseInt(episode) ? " active-episode" : ""
+                    }`}
+                    to={`/anime/${malId}/watch/${ep.episode}`}
+                    key={index}
+                    onClick={() => allowShouldFetchComment(true)}
+                  >
+                    {ep.episode}
+                  </Link>
+                );
+              })}
+          </div>
         </div>
       </div>
       <Comment malId={malId} user={user} />

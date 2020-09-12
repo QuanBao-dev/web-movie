@@ -7,6 +7,20 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  box-shadow: 0 0 5px 5px black;
+}
+
+@media(min-width:950px){
+  .container-episode-movie{
+    margin: 100px auto;
+    width: 80%;
+  }
+}
+
+.section-episodes-display{
+  padding: 2rem;
+  margin-top: 2rem;
+  border: 1px double rgb(88, 92, 71);
 }
 
 .list-episode-movie{
@@ -18,10 +32,12 @@
   justify-content: flex-start;
   width: 100%;
   margin-top:2rem;
+  background-color: rgb(42, 50, 68);
+  box-shadow: 0 0 1px 1px rgb(93, 100, 41);
 }
 
 .episode-link-movie{
-  padding: 1rem;
+  padding: 0.5rem 1rem;
   margin: 0.5rem;
   border: 1px double #7a7a37;
   text-decoration: none;

@@ -160,11 +160,3 @@
   cursor: pointer;
   color:blue;
 }
-
-@media (max-width:376px){
-  .message-dialog-container{
-    width: 90%!important;
-    margin: auto!important;
-    padding: .5rem!important;
-  }
-}

@@ -31,9 +31,9 @@ import {
 } from "../store/home";
 
 const numberOfMovieShown = 8;
-window.addEventListener("resize",() => {
+window.addEventListener("resize", () => {
   stream.init();
-})
+});
 function Home() {
   const [homeState, setHomeState] = useState(stream.initialState);
   const [limitShowRecentlyUpdated, setLimitShowRecentlyUpdated] = useState(
@@ -139,7 +139,7 @@ function Home() {
     homeState.shouldFetchTopMovie,
     homeState.shouldScrollToSeeMore,
     homeState.textSearch,
-    homeState.screenWidth
+    homeState.screenWidth,
   ]);
   middleWare(homeState);
   const startYear = 2000;
@@ -405,6 +405,7 @@ function UpcomingAnimeList({ homeState }) {
               <h2>Rank {movie.rank}</h2>
               <div>
                 <div className="upcoming-anime-list-info">
+                  <div className="top-movie-score__home">{movie.score}/10</div>
                   <Link to={"/anime/" + movie.mal_id}>
                     <img src={movie.image_url} alt="Preview" />
                   </Link>

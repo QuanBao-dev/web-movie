@@ -75,6 +75,7 @@
 .upcoming-anime-list-info{
   color:white;
   width: 100%;
+  position: relative;
   text-align: center;
   background-color: rgb(37, 39, 63);
   white-space: normal;
@@ -93,6 +94,7 @@
 .upcoming-anime-list li img{
   width: 60%;
   height: 100%;
+  min-height: 200px;
   display: block;
   cursor: pointer;
   margin: 15px auto 10px auto;
@@ -111,6 +113,18 @@
   color: white;
   background-color: #242847;
   box-shadow: 0 0 5px 10px black, 0 0 5px 10px yellow;
+}
+
+.top-movie-score__home{
+  position: absolute;
+  top:0;
+  right: 0;
+  font-weight: 10px;
+  font-size: larger;
+  color: yellow;
+  padding: 5px;
+  background-color: #3a417591;
+  border-radius: 10px;
 }
 
 .sub-nav-bar{

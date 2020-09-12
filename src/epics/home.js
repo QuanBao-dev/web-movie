@@ -290,7 +290,7 @@ export const topMovieUpdatedScrolling$ = (topAnimeElement) => {
     stream.currentState().screenWidth > 697 ? topAnimeElement : window,
     "scroll"
   ).pipe(
-    debounceTime(1000),
+    debounceTime(500),
     filter(() =>
       stream.currentState().screenWidth > 697
         ? topAnimeElement.scrollTop - (topAnimeElement.scrollHeight - 5000) > 0

@@ -1,8 +1,8 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-useless-escape */
-import { orderBy } from 'lodash';
-import { from, fromEvent, of, timer } from 'rxjs';
-import { ajax } from 'rxjs/ajax';
+import { orderBy } from "lodash";
+import { asyncScheduler, from, fromEvent, of, timer } from "rxjs";
+import { ajax } from "rxjs/ajax";
 import {
   catchError,
   combineAll,
@@ -17,7 +17,8 @@ import {
   switchMap,
   switchMapTo,
   tap,
-} from 'rxjs/operators';
+  throttleTime,
+} from "rxjs/operators";
 
 import homeStore, {
   allowScrollToSeeMore,
@@ -25,7 +26,7 @@ import homeStore, {
   updateIsLoading,
   updateMaxPage,
   updateOriginalData,
-} from '../store/home';
+} from "../store/home";
 
 export const stream = homeStore;
 
@@ -165,7 +166,10 @@ export const changeSeasonYear$ = (selectYearElement, selectSeasonElement) => {
 
 export const changeSearchInput$ = (searchInputElement) => {
   const searchedInput$ = fromEvent(searchInputElement, "input").pipe(
-    debounceTime(500)
+    throttleTime(300, asyncScheduler, {
+      leading: true,
+      trailing: true,
+    })
   );
   return searchedInput$.pipe(
     pluck("target", "value"),

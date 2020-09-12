@@ -265,9 +265,6 @@ function Home() {
     stream.init();
     selectSeason.current.value = homeState.season;
     selectYear.current.value = homeState.year;
-    if (searchInput.current) {
-      searchInput.current.value = homeState.textSearch;
-    }
     return subscription;
   }
 

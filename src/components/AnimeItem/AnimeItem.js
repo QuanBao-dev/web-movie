@@ -18,7 +18,7 @@ const AnimeItem = ({ anime }) => {
           </div>
         )}
       <div className="anime-info-display_summary top-right_summary color-red">
-        {anime.score || "?"}
+        {anime.score || "?"}/10
       </div>
       <img
         style={{

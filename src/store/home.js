@@ -40,8 +40,9 @@ const initialState = {
   shouldFetchLatestUpdatedMovie: true,
   shouldFetchBoxMovie: false,
   shouldScrollToSeeMore: false,
-  shouldFetchTopMovie:true,
+  shouldFetchTopMovie: true,
   pageTopMovie: 1,
+  screenWidth: null,
 };
 
 const subject = new BehaviorSubject(initialState);
@@ -57,6 +58,10 @@ const homeStore = {
     return ans;
   },
   init: () => {
+    state = {
+      ...state,
+      screenWidth: window.innerWidth,
+    };
     subject.next(state);
   },
 
@@ -131,12 +136,12 @@ const homeStore = {
     subject.next(state);
   },
 
-  updateSeasonYear:(season,year) => {
-    state={
+  updateSeasonYear: (season, year) => {
+    state = {
       ...state,
-      season:season,
-      year:year
-    }
+      season: season,
+      year: year,
+    };
     subject.next(state);
   },
 
@@ -151,7 +156,7 @@ const homeStore = {
   updateTopMovie: (data) => {
     state = {
       ...state,
-      dataTopMovie: [...state.dataTopMovie,...data],
+      dataTopMovie: [...state.dataTopMovie, ...data],
     };
     subject.next(state);
   },

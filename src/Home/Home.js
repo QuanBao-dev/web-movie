@@ -31,22 +31,9 @@ import {
 } from "../store/home";
 
 const numberOfMovieShown = 8;
-window.addEventListener("resize", () => {
-  if (window.innerWidth > 697) {
-    const topAnimeElement = document.querySelector(
-      ".upcoming-anime-list-container"
-    );
-    if (topAnimeElement) {
-      topMovieUpdatedScrolling$(topAnimeElement, true).subscribe(() => {
-        updateDataTopScrolling();
-      });
-    }
-  } else {
-    topMovieUpdatedScrolling$(window, false).subscribe(() => {
-      updateDataTopScrolling();
-    });
-  }
-});
+window.addEventListener("resize",() => {
+  stream.init();
+})
 function Home() {
   const [homeState, setHomeState] = useState(stream.initialState);
   const [limitShowRecentlyUpdated, setLimitShowRecentlyUpdated] = useState(
@@ -114,22 +101,12 @@ function Home() {
     ).subscribe((v) => {
       history.push("/anime/search?key=" + v);
     });
-    let topAnimeElement;
     let subscription11;
-    if (window.innerWidth > 697) {
-      topAnimeElement = document.querySelector(
-        ".upcoming-anime-list-container"
-      );
-      if (topAnimeElement) {
-        subscription11 = topMovieUpdatedScrolling$(
-          topAnimeElement,
-          true
-        ).subscribe(() => {
-          updateDataTopScrolling();
-        });
-      }
-    } else {
-      subscription11 = topMovieUpdatedScrolling$(window, false).subscribe(
+    const topAnimeElement = document.querySelector(
+      ".upcoming-anime-list-container"
+    );
+    if (topAnimeElement) {
+      subscription11 = topMovieUpdatedScrolling$(topAnimeElement).subscribe(
         () => {
           updateDataTopScrolling();
         }
@@ -162,6 +139,7 @@ function Home() {
     homeState.shouldFetchTopMovie,
     homeState.shouldScrollToSeeMore,
     homeState.textSearch,
+    homeState.screenWidth
   ]);
   middleWare(homeState);
   const startYear = 2000;
@@ -422,7 +400,7 @@ function SelectFilterAnime({
 function UpcomingAnimeList({ homeState }) {
   return (
     <div className="upcoming-anime-list-container">
-      <h2>Top Anime</h2>
+      <h1>Top Anime</h1>
       <ul className="upcoming-anime-list">
         {homeState.dataTopMovie &&
           homeState.dataTopMovie.map((movie, index) => (

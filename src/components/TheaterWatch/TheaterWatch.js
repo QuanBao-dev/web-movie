@@ -112,6 +112,8 @@ const TheaterWatch = (props) => {
         updateAllowUserJoin(true);
       }
       updateAllowRemoveVideoWatch(true);
+      const buttonScrollTopE = document.querySelector(".button-scroll-top");
+      buttonScrollTopE.style.display = "block";   
     };
   }, [
     cookies.idCartoonUser,

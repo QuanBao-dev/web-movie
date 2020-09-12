@@ -1,8 +1,8 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-useless-escape */
-import { orderBy } from "lodash";
-import { from, fromEvent, of, timer } from "rxjs";
-import { ajax } from "rxjs/ajax";
+import { orderBy } from 'lodash';
+import { from, fromEvent, of, timer } from 'rxjs';
+import { ajax } from 'rxjs/ajax';
 import {
   catchError,
   combineAll,
@@ -17,7 +17,7 @@ import {
   switchMap,
   switchMapTo,
   tap,
-} from "rxjs/operators";
+} from 'rxjs/operators';
 
 import homeStore, {
   allowScrollToSeeMore,
@@ -25,7 +25,7 @@ import homeStore, {
   updateIsLoading,
   updateMaxPage,
   updateOriginalData,
-} from "../store/home";
+} from '../store/home';
 
 export const stream = homeStore;
 
@@ -281,18 +281,16 @@ export const listenSearchInputPressEnter$ = (searchInputE) => {
   );
 };
 
-export const topMovieUpdatedScrolling$ = (topAnimeElement, isBigScreen) => {
-  if (isBigScreen)
-    return fromEvent(topAnimeElement, "scroll").pipe(
-      debounceTime(1000),
-      filter(
-        () =>
-          topAnimeElement.scrollTop - (topAnimeElement.scrollHeight - 5000) > 0
-      )
-    );
-  const window = topAnimeElement;
-  return fromEvent(window, "scroll").pipe(
+export const topMovieUpdatedScrolling$ = (topAnimeElement) => {
+  return fromEvent(
+    stream.currentState().screenWidth > 697 ? topAnimeElement : window,
+    "scroll"
+  ).pipe(
     debounceTime(1000),
-    filter(() => document.body.scrollHeight - (window.scrollY + 2000) < 0)
+    filter(() =>
+      stream.currentState().screenWidth > 697
+        ? topAnimeElement.scrollTop - (topAnimeElement.scrollHeight - 5000) > 0
+        : document.body.scrollHeight - (window.scrollY + 2000) < 0
+    )
   );
 };

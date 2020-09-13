@@ -21,6 +21,8 @@ const AdminManager = () => {
   const dateStartRef = useRef();
   const dateEndRef = useRef();
   useEffect(() => {
+    const buttonScrollTopE = document.querySelector(".button-scroll-top");
+    buttonScrollTopE.style.display = "block";
     const subscription = adminStream.subscribe(setAdminState);
     adminStream.init();
     let fetchUsersSub;

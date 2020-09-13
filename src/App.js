@@ -40,12 +40,16 @@ window.addEventListener("scroll", () => {
   scrollSaveSubject.next(window.scrollY);
   scrollSaveSubject.subscribe((v) => {
     const navBarE = document.querySelector(".nav-bar__app");
+    const buttonScrollTopE = document.querySelector(".button-scroll-top");
     if (window.scrollY === 0) {
       navBarE.style.transform = "translateY(0)";
+      buttonScrollTopE.style.display = "none";
     } else if (v - window.scrollY < -1) {
       navBarE.style.transform = "translateY(-500px)";
+      buttonScrollTopE.style.display = "none";
     } else if (v - window.scrollY > 1) {
       navBarE.style.transform = "translateY(0)";
+      buttonScrollTopE.style.display = "block";
     }
   });
 });

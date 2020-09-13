@@ -21,9 +21,8 @@ const EpisodePage = (props) => {
     pageWatchStream.init();
     let fetchEpisodesSub;
     if (pageWatchState.shouldFetchEpisodeMovie) {
-      if (user) {
+      if (user) 
         theaterStream.socket.emit("user-join-watch", malId, user.username);
-      }
       fetchEpisodesSub = fetchEpisodesOfMovie$(malId).subscribe((v) => {
         pageWatchStream.updateEpisodes(v);
         const e = document.getElementsByClassName("active-episode").item(0);
@@ -38,11 +37,10 @@ const EpisodePage = (props) => {
   }, [malId, pageWatchState.shouldFetchEpisodeMovie, user]);
   let currentEpisode = {};
   const { episodes } = pageWatchState;
-  if (episodes) {
-    currentEpisode = episodes.find((ep) => {
+  if (episodes) currentEpisode = episodes.find((ep) => {
       return ep.episode === parseInt(episode);
     });
-  }
+  
   // console.log(currentEpisode);
   return (
     <div className="container-episode-movie">
@@ -51,7 +49,7 @@ const EpisodePage = (props) => {
           className="section-play-movie"
           style={{
             paddingBottom:
-              currentEpisode && !currentEpisode.typeVideo ? "50%" : "0",
+              currentEpisode && !currentEpisode.typeVideo ? "70%" : "0",
           }}
         >
           {currentEpisode && !currentEpisode.typeVideo && (
@@ -66,7 +64,7 @@ const EpisodePage = (props) => {
           )}
           {currentEpisode && currentEpisode.typeVideo && (
             <div className="video-container__episode">
-              <button
+              {user && <button
                 className="btn btn-primary"
                 style={{ backgroundColor: "black" }}
                 onClick={() => {
@@ -77,7 +75,7 @@ const EpisodePage = (props) => {
                 }}
               >
                 Copy Video Url for theater
-              </button>
+              </button>}
               <video
                 className="video-player"
                 width="100%"

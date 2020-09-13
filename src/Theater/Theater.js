@@ -29,8 +29,6 @@ const Theater = (props) => {
   const inputRoomNameRef = useRef();
   const inputPasswordRef = useRef();
   const buttonSubmitRef = useRef();
-  const buttonScrollTopE = document.querySelector(".button-scroll-top");
-  buttonScrollTopE.style.display = "none";
   useEffect(() => {
     const subscription = theaterStream.subscribe(setTheaterState);
     theaterStream.init();

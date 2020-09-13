@@ -43,13 +43,13 @@ window.addEventListener("scroll", () => {
     const buttonScrollTopE = document.querySelector(".button-scroll-top");
     if (window.scrollY === 0) {
       navBarE.style.transform = "translateY(0)";
-      buttonScrollTopE.style.display = "none";
+      buttonScrollTopE.style.transform = "translateY(500px)";
     } else if (v - window.scrollY < -1) {
       navBarE.style.transform = "translateY(-500px)";
-      buttonScrollTopE.style.display = "none";
+      buttonScrollTopE.style.transform = "translateY(500px)";
     } else if (v - window.scrollY > 1) {
       navBarE.style.transform = "translateY(0)";
-      buttonScrollTopE.style.display = "block";
+      buttonScrollTopE.style.transform = "translateY(0)";
     }
   });
 });

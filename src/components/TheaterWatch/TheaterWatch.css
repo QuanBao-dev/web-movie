@@ -126,6 +126,7 @@
   right : 0;
   object-fit:  contain;
   background-color : black;
+  z-index: 20;
 }
 
 .container-message-zoom{

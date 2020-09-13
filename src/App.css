@@ -114,4 +114,5 @@
   background-color: black;
   margin:1rem;
   cursor: pointer;
+  transition: 0.5s ease-in-out;
 }

@@ -550,17 +550,15 @@ function VideoPromotionList({ data }) {
 
 const fetchData$ = (name) => {
   return ajax(`https://api.jikan.moe/v3/anime/${name}`).pipe(
-    retry(20),
+    retry(),
     pluck("response"),
-    catchError(() => of({}))
   );
 };
 
 const fetchDataVideo$ = (malId) => {
   return ajax(`https://api.jikan.moe/v3/anime/${malId}/videos`).pipe(
-    retry(20),
+    retry(),
     pluck("response"),
-    catchError(() => of({}))
   );
 };
 

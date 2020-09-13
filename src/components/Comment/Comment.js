@@ -11,11 +11,12 @@ import {
 import Input from "../Input/Input";
 import { useCookies } from "react-cookie";
 import { allowShouldFetchComment } from "../../store/comment";
-
+let idCartoonUser;
 function Comment({ malId, user }) {
   chatStream.initialState.malId = malId;
   let [chatState, setChatState] = useState(chatStream.initialState);
   const [cookies] = useCookies(["idCartoonUser"]);
+  idCartoonUser = cookies && cookies.idCartoonUser;
   const input = useRef();
   const inputAuthor = useRef();
   const buttonSubmit = useRef();
@@ -39,7 +40,7 @@ function Comment({ malId, user }) {
         subscription1 = fetchPageMessage$(malId).subscribe(
           (responseMessage) => {
             chatStream.initMessage(responseMessage);
-            chatStream.updateCurrentPage(1);
+            chatStream.updateCurrentPage(chatState.currentPage);
             wrapperMessage.current.style.display = "block";
             allowShouldFetchComment(false);
           }
@@ -76,6 +77,7 @@ function Comment({ malId, user }) {
     };
   }, [
     buttonSubmitRefs,
+    chatState.currentPage,
     chatState.indexInputDisplayBlock,
     chatState.shouldFetchComment,
     inputAuthorRefs,
@@ -83,10 +85,22 @@ function Comment({ malId, user }) {
     malId,
     user,
   ]);
+  let allPos50pxMargin = [];
+  for (let i = 1; i < chatState.messages.length; i++) {
+    if (
+      chatState.messages[i - 1].marginLeft === "50px" &&
+      convertPxToInt(chatState.messages[i].marginLeft) >=
+        convertPxToInt(chatState.messages[i - 1].marginLeft)
+    ) {
+      allPos50pxMargin.push({ pos: i });
+    }
+  }
+  // console.log(allPos50pxMargin);
+
   const e = document.getElementsByClassName("comment-button-see").item(0);
   if (e) {
     if (
-      chatState.messages.length <
+      allPos50pxMargin.length <=
       chatState.currentPage * chatState.numberCommentOfEachPage
     ) {
       e.style.display = "none";
@@ -129,7 +143,16 @@ function Comment({ malId, user }) {
         {!user && <h3>You need to sign in to comment</h3>}
       </div>
       {chatState.messages
-        .slice(0, chatState.currentPage * chatState.numberCommentOfEachPage)
+        .slice(
+          0,
+          allPos50pxMargin[
+            chatState.currentPage * chatState.numberCommentOfEachPage
+          ]
+            ? allPos50pxMargin[
+                chatState.currentPage * chatState.numberCommentOfEachPage
+              ].pos - 1
+            : chatState.messages.length
+        )
         .map((v, index) => {
           return (
             <div key={index}>
@@ -160,7 +183,7 @@ function Comment({ malId, user }) {
         onClick={(e) => {
           e.target.scrollIntoView({
             behavior: "smooth",
-            block: "end",
+            block: "start",
             inline: "nearest",
           });
           const nextPage = chatState.currentPage;
@@ -311,8 +334,10 @@ function DeleteComment({ index, chatState, malId, cookies }) {
 function addInputReply(user, containerInputRefs, buttonSubmitRefs, index) {
   if (user) {
     containerInputRefs.forEach((ref, index) => {
-      ref.current.style.display = "none";
-      buttonSubmitRefs[index].current.disabled = true;
+      if (ref.current) {
+        ref.current.style.display = "none";
+        buttonSubmitRefs[index].current.disabled = true;
+      }
     });
     containerInputRefs[index].current.style.display = "block";
     chatStream.updateInputDisplayBlock(index);
@@ -340,11 +365,19 @@ async function handleUpdateMessage(
     marginLeft: elementMarginLeft,
   };
   chatStream.updateMessage(newMessage, index, isPush);
-  // console.log(chatStream.currentState());
+  // console.log(currentUser);
   try {
-    await Axios.put(`/api/movies/${malId}`, {
-      messages: chatStream.currentState().messages,
-    });
+    await Axios.put(
+      `/api/movies/${malId}`,
+      {
+        messages: chatStream.currentState().messages,
+      },
+      {
+        headers: {
+          authorization: "Bearer " + idCartoonUser,
+        },
+      }
+    );
     allowShouldFetchComment(true);
     inputElement.value = "";
   } catch (error) {}

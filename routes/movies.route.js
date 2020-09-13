@@ -184,7 +184,7 @@ router.put(
   }
 );
 
-router.put("/:malId", async (req, res) => {
+router.put("/:malId", verifyRole("Admin","User"), async (req, res) => {
   const { malId } = req.params;
   const dataModified = req.body;
   try {

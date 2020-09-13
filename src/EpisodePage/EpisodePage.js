@@ -21,7 +21,7 @@ const EpisodePage = (props) => {
     pageWatchStream.init();
     let fetchEpisodesSub;
     if (pageWatchState.shouldFetchEpisodeMovie) {
-      if (user) 
+      if (user)
         theaterStream.socket.emit("user-join-watch", malId, user.username);
       fetchEpisodesSub = fetchEpisodesOfMovie$(malId).subscribe((v) => {
         pageWatchStream.updateEpisodes(v);
@@ -37,13 +37,18 @@ const EpisodePage = (props) => {
   }, [malId, pageWatchState.shouldFetchEpisodeMovie, user]);
   let currentEpisode = {};
   const { episodes } = pageWatchState;
-  if (episodes) currentEpisode = episodes.find((ep) => {
+  if (episodes)
+    currentEpisode = episodes.find((ep) => {
       return ep.episode === parseInt(episode);
     });
-  
+
   // console.log(currentEpisode);
   return (
     <div className="container-episode-movie">
+      <div className="wrapper-discuss-section">
+        <h1>Q&A</h1>
+        <Chat groupId={malId} user={user} />
+      </div>
       <div className="video-player-container">
         <div
           className="section-play-movie"
@@ -64,18 +69,20 @@ const EpisodePage = (props) => {
           )}
           {currentEpisode && currentEpisode.typeVideo && (
             <div className="video-container__episode">
-              {user && <button
-                className="btn btn-primary"
-                style={{ backgroundColor: "black" }}
-                onClick={() => {
-                  document.addEventListener("copy", (e) => {
-                    copyToClipboard(e, currentEpisode);
-                  });
-                  document.execCommand("copy");
-                }}
-              >
-                Copy Video Url for theater
-              </button>}
+              {user && (
+                <button
+                  className="btn btn-primary"
+                  style={{ backgroundColor: "black" }}
+                  onClick={() => {
+                    document.addEventListener("copy", (e) => {
+                      copyToClipboard(e, currentEpisode);
+                    });
+                    document.execCommand("copy");
+                  }}
+                >
+                  Copy Video Url for theater
+                </button>
+              )}
               <video
                 className="video-player"
                 width="100%"
@@ -108,7 +115,6 @@ const EpisodePage = (props) => {
         </div>
       </div>
       <Comment malId={malId} user={user} />
-      <Chat groupId={malId} user={user} />
     </div>
   );
 };

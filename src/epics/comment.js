@@ -22,18 +22,17 @@ export const validateInput$ = (
   buttonSubmitElement.disabled = true;
   const inputAuthor$ = fromEvent(inputAuthorElement, "input").pipe(
     pluck("target", "value"),
-    startWith(user.username),
+    startWith(user.username)
   );
   const input$ = fromEvent(inputElement, "input").pipe(
     pluck("target", "value"),
     startWith("")
   );
-  return from([inputAuthor$,input$]).pipe(
+  return from([inputAuthor$, input$]).pipe(
     combineAll(),
     map(([inputAuthor, input]) => {
       const text = input;
       const textAuthor = inputAuthor;
-      console.log(text, textAuthor);
       if (text.trim() === "" || textAuthor.trim() === "") {
         buttonSubmitElement.disabled = true;
       } else {
@@ -50,7 +49,7 @@ export const fetchPageMessage$ = (malId) => {
         url: `/api/movies/${malId}`,
       }).pipe(
         map((res) => res.response.message),
-        catchError(() => of({}))
+        catchError(() => of([]))
       )
     )
   );

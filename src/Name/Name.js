@@ -151,7 +151,7 @@ const Name = (props) => {
               }}
               to={
                 "/anime/" +
-                findingAnime.mal_id +
+                name +
                 `/watch/${episodeData[0].episode}`
               }
             >

@@ -265,6 +265,10 @@ function Home() {
     stream.init();
     selectSeason.current.value = homeState.season;
     selectYear.current.value = homeState.year;
+    if (document.querySelector(".container-anime-list input").value.trim() === "")
+      document.querySelector(".container-anime-list input").value =
+        homeState.textSearch;
+
     return subscription;
   }
 

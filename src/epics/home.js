@@ -165,20 +165,19 @@ export const changeSeasonYear$ = (selectYearElement, selectSeasonElement) => {
 };
 
 export const changeSearchInput$ = (searchInputElement) => {
-  const searchedInput$ = fromEvent(searchInputElement, "input").pipe(
-    throttleTime(300, asyncScheduler, {
-      leading: true,
-      trailing: true,
-    })
-  );
+  const searchedInput$ = fromEvent(searchInputElement, "input")
   return searchedInput$.pipe(
+    throttleTime(300, asyncScheduler, {
+      leading: false,
+      trailing: true,
+    }),
     pluck("target", "value"),
     tap((text) => savingTextSearch(text)),
     retry(20),
-    catchError((err) => {
+    catchError(() => {
       return of("");
     }),
-    switchMap((text) =>
+    mergeMap((text) =>
       text
         ? ajax("https://api.jikan.moe/v3/search/anime?q=" + text).pipe(
             pluck("response", "results"),

@@ -12,13 +12,22 @@
 
 .wrapper-discuss-section{
   display: flex;
+  position: relative;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
-  width: 90%;
   margin: 1rem; 
   padding: 2rem;
-  box-shadow:0 0 1px 1px #000000;
+  box-shadow: 0 0 1px 1px black;
+}
+
+.wrapper-discuss-section h1{
+  position: absolute;
+  bottom:91%;
+  left:40%;
+  padding: 10px;
+  background-color: #00000093;
+  border-radius: 10px;
 }
 
 @media(min-width:950px){
@@ -30,6 +39,8 @@
 
 .section-episodes-display{
   padding: 2rem;
+  margin: 1rem;
+  width: 90%;
   margin-top: 2rem;
   border: 1px double rgb(88, 92, 71);
 }
@@ -83,15 +94,25 @@
 }
 
 .video-player-container{
-  width: 90%;
-  padding: 2rem;
+  width: 64%;
+  height: 100%;
+  padding: 0.5em;
   box-shadow: 0 0 1px 1px black;
-  margin:1rem;
 }
 
-@media (max-width:376px){
+@media (max-width:1380px){
   .video-player-container{
     padding: .5rem!important;
+    width: 90%;
+  }
+  .wrapper-discuss-section{
+    box-shadow: none;
+    margin:0;
+    padding: 0;
+  }
+  .section-episodes-display{
+    border: none!important;
+    margin: 0;
   }
 }
 
@@ -100,8 +121,17 @@
   height: 100%;
   width: 100%!important;
   box-shadow:0 0 1px 1px black;
+  margin-top:0.2em;
 }
 
 .container-episode-movie .container-chat-bot{
   margin:1rem;
+}
+
+.wrapper-player-video{
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
+  justify-content: center;
+  align-items: center;
 }

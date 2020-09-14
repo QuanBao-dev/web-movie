@@ -45,73 +45,75 @@ const EpisodePage = (props) => {
   // console.log(currentEpisode);
   return (
     <div className="container-episode-movie">
-      <div className="wrapper-discuss-section">
-        <h1>Q&A</h1>
-        <Chat groupId={malId} user={user} />
-      </div>
-      <div className="video-player-container">
-        <div
-          className="section-play-movie"
-          style={{
-            paddingBottom:
-              currentEpisode && !currentEpisode.typeVideo ? "70%" : "0",
-          }}
-        >
-          {currentEpisode && !currentEpisode.typeVideo && (
-            <iframe
-              className="embed-video-player"
-              width="100%"
-              height="100%"
-              src={currentEpisode.embedUrl}
-              title={currentEpisode.episode}
-              allowFullScreen
-            />
-          )}
-          {currentEpisode && currentEpisode.typeVideo && (
-            <div className="video-container__episode">
-              {user && (
-                <button
-                  className="btn btn-primary"
-                  style={{ backgroundColor: "black" }}
-                  onClick={() => {
-                    document.addEventListener("copy", (e) => {
-                      copyToClipboard(e, currentEpisode);
-                    });
-                    document.execCommand("copy");
-                  }}
-                >
-                  Copy Video Url for theater
-                </button>
-              )}
-              <video
-                className="video-player"
+      <div className="wrapper-player-video">
+        <div className="wrapper-discuss-section">
+          <h1>Q&A</h1>
+          <Chat groupId={malId} user={user} />
+        </div>
+        <div className="video-player-container">
+          <div
+            className="section-play-movie"
+            style={{
+              paddingBottom:
+                currentEpisode && !currentEpisode.typeVideo ? "70%" : "0",
+            }}
+          >
+            {currentEpisode && !currentEpisode.typeVideo && (
+              <iframe
+                className="embed-video-player"
                 width="100%"
                 height="100%"
                 src={currentEpisode.embedUrl}
-                controls={true}
-              ></video>
-            </div>
-          )}
-        </div>
-        <div className="section-episodes-display">
-          <h1>All Episodes</h1>
-          <div className="list-episode-movie">
-            {episodes &&
-              episodes.map((ep, index) => {
-                return (
-                  <Link
-                    className={`episode-link-movie${
-                      ep.episode === parseInt(episode) ? " active-episode" : ""
-                    }`}
-                    to={`/anime/${malId}/watch/${ep.episode}`}
-                    key={index}
-                    onClick={() => allowShouldFetchComment(true)}
+                title={currentEpisode.episode}
+                allowFullScreen
+              />
+            )}
+            {currentEpisode && currentEpisode.typeVideo && (
+              <div className="video-container__episode">
+                {user && (
+                  <button
+                    className="btn btn-primary"
+                    style={{ backgroundColor: "black" }}
+                    onClick={() => {
+                      document.addEventListener("copy", (e) => {
+                        copyToClipboard(e, currentEpisode);
+                      });
+                      document.execCommand("copy");
+                    }}
                   >
-                    {ep.episode}
-                  </Link>
-                );
-              })}
+                    Copy Video Url for theater
+                  </button>
+                )}
+                <video
+                  className="video-player"
+                  width="100%"
+                  height="100%"
+                  src={currentEpisode.embedUrl}
+                  controls={true}
+                ></video>
+              </div>
+            )}
           </div>
+        </div>
+      </div>
+      <div className="section-episodes-display">
+        <h1>All Episodes</h1>
+        <div className="list-episode-movie">
+          {episodes &&
+            episodes.map((ep, index) => {
+              return (
+                <Link
+                  className={`episode-link-movie${
+                    ep.episode === parseInt(episode) ? " active-episode" : ""
+                  }`}
+                  to={`/anime/${malId}/watch/${ep.episode}`}
+                  key={index}
+                  onClick={() => allowShouldFetchComment(true)}
+                >
+                  {ep.episode}
+                </Link>
+              );
+            })}
         </div>
       </div>
       <Comment malId={malId} user={user} />

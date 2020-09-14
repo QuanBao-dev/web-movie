@@ -95,6 +95,12 @@ function Comment({ malId, user }) {
       allPos50pxMargin.push({ pos: i });
     }
   }
+  if (
+    chatState.messages[chatState.messages.length - 1] &&
+    chatState.messages[chatState.messages.length - 1].marginLeft === "50px"
+  ) {
+    allPos50pxMargin.push({ pos: chatState.messages.length });
+  }
   // console.log(allPos50pxMargin);
 
   const e = document.getElementsByClassName("comment-button-see").item(0);
@@ -108,7 +114,7 @@ function Comment({ malId, user }) {
       e.style.display = "block";
     }
   }
-  // console.log(chatState);
+  console.log(chatState.messages, allPos50pxMargin);
   return (
     <div className="wrapper-messages" ref={wrapperMessage}>
       <h2>Comments</h2>
@@ -246,12 +252,12 @@ function CommentDetail({
       <div className="content-comment">
         <div>{v.textContent}</div>
         <div
-          className="link"
+          className="button-comment-reply"
           onClick={() =>
             addInputReply(user, containerInputRefs, buttonSubmitRefs, index)
           }
         >
-          Reply
+          <i class="fas fa-reply fa-1x"></i>
         </div>
       </div>
     </div>

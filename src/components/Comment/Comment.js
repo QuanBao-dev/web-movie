@@ -114,7 +114,7 @@ function Comment({ malId, user }) {
       e.style.display = "block";
     }
   }
-  console.log(chatState.messages, allPos50pxMargin);
+  // console.log(chatState.messages, allPos50pxMargin);
   return (
     <div className="wrapper-messages" ref={wrapperMessage}>
       <h2>Comments</h2>

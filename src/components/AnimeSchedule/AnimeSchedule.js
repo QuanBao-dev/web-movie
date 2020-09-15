@@ -1,9 +1,9 @@
-import './AnimeSchedule.css';
+import "./AnimeSchedule.css";
 
-import React, { createRef, useEffect, useState } from 'react';
-import { useHistory } from 'react-router-dom';
+import React, { createRef, useEffect, useState } from "react";
+import { useHistory } from "react-router-dom";
 
-import { fetchAnimeSchedule$, stream } from '../../epics/home';
+import { fetchAnimeSchedule$, stream } from "../../epics/home";
 
 const AnimeSchedule = () => {
   const history = useHistory();
@@ -38,25 +38,20 @@ const AnimeSchedule = () => {
         <h1>Schedule</h1>
         {week.map((date, index) => {
           return (
-            <li key={index} className="day-schedule-movie">
-              <div
-                className="title"
-                onClick={() => {
-                  homeState.dateSchedule[index] = !homeState.dateSchedule[
-                    index
-                  ];
-                  const display = homeState.dateSchedule[index]
-                    ? "grid"
-                    : "none";
-                  movieRefs[index].current.style.display = display;
-                  const showMovie = movieRefs.map((movie) => {
-                    return movie.current.style.display !== "none";
-                  });
-                  stream.updateDate(showMovie);
-                }}
-              >
-                {date}
-              </div>
+            <li
+              key={index}
+              className="day-schedule-movie"
+              onClick={() => {
+                homeState.dateSchedule[index] = !homeState.dateSchedule[index];
+                const display = homeState.dateSchedule[index] ? "grid" : "none";
+                movieRefs[index].current.style.display = display;
+                const showMovie = movieRefs.map((movie) => {
+                  return movie.current.style.display !== "none";
+                });
+                stream.updateDate(showMovie);
+              }}
+            >
+              <div className="title">{date}</div>
               <div
                 style={{
                   display: homeState.dateSchedule[index] ? "flex" : "none",

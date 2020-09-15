@@ -401,7 +401,7 @@ function SelectFilterAnime({
 function UpcomingAnimeList({ homeState }) {
   return (
     <div className="upcoming-anime-list-container">
-      <h1>Top Anime</h1>
+      <h1>Top Anime {(new Date(Date.now())).getFullYear()}</h1>
       <ul className="upcoming-anime-list">
         {homeState.dataTopMovie &&
           homeState.dataTopMovie.map((movie, index) => (

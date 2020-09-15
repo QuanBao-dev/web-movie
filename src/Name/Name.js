@@ -5,7 +5,7 @@ import { orderBy } from "lodash";
 import React, { useEffect, useRef, useState } from "react";
 import { useCookies } from "react-cookie";
 import { Link } from "react-router-dom";
-import { from, fromEvent, of, timer } from "rxjs";
+import { from, fromEvent, timer } from "rxjs";
 import { ajax } from "rxjs/ajax";
 import {
   catchError,
@@ -149,11 +149,7 @@ const Name = (props) => {
                 allowShouldFetchComment(true);
                 allowShouldFetchEpisodeMovie(true);
               }}
-              to={
-                "/anime/" +
-                name +
-                `/watch/${episodeData[0].episode}`
-              }
+              to={"/anime/" + name + `/watch/${episodeData[0].episode}`}
             >
               Watch
             </Link>
@@ -268,18 +264,42 @@ function ListInformation({ arrKeys }) {
       {arrKeys &&
         arrKeys.map((v, index) => {
           if (typeof findingAnime[v] !== "object") {
-            return (
-              <li key={index}>
-                <span
+            if (v !== "rank")
+              return (
+                <li key={index}>
+                  <span
+                    style={{
+                      fontFamily: "Arial",
+                    }}
+                  >
+                    {capitalizeFirstLetter(v)}:
+                  </span>{" "}
+                  {`${findingAnime[v]}`}
+                </li>
+              );
+            else
+              return (
+                <li
+                  key={index}
                   style={{
-                    fontFamily: "Arial",
+                    color:
+                      findingAnime[v] <= 500
+                        ? "Yellow"
+                        : findingAnime[v] <= 1000
+                        ? "#8b8bff"
+                        : "inherit",
                   }}
                 >
-                  {capitalizeFirstLetter(v)}:
-                </span>{" "}
-                {`${findingAnime[v]}`}
-              </li>
-            );
+                  <span
+                    style={{
+                      fontFamily: "Arial",
+                    }}
+                  >
+                    {capitalizeFirstLetter(v)}:
+                  </span>{" "}
+                  {`${findingAnime[v]}`}
+                </li>
+              );
           } else {
             if (findingAnime[v] && findingAnime[v].length) {
               let check = true;
@@ -305,6 +325,7 @@ function ListInformation({ arrKeys }) {
                       {`${findingAnime[v].join(" <||> ")}`}
                     </ul>
                   )}
+
                   {/themes/g.test(v) && (
                     <div
                       style={{
@@ -551,14 +572,14 @@ function VideoPromotionList({ data }) {
 const fetchData$ = (name) => {
   return ajax(`https://api.jikan.moe/v3/anime/${name}`).pipe(
     retry(),
-    pluck("response"),
+    pluck("response")
   );
 };
 
 const fetchDataVideo$ = (malId) => {
   return ajax(`https://api.jikan.moe/v3/anime/${malId}/videos`).pipe(
     retry(),
-    pluck("response"),
+    pluck("response")
   );
 };
 

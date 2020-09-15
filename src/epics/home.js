@@ -1,9 +1,10 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-useless-escape */
 import { orderBy } from "lodash";
-import { asyncScheduler, from, fromEvent, of, timer } from "rxjs";
+import { asyncScheduler, from, fromEvent, interval, of, timer } from "rxjs";
 import { ajax } from "rxjs/ajax";
 import {
+  delay,
   catchError,
   combineAll,
   debounceTime,
@@ -165,7 +166,7 @@ export const changeSeasonYear$ = (selectYearElement, selectSeasonElement) => {
 };
 
 export const changeSearchInput$ = (searchInputElement) => {
-  const searchedInput$ = fromEvent(searchInputElement, "input")
+  const searchedInput$ = fromEvent(searchInputElement, "input");
   return searchedInput$.pipe(
     throttleTime(300, asyncScheduler, {
       leading: false,
@@ -295,5 +296,33 @@ export const topMovieUpdatedScrolling$ = (topAnimeElement) => {
         ? topAnimeElement.scrollTop - (topAnimeElement.scrollHeight - 5000) > 0
         : document.body.scrollHeight - (window.scrollY + 2000) < 0
     )
+  );
+};
+
+export const upcomingAnimeListUpdated$ = () => {
+  return timer(0).pipe(
+    switchMap(() =>
+      ajax({
+        url: `https://api.jikan.moe/v3/top/anime/1/upcoming`,
+      }).pipe(
+        pluck("response", "top"),
+        retry(),
+        catchError(() => of([]))
+      )
+    )
+  );
+};
+let mode = "interval";
+export const scrollAnimeInterval$ = (scrollE) => {
+  fromEvent(scrollE, "mouseenter").subscribe(() => {
+    mode = "enter";
+  });
+  fromEvent(scrollE, "mouseleave").subscribe(() => {
+    mode = "interval";
+  });
+  return interval(100).pipe(
+    delay(3000),
+    filter(() => mode === "interval"),
+    map(() => scrollE.scrollLeft + 10)
   );
 };

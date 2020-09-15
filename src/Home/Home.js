@@ -29,6 +29,7 @@ import {
   allowUpdatedMovie,
   allowFetchTopMovie,
 } from "../store/home";
+import UpcomingAnimeList from "../components/UpcomingAnimeList/UpcomingAnimeList";
 
 const numberOfMovieShown = 18;
 window.addEventListener("resize", () => {
@@ -102,9 +103,7 @@ function Home() {
       history.push("/anime/search?key=" + v);
     });
     let subscription11;
-    const topAnimeElement = document.querySelector(
-      ".upcoming-anime-list-container"
-    );
+    const topAnimeElement = document.querySelector(".top-anime-list-container");
     if (topAnimeElement) {
       subscription11 = topMovieUpdatedScrolling$(topAnimeElement).subscribe(
         () => {
@@ -167,6 +166,7 @@ function Home() {
   return (
     <div className="home-page">
       <div className="recently-updated-movie">
+        <UpcomingAnimeList />
         <SubNavBar
           subNavToggle={subNavToggle}
           setSubNavToggle={setSubNavToggle}
@@ -246,7 +246,7 @@ function Home() {
               />
             </div>
           </div>
-          <UpcomingAnimeList homeState={homeState} />
+          <TopAnimeList homeState={homeState} />
         </div>
       </div>
     </div>
@@ -265,7 +265,9 @@ function Home() {
     stream.init();
     selectSeason.current.value = homeState.season;
     selectYear.current.value = homeState.year;
-    if (document.querySelector(".container-anime-list input").value.trim() === "")
+    if (
+      document.querySelector(".container-anime-list input").value.trim() === ""
+    )
       document.querySelector(".container-anime-list input").value =
         homeState.textSearch;
 
@@ -365,6 +367,7 @@ function SelectFilterAnime({
           fontSize: "150%",
           boxShadow: "2px 2px 5px 2px black",
         }}
+        onChange={() => stream.updateCurrentPage(1)}
         defaultValue={`${homeState.season}`}
         ref={selectSeason}
       >
@@ -374,6 +377,7 @@ function SelectFilterAnime({
         <option value="fall">fall</option>
       </select>
       <select
+        onChange={() => stream.updateCurrentPage(1)}
         style={{
           margin: "10px",
           padding: "10px",
@@ -398,17 +402,17 @@ function SelectFilterAnime({
   );
 }
 
-function UpcomingAnimeList({ homeState }) {
+function TopAnimeList({ homeState }) {
   return (
-    <div className="upcoming-anime-list-container">
-      <h1>Top Anime {(new Date(Date.now())).getFullYear()}</h1>
-      <ul className="upcoming-anime-list">
+    <div className="top-anime-list-container">
+      <h1>Top Anime {new Date(Date.now()).getFullYear()}</h1>
+      <ul className="top-anime-list">
         {homeState.dataTopMovie &&
           homeState.dataTopMovie.map((movie, index) => (
             <li key={index}>
               <h2>Rank {movie.rank}</h2>
               <div>
-                <div className="upcoming-anime-list-info">
+                <div className="top-anime-list-info">
                   <div className="top-movie-score__home">{movie.score}/10</div>
                   <Link to={"/anime/" + movie.mal_id}>
                     <img src={movie.image_url} alt="Preview" />

@@ -43,6 +43,7 @@ const initialState = {
   shouldFetchTopMovie: true,
   pageTopMovie: 1,
   screenWidth: null,
+  upcomingAnimeList: []
 };
 
 const subject = new BehaviorSubject(initialState);
@@ -175,6 +176,14 @@ const homeStore = {
     };
     subject.next(state);
   },
+
+  updateUpcomingAnimeList:(upcomingDataList) => {
+    state = {
+      ...state,
+      upcomingAnimeList:upcomingDataList
+    };
+    subject.next(state);
+  }
 };
 
 export const updateMaxPage = (max) => {

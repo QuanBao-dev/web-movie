@@ -8,6 +8,9 @@ const SearchedAnimeList = ({ homeState }) => {
   homeState.dataFilter = homeState.dataFilter.filter((data) => {
     return !["Rx"].includes(data.rated);
   });
+  if(homeState.textSearch && homeState.dataFilter.length === 0){
+    homeState.textSearch = "";
+  }
   return (
     <>
       {homeState.dataFilter && homeState.dataFilter.length !== 0 && (

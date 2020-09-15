@@ -1,0 +1,25 @@
+.title-upcoming-anime{
+  color: white;
+  font-size: 3rem;
+  text-align: center;
+  text-transform: uppercase;
+  padding: 10px;
+  background-color: black;
+  width: fit-content;
+  margin: auto;
+  margin-top: 10px;
+  border-radius: 10px;
+  animation: colorChanging 1s infinite forwards;
+}
+
+@keyframes colorChanging{
+  0% {
+    color: black;
+  }
+  50% {
+    color: red;
+  }
+  100% {
+    color: black;
+  }
+}

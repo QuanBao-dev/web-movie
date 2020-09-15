@@ -1,18 +1,16 @@
-import './AnimeList.css';
+import "./AnimeList.css";
 
-import React from 'react';
+import React from "react";
 
-import AnimeItem from '../AnimeItem/AnimeItem';
+import AnimeItem from "../AnimeItem/AnimeItem";
 
-const AnimeList = ({ data, error }) => {
+const AnimeList = ({ data, error, isWrap = true }) => {
   return (
-    <div className="list-anime">
+    <div className={isWrap ? "list-anime" : "list-anime-nowrap"}>
       {data &&
         !error &&
         data.map((anime, index) => {
-          return (
-            <AnimeItem key={index} anime={anime} />
-          );
+          return <AnimeItem key={index} anime={anime} />;
         })}
       {error && (
         <div

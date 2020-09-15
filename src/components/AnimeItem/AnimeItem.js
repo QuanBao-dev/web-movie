@@ -28,7 +28,7 @@ const AnimeItem = ({ anime }) => {
         src={anime.imageUrl || anime.image_url}
         alt="NOT_FOUND"
       />
-      <div className="anime-item-synopsis">
+      {anime.synopsis && <div className="anime-item-synopsis">
         <p className="text-synopsis">
           {anime.synopsis === " " && "No content."}
           {anime.synopsis
@@ -40,7 +40,7 @@ const AnimeItem = ({ anime }) => {
             ? "..."
             : ""}
         </p>
-      </div>
+      </div>}
       <div className="anime-item-info">
         <h3>
           {anime.title.slice(0, 52)}

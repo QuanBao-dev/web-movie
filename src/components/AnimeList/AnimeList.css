@@ -6,3 +6,37 @@
   justify-content: center;
 }
 
+.list-anime-nowrap{
+  display: block;
+  overflow-x: auto;
+  width: 100%;
+  white-space: nowrap;
+  overflow-y: hidden;
+  border-top-left-radius: 30px;
+  border-bottom-left-radius: 30px;
+}
+
+.list-anime-nowrap .anime-item-info{
+  white-space: normal;
+  text-align: center;
+}
+
+.list-anime-nowrap::-webkit-scrollbar{
+  height: 10px;
+  background-color: black;
+}
+
+.list-anime-nowrap::-webkit-scrollbar-thumb{
+  border-radius: 5px;
+  background-color: rgba(255, 255, 255, 0.603);
+}
+
+.list-anime-nowrap::-webkit-scrollbar-thumb:hover{
+  background-color: white;
+}
+
+
+
+.list-anime-nowrap .anime-item{
+  display: inline-block;
+}

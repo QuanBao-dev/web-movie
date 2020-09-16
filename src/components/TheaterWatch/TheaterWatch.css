@@ -93,7 +93,7 @@
   max-width: 1130px;
   flex-direction: column;
   flex-grow: 100;
-  align-items: flex-end;
+  align-items: flex-start;
   height: 100%;
 }
 

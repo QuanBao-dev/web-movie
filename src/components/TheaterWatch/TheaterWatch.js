@@ -189,6 +189,7 @@ const TheaterWatch = (props) => {
                 <video
                   poster="https://videopromotion.club/assets/images/default-video-thumbnail.jpg"
                   ref={videoWatchRef}
+                  playsInline
                 ></video>
                 <div className="container-message-dialog">
                   <button

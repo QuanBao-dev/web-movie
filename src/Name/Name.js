@@ -18,7 +18,7 @@ import {
   retry,
   switchMap,
 } from "rxjs/operators";
-import Input from "../components/Input/Input";
+import Input from "../components/Input/Input"; 
 import { userStream } from "../epics/user";
 import { allowShouldFetchComment } from "../store/comment";
 import { allowUpdatedMovie } from "../store/home";

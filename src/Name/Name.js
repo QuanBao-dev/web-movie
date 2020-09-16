@@ -18,7 +18,7 @@ import {
   retry,
   switchMap,
 } from "rxjs/operators";
-
+import translate from 'translate';    
 import Input from "../components/Input/Input";
 import { userStream } from "../epics/user";
 import { allowShouldFetchComment } from "../store/comment";
@@ -283,9 +283,9 @@ function ListInformation({ arrKeys }) {
                   key={index}
                   style={{
                     color:
-                      findingAnime[v] <= 500
+                      findingAnime[v] <= 1000
                         ? "Yellow"
-                        : findingAnime[v] <= 1000
+                        : findingAnime[v] <= 2000
                         ? "#8b8bff"
                         : "inherit",
                   }}

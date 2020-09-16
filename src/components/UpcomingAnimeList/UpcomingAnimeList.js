@@ -7,18 +7,30 @@ import {
 } from "../../epics/home";
 import AnimeList from "../AnimeList/AnimeList";
 import "./UpcomingAnimeList.css";
+let forward = 1;
 const UpcomingAnimeList = () => {
   useEffect(() => {
     const subscription = upcomingAnimeListUpdated$().subscribe((data) => {
       stream.updateUpcomingAnimeList(data);
     });
     const elementScroll = document.querySelector(".list-anime-nowrap");
-    const subscription2 = scrollAnimeInterval$(elementScroll).subscribe((i) => {
-      elementScroll.scroll({
-        left: i,
-        behavior: "smooth",
-      });
-    });
+    const subscription2 = scrollAnimeInterval$(elementScroll).subscribe(
+      (scrollLeft) => {
+        const distance =
+          elementScroll.scrollLeft +
+          elementScroll.clientWidth -
+          elementScroll.scrollWidth;
+        if (Math.abs(distance) < 0.5) {
+          forward = -1;
+        } else if (elementScroll.scrollLeft === 0) {
+          forward = 1;
+        }
+        elementScroll.scroll({
+          left: scrollLeft + 5 * forward,
+          behavior: "smooth",
+        });
+      }
+    );
     return () => {
       subscription2.unsubscribe();
       subscription && subscription.unsubscribe();

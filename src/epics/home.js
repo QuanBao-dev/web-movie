@@ -323,6 +323,6 @@ export const scrollAnimeInterval$ = (scrollE) => {
   return interval(100).pipe(
     delay(3000),
     filter(() => mode === "interval"),
-    map(() => scrollE.scrollLeft + 10)
+    map(() => scrollE.scrollLeft)
   );
 };

@@ -1,6 +1,6 @@
 import "./Home.css";
 
-import { orderBy } from "lodash";
+import { capitalize, orderBy } from "lodash";
 import React, { useEffect, useRef, useState } from "react";
 import { useCookies } from "react-cookie";
 import { Link, useHistory } from "react-router-dom";
@@ -225,7 +225,7 @@ function Home() {
         <div className="container-display-anime__home">
           <div className="anime-pagination">
             <h1 style={{ textAlign: "center" }}>
-              Search Anime by season and year
+              All Anime in {capitalize(homeState.season)}, {homeState.year}
             </h1>
             <SelectFilterAnime
               targetScroll={targetScroll}

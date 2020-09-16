@@ -1,7 +1,7 @@
 import "./Name.css";
 
 import Axios from "axios";
-import { orderBy } from "lodash";
+import { capitalize, orderBy } from "lodash";
 import React, { useEffect, useRef, useState } from "react";
 import { useCookies } from "react-cookie";
 import { Link } from "react-router-dom";
@@ -272,7 +272,7 @@ function ListInformation({ arrKeys }) {
                       fontFamily: "Arial",
                     }}
                   >
-                    {capitalizeFirstLetter(v)}:
+                    {capitalizeString(v)}:
                   </span>{" "}
                   {`${findingAnime[v]}`}
                 </li>
@@ -295,7 +295,7 @@ function ListInformation({ arrKeys }) {
                       fontFamily: "Arial",
                     }}
                   >
-                    {capitalizeFirstLetter(v)}:
+                    {capitalizeString(v)}:
                   </span>{" "}
                   {`${findingAnime[v]}`}
                 </li>
@@ -312,7 +312,7 @@ function ListInformation({ arrKeys }) {
                 const array = findingAnime[v].map((anime) => anime.name);
                 return (
                   <li key={index}>
-                    <span>{capitalizeFirstLetter(v)}: </span>
+                    <span>{capitalizeString(v)}: </span>
                     {`${array.join(" || ")}`}
                   </li>
                 );
@@ -321,7 +321,7 @@ function ListInformation({ arrKeys }) {
                 <li key={index}>
                   {!/themes/g.test(v) && (
                     <ul>
-                      <span>{capitalizeFirstLetter(v)}: </span>
+                      <span>{capitalizeString(v)}: </span>
                       {`${findingAnime[v].join(" <||> ")}`}
                     </ul>
                   )}
@@ -601,9 +601,9 @@ const fetchBoxMovieOneMovie = async (malId, idCartoonUser) => {
 
 let findingAnime;
 
-function capitalizeFirstLetter(string) {
+function capitalizeString(string) {
   string = string.replace("_", " ");
-  return string.charAt(0).toUpperCase() + string.slice(1);
+  return capitalize(string);
 }
 
 function handleAddBoxMovie(

@@ -1,5 +1,4 @@
 import React, { useEffect } from "react";
-import { ReplaySubject } from "rxjs";
 import {
   scrollAnimeInterval$,
   stream,

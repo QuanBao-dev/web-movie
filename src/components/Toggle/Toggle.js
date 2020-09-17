@@ -1,7 +1,12 @@
 import "./Toggle.css";
-import React from "react";
+import React, { useEffect } from "react";
 import { theaterStream } from "../../epics/theater";
 const Toggle = ({ mode }) => {
+  useEffect(() => {
+    return () => {
+      theaterStream.updateModeRoom(1)
+    }
+  },[])
   return (
     <div className="toggle" onClick={() => {
       if(mode === 1){

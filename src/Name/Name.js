@@ -1,14 +1,15 @@
 import "./Name.css";
 
 import Axios from "axios";
-import { capitalize, orderBy } from "lodash";
+import { capitalize, orderBy, random } from "lodash";
 import React, { useEffect, useRef, useState } from "react";
 import { useCookies } from "react-cookie";
 import { Link } from "react-router-dom";
-import { from, fromEvent, timer } from "rxjs";
+import { from, fromEvent, of, timer } from "rxjs";
 import { ajax } from "rxjs/ajax";
 import {
   catchError,
+  combineAll,
   debounceTime,
   exhaustMap,
   filter,
@@ -18,12 +19,13 @@ import {
   retry,
   switchMap,
 } from "rxjs/operators";
-import Input from "../components/Input/Input"; 
+import Input from "../components/Input/Input";
 import { userStream } from "../epics/user";
 import { allowShouldFetchComment } from "../store/comment";
 import { allowUpdatedMovie } from "../store/home";
 import { allowShouldFetchEpisodeMovie } from "../store/pageWatch";
 import navBarStore from "../store/navbar";
+import RelatedAnime from "../components/RelatedAnime/RelatedAnime";
 
 const Name = (props) => {
   const { name } = props.match.params;
@@ -57,14 +59,26 @@ const Name = (props) => {
     fetchSub = fetchData$(name)
       .pipe(
         mergeMap((anime) =>
-          fetchDataVideo$(name).pipe(map((api) => ({ anime, api })))
-        )
+          from([
+            fetchDataVideo$(name).pipe(map((api) => ({ anime, api }))),
+            ajax(`https://api.jikan.moe/v3/anime/${name}/pictures`).pipe(
+              retry(10),
+              pluck("response", "pictures"),
+              map((pictures) => ({ pictures })),
+              catchError(() => of([]))
+            ),
+          ])
+        ),
+        combineAll()
       )
-      .subscribe(({ anime, api }) => {
-        setData({
-          ...anime,
-          dataPromo: api,
-        });
+      .subscribe(([{ anime, api }, { pictures }]) => {
+        if (anime && api) {
+          setData({
+            ...anime,
+            dataPromo: api,
+            image_url: pictures[random(pictures.length - 1)].large,
+          });
+        }
       });
     fetchEpisodeDataVideo(name)
       .then((api) => {
@@ -100,8 +114,11 @@ const Name = (props) => {
       });
     return () => {
       subscription && subscription.unsubscribe();
-
       fetchSub && fetchSub.unsubscribe();
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      linkWatchingInputRef.current && (linkWatchingInputRef.current.value = "");
+      setData({});
+      setEpisodeData([]);
     };
   }, [cookies.idCartoonUser, name]);
 
@@ -252,6 +269,7 @@ const Name = (props) => {
           </div>
         </div>
         {data.dataPromo && <VideoPromotionList data={data} />}
+        <RelatedAnime malId={name} />
       </div>
     )
   );
@@ -448,13 +466,15 @@ function FormSubmitCrawl({
             endEpisodeInputRef.current.value = "";
             navBarStore.updateIsShowBlockPopUp(false);
             buttonSubmitCrawlInputRef.current.disabled = false;
-            linkWatchingInputRef.current.value =
-              updateMovie.data.message.source || "";
+            linkWatchingInputRef.current &&
+              (linkWatchingInputRef.current.value =
+                updateMovie.data.message.source || "");
           } catch (error) {
             startEpisodeInputRef.current.value = "";
             endEpisodeInputRef.current.value = "";
             navBarStore.updateIsShowBlockPopUp(false);
-            buttonSubmitCrawlInputRef.current.disabled = false;
+            linkWatchingInputRef.current &&
+              (buttonSubmitCrawlInputRef.current.disabled = false);
             allowUpdatedMovie(true);
           }
         }}
@@ -525,7 +545,14 @@ function ListVideoUrl({ episodeData, name }) {
   return (
     <div className={"list-video-url"}>
       {episodeData &&
-        orderBy(episodeData, ["episode"], "desc")
+        orderBy(
+          episodeData.map((data) => ({
+            ...data,
+            episode: parseInt(data.episode),
+          })),
+          ["episode"],
+          "desc"
+        )
           .slice(0, 3)
           .map((episode, index) => {
             return (

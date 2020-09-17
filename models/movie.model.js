@@ -30,7 +30,7 @@ const movieSchema = new mongoose.Schema({
   episodes:{
     type:[
       {
-        episode:Number,
+        episode:String,
         embedUrl:String,
         typeVideo:Boolean
       }

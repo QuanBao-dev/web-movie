@@ -2,7 +2,6 @@ import { BehaviorSubject } from "rxjs";
 const behaviorSubject = new BehaviorSubject();
 const initialState = {
   episodes:[],
-  shouldFetchEpisodeMovie:true
 };
 let state = initialState;
 

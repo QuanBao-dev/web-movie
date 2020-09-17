@@ -1,10 +1,10 @@
+/* eslint-disable eqeqeq */
 import "./EpisodePage.css";
 
 import React, { useEffect, useState } from "react";
 
 import Comment from "../components/Comment/Comment";
 import { fetchEpisodesOfMovie$, pageWatchStream } from "../epics/pageWatch";
-import { allowShouldFetchEpisodeMovie } from "../store/pageWatch";
 import { Link } from "react-router-dom";
 import { allowShouldFetchComment } from "../store/comment";
 import { userStream } from "../epics/user";
@@ -20,29 +20,32 @@ const EpisodePage = (props) => {
     const subscription = pageWatchStream.subscribe(setPageWatchState);
     pageWatchStream.init();
     let fetchEpisodesSub;
-    if (pageWatchState.shouldFetchEpisodeMovie) {
-      if (user)
-        theaterStream.socket.emit("user-join-watch", malId, user.username);
-      fetchEpisodesSub = fetchEpisodesOfMovie$(malId).subscribe((v) => {
-        pageWatchStream.updateEpisodes(v);
-        const e = document.getElementsByClassName("active-episode").item(0);
+    if (user)
+      theaterStream.socket.emit("user-join-watch", malId, user.username);
+    fetchEpisodesSub = fetchEpisodesOfMovie$(malId).subscribe((v) => {
+      pageWatchStream.updateEpisodes(v);
+      const e = document.getElementsByClassName("active-episode").item(0);
+      if (e) {
         e.scrollIntoView();
-        allowShouldFetchEpisodeMovie(false);
-      });
-    }
+      }
+    });
     return () => {
       subscription.unsubscribe();
       fetchEpisodesSub && fetchEpisodesSub.unsubscribe();
+      pageWatchStream.updateEpisodes([]);
     };
   }, [malId, pageWatchState.shouldFetchEpisodeMovie, user]);
   let currentEpisode = {};
   const { episodes } = pageWatchState;
   if (episodes)
     currentEpisode = episodes.find((ep) => {
-      return ep.episode === parseInt(episode);
+      if (ep.episode[0] === "0") {
+        ep.episode = ep.episode.slice(1);
+      }
+      return ep.episode == episode;
     });
 
-  // console.log(currentEpisode);
+  console.log(episode);
   return (
     <div className="container-episode-movie">
       <div className="wrapper-player-video">
@@ -104,7 +107,7 @@ const EpisodePage = (props) => {
               return (
                 <Link
                   className={`episode-link-movie${
-                    ep.episode === parseInt(episode) ? " active-episode" : ""
+                    ep.episode == episode ? " active-episode" : ""
                   }`}
                   to={`/anime/${malId}/watch/${ep.episode}`}
                   key={index}

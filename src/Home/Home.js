@@ -47,6 +47,7 @@ function Home() {
   const searchInput = useRef(null);
   const selectYear = useRef(null);
   const selectSeason = useRef(null);
+  const selectScore = useRef(null);
   const targetScroll = useRef(null);
   useEffect(() => {
     const subscription = initUIBehavior();
@@ -54,16 +55,18 @@ function Home() {
       homeState.year,
       homeState.season,
       homeState.currentPage,
-      homeState.numberOfProduct
+      homeState.numberOfProduct,
+      homeState.score
     ).subscribe();
 
     const subscription3 = changeCurrentPage$().subscribe();
 
     const subscription4 = changeSeasonYear$(
       selectYear.current,
-      selectSeason.current
-    ).subscribe(([year, season]) => {
-      stream.updateSeasonYear(season, year);
+      selectSeason.current,
+      selectScore.current
+    ).subscribe(([year, season, score]) => {
+      stream.updateSeasonYear(season, year, score);
     });
 
     const subscription6 = changeSearchInput$(searchInput.current).subscribe();
@@ -139,6 +142,7 @@ function Home() {
     homeState.shouldScrollToSeeMore,
     homeState.textSearch,
     homeState.screenWidth,
+    homeState.score,
   ]);
   middleWare(homeState);
   const startYear = 2000;
@@ -225,13 +229,18 @@ function Home() {
         <div className="container-display-anime__home">
           <div className="anime-pagination">
             <h1 style={{ textAlign: "center" }}>
-              All Anime in {capitalize(homeState.season)}, {homeState.year}
+              All Anime
+              {homeState.score !== 0
+                ? " with score greater than " + homeState.score
+                : ""}{" "}
+              in {capitalize(homeState.season)}, {homeState.year}
             </h1>
             <SelectFilterAnime
               targetScroll={targetScroll}
               homeState={homeState}
               selectSeason={selectSeason}
               selectYear={selectYear}
+              selectScore={selectScore}
               numberOfYears={numberOfYears}
             />
             <AnimeList
@@ -344,11 +353,13 @@ function SelectFilterAnime({
   homeState,
   selectSeason,
   selectYear,
+  selectScore,
   numberOfYears,
 }) {
   const elementOptions = Array.from(Array(numberOfYears).keys()).map(
     (v) => new Date(Date.now()).getFullYear() - v
   );
+  const scoreOptions = Array.from(Array(11).keys());
   return (
     <div
       style={{
@@ -397,6 +408,25 @@ function SelectFilterAnime({
             </option>
           );
         })}
+      </select>
+      <select
+        style={{
+          margin: "10px",
+          padding: "10px",
+          borderRadius: "10px",
+          backgroundColor: "black",
+          color: "white",
+          fontSize: "150%",
+          boxShadow: "2px 2px 5px 2px black",
+        }}
+        defaultValue={`${stream.currentState().score}`}
+        ref={selectScore}
+      >
+        {scoreOptions.map((score, key) => (
+          <option key={key} value={`${score}`}>
+            {score !== 0 ? score : "All"}
+          </option>
+        ))}
       </select>
     </div>
   );

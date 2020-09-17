@@ -117,7 +117,8 @@ router.put("/:malId/episodes/crawl", verifyRole("Admin"), async (req, res) => {
     addMovieUpdated(malId);
     dataCrawl.forEach((data) => {
       const index = movie.episodes.findIndex(
-        (dataEp) => dataEp.episode === data.episode
+        // eslint-disable-next-line eqeqeq
+        (dataEp) => dataEp.episode == data.episode
       );
       if (index < 0) {
         movie.episodes.push(data);
@@ -184,7 +185,7 @@ router.put(
   }
 );
 
-router.put("/:malId", verifyRole("Admin","User"), async (req, res) => {
+router.put("/:malId", verifyRole("Admin", "User"), async (req, res) => {
   const { malId } = req.params;
   const dataModified = req.body;
   try {
@@ -282,35 +283,71 @@ async function crawl(start, end, url, serverWeb, serverVideo) {
     console.log(linkWatching);
 
     await page.goto(linkWatching, options);
-    const listLinkWatchEpisode = await page.evaluate((serverWeb) => {
-      let listLink;
-      switch (serverWeb) {
-        case "animehay":
-          listLink = [...document.querySelectorAll(".ah-wf-body ul li a")];
-          break;
-        case "animevsub":
-          listLink = [...document.querySelectorAll(".Content #list-server a")];
-          break;
-        default:
-          break;
-      }
-      return listLink.map((link) => link.href);
-    }, serverWeb);
+    let listLinkWatchEpisode;
+    switch (serverWeb) {
+      case "animehay":
+        listLinkWatchEpisode = await page.evaluate((start) => {
+          let listLink = document.querySelector(".ah-wf-body ul");
+          listLink = [...listLink.children];
+          for (let i = 0; i < listLink.length; i++) {
+            if (listLink[i] && !listLink[i].textContent.includes(`${start}`)) {
+              listLink[i].remove();
+            } else {
+              break;
+            }
+          }
+          listLink = document.querySelector(".ah-wf-body ul");
+          listLink = [...listLink.children];
+          return listLink.map((link) => ({
+            url: link.childNodes[0].href,
+            textContent: link.textContent,
+          }));
+        }, start);
+        break;
+      case "animevsub":
+        listLinkWatchEpisode = await page.evaluate((start) => {
+          let listLink = document.querySelector(".Content #list-server ul");
+          listLink = [...listLink.children];
+          for (let i = 0; i < listLink.length; i++) {
+            if (listLink[i] && !listLink[i].textContent.includes(`${start}`)) {
+              listLink[i].remove();
+            } else {
+              break;
+            }
+          }
+          listLink = document.querySelector(".Content #list-server ul");
+          listLink = [...listLink.children];
+          return listLink.map((link) => ({
+            url: link.childNodes[0].href,
+            textContent: link.textContent,
+          }));
+        }, start);
+        break;
+      default:
+        break;
+    }
     let listSrc = [];
-    const startEpisode = start <= 0 ? 1 : start;
+    const lastEpisode = parseInt(
+      listLinkWatchEpisode[listLinkWatchEpisode.length - 1].textContent
+    );
+    const startEpisode = 0;
     const endEpisode =
-      end > listLinkWatchEpisode.length ? listLinkWatchEpisode.length : end;
-    for (let i = startEpisode - 1; i < endEpisode; i++) {
+      lastEpisode > end
+        ? listLinkWatchEpisode.findIndex((link) =>
+            link.textContent.includes(end.toString())
+          ) + 1
+        : listLinkWatchEpisode.length;
+    for (let i = startEpisode; i < endEpisode; i++) {
       const data = await extractSourceVideo(
         page,
-        listLinkWatchEpisode[i],
+        listLinkWatchEpisode[i].url,
         serverWeb,
         serverVideo,
         options
       );
       listSrc.push({
         embedUrl: data ? data.url : "",
-        episode: i + 1,
+        episode: listLinkWatchEpisode[i].textContent,
         typeVideo: data ? data.typeVideo : false,
       });
     }

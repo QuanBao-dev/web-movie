@@ -41,16 +41,17 @@ window.addEventListener("scroll", () => {
   scrollSaveSubject.subscribe((v) => {
     const navBarE = document.querySelector(".nav-bar__app");
     const buttonScrollTopE = document.querySelector(".button-scroll-top");
-    if (window.scrollY === 0) {
-      navBarE.style.transform = "translateY(0)";
-      buttonScrollTopE.style.transform = "translateY(500px)";
-    } else if (v - window.scrollY < -1) {
-      navBarE.style.transform = "translateY(-500px)";
-      buttonScrollTopE.style.transform = "translateY(500px)";
-    } else if (v - window.scrollY > 1) {
-      navBarE.style.transform = "translateY(0)";
-      buttonScrollTopE.style.transform = "translateY(0)";
-    }
+    if (navBarE)
+      if (window.scrollY === 0) {
+        navBarE.style.transform = "translateY(0)";
+        buttonScrollTopE.style.transform = "translateY(500px)";
+      } else if (v - window.scrollY < -1) {
+        navBarE.style.transform = "translateY(-500px)";
+        buttonScrollTopE.style.transform = "translateY(500px)";
+      } else if (v - window.scrollY > 1) {
+        navBarE.style.transform = "translateY(0)";
+        buttonScrollTopE.style.transform = "translateY(0)";
+      }
   });
 });
 

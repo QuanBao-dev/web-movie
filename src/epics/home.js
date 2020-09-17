@@ -84,7 +84,7 @@ export const validateFormSubmitLogin$ = (
   );
 };
 
-export const fetchAnimeSeason$ = (year, season, page, numberOfProducts) => {
+export const fetchAnimeSeason$ = (year, season, page, numberOfProducts, score) => {
   return timer(0).pipe(
     tap(() => updateIsLoading(true)),
     switchMapTo(
@@ -92,7 +92,7 @@ export const fetchAnimeSeason$ = (year, season, page, numberOfProducts) => {
         pluck("response", "anime"),
         map((anime) => {
           anime = anime.filter(
-            (movie) => movie.airing_start && limitAdultGenre(movie.genres)
+            (movie) => (movie.airing_start && limitAdultGenre(movie.genres) && (movie.score > score || score === 0) )
           );
           updateMaxPage(
             Math.ceil(anime.length / stream.initialState.numberOfProduct)
@@ -100,10 +100,11 @@ export const fetchAnimeSeason$ = (year, season, page, numberOfProducts) => {
           updateOriginalData(anime);
           updateIsLoading(false);
           stream.catchingError(null);
-          return orderBy(anime, ["airing_start"], ["desc"]).slice(
+          const sortedArray = orderBy(anime, ["airing_start"], ["desc"]).slice(
             (page - 1) * numberOfProducts,
             page * numberOfProducts
           );
+          return sortedArray;
         }),
         retry(20),
         catchError((error) => {
@@ -151,7 +152,7 @@ export const changeCurrentPage$ = () => {
   );
 };
 
-export const changeSeasonYear$ = (selectYearElement, selectSeasonElement) => {
+export const changeSeasonYear$ = (selectYearElement, selectSeasonElement, selectScoreElement) => {
   const listenEventYear$ = fromEvent(selectYearElement, "change").pipe(
     pluck("target", "value"),
     map((v) => parseInt(v))
@@ -159,9 +160,14 @@ export const changeSeasonYear$ = (selectYearElement, selectSeasonElement) => {
   const listenEventSeason$ = fromEvent(selectSeasonElement, "change").pipe(
     pluck("target", "value")
   );
+  const listenEventScore$ = fromEvent(selectScoreElement,"change").pipe(
+    pluck("target","value"),
+    map((v) => parseInt(v)),
+  )
   return from([
     listenEventYear$.pipe(startWith(stream.currentState().year)),
     listenEventSeason$.pipe(startWith(stream.currentState().season)),
+    listenEventScore$.pipe(startWith(stream.currentState().score))
   ]).pipe(combineAll());
 };
 

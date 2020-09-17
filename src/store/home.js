@@ -43,7 +43,8 @@ const initialState = {
   shouldFetchTopMovie: true,
   pageTopMovie: 1,
   screenWidth: null,
-  upcomingAnimeList: []
+  upcomingAnimeList: [],
+  score:0,
 };
 
 const subject = new BehaviorSubject(initialState);
@@ -137,11 +138,12 @@ const homeStore = {
     subject.next(state);
   },
 
-  updateSeasonYear: (season, year) => {
+  updateSeasonYear: (season, year, score) => {
     state = {
       ...state,
       season: season,
       year: year,
+      score
     };
     subject.next(state);
   },

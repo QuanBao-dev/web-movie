@@ -20,6 +20,21 @@ switch (numSeason) {
   default:
     break;
 }
+
+const week = [
+  "monday",
+  "tuesday",
+  "wednesday",
+  "thursday",
+  "friday",
+  "saturday",
+  "sunday",
+];
+const todayDate = new Date(Date.now())
+  .toDateString()
+  .slice(0, 3)
+  .toLocaleLowerCase();
+const todayIndex = week.findIndex((day) => day.includes(todayDate));
 const initialState = {
   dataDetail: [],
   dataDetailOriginal: [],
@@ -50,7 +65,7 @@ const initialState = {
 const subject = new BehaviorSubject(initialState);
 
 let state = initialState;
-
+state.dateSchedule[todayIndex] = true;
 const homeStore = {
   initialState,
   subscribe: (setState) => subject.pipe().subscribe((v) => setState(v)),

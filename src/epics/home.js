@@ -84,7 +84,13 @@ export const validateFormSubmitLogin$ = (
   );
 };
 
-export const fetchAnimeSeason$ = (year, season, page, numberOfProducts, score) => {
+export const fetchAnimeSeason$ = (
+  year,
+  season,
+  page,
+  numberOfProducts,
+  score
+) => {
   return timer(0).pipe(
     tap(() => updateIsLoading(true)),
     switchMapTo(
@@ -92,7 +98,10 @@ export const fetchAnimeSeason$ = (year, season, page, numberOfProducts, score) =
         pluck("response", "anime"),
         map((anime) => {
           anime = anime.filter(
-            (movie) => (movie.airing_start && limitAdultGenre(movie.genres) && (movie.score > score || score === 0) )
+            (movie) =>
+              movie.airing_start &&
+              limitAdultGenre(movie.genres) &&
+              (movie.score > score || score === 0)
           );
           updateMaxPage(
             Math.ceil(anime.length / stream.initialState.numberOfProduct)
@@ -152,7 +161,11 @@ export const changeCurrentPage$ = () => {
   );
 };
 
-export const changeSeasonYear$ = (selectYearElement, selectSeasonElement, selectScoreElement) => {
+export const changeSeasonYear$ = (
+  selectYearElement,
+  selectSeasonElement,
+  selectScoreElement
+) => {
   const listenEventYear$ = fromEvent(selectYearElement, "change").pipe(
     pluck("target", "value"),
     map((v) => parseInt(v))
@@ -160,14 +173,14 @@ export const changeSeasonYear$ = (selectYearElement, selectSeasonElement, select
   const listenEventSeason$ = fromEvent(selectSeasonElement, "change").pipe(
     pluck("target", "value")
   );
-  const listenEventScore$ = fromEvent(selectScoreElement,"change").pipe(
-    pluck("target","value"),
-    map((v) => parseInt(v)),
-  )
+  const listenEventScore$ = fromEvent(selectScoreElement, "change").pipe(
+    pluck("target", "value"),
+    map((v) => parseInt(v))
+  );
   return from([
     listenEventYear$.pipe(startWith(stream.currentState().year)),
     listenEventSeason$.pipe(startWith(stream.currentState().season)),
-    listenEventScore$.pipe(startWith(stream.currentState().score))
+    listenEventScore$.pipe(startWith(stream.currentState().score)),
   ]).pipe(combineAll());
 };
 
@@ -326,7 +339,7 @@ export const scrollAnimeInterval$ = (scrollE) => {
   fromEvent(scrollE, "mouseleave").subscribe(() => {
     mode = "interval";
   });
-  return interval(100).pipe(
+  return interval(20).pipe(
     delay(3000),
     filter(() => mode === "interval"),
     map(() => scrollE.scrollLeft)

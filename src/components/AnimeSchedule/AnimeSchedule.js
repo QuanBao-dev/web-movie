@@ -29,6 +29,7 @@ const AnimeSchedule = () => {
     return () => {
       subscription.unsubscribe();
       fetchDataScheduleSub.unsubscribe();
+      console.log(stream.initialState);
     };
   }, [homeState.dateSchedule]);
   // console.log(homeState);

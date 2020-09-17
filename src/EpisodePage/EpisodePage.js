@@ -93,6 +93,7 @@ const EpisodePage = (props) => {
                   height="100%"
                   src={currentEpisode.embedUrl}
                   controls={true}
+                  playsInline
                 ></video>
               </div>
             )}

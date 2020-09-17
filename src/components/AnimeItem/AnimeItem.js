@@ -4,7 +4,7 @@ import { useHistory } from "react-router-dom";
 // import { timer } from "rxjs";
 const AnimeItem = ({ anime }) => {
   const history = useHistory();
-  // console.log(anime.score);
+  // console.log(anime);
   return (
     <div
       className="anime-item"
@@ -18,7 +18,7 @@ const AnimeItem = ({ anime }) => {
           </div>
         )}
       <div className="anime-info-display_summary top-right_summary color-red">
-        {anime.score || "?"}/10
+        {(!anime.score || anime.score === "null") ? "?":anime.score}/10
       </div>
       <img
         style={{

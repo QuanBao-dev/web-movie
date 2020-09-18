@@ -1,7 +1,6 @@
 import React from "react";
 import "./AnimeItem.css";
 import { useHistory } from "react-router-dom";
-// import { timer } from "rxjs";
 const AnimeItem = ({ anime }) => {
   const history = useHistory();
   // console.log(anime);

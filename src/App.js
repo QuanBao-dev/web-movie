@@ -10,7 +10,6 @@ import {
   Switch,
 } from "react-router-dom";
 
-// import Chat from './Chat/Chat';
 import EpisodePage from "./EpisodePage/EpisodePage";
 import Home from "./Home/Home";
 import Login from "./Login/Login";
@@ -26,6 +25,7 @@ import { allowUpdatedMovie } from "./store/home";
 import navBarStore from "./store/navbar";
 import SearchedList from "./Search/SearchedList";
 import { ReplaySubject } from "rxjs";
+import CharacterDetail from "./components/CharacterDetail/CharacterDetail";
 const scrollSaveSubject = new ReplaySubject(3);
 window.addEventListener("resize", () => {
   const e = document.getElementsByClassName("child-nav-bar__app").item(0);
@@ -125,7 +125,6 @@ function App() {
                 to="/"
                 activeClassName="active"
                 onClick={() => {
-                  // eslint-disable-next-line no-restricted-globals
                   window.scroll({
                     top: 0,
                     behavior: "smooth",
@@ -235,6 +234,10 @@ function App() {
         )}
         <Route path="/anime/search" component={SearchedList} />
         <Route path="/anime/:malId/watch/:episode" component={EpisodePage} />
+        <Route
+          path="/anime/:malId/character/:characterId"
+          component={CharacterDetail}
+        />
         <Route path="/anime/:name" component={Name} />
         {user && <Route path="/theater" component={Theater} />}
         {user && <Route path="/edit" component={EditUser} />}

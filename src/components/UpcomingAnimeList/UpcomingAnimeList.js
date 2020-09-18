@@ -4,6 +4,7 @@ import {
   stream,
   upcomingAnimeListUpdated$,
 } from "../../epics/home";
+import { updateModeScrolling } from "../../store/home";
 import AnimeList from "../AnimeList/AnimeList";
 import "./UpcomingAnimeList.css";
 let forward = 1;
@@ -35,7 +36,20 @@ const UpcomingAnimeList = () => {
     };
   }, []);
   return (
-    <section>
+    <section
+      onTouchMove={() => {
+        updateModeScrolling("enter");
+      }}
+      onTouchStart={() => {
+        updateModeScrolling("enter");
+      }}
+      onTouchEnd={() => {
+        updateModeScrolling("interval");
+      }}
+      onTouchCancel={() => {
+        updateModeScrolling("interval");
+      }}
+    >
       <h1 className="title-upcoming-anime">Upcoming anime</h1>
       <AnimeList
         data={stream.currentState().upcomingAnimeList}

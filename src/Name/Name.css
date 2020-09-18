@@ -100,6 +100,8 @@
   .anime-name-info .box-info{
     width:100%;
     overflow-wrap: break-word;
+    overflow-y: hidden!important;
+    max-height: 100%!important;
   }
 
   .anime-name-info .box-content{
@@ -109,9 +111,21 @@
 }
 
 .anime-name-info .box-info{
-  /* width:40%; */
   box-shadow: 2px 0 10px 1px black;
   text-align: center;
+  max-height: 100%;
+  font-size: 0.8em;
+  overflow-y: auto;
+}
+
+.anime-name-info .box-info::-webkit-scrollbar{
+  width: 5px;
+  display: none;
+  background-color: #393c4b;
+}
+
+.anime-name-info .box-info::-webkit-scrollbar-thumb{
+  background-color: #584b4b;
 }
 
 .anime-name-info .box-info div{
@@ -127,7 +141,7 @@
   padding: 0;
 }
 
-.anime-name-info .box-info ul li {
+.anime-name-info .box-info ul > li {
   border-bottom: 1px solid black;
   padding:10px;
   color: #d4c4c4;
@@ -138,6 +152,8 @@
   width: inherit;
   background-color: #282b38;
   margin-left: 10px;
+  border-radius: 10px;
+  max-height: 100%;
   box-shadow: 0 0 5px 5px black;
 }
 
@@ -148,22 +164,23 @@
 
 .anime-name-info .box-content .content{
   padding: 10px;
-  text-align: justify;
+  text-align: start;
   line-height: 3rem;
   font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
   font-size: larger;
   color: #d4c4c4;
 }
 
-.anime-name-info .box-content .link{
-  color: white;
-  position: absolute;
+.button-show-more-information{
   display: block;
-  text-decoration: none;
-  bottom: 0;
-  right: 0;
-  padding: 10px;
-  background-color: #a31212;
+  cursor: pointer;
+  width: 100%;
+  background-color: rgb(40, 100, 150);
+  color: white;
+  border:none;
+  outline: none;
+  font-size: larger;
+  height: 3rem;
 }
 
 .video-promotion-item{
@@ -197,6 +214,8 @@
 .list-video-url{
   display: flex;
   flex-direction: row;
+  justify-content: center;
+  flex-wrap: wrap;
 }
 
 .list-video-url a{
@@ -210,6 +229,17 @@
   border-radius: 10px;
   border:1px double black;
   box-shadow: 0 0 5px 5px black, 0 0 5px 5px white;
+}
+
+.title-capitalize{
+  text-transform: capitalize;
+  font-style: italic;
+}
+
+.title-synonym-list{
+  background-color: #33476b;
+  margin: 1rem;
+  border-radius: 20px;
 }
 
 .form-submit{

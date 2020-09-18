@@ -26,6 +26,7 @@ import { allowUpdatedMovie } from "../store/home";
 import { allowShouldFetchEpisodeMovie } from "../store/pageWatch";
 import navBarStore from "../store/navbar";
 import RelatedAnime from "../components/RelatedAnime/RelatedAnime";
+import Characters from "../components/Characters/Characters";
 
 const Name = (props) => {
   const { name } = props.match.params;
@@ -35,6 +36,7 @@ const Name = (props) => {
   const [data, setData] = useState({});
   const [episodeData, setEpisodeData] = useState();
   const [boxMovie, setBoxMovie] = useState();
+  const [showThemeMusic, setShowThemeMusic] = useState(false);
 
   const controlBoxMovieRef = useRef();
   const deleteMovieRef = useRef();
@@ -49,6 +51,9 @@ const Name = (props) => {
   const buttonDeleteCrawlInputRef = useRef();
   const typeVideoSelectRef = useRef();
   const selectCrawlServerVideo = useRef();
+  useEffect(() => {
+    setShowThemeMusic(false);
+  }, []);
   useEffect(() => {
     window.scroll({
       top: 0,
@@ -126,9 +131,10 @@ const Name = (props) => {
     findingAnime = data;
   }
   let arrKeys;
+  // console.log(findingAnime);
   if (findingAnime) {
     arrKeys = Object.keys(findingAnime).filter((v) => {
-      return [
+      let arrayExclude = [
         "title",
         "image_url",
         "url",
@@ -138,12 +144,20 @@ const Name = (props) => {
         "request_cached",
         "request_cache_expiry",
         "mal_id",
-      ].indexOf(v) === -1
-        ? true
-        : false;
+      ];
+      if (!showThemeMusic) {
+        arrayExclude = [...arrayExclude, "opening_themes", "ending_themes"];
+      }
+      if (
+        findingAnime.opening_themes.length === 0 &&
+        findingAnime.ending_themes.length === 0
+      ) {
+        document.querySelector(".button-show-more-information").style.display =
+          "none";
+      }
+      return arrayExclude.indexOf(v) === -1 ? true : false;
     });
   }
-  // console.log(episodeData);
   return (
     findingAnime && (
       <div className="anime-name-info layout">
@@ -196,14 +210,51 @@ const Name = (props) => {
               About
             </h1>
             <ListInformation arrKeys={arrKeys} />
+            {!showThemeMusic && (
+              <button
+                className="button-show-more-information"
+                onClick={() => {
+                  setShowThemeMusic(true);
+                }}
+              >
+                Show More Information
+              </button>
+            )}
           </div>
           <div className="box-content">
             <h1 style={{ margin: "0" }} className="title">
               Summary
             </h1>
             <div className="content">{findingAnime.synopsis}</div>
+            {episodeData && episodeData.length > 0 && (
+              <div>
+                <h1 className="title">Latest Episodes</h1>
+                <ListVideoUrl episodeData={episodeData} name={name} />
+              </div>
+            )}
             {user && user.role === "Admin" && (
               <div className="admin-section">
+                <h1 className="title">Adding episode url</h1>
+                <FormSubmit
+                  inputEpisodeRef={inputEpisodeRef}
+                  inputVideoUrlRef={inputVideoUrlRef}
+                  cookies={cookies}
+                  name={name}
+                  setEpisodeData={setEpisodeData}
+                  typeVideoSelectRef={typeVideoSelectRef}
+                />
+                <h1 className="title">Crawl episode</h1>
+                <FormSubmitCrawl
+                  buttonSubmitCrawlInputRef={buttonSubmitCrawlInputRef}
+                  endEpisodeInputRef={endEpisodeInputRef}
+                  startEpisodeInputRef={startEpisodeInputRef}
+                  linkWatchingInputRef={linkWatchingInputRef}
+                  selectCrawlInputRef={selectCrawlInputRef}
+                  name={name}
+                  setEpisodeData={setEpisodeData}
+                  cookies={cookies}
+                  selectCrawlServerVideo={selectCrawlServerVideo}
+                />
                 <button
                   className="btn btn-danger"
                   ref={buttonDeleteCrawlInputRef}
@@ -228,46 +279,11 @@ const Name = (props) => {
                 >
                   Reset
                 </button>
-
-                <h1 className="title">Adding episode url</h1>
-                <FormSubmit
-                  inputEpisodeRef={inputEpisodeRef}
-                  inputVideoUrlRef={inputVideoUrlRef}
-                  cookies={cookies}
-                  name={name}
-                  setEpisodeData={setEpisodeData}
-                  typeVideoSelectRef={typeVideoSelectRef}
-                />
-                <h1 className="title">Crawl episode</h1>
-                <FormSubmitCrawl
-                  buttonSubmitCrawlInputRef={buttonSubmitCrawlInputRef}
-                  endEpisodeInputRef={endEpisodeInputRef}
-                  startEpisodeInputRef={startEpisodeInputRef}
-                  linkWatchingInputRef={linkWatchingInputRef}
-                  selectCrawlInputRef={selectCrawlInputRef}
-                  name={name}
-                  setEpisodeData={setEpisodeData}
-                  cookies={cookies}
-                  selectCrawlServerVideo={selectCrawlServerVideo}
-                />
               </div>
             )}
-            {episodeData && episodeData.length > 0 && (
-              <div>
-                <h1 className="title">Latest Episodes</h1>
-                <ListVideoUrl episodeData={episodeData} name={name} />
-              </div>
-            )}
-            <a
-              className="link"
-              href={findingAnime.url}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              More information
-            </a>
           </div>
         </div>
+        <Characters malId={name} />
         {data.dataPromo && <VideoPromotionList data={data} />}
         <RelatedAnime malId={name} />
       </div>
@@ -336,10 +352,12 @@ function ListInformation({ arrKeys }) {
               }
               return (
                 <li key={index}>
+                  <span className="title-capitalize">{capitalizeString(v)} </span>
                   {!/themes/g.test(v) && (
-                    <ul>
-                      <span>{capitalizeString(v)}: </span>
-                      {`${findingAnime[v].join(" <||> ")}`}
+                    <ul className="title-synonym-list">
+                      {findingAnime[v].map((nameAnime) => {
+                        return <li>{nameAnime}</li>;
+                      })}
                     </ul>
                   )}
 
@@ -553,7 +571,7 @@ function ListVideoUrl({ episodeData, name }) {
           ["episode"],
           "desc"
         )
-          .slice(0, 3)
+          .slice(0, 6)
           .map((episode, index) => {
             return (
               <Link

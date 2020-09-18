@@ -1,0 +1,137 @@
+.character-detail-container{
+  background-color: #1f1f3d;
+  width: 90%;
+  margin: auto;
+  padding: 2rem;
+  color: white;
+  box-shadow: 0 0 6px 5px black;
+}
+  .character-information-wrapper{
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    background-color: rgb(34, 37, 75);
+    border-radius: 10px;
+    padding: 1rem;
+    flex-wrap: wrap;
+    box-shadow: 0 0 10px 1px rgb(18, 71, 73);
+  }
+    .image-character{
+      max-width: 410px;
+      margin: 1rem;
+      display: block;
+      width: 100%;
+      box-shadow: 0 0 20px 5px rgba(255, 255, 255, 0.733);
+
+    }
+    .character-information{
+      max-width: 661px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      margin:1rem;
+      font-size: 1.6rem;
+      text-align: center;
+      letter-spacing: 0.05em;
+      line-height: 2rem;
+      padding: 2rem;
+      background-color: rgb(68, 68, 61);
+      box-shadow: 0 0 10px 5px rgba(0, 0, 0, 0.733);
+      border-radius: 10px;
+    }
+
+.all-anime-related{
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+  .all-anime-related > div{
+    cursor: pointer;
+    margin: 1rem;
+    display: flex;
+    align-items: center;
+    box-shadow: 0 0 10px 1px black;
+    position: relative;
+    transition: 0.5s;
+  }
+  .all-anime-related > div:hover{
+    transform: scale(1.1);
+  }
+  .all-anime-related > div:hover .pop-up-hover{
+    transform: scale(1);
+  }
+
+    .all-anime-related div img{
+      border-radius: 10px;
+    }
+    .pop-up-hover{
+      transition: 0.5s;
+      transform: scale(0);
+      display: flex;
+      position: absolute;
+      width: 100%;
+      top:0;
+      left: 0;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      height: 100%;
+      background-color: #1f1f3d6b;
+    }
+      .pop-up-hover > h3{
+        text-shadow: 2px 2px black;
+      }
+
+
+.text-about-character{
+  white-space: pre-wrap;
+  font-family: Arial, Helvetica, sans-serif;
+  text-align: start;
+  font-size: larger;
+  letter-spacing: 0.05em;
+  line-height: 2rem;
+}
+
+.anime-main-role{
+  border: 2px solid yellow;
+  animation: victoryEnlighten 2s forwards infinite;
+  border-radius: 10px;
+}
+
+.text-capitalize{
+  text-transform: capitalize;
+  font-size: 2.9rem;
+  font-family: 'Times New Roman', Times, serif;
+  margin:10px 0;
+  line-height: 1em;
+  display: block;
+  padding: 1rem;
+  background-color: rgb(68, 68, 61);
+  text-align: center;
+  font-style: italic;
+}
+
+.wrapper-text{
+  margin-bottom: 1rem;
+  border-bottom: 2px double rgb(0, 0, 0);
+  padding-bottom: 1rem;
+  padding: 1em 1rem;
+  box-shadow: 0 22px 10px 1px rgba(82, 77, 77, 0.753);
+}
+
+.character-appear-container{
+  text-align: center;
+}
+
+@keyframes victoryEnlighten{
+  0%{
+    box-shadow: 0 0 1px 1px yellow;
+  }
+  50%{
+    box-shadow: 0 0 10px 1px yellow;
+  }
+  100%{
+    box-shadow: 0 0 1px 1px yellow;
+  }
+}

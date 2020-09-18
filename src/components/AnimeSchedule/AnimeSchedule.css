@@ -8,7 +8,7 @@
   display: flex;
   flex-direction: column;
   box-shadow: 0 0 10px 10px rgba(0, 0, 0, 0.979), 0 0 10px 10px #131414;
-
+  text-align: center;
 }
 
 .day-schedule-movie{
@@ -24,6 +24,8 @@
 .day-schedule-movie .title{
   font-size: 1.2rem;
   text-transform: capitalize;
+  text-align: center;
+  text-shadow: 2px 2px black;
 }
 
 .all-movies-day{

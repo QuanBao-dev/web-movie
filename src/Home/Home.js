@@ -359,7 +359,7 @@ function SelectFilterAnime({
   const elementOptions = Array.from(Array(numberOfYears).keys()).map(
     (v) => new Date(Date.now()).getFullYear() - v
   );
-  const scoreOptions = Array.from(Array(11).keys());
+  const scoreOptions = Array.from(Array(10).keys());
   return (
     <div
       style={{
@@ -410,6 +410,7 @@ function SelectFilterAnime({
         })}
       </select>
       <select
+        onChange={() => stream.updateCurrentPage(1)}
         style={{
           margin: "10px",
           padding: "10px",

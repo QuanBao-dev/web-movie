@@ -8,6 +8,10 @@ router.get("/anime/search", (req, res) => {
   res.sendFile(path.join(__dirname, "../build", "index.html"));
 });
 
+router.get("/anime/:malId/character/:characterId", (req, res) => {
+  res.sendFile(path.join(__dirname, "../build", "index.html"));
+});
+
 router.get("/anime/:malId/watch/:episode", (req, res) => {
   res.sendFile(path.join(__dirname, "../build", "index.html"));
 });

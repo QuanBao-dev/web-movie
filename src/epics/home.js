@@ -26,6 +26,7 @@ import homeStore, {
   savingTextSearch,
   updateIsLoading,
   updateMaxPage,
+  updateModeScrolling,
   updateOriginalData,
 } from "../store/home";
 
@@ -331,17 +332,16 @@ export const upcomingAnimeListUpdated$ = () => {
     )
   );
 };
-let mode = "interval";
 export const scrollAnimeInterval$ = (scrollE) => {
   fromEvent(scrollE, "mouseenter").subscribe(() => {
-    mode = "enter";
+    updateModeScrolling("enter")
   });
   fromEvent(scrollE, "mouseleave").subscribe(() => {
-    mode = "interval";
+    updateModeScrolling("interval")
   });
   return interval(20).pipe(
     delay(3000),
-    filter(() => mode === "interval"),
+    filter(() => stream.currentState().modeScrolling === "interval"),
     map(() => scrollE.scrollLeft)
   );
 };

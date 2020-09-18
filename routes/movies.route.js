@@ -281,7 +281,6 @@ async function crawl(start, end, url, serverWeb, serverVideo) {
       return link;
     }, serverWeb);
     console.log(linkWatching);
-
     await page.goto(linkWatching, options);
     let listLinkWatchEpisode;
     switch (serverWeb) {
@@ -289,6 +288,12 @@ async function crawl(start, end, url, serverWeb, serverVideo) {
         listLinkWatchEpisode = await page.evaluate((start) => {
           let listLink = document.querySelector(".ah-wf-body ul");
           listLink = [...listLink.children];
+          if(listLink.length === 1){
+            return listLink.map((link) => ({
+              url: link.children[0].href,
+              textContent: "1",
+            }))
+          }
           for (let i = 0; i < listLink.length; i++) {
             if (listLink[i] && !listLink[i].textContent.includes(`${start}`)) {
               listLink[i].remove();
@@ -306,8 +311,16 @@ async function crawl(start, end, url, serverWeb, serverVideo) {
         break;
       case "animevsub":
         listLinkWatchEpisode = await page.evaluate((start) => {
-          let listLink = document.querySelector(".Content #list-server ul");
+          let listLink =
+            document.querySelector(".Content #list-server ul .list-episode") ||
+            document.querySelector(".Content #list-server ul");
           listLink = [...listLink.children];
+          if(listLink.length === 1){
+            return listLink.map((link) => ({
+              url: link.children[0].href,
+              textContent: "1",
+            }))
+          }
           for (let i = 0; i < listLink.length; i++) {
             if (listLink[i] && !listLink[i].textContent.includes(`${start}`)) {
               listLink[i].remove();
@@ -315,7 +328,9 @@ async function crawl(start, end, url, serverWeb, serverVideo) {
               break;
             }
           }
-          listLink = document.querySelector(".Content #list-server ul");
+          listLink =
+            document.querySelector(".Content #list-server ul .list-episode") ||
+            document.querySelector(".Content #list-server ul");
           listLink = [...listLink.children];
           return listLink.map((link) => ({
             url: link.childNodes[0].href,

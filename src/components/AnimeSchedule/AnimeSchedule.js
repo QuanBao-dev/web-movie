@@ -4,7 +4,7 @@ import React, { createRef, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 
 import { fetchAnimeSchedule$, stream } from "../../epics/home";
-
+import { resetScheduleDate } from "../../store/home";
 const AnimeSchedule = () => {
   const history = useHistory();
   const week = [
@@ -21,6 +21,9 @@ const AnimeSchedule = () => {
   });
   const [homeState, setHomeState] = useState(stream.initialState);
   useEffect(() => {
+    resetScheduleDate();
+  },[])
+  useEffect(() => {
     const subscription = stream.subscribe(setHomeState);
     stream.init();
     const fetchDataScheduleSub = fetchAnimeSchedule$(
@@ -29,7 +32,6 @@ const AnimeSchedule = () => {
     return () => {
       subscription.unsubscribe();
       fetchDataScheduleSub.unsubscribe();
-      console.log(stream.initialState);
     };
   }, [homeState.dateSchedule]);
   // console.log(homeState);

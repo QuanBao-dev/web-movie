@@ -21,20 +21,6 @@ switch (numSeason) {
     break;
 }
 
-const week = [
-  "monday",
-  "tuesday",
-  "wednesday",
-  "thursday",
-  "friday",
-  "saturday",
-  "sunday",
-];
-const todayDate = new Date(Date.now())
-  .toDateString()
-  .slice(0, 3)
-  .toLocaleLowerCase();
-const todayIndex = week.findIndex((day) => day.includes(todayDate));
 const initialState = {
   dataDetail: [],
   dataDetailOriginal: [],
@@ -59,13 +45,12 @@ const initialState = {
   pageTopMovie: 1,
   screenWidth: null,
   upcomingAnimeList: [],
-  score:0,
+  score: 0,
+  modeScrolling: "interval",
 };
 
 const subject = new BehaviorSubject(initialState);
-
 let state = initialState;
-state.dateSchedule[todayIndex] = true;
 const homeStore = {
   initialState,
   subscribe: (setState) => subject.pipe().subscribe((v) => setState(v)),
@@ -158,7 +143,7 @@ const homeStore = {
       ...state,
       season: season,
       year: year,
-      score
+      score,
     };
     subject.next(state);
   },
@@ -194,13 +179,31 @@ const homeStore = {
     subject.next(state);
   },
 
-  updateUpcomingAnimeList:(upcomingDataList) => {
+  updateUpcomingAnimeList: (upcomingDataList) => {
     state = {
       ...state,
-      upcomingAnimeList:upcomingDataList
+      upcomingAnimeList: upcomingDataList,
     };
     subject.next(state);
-  }
+  },
+};
+
+export const resetScheduleDate = () => {
+  const week = [
+    "monday",
+    "tuesday",
+    "wednesday",
+    "thursday",
+    "friday",
+    "saturday",
+    "sunday",
+  ];  
+  const todayDate = new Date(Date.now())
+    .toDateString()
+    .slice(0, 3)
+    .toLocaleLowerCase();
+  const todayIndex = week.findIndex((day) => day.includes(todayDate));
+  state.dateSchedule[todayIndex] = true;
 };
 
 export const updateMaxPage = (max) => {
@@ -233,6 +236,10 @@ export const allowScrollToSeeMore = (bool) => {
 
 export const allowFetchTopMovie = (bool) => {
   state.shouldFetchTopMovie = bool;
+};
+
+export const updateModeScrolling = (mode) => {
+  state.modeScrolling = mode;
 };
 
 export default homeStore;

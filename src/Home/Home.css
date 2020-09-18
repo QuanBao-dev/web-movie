@@ -132,7 +132,7 @@
   display: flex;
 }
 
-@media (max-width:697px){
+@media (max-width:1465px){
   .sub-nav-bar{
     flex-direction: column;
   }

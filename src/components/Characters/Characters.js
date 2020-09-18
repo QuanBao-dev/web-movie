@@ -12,6 +12,10 @@ const Characters = ({ malId }) => {
     characterStream.initialState
   );
   useEffect(() => {
+    window.scroll({
+      top:0,
+      behavior:"smooth"
+    })
     const subscription = fetchDataCharacter$(malId).subscribe((data) => {
       setDataCharacterState(data);
     });
@@ -61,7 +65,7 @@ const Characters = ({ malId }) => {
                   onClick={() => {
                     characterStream.updateRole(characterData.role);
                     history.push(
-                      `/anime/${malId}/character/${characterData.mal_id}`
+                      `/anime/character/${characterData.mal_id}`
                     );
                   }}
                 >

@@ -50,8 +50,32 @@
   overflow: hidden;
   border-radius: 10px;
   cursor: pointer;
+  display: flex;
+  align-items: center;
   margin:1.5rem 1rem;
 }
+
+@media (max-width:800px){
+  .schedule-movie{
+    width: 150px;
+    font-size: 50%;
+  }
+}
+
+@media (max-width:600px){
+  .schedule-movie{
+    width: 90px;
+    font-size: 30%;
+  }
+  .day-schedule-movie .title{
+    width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 20%;
+  }
+}
+
 
 .schedule-movie-content{
   position: absolute;
@@ -80,8 +104,6 @@
   object-fit: cover;
   object-position: center;
   width: 100%;
-  min-width: 225px;
-  height: 20rem;
 }
 
 .schedule-movie-rating{

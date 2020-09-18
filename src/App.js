@@ -235,7 +235,7 @@ function App() {
         <Route path="/anime/search" component={SearchedList} />
         <Route path="/anime/:malId/watch/:episode" component={EpisodePage} />
         <Route
-          path="/anime/:malId/character/:characterId"
+          path="/anime/character/:characterId"
           component={CharacterDetail}
         />
         <Route path="/anime/:name" component={Name} />

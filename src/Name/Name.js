@@ -356,7 +356,7 @@ function ListInformation({ arrKeys }) {
                   {!/themes/g.test(v) && (
                     <ul className="title-synonym-list">
                       {findingAnime[v].map((nameAnime) => {
-                        return <li>{nameAnime}</li>;
+                        return <li key={nameAnime}>{nameAnime}</li>;
                       })}
                     </ul>
                   )}

@@ -12,6 +12,10 @@ const CharacterDetail = (props) => {
   const history = useHistory();
   const [dataCharacterDetail, setDataCharacterDetail] = useState({});
   useEffect(() => {
+    window.scroll({
+      top:0,
+      behavior:"smooth"
+    })
     const subscription = fetchCharacterDetailData$(characterId).subscribe(
       (data) => {
         setDataCharacterDetail(data);

@@ -49,11 +49,28 @@
   .all-anime-related > div{
     cursor: pointer;
     margin: 1rem;
+    max-width: 410px;
     display: flex;
     align-items: center;
     box-shadow: 0 0 10px 1px black;
     position: relative;
     transition: 0.5s;
+  }
+  @media (max-width:855px){
+    .all-anime-related > div{
+      width: 100px;
+    }
+
+    .pop-up-hover h3{
+      white-space: nowrap; 
+      width: 100%; 
+      text-align: center;
+      overflow: hidden;
+      text-overflow: ellipsis; 
+      text-transform: capitalize;
+      font-style: italic;
+      font-size: smaller;
+    }
   }
   .all-anime-related > div:hover{
     transform: scale(1.1);
@@ -64,6 +81,7 @@
 
     .all-anime-related div img{
       border-radius: 10px;
+      width: 100%;
     }
     .pop-up-hover{
       transition: 0.5s;

@@ -179,7 +179,8 @@ const Name = (props) => {
   let sourceFilmList;
   if (episodeData.sourceFilmList)
     sourceFilmList = Object.entries(episodeData.sourceFilmList);
-  // console.log(sourceFilmList);
+  episodeDataDisplay.episodeList[0] &&
+    console.log(episodeDataDisplay.episodeList[0].episode);
   return (
     findingAnime && (
       <div className="anime-name-info layout">
@@ -202,7 +203,13 @@ const Name = (props) => {
                 allowShouldFetchEpisodeMovie(true);
               }}
               to={
-                "/anime/" + name + `/watch/${episodeData.episodes[0].episode}`
+                "/anime/" +
+                name +
+                `/watch/${episodeDataDisplay.episodeList[0].episode}/${
+                  episodeDataDisplay.key.replace("episodes","") === ""
+                    ? "vie"
+                    : episodeDataDisplay.key.replace("episodes","")
+                }`
               }
             >
               Watch
@@ -275,7 +282,7 @@ const Name = (props) => {
                 <h1 className="title">Crawl episode</h1>
                 <ul>
                   {sourceFilmList &&
-                    sourceFilmList.map((sourceFilm,index) => (
+                    sourceFilmList.map((sourceFilm, index) => (
                       <li key={index}>
                         {sourceFilm[0]}: {sourceFilm[1]}
                       </li>

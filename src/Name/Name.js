@@ -179,7 +179,7 @@ const Name = (props) => {
   let sourceFilmList;
   if (episodeData.sourceFilmList)
     sourceFilmList = Object.entries(episodeData.sourceFilmList);
-  console.log(sourceFilmList);
+  // console.log(sourceFilmList);
   return (
     findingAnime && (
       <div className="anime-name-info layout">

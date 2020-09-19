@@ -45,6 +45,14 @@
   border: 1px double rgb(88, 92, 71);
 }
 
+.section-episodes-display .title{
+  font-family: 'Times New Roman', Times, serif;
+  background-color: #39415f;
+  text-align: center;
+  padding: 0.4em;
+  color: rgb(187, 187, 49);
+}
+
 .list-episode-movie{
   display: flex;
   max-height: 500px;

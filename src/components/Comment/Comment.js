@@ -257,7 +257,7 @@ function CommentDetail({
             addInputReply(user, containerInputRefs, buttonSubmitRefs, index)
           }
         >
-          <i class="fas fa-reply fa-1x"></i>
+          <i className="fas fa-reply fa-1x"></i>
         </div>
       </div>
     </div>

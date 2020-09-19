@@ -27,17 +27,23 @@ import { allowShouldFetchEpisodeMovie } from "../store/pageWatch";
 import navBarStore from "../store/navbar";
 import RelatedAnime from "../components/RelatedAnime/RelatedAnime";
 import Characters from "../components/Characters/Characters";
-
+let episodeDataDisplay;
 const Name = (props) => {
   const { name } = props.match.params;
   const user = userStream.currentState();
   const [cookies] = useCookies();
 
   const [data, setData] = useState({});
-  const [episodeData, setEpisodeData] = useState();
+  const [episodeData, setEpisodeData] = useState({
+    episodes: [],
+    episodesEng: [],
+    episodesEngDub: [],
+  });
   const [boxMovie, setBoxMovie] = useState();
   const [showThemeMusic, setShowThemeMusic] = useState(false);
+  const [crawlAnimeMode, setCrawlAnimeMode] = useState("animehay");
 
+  const selectModeEngVideoRef = useRef();
   const controlBoxMovieRef = useRef();
   const deleteMovieRef = useRef();
   const addMovieRef = useRef();
@@ -89,7 +95,7 @@ const Name = (props) => {
       .then((api) => {
         if (linkWatchingInputRef.current)
           linkWatchingInputRef.current.value = api.message.source;
-        setEpisodeData(api.message.episodes);
+        setEpisodeData(api.message);
       })
       .catch(() => {
         console.log("Don't have episode");
@@ -158,6 +164,22 @@ const Name = (props) => {
       return arrayExclude.indexOf(v) === -1 ? true : false;
     });
   }
+  if (episodeData) {
+    episodeDataDisplay = Object.entries(episodeData).reduce(
+      (ans, [key, episodeList]) => {
+        if (key !== "source" && key !== "sourceFilmList")
+          if (episodeList.length > ans.episodeList.length) {
+            ans = { key, episodeList: [...episodeList] };
+          }
+        return ans;
+      },
+      { key: "", episodeList: [] }
+    );
+  }
+  let sourceFilmList;
+  if (episodeData.sourceFilmList)
+    sourceFilmList = Object.entries(episodeData.sourceFilmList);
+  console.log(sourceFilmList);
   return (
     findingAnime && (
       <div className="anime-name-info layout">
@@ -172,14 +194,16 @@ const Name = (props) => {
           />
         </div>
         <div className="menu-control">
-          {episodeData && episodeData.length > 0 && (
+          {episodeDataDisplay && episodeDataDisplay.episodeList.length > 0 && (
             <Link
               className="btn btn-success"
               onClick={() => {
                 allowShouldFetchComment(true);
                 allowShouldFetchEpisodeMovie(true);
               }}
-              to={"/anime/" + name + `/watch/${episodeData[0].episode}`}
+              to={
+                "/anime/" + name + `/watch/${episodeData.episodes[0].episode}`
+              }
             >
               Watch
             </Link>
@@ -226,10 +250,14 @@ const Name = (props) => {
               Summary
             </h1>
             <div className="content">{findingAnime.synopsis}</div>
-            {episodeData && episodeData.length > 0 && (
+            {episodeDataDisplay && episodeDataDisplay.episodeList.length > 0 && (
               <div>
                 <h1 className="title">Latest Episodes</h1>
-                <ListVideoUrl episodeData={episodeData} name={name} />
+                <ListVideoUrl
+                  episodeData={episodeDataDisplay.episodeList}
+                  name={name}
+                  keyListEpisode={episodeDataDisplay.key}
+                />
               </div>
             )}
             {user && user.role === "Admin" && (
@@ -240,10 +268,19 @@ const Name = (props) => {
                   inputVideoUrlRef={inputVideoUrlRef}
                   cookies={cookies}
                   name={name}
+                  episodeData={episodeData}
                   setEpisodeData={setEpisodeData}
                   typeVideoSelectRef={typeVideoSelectRef}
                 />
                 <h1 className="title">Crawl episode</h1>
+                <ul>
+                  {sourceFilmList &&
+                    sourceFilmList.map((sourceFilm,index) => (
+                      <li key={index}>
+                        {sourceFilm[0]}: {sourceFilm[1]}
+                      </li>
+                    ))}
+                </ul>
                 <FormSubmitCrawl
                   buttonSubmitCrawlInputRef={buttonSubmitCrawlInputRef}
                   endEpisodeInputRef={endEpisodeInputRef}
@@ -254,6 +291,9 @@ const Name = (props) => {
                   setEpisodeData={setEpisodeData}
                   cookies={cookies}
                   selectCrawlServerVideo={selectCrawlServerVideo}
+                  crawlAnimeMode={crawlAnimeMode}
+                  setCrawlAnimeMode={setCrawlAnimeMode}
+                  selectModeEngVideoRef={selectModeEngVideoRef}
                 />
                 <button
                   className="btn btn-danger"
@@ -269,7 +309,7 @@ const Name = (props) => {
                       });
                       allowUpdatedMovie(true);
                       navBarStore.updateIsShowBlockPopUp(false);
-                      setEpisodeData([]);
+                      setEpisodeData({ episodes: [] });
                       buttonDeleteCrawlInputRef.current.disabled = false;
                     } catch (error) {
                       navBarStore.updateIsShowBlockPopUp(false);
@@ -352,9 +392,11 @@ function ListInformation({ arrKeys }) {
               }
               return (
                 <li key={index}>
-                  <span className="title-capitalize">{capitalizeString(v)} </span>
                   {!/themes/g.test(v) && (
                     <ul className="title-synonym-list">
+                      <span className="title-capitalize">
+                        {capitalizeString(v)}
+                      </span>
                       {findingAnime[v].map((nameAnime) => {
                         return <li key={nameAnime}>{nameAnime}</li>;
                       })}
@@ -400,6 +442,9 @@ function FormSubmitCrawl({
   setEpisodeData,
   cookies,
   selectCrawlServerVideo,
+  crawlAnimeMode,
+  setCrawlAnimeMode,
+  selectModeEngVideoRef,
 }) {
   return (
     <div className="form-submit">
@@ -412,15 +457,23 @@ function FormSubmitCrawl({
           } else {
             selectCrawlServerVideo.current.style.display = "none";
           }
+          setCrawlAnimeMode(e.target.value);
         }}
       >
         <option value="animehay">animehay</option>
         <option value="animevsub">animevsub</option>
+        <option value="gogostream">gogostream</option>
       </select>
       <select defaultValue="serverMoe" ref={selectCrawlServerVideo}>
         <option value="serverMoe">Moe</option>
         <option value="serverICQ">Kol</option>
       </select>
+      {crawlAnimeMode === "gogostream" && (
+        <select defaultValue="sub" ref={selectModeEngVideoRef}>
+          <option value="sub">Sub</option>
+          <option value="dub">Dub</option>
+        </select>
+      )}
       <div className="form-limit-episode">
         <Input label="start" type="number" input={startEpisodeInputRef} />
         <Input label="end" type="number" input={endEpisodeInputRef} />
@@ -435,6 +488,10 @@ function FormSubmitCrawl({
           const url = linkWatchingInputRef.current.value;
           const serverWeb = selectCrawlInputRef.current.value;
           const serverVideo = selectCrawlServerVideo.current.value;
+          const isDub = selectModeEngVideoRef.current
+            ? selectModeEngVideoRef.current.value === "dub"
+            : false;
+          // console.log(isDub);
           switch (serverWeb) {
             case "animehay":
               if (!url.includes("animehay.tv/phim/")) {
@@ -443,6 +500,15 @@ function FormSubmitCrawl({
               break;
             case "animevsub":
               if (!url.includes("animevsub.tv/phim/")) {
+                return alert("Invalid url");
+              }
+              break;
+            case "gogostream":
+              if (
+                !url.includes("gogo-stream.com/videos/") ||
+                (!/-dub-episode-[0-9]+/.test(url) && isDub === true) ||
+                (/-dub-episode-[0-9]+/.test(url) && isDub === false)
+              ) {
                 return alert("Invalid url");
               }
               break;
@@ -471,6 +537,7 @@ function FormSubmitCrawl({
                 url,
                 serverWeb,
                 serverVideo,
+                isDub,
               },
               {
                 headers: {
@@ -479,7 +546,7 @@ function FormSubmitCrawl({
               }
             );
             allowUpdatedMovie(true);
-            setEpisodeData(updateMovie.data.message.episodes);
+            setEpisodeData(updateMovie.data.message);
             startEpisodeInputRef.current.value = "";
             endEpisodeInputRef.current.value = "";
             navBarStore.updateIsShowBlockPopUp(false);
@@ -508,6 +575,7 @@ function FormSubmit({
   inputVideoUrlRef,
   cookies,
   name,
+  episodeData,
   setEpisodeData,
   typeVideoSelectRef,
 }) {
@@ -516,6 +584,32 @@ function FormSubmit({
       <select ref={typeVideoSelectRef} defaultValue="video">
         <option value="video">video</option>
         <option value="iframe">iframe</option>
+      </select>
+      <select
+        defaultValue="vi"
+        className="select-language-anime"
+        onChange={(e) => {
+          const languageSelect = e.target;
+          const value = languageSelect.value;
+          const modeAnime = document.querySelector(".select-mode-anime");
+          // console.log(value);
+          if (value === "eng") {
+            modeAnime.style.display = "block";
+          } else {
+            modeAnime.style.display = "none";
+          }
+        }}
+      >
+        <option value="eng">Eng</option>
+        <option value="vi">Vi</option>
+      </select>
+      <select
+        defaultValue="sub"
+        className="select-mode-anime"
+        style={{ display: "none" }}
+      >
+        <option value="sub">Sub</option>
+        <option value="dub">Dub</option>
       </select>
       <Input label="Number" type="number" input={inputEpisodeRef} />
       <Input label={"Video url"} input={inputVideoUrlRef} />
@@ -526,6 +620,10 @@ function FormSubmit({
           const episode = parseInt(inputEpisodeRef.current.value);
           const embedUrl = inputVideoUrlRef.current.value;
           const typeVideo = typeVideoSelectRef.current.value === "video";
+          const language = document.querySelector(".select-language-anime")
+            .value;
+          const isDub =
+            document.querySelector(".select-mode-anime").value === "dub";
           const { idCartoonUser } = cookies;
           if (!episode || !embedUrl || embedUrl.trim() === "") {
             alert("Episode and Url are required");
@@ -533,7 +631,7 @@ function FormSubmit({
           }
           try {
             const res = await Axios.put(
-              `/api/movies/${name}/episode/${episode}`,
+              `/api/movies/${name}/episode/${episode}/${language}/${isDub}`,
               {
                 embedUrl,
                 typeVideo,
@@ -545,7 +643,17 @@ function FormSubmit({
               }
             );
             allowUpdatedMovie(true);
-            setEpisodeData(res.data);
+            const data = episodeData;
+            if (language === "vi") {
+              setEpisodeData({ ...data, episodes: res.data });
+            }
+            if (language === "eng") {
+              if (isDub) {
+                setEpisodeData({ ...data, episodesEngDub: res.data });
+              } else {
+                setEpisodeData({ ...data, episodesEng: res.data });
+              }
+            }
             inputEpisodeRef.current.value = "";
             inputVideoUrlRef.current.value = "";
           } catch (error) {
@@ -559,7 +667,7 @@ function FormSubmit({
   );
 }
 
-function ListVideoUrl({ episodeData, name }) {
+function ListVideoUrl({ episodeData, name, keyListEpisode }) {
   return (
     <div className={"list-video-url"}>
       {episodeData &&
@@ -577,7 +685,11 @@ function ListVideoUrl({ episodeData, name }) {
               <Link
                 key={index}
                 // href={episode.embedUrl}
-                to={`/anime/${name}/watch/${episode.episode}`}
+                to={`/anime/${name}/watch/${episode.episode}/${
+                  keyListEpisode.replace("episodes", "") === ""
+                    ? "vie"
+                    : keyListEpisode.replace("episodes", "")
+                }`}
                 onClick={() => {
                   allowShouldFetchComment(true);
                   allowShouldFetchEpisodeMovie(true);

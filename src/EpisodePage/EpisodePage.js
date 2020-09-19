@@ -11,7 +11,7 @@ import { userStream } from "../epics/user";
 import Chat from "../components/Chat/Chat";
 import { theaterStream } from "../epics/theater";
 const EpisodePage = (props) => {
-  const { malId, episode } = props.match.params;
+  const { malId, episode, mode } = props.match.params;
   const [pageWatchState, setPageWatchState] = useState(
     pageWatchStream.initialState
   );
@@ -36,7 +36,14 @@ const EpisodePage = (props) => {
     };
   }, [malId, pageWatchState.shouldFetchEpisodeMovie, user]);
   let currentEpisode = {};
-  const { episodes } = pageWatchState;
+  let episodes = [];
+  if (mode === "vie") {
+    episodes = pageWatchState.episodes.episodes;
+  } else if (mode === "Eng") {
+    episodes = pageWatchState.episodes.episodesEng;
+  } else if (mode === "EngDub") {
+    episodes = pageWatchState.episodes.episodesEngDub;
+  }
   if (episodes)
     currentEpisode = episodes.find((ep) => {
       if (ep.episode[0] === "0") {
@@ -44,8 +51,6 @@ const EpisodePage = (props) => {
       }
       return ep.episode == episode;
     });
-
-  console.log(episode);
   return (
     <div className="container-episode-movie">
       <div className="wrapper-player-video">
@@ -101,24 +106,58 @@ const EpisodePage = (props) => {
         </div>
       </div>
       <div className="section-episodes-display">
-        <h1>All Episodes</h1>
-        <div className="list-episode-movie">
-          {episodes &&
-            episodes.map((ep, index) => {
-              return (
-                <Link
-                  className={`episode-link-movie${
-                    ep.episode == episode ? " active-episode" : ""
-                  }`}
-                  to={`/anime/${malId}/watch/${ep.episode}`}
-                  key={index}
-                  onClick={() => allowShouldFetchComment(true)}
-                >
-                  {ep.episode}
-                </Link>
-              );
-            })}
-        </div>
+        {pageWatchState.episodes &&
+          pageWatchState.episodes.episodes &&
+          pageWatchState.episodes.episodes.length > 0 && (
+            <div>
+              <h1 className="title">Vietsub</h1>
+              <ListEpisodeUrlDisplay
+                episodes={
+                  mode === "vie" ? episodes : pageWatchState.episodes.episodes
+                }
+                episode={episode}
+                malId={malId}
+                mode={mode}
+                modeDisplay={"vie"}
+              />
+            </div>
+          )}
+        {pageWatchState.episodes &&
+          pageWatchState.episodes.episodesEng &&
+          pageWatchState.episodes.episodesEng.length > 0 && (
+            <div>
+              <h1 className="title">Engsub</h1>
+              <ListEpisodeUrlDisplay
+                episodes={
+                  mode === "Eng"
+                    ? episodes
+                    : pageWatchState.episodes.episodesEng
+                }
+                episode={episode}
+                malId={malId}
+                mode={mode}
+                modeDisplay={"Eng"}
+              />
+            </div>
+          )}
+        {pageWatchState.episodes &&
+          pageWatchState.episodes.episodesEngDub &&
+          pageWatchState.episodes.episodesEngDub.length > 0 && (
+            <div>
+              <h1 className="title">Engdub</h1>
+              <ListEpisodeUrlDisplay
+                episodes={
+                  mode === "EngDub"
+                    ? episodes
+                    : pageWatchState.episodes.episodesEngDub
+                }
+                episode={episode}
+                malId={malId}
+                mode={mode}
+                modeDisplay={"EngDub"}
+              />
+            </div>
+          )}
       </div>
       <Comment malId={malId} user={user} />
     </div>
@@ -129,3 +168,32 @@ const copyToClipboard = (event, currentEpisode) => {
   event.preventDefault();
 };
 export default EpisodePage;
+function ListEpisodeUrlDisplay({
+  episodes,
+  episode,
+  malId,
+  mode,
+  modeDisplay,
+}) {
+  return (
+    <div className="list-episode-movie">
+      {episodes &&
+        episodes.map((ep, index) => {
+          return (
+            <Link
+              className={`episode-link-movie${
+                ep.episode == episode && mode === modeDisplay
+                  ? " active-episode"
+                  : ""
+              }`}
+              to={`/anime/${malId}/watch/${ep.episode}/${modeDisplay}`}
+              key={index}
+              onClick={() => allowShouldFetchComment(true)}
+            >
+              {ep.episode}
+            </Link>
+          );
+        })}
+    </div>
+  );
+}

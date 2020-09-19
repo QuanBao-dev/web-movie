@@ -19,7 +19,7 @@ const pageWatchStore = {
   updateEpisodes : (data) =>{
     state = {
       ...state,
-      episodes:[...data],
+      episodes:{...data},
     }
     behaviorSubject.next(state)
   }

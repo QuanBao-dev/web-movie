@@ -142,7 +142,7 @@
 }
 
 .anime-name-info .box-info ul > li {
-  border-bottom: 1px solid black;
+  border-bottom: 2px solid black;
   padding:10px;
   color: #d4c4c4;
   font-size: 120%;
@@ -233,13 +233,23 @@
 
 .title-capitalize{
   text-transform: capitalize;
-  font-style: italic;
+  font-weight: 500;
+  font-size: 140%;
+  display: block;
+  margin: 1rem;
 }
 
 .title-synonym-list{
-  background-color: #33476b;
-  margin: 1rem;
-  border-radius: 20px;
+  background-color: #202c41;
+  border: 2px solid black;
+  box-shadow: 0 0 5px 5px black, 0 0 1px 5px white;
+}
+
+.title-synonym-list > li{
+  text-shadow: 2px 2px black;
+  font-size: 1em!important;
+  box-shadow: 0 0 1px 1px black;
+  border-bottom: 2px solid black;
 }
 
 .form-submit{

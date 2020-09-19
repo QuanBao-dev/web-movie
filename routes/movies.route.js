@@ -36,11 +36,23 @@ router.get("/latest", async (req, res) => {
 router.get("/:malId/episodes", async (req, res) => {
   try {
     const movie = await Movie.findOne({ malId: req.params.malId });
-    const episodes = movie.episodes;
+    const episodes = movie.episodes || [];
+    const episodesEng = movie.episodesEng || [];
+    const episodesEngDub = movie.episodesEngDub || [];
     res.send({
       message: {
         source: movie.sourceFilm || "",
+        sourceFilmList: ignoreProps(
+          ["_id", "__v"],
+          movie.sourceFilmList.toJSON()
+        ),
         episodes: episodes.map((message) => {
+          return ignoreProps(["_id", "__v"], message.toJSON());
+        }),
+        episodesEng: episodesEng.map((message) => {
+          return ignoreProps(["_id", "__v"], message.toJSON());
+        }),
+        episodesEngDub: episodesEngDub.map((message) => {
           return ignoreProps(["_id", "__v"], message.toJSON());
         }),
       },
@@ -91,11 +103,26 @@ router.put("/admin/:malId", verifyRole("Admin"), async (req, res) => {
 });
 
 router.put("/:malId/episodes/crawl", verifyRole("Admin"), async (req, res) => {
-  const { start, end, url, serverWeb, serverVideo } = req.body;
+  const { start, end, url, serverWeb, serverVideo, isDub } = req.body;
   const { malId } = req.params;
   let movie = await Movie.findOne({ malId });
   if (movie) {
     movie.sourceFilm = url;
+    !movie.sourceFilmList &&
+      (movie.sourceFilmList = {
+        episodes: "",
+        episodesEng: "",
+        episodesEngDub: "",
+      });
+    const keySourceFilm =
+      serverWeb === "animehay" || serverWeb === "animevsub"
+        ? "episodes"
+        : serverWeb === "gogostream" && isDub
+        ? "episodesEngDub"
+        : serverWeb === "gogostream" && !isDub
+        ? "episodesEng"
+        : "";
+    movie.sourceFilmList[keySourceFilm] = url;
   } else {
     movie = new Movie({
       sourceFilm: url,
@@ -115,23 +142,61 @@ router.put("/:malId/episodes/crawl", verifyRole("Admin"), async (req, res) => {
     }
     console.log("Done");
     addMovieUpdated(malId);
-    dataCrawl.forEach((data) => {
-      const index = movie.episodes.findIndex(
-        // eslint-disable-next-line eqeqeq
-        (dataEp) => dataEp.episode == data.episode
-      );
-      if (index < 0) {
-        movie.episodes.push(data);
-      } else {
-        movie.episodes[index] = data;
-      }
-    });
-    movie.episodes.sort((a, b) => a.episode - b.episode);
+    if (serverWeb !== "gogostream") {
+      dataCrawl.forEach((data) => {
+        const index = movie.episodes.findIndex(
+          // eslint-disable-next-line eqeqeq
+          (dataEp) => dataEp.episode == data.episode
+        );
+        if (index < 0) {
+          movie.episodes.push(data);
+        } else {
+          movie.episodes[index] = data;
+        }
+      });
+      movie.episodes.sort((a, b) => a.episode - b.episode);
+    } else if (isDub) {
+      dataCrawl.forEach((data) => {
+        const index = movie.episodesEngDub.findIndex(
+          // eslint-disable-next-line eqeqeq
+          (dataEp) => dataEp.episode == data.episode
+        );
+        if (index < 0) {
+          movie.episodesEngDub.push(data);
+        } else {
+          movie.episodesEngDub[index] = data;
+        }
+      });
+      movie.episodesEngDub.sort((a, b) => a.episode - b.episode);
+    } else {
+      dataCrawl.forEach((data) => {
+        const index = movie.episodesEng.findIndex(
+          // eslint-disable-next-line eqeqeq
+          (dataEp) => dataEp.episode == data.episode
+        );
+        if (index < 0) {
+          movie.episodesEng.push(data);
+        } else {
+          movie.episodesEng[index] = data;
+        }
+      });
+      movie.episodesEng.sort((a, b) => a.episode - b.episode);
+    }
     const savedMovie = await movie.save();
     res.send({
       message: {
         source: movie.sourceFilm,
+        sourceFilmList: ignoreProps(
+          ["_id", "__v"],
+          movie.sourceFilmList.toJSON()
+        ),
         episodes: savedMovie.episodes.map((episode) =>
+          ignoreProps(["_id", "__v"], episode.toJSON())
+        ),
+        episodesEng: savedMovie.episodesEng.map((episode) =>
+          ignoreProps(["_id", "__v"], episode.toJSON())
+        ),
+        episodesEngDub: savedMovie.episodesEngDub.map((episode) =>
           ignoreProps(["_id", "__v"], episode.toJSON())
         ),
       },
@@ -143,10 +208,10 @@ router.put("/:malId/episodes/crawl", verifyRole("Admin"), async (req, res) => {
 });
 
 router.put(
-  "/:malId/episode/:episode",
+  "/:malId/episode/:episode/:language/:isDub",
   verifyRole("Admin"),
   async (req, res) => {
-    const { malId, episode } = req.params;
+    const { malId, episode, language, isDub } = req.params;
     const dataUpdated = req.body;
     dataUpdated.episode = episode;
     try {
@@ -162,23 +227,67 @@ router.put(
         addMovieUpdated(malId),
       ]);
       let check = false;
-      movie.episodes = movie.episodes.map((data) => {
-        if (data.episode === parseInt(episode)) {
-          check = true;
-          return dataUpdated;
+      if (language === "vi") {
+        movie.episodes = movie.episodes.map((data) => {
+          // eslint-disable-next-line eqeqeq
+          if (data.episode == episode) {
+            check = true;
+            return dataUpdated;
+          }
+          return data;
+        });
+        if (!check) {
+          movie.episodes.push(dataUpdated);
+          movie.episodes.sort((a, b) => a.episode - b.episode);
         }
-        return data;
-      });
-      if (!check) {
-        movie.episodes.push(dataUpdated);
-        movie.episodes.sort((a, b) => a.episode - b.episode);
+        const savedMovie = await movie.save();
+        res.send(
+          savedMovie.episodes.map((episode) => {
+            return ignoreProps(["_id", "__v"], episode.toJSON());
+          })
+        );
       }
-      const savedMovie = await movie.save();
-      res.send(
-        savedMovie.episodes.map((episode) => {
-          return ignoreProps(["_id", "__v"], episode.toJSON());
-        })
-      );
+      if (language === "eng") {
+        if (isDub === "true") {
+          movie.episodesEngDub = movie.episodesEngDub.map((data) => {
+            // eslint-disable-next-line eqeqeq
+            if (data.episode == episode) {
+              check = true;
+              return dataUpdated;
+            }
+            return data;
+          });
+          if (!check) {
+            movie.episodesEngDub.push(dataUpdated);
+            movie.episodesEngDub.sort((a, b) => a.episode - b.episode);
+          }
+          const savedMovie = await movie.save();
+          res.send(
+            savedMovie.episodesEngDub.map((episode) => {
+              return ignoreProps(["_id", "__v"], episode.toJSON());
+            })
+          );
+        } else {
+          movie.episodesEng = movie.episodesEng.map((data) => {
+            // eslint-disable-next-line eqeqeq
+            if (data.episode == episode) {
+              check = true;
+              return dataUpdated;
+            }
+            return data;
+          });
+          if (!check) {
+            movie.episodesEng.push(dataUpdated);
+            movie.episodesEng.sort((a, b) => a.episode - b.episode);
+          }
+          const savedMovie = await movie.save();
+          res.send(
+            savedMovie.episodesEng.map((episode) => {
+              return ignoreProps(["_id", "__v"], episode.toJSON());
+            })
+          );
+        }
+      }
     } catch (error) {
       res.status(404).send("Something went wrong");
     }
@@ -262,7 +371,7 @@ async function crawl(start, end, url, serverWeb, serverVideo) {
       timeout: 0,
     };
     await page.goto(url, options);
-    const linkWatching = await page.evaluate((serverWeb) => {
+    let linkWatching = await page.evaluate((serverWeb) => {
       let link = null;
       switch (serverWeb) {
         case "animehay":
@@ -280,6 +389,9 @@ async function crawl(start, end, url, serverWeb, serverVideo) {
       }
       return link;
     }, serverWeb);
+    if (serverWeb === "gogostream") {
+      linkWatching = url;
+    }
     console.log(linkWatching);
     await page.goto(linkWatching, options);
     let listLinkWatchEpisode;
@@ -288,11 +400,11 @@ async function crawl(start, end, url, serverWeb, serverVideo) {
         listLinkWatchEpisode = await page.evaluate((start) => {
           let listLink = document.querySelector(".ah-wf-body ul");
           listLink = [...listLink.children];
-          if(listLink.length === 1){
+          if (listLink.length === 1) {
             return listLink.map((link) => ({
               url: link.children[0].href,
               textContent: "1",
-            }))
+            }));
           }
           for (let i = 0; i < listLink.length; i++) {
             if (listLink[i] && !listLink[i].textContent.includes(`${start}`)) {
@@ -315,11 +427,11 @@ async function crawl(start, end, url, serverWeb, serverVideo) {
             document.querySelector(".Content #list-server ul .list-episode") ||
             document.querySelector(".Content #list-server ul");
           listLink = [...listLink.children];
-          if(listLink.length === 1){
+          if (listLink.length === 1) {
             return listLink.map((link) => ({
               url: link.children[0].href,
               textContent: "1",
-            }))
+            }));
           }
           for (let i = 0; i < listLink.length; i++) {
             if (listLink[i] && !listLink[i].textContent.includes(`${start}`)) {
@@ -335,6 +447,42 @@ async function crawl(start, end, url, serverWeb, serverVideo) {
           return listLink.map((link) => ({
             url: link.childNodes[0].href,
             textContent: link.textContent,
+          }));
+        }, start);
+        break;
+      case "gogostream":
+        listLinkWatchEpisode = await page.evaluate((start) => {
+          let listLink = document.querySelector(
+            ".video-info-left ul.listing.items.lists"
+          );
+          listLink = [...listLink.children];
+          listLink[listLink.length - 1].tagName === "DIV" &&
+            listLink[listLink.length - 1].remove();
+          listLink[listLink.length - 1].tagName === "DIV" &&
+            (listLink = listLink.slice(0, listLink.length - 1));
+          listLink = listLink.reverse();
+          for (let i = 0; i < listLink.length; i++) {
+            if (
+              listLink[i] &&
+              !listLink[i].children[0].children[1].textContent
+                .replace(/[0-9][a-z]+/g, "")
+                .includes(`${start}`)
+            ) {
+              listLink[i].remove();
+            } else {
+              break;
+            }
+          }
+          listLink = document.querySelector(
+            ".video-info-left ul.listing.items.lists"
+          );
+          listLink = [...listLink.children];
+          listLink = listLink.reverse();
+          return listLink.map((link) => ({
+            url: link.children[0].href,
+            textContent: link.children[0].children[1].textContent
+              .replace(/[0-9][a-z]+/g, "")
+              .match(/[0-9]+/g)[0],
           }));
         }, start);
         break;
@@ -412,6 +560,11 @@ async function extractSourceVideo(
           }
           const linkEpisodeAnime = e.src;
           return { url: linkEpisodeAnime, typeVideo: typeVideo };
+        case "gogostream":
+          let iframeE = document.querySelector(
+            ".watch_play .play-video iframe"
+          );
+          return { url: iframeE.src };
         default:
           return;
       }
@@ -443,6 +596,11 @@ async function extractSourceVideo(
           }
           const linkEpisodeAnime = e.src;
           return { url: linkEpisodeAnime, typeVideo: typeVideo };
+        case "gogostream":
+          let iframeE = document.querySelector(
+            ".watch_play .play-video iframe"
+          );
+          return { url: iframeE.src };
         default:
           return;
       }

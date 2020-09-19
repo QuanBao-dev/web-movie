@@ -233,7 +233,10 @@ function App() {
           <Route path="/admin" component={AdminManager} exact />
         )}
         <Route path="/anime/search" component={SearchedList} />
-        <Route path="/anime/:malId/watch/:episode" component={EpisodePage} />
+        <Route
+          path="/anime/:malId/watch/:episode/:mode"
+          component={EpisodePage}
+        />
         <Route
           path="/anime/character/:characterId"
           component={CharacterDetail}

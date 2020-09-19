@@ -5,6 +5,7 @@ import { useHistory } from "react-router-dom";
 
 import { fetchAnimeSchedule$, stream } from "../../epics/home";
 import { resetScheduleDate } from "../../store/home";
+resetScheduleDate();
 const AnimeSchedule = () => {
   const history = useHistory();
   const week = [
@@ -20,9 +21,6 @@ const AnimeSchedule = () => {
     return createRef();
   });
   const [homeState, setHomeState] = useState(stream.initialState);
-  useEffect(() => {
-    resetScheduleDate();
-  },[])
   useEffect(() => {
     const subscription = stream.subscribe(setHomeState);
     stream.init();

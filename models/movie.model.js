@@ -9,8 +9,20 @@ const movieSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
-  sourceFilm:{
-    type:String,
+  sourceFilm: {
+    type: String,
+  },
+  sourceFilmList: {
+    type: mongoose.Schema({
+      episodes:String,
+      episodesEng:String,
+      episodesEngDub:String,
+    }),
+    default: {
+      episodes: "",
+      episodesEng: "",
+      episodesEngDub: "",
+    },
   },
   malId: {
     type: String,
@@ -27,15 +39,35 @@ const movieSchema = new mongoose.Schema({
     ],
     default: [],
   },
-  episodes:{
-    type:[
+  episodes: {
+    type: [
       {
-        episode:String,
-        embedUrl:String,
-        typeVideo:Boolean
-      }
+        episode: String,
+        embedUrl: String,
+        typeVideo: Boolean,
+      },
     ],
-    default:[],
+    default: [],
+  },
+  episodesEng: {
+    type: [
+      {
+        episode: String,
+        embedUrl: String,
+        typeVideo: Boolean,
+      },
+    ],
+    default: [],
+  },
+  episodesEngDub: {
+    type: [
+      {
+        episode: String,
+        embedUrl: String,
+        typeVideo: Boolean,
+      },
+    ],
+    default: [],
   },
 });
 

@@ -177,7 +177,7 @@ const Name = (props) => {
     );
   }
   let sourceFilmList;
-  if (episodeData.sourceFilmList)
+  if (episodeData && episodeData.sourceFilmList)
     sourceFilmList = Object.entries(episodeData.sourceFilmList);
   episodeDataDisplay.episodeList[0] &&
     console.log(episodeDataDisplay.episodeList[0].episode);

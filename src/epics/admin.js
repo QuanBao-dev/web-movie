@@ -30,7 +30,6 @@ export const listenChangeFilter$ = (
   });
   return from(source$).pipe(
     combineAll(),
-    tap(v => console.log(v)),
     map(([eventUsername, eventRole, eventDateStart, eventDateEnd]) => {
       let dataFilter = createDataFilter(
         eventUsername.target,

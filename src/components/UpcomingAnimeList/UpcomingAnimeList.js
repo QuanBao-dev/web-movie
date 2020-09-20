@@ -26,7 +26,7 @@ const UpcomingAnimeList = () => {
           forward = 1;
         }
         elementScroll.scroll({
-          left: scrollLeft + 2 * forward,
+          left: scrollLeft + 3 * forward,
         });
       }
     );

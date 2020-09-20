@@ -22,7 +22,6 @@ import {
 import Input from "../components/Input/Input";
 import { userStream } from "../epics/user";
 import { allowShouldFetchComment } from "../store/comment";
-import { allowUpdatedMovie } from "../store/home";
 import { allowShouldFetchEpisodeMovie } from "../store/pageWatch";
 import navBarStore from "../store/navbar";
 import RelatedAnime from "../components/RelatedAnime/RelatedAnime";
@@ -314,7 +313,6 @@ const Name = (props) => {
                           authorization: `Bearer ${cookies.idCartoonUser}`,
                         },
                       });
-                      allowUpdatedMovie(true);
                       navBarStore.updateIsShowBlockPopUp(false);
                       setEpisodeData({ episodes: [] });
                       buttonDeleteCrawlInputRef.current.disabled = false;
@@ -552,7 +550,6 @@ function FormSubmitCrawl({
                 },
               }
             );
-            allowUpdatedMovie(true);
             setEpisodeData(updateMovie.data.message);
             startEpisodeInputRef.current.value = "";
             endEpisodeInputRef.current.value = "";
@@ -567,7 +564,6 @@ function FormSubmitCrawl({
             navBarStore.updateIsShowBlockPopUp(false);
             linkWatchingInputRef.current &&
               (buttonSubmitCrawlInputRef.current.disabled = false);
-            allowUpdatedMovie(true);
           }
         }}
       >
@@ -649,7 +645,6 @@ function FormSubmit({
                 },
               }
             );
-            allowUpdatedMovie(true);
             const data = episodeData;
             if (language === "vi") {
               setEpisodeData({ ...data, episodes: res.data });

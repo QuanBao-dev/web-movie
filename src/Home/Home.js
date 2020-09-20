@@ -23,12 +23,7 @@ import {
   topMovieUpdatedScrolling$,
 } from "../epics/home";
 import { userStream } from "../epics/user";
-import {
-  allowBoxMovie,
-  allowScrollToSeeMore,
-  allowUpdatedMovie,
-  allowFetchTopMovie,
-} from "../store/home";
+import { allowScrollToSeeMore, updateMaxPage } from "../store/home";
 import UpcomingAnimeList from "../components/UpcomingAnimeList/UpcomingAnimeList";
 
 const numberOfMovieShown = 18;
@@ -50,15 +45,69 @@ function Home() {
   const selectScore = useRef(null);
   const targetScroll = useRef(null);
   useEffect(() => {
-    const subscription = initUIBehavior();
+    let subscription8, subscription9;
+    if (subNavToggle === 0) {
+      subscription8 = fetchUpdatedMovie$().subscribe((updatedMovie) => {
+        console.log("updated movie");
+        stream.updateUpdatedMovie(updatedMovie);
+      });
+    }
+    if (subNavToggle === 1) {
+      subscription9 = fetchBoxMovie$(cookies.idCartoonUser).subscribe((v) => {
+        stream.updateBoxMovie(v);
+      });
+    }
+    return () => {
+      subscription8 && subscription8.unsubscribe();
+      subscription9 && subscription9.unsubscribe();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [subNavToggle]);
+
+  useEffect(() => {
+    const subscription7 = fetchTopMovie$().subscribe((topMovieList) => {
+      console.log("fetch top movie");
+      stream.updateTopMovie(topMovieList);
+    });
+    return () => {
+      subscription7.unsubscribe();
+    };
+  }, [homeState.pageTopMovie]);
+  useEffect(() => {
     const subscription2 = fetchAnimeSeason$(
       homeState.year,
       homeState.season,
       homeState.currentPage,
       homeState.numberOfProduct,
       homeState.score
-    ).subscribe();
-
+    ).subscribe((v) => {
+      stream.updateAnimeData(v);
+    });
+    return () => {
+      subscription2.unsubscribe();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [homeState.year, homeState.season]);
+  useEffect(() => {
+    const filterAnime = homeState.dataDetailOriginal.filter((movie) => {
+      return (
+        movie.airing_start &&
+        limitAdultGenre(movie.genres) &&
+        (movie.score > homeState.score || homeState.score === 0)
+      );
+    });
+    updateMaxPage(
+      Math.ceil(filterAnime.length / stream.initialState.numberOfProduct)
+    );
+    const sortedArray = orderBy(filterAnime, ["airing_start"], ["desc"]).slice(
+      (homeState.currentPage - 1) * homeState.numberOfProduct,
+      homeState.currentPage * homeState.numberOfProduct
+    );
+    stream.updateAnimeData(sortedArray);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [homeState.currentPage, homeState.score]);
+  useEffect(() => {
+    const subscription = initUIBehavior();
     const subscription3 = changeCurrentPage$().subscribe();
 
     const subscription4 = changeSeasonYear$(
@@ -70,31 +119,8 @@ function Home() {
     });
 
     const subscription6 = changeSearchInput$(searchInput.current).subscribe();
-    let subscription7;
-    if (homeState.shouldFetchTopMovie === true) {
-      subscription7 = fetchTopMovie$().subscribe((topMovieList) => {
-        console.log("fetch top movie");
-        stream.updateTopMovie(topMovieList);
-        allowFetchTopMovie(false);
-      });
-    }
 
     let subscription8;
-    if (
-      subNavToggle === 0 &&
-      homeState.shouldFetchLatestUpdatedMovie === true
-    ) {
-      subscription8 = fetchUpdatedMovie$().subscribe(() => {
-        console.log("updated movie");
-        allowUpdatedMovie(false);
-      });
-    }
-    let subscription9;
-    if (subNavToggle === 1 && homeState.shouldFetchBoxMovie === true) {
-      subscription9 = fetchBoxMovie$(cookies.idCartoonUser).subscribe(() => {
-        allowBoxMovie(false);
-      });
-    }
 
     if (subNavToggle === 1 && !user) {
       setSubNavToggle(0);
@@ -115,13 +141,10 @@ function Home() {
       );
     }
     return () => {
-      subscription7 && subscription7.unsubscribe();
       subscription8 && subscription8.unsubscribe();
-      subscription9 && subscription9.unsubscribe();
       subscription11 && subscription11.unsubscribe();
       unsubscribeSubscription(
         subscription,
-        subscription2,
         subscription3,
         subscription4,
         subscription6,
@@ -132,17 +155,10 @@ function Home() {
   }, [
     cookies.idCartoonUser,
     subNavToggle,
-    homeState.currentPage,
-    homeState.season,
-    homeState.year,
     homeState.dataTopMovie.length,
-    homeState.shouldFetchBoxMovie,
-    homeState.shouldFetchLatestUpdatedMovie,
-    homeState.shouldFetchTopMovie,
     homeState.shouldScrollToSeeMore,
     homeState.textSearch,
     homeState.screenWidth,
-    homeState.score,
   ]);
   middleWare(homeState);
   const startYear = 2000;
@@ -308,10 +324,19 @@ const middleWare = (homeState) => {
   }
 };
 
+function limitAdultGenre(genres) {
+  let check = true;
+  genres.forEach((genre) => {
+    if (genre.name === "Hentai") {
+      check = false;
+    }
+  });
+  return check;
+}
+
 function updateDataTopScrolling() {
   let page = stream.currentState().pageTopMovie;
   if (page < 5) {
-    allowFetchTopMovie(true);
     stream.updatePageTopMovie(page + 1);
   }
 }
@@ -337,7 +362,6 @@ function SubNavBar({ subNavToggle, setSubNavToggle, user }) {
             subNavToggle === 1 ? " sub-nav-active" : ""
           }`}
           onClick={() => {
-            allowBoxMovie(true);
             setSubNavToggle(1);
           }}
         >

@@ -210,10 +210,6 @@ export const updateMaxPage = (max) => {
   state.maxPage = max;
 };
 
-export const updateIsLoading = (bool) => {
-  state.isLoading = bool;
-};
-
 export const updateOriginalData = (data) => {
   state.dataDetailOriginal = data;
 };
@@ -222,20 +218,8 @@ export const savingTextSearch = (text) => {
   state.textSearch = text;
 };
 
-export const allowUpdatedMovie = (bool) => {
-  state.shouldFetchLatestUpdatedMovie = bool;
-};
-
-export const allowBoxMovie = (bool) => {
-  state.shouldFetchBoxMovie = bool;
-};
-
 export const allowScrollToSeeMore = (bool) => {
   state.shouldScrollToSeeMore = bool;
-};
-
-export const allowFetchTopMovie = (bool) => {
-  state.shouldFetchTopMovie = bool;
 };
 
 export const updateModeScrolling = (mode) => {

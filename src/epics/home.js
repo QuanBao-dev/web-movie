@@ -24,7 +24,6 @@ import {
 import homeStore, {
   allowScrollToSeeMore,
   savingTextSearch,
-  updateIsLoading,
   updateMaxPage,
   updateModeScrolling,
   updateOriginalData,
@@ -93,7 +92,6 @@ export const fetchAnimeSeason$ = (
   score
 ) => {
   return timer(0).pipe(
-    tap(() => updateIsLoading(true)),
     switchMapTo(
       ajax(`https://api.jikan.moe/v3/season/${year}/${season}`).pipe(
         pluck("response", "anime"),
@@ -108,7 +106,6 @@ export const fetchAnimeSeason$ = (
             Math.ceil(anime.length / stream.initialState.numberOfProduct)
           );
           updateOriginalData(anime);
-          updateIsLoading(false);
           stream.catchingError(null);
           const sortedArray = orderBy(anime, ["airing_start"], ["desc"]).slice(
             (page - 1) * numberOfProducts,
@@ -118,16 +115,11 @@ export const fetchAnimeSeason$ = (
         }),
         retry(20),
         catchError((error) => {
-          updateIsLoading(false);
           stream.catchingError(error);
           return of([]);
         })
       )
     ),
-    tap((v) => {
-      stream.updateAnimeData(v);
-      updateIsLoading(false);
-    })
   );
 };
 
@@ -242,9 +234,6 @@ export const fetchUpdatedMovie$ = () => {
         url: "/api/movies/latest",
       }).pipe(
         pluck("response", "message"),
-        tap((updatedMovie) => {
-          stream.updateUpdatedMovie(updatedMovie);
-        }),
         retry(20),
         catchError(() => of([]))
       )
@@ -292,9 +281,6 @@ export const fetchBoxMovie$ = (idCartoonUser) => {
         catchError((err) => from([]))
       )
     ),
-    tap((v) => {
-      stream.updateBoxMovie(v);
-    })
   );
 };
 
@@ -334,10 +320,10 @@ export const upcomingAnimeListUpdated$ = () => {
 };
 export const scrollAnimeInterval$ = (scrollE) => {
   fromEvent(scrollE, "mouseenter").subscribe(() => {
-    updateModeScrolling("enter")
+    updateModeScrolling("enter");
   });
   fromEvent(scrollE, "mouseleave").subscribe(() => {
-    updateModeScrolling("interval")
+    updateModeScrolling("interval");
   });
   return interval(20).pipe(
     delay(3000),

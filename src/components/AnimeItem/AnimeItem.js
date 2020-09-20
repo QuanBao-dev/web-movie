@@ -17,29 +17,34 @@ const AnimeItem = ({ anime }) => {
           </div>
         )}
       <div className="anime-info-display_summary top-right_summary color-red">
-        {(!anime.score || anime.score === "null") ? "?":anime.score}/10
+        {!anime.score || anime.score === "null" ? "?" : anime.score}/10
       </div>
       <img
         style={{
           objectFit: "contain",
           position: "absolute",
+          top: 0,
+          left: 0,
         }}
         src={anime.imageUrl || anime.image_url}
         alt="NOT_FOUND"
       />
-      {anime.synopsis && <div className="anime-item-synopsis">
-        <p className="text-synopsis">
-          {anime.synopsis === " " && "No content."}
-          {anime.synopsis
-            ? anime.synopsis.slice(0, window.innerWidth <= 700 ? 85 : 200)
-            : "No content."}
-          {anime.synopsis &&
-          anime.synopsis.length >
-            anime.synopsis.slice(0, window.innerWidth <= 700 ? 85 : 220).length
-            ? "..."
-            : ""}
-        </p>
-      </div>}
+      {anime.synopsis && (
+        <div className="anime-item-synopsis">
+          <p className="text-synopsis">
+            {anime.synopsis === " " && "No content."}
+            {anime.synopsis
+              ? anime.synopsis.slice(0, window.innerWidth <= 700 ? 85 : 200)
+              : "No content."}
+            {anime.synopsis &&
+            anime.synopsis.length >
+              anime.synopsis.slice(0, window.innerWidth <= 700 ? 85 : 220)
+                .length
+              ? "..."
+              : ""}
+          </p>
+        </div>
+      )}
       <div className="anime-item-info">
         <h3>
           {anime.title.slice(0, 52)}

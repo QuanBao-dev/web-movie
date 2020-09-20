@@ -21,11 +21,11 @@ import { allowShouldFetchAllUser } from "./store/admin";
 import EditUser from "./EditUser/EditUser";
 import Theater from "./Theater/Theater";
 import { theaterStream } from "./epics/theater";
-import { allowUpdatedMovie } from "./store/home";
 import navBarStore from "./store/navbar";
 import SearchedList from "./Search/SearchedList";
 import { ReplaySubject } from "rxjs";
 import CharacterDetail from "./components/CharacterDetail/CharacterDetail";
+import NotFound from "./404/NotFound";
 const scrollSaveSubject = new ReplaySubject(3);
 window.addEventListener("resize", () => {
   const e = document.getElementsByClassName("child-nav-bar__app").item(0);
@@ -130,7 +130,6 @@ function App() {
                     behavior: "smooth",
                   });
                   theaterStream.socket.emit("disconnect-custom");
-                  allowUpdatedMovie(true);
                 }}
                 exact
               >
@@ -246,6 +245,7 @@ function App() {
         {user && <Route path="/edit" component={EditUser} />}
         {!user && <Route path="/auth/login" component={Login} />}
         {!user && <Route path="/auth/register" component={Register} />}
+        <Route path="/*" component={NotFound}/>
       </Switch>
     </Router>
   );

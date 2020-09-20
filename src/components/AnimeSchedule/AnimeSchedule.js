@@ -1,14 +1,12 @@
 import "./AnimeSchedule.css";
 
 import React, { createRef, useEffect, useState } from "react";
-import { useHistory } from "react-router-dom";
 
 import { fetchAnimeSchedule$, stream } from "../../epics/home";
 import { resetScheduleDate } from "../../store/home";
 import AnimeList from "../AnimeList/AnimeList";
 resetScheduleDate();
 const AnimeSchedule = () => {
-  const history = useHistory();
   const week = [
     "monday",
     "tuesday",
@@ -71,15 +69,5 @@ const AnimeSchedule = () => {
     </div>
   );
 };
-
-function limitAdultGenre(genres) {
-  let check = true;
-  genres.forEach((genre) => {
-    if (genre.name === "Hentai") {
-      check = false;
-    }
-  });
-  return check;
-}
 
 export default AnimeSchedule;

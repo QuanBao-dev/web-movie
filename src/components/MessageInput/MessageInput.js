@@ -1,6 +1,9 @@
 import "./MessageInput.css";
 
 import React, { useEffect, useRef, useState } from "react";
+import { fromEvent } from "rxjs";
+import { debounceTime, first } from "rxjs/operators";
+
 import { messageInputStream } from "../../epics/message-input";
 
 const MessageInput = ({
@@ -22,7 +25,30 @@ const MessageInput = ({
     return () => {
       subscription.unsubscribe();
     };
-  }, [messageInputState.textMessage]);
+  }, []);
+
+  useEffect(() => {
+    let subStartTyping, subStopTyping;
+    subStartTyping = fromEvent(messageInputRef.current, "input")
+      .pipe(first())
+      .subscribe(() => {
+        socket.emit("notify-user-typing",idGroup);
+      });
+    subStopTyping = fromEvent(messageInputRef.current, "input")
+      .pipe(debounceTime(1000))
+      .subscribe(() => {
+        socket.emit("notify-user-stop-type", idGroup);
+        fromEvent(messageInputRef.current, "input")
+          .pipe(first())
+          .subscribe(() => {
+            socket.emit("notify-user-typing", idGroup);
+          });
+      });
+    return () => {
+      subStartTyping && subStartTyping.unsubscribe();
+      subStopTyping && subStopTyping.unsubscribe();
+    };
+  }, []);
   if (messageInputRef.current) {
     messageInputRef.current.innerHTML = messageInputRef.current.innerText;
   }

@@ -21,12 +21,16 @@ const UpcomingAnimeList = () => {
           elementScroll.clientWidth -
           elementScroll.scrollWidth;
         if (Math.abs(distance) < 0.5) {
-          forward = -1;
+          setTimeout(() => {
+            forward = -1;
+          },3000)
         } else if (elementScroll.scrollLeft === 0) {
-          forward = 1;
+          setTimeout(() => {
+            forward = 1;
+          },3000)
         }
         elementScroll.scroll({
-          left: scrollLeft + 3 * forward,
+          left: scrollLeft + 2.5 * forward,
         });
       }
     );
@@ -36,18 +40,22 @@ const UpcomingAnimeList = () => {
     };
   }, []);
   return (
-    <section
+    <section className="upcoming-anime-container"
       onTouchMove={() => {
         updateModeScrolling("enter");
+        document.querySelector(".upcoming-anime-container .list-anime-nowrap").style.overflowX = "auto";
       }}
       onTouchStart={() => {
         updateModeScrolling("enter");
+        document.querySelector(".upcoming-anime-container .list-anime-nowrap").style.overflowX = "auto";
       }}
       onTouchEnd={() => {
         updateModeScrolling("interval");
+        document.querySelector(".upcoming-anime-container .list-anime-nowrap").style.overflowX = "hidden";
       }}
       onTouchCancel={() => {
         updateModeScrolling("interval");
+        document.querySelector(".upcoming-anime-container .list-anime-nowrap").style.overflowX = "hidden";
       }}
     >
       <h1 className="title-upcoming-anime">Upcoming anime</h1>

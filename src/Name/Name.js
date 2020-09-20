@@ -329,8 +329,8 @@ const Name = (props) => {
           </div>
         </div>
         <Characters malId={name} />
-        {data.dataPromo && <VideoPromotionList data={data} />}
         <RelatedAnime malId={name} />
+        {data.dataPromo && <VideoPromotionList data={data} />}
       </div>
     )
   );

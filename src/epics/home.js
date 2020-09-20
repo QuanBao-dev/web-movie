@@ -320,9 +320,11 @@ export const upcomingAnimeListUpdated$ = () => {
 };
 export const scrollAnimeInterval$ = (scrollE) => {
   fromEvent(scrollE, "mouseenter").subscribe(() => {
+    document.querySelector(".upcoming-anime-container .list-anime-nowrap").style.overflowX = "auto";
     updateModeScrolling("enter");
   });
   fromEvent(scrollE, "mouseleave").subscribe(() => {
+    document.querySelector(".upcoming-anime-container .list-anime-nowrap").style.overflowX = "hidden";
     updateModeScrolling("interval");
   });
   return interval(20).pipe(

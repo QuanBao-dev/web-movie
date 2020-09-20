@@ -160,3 +160,15 @@
   cursor: pointer;
   color:blue;
 }
+
+.notification-typing{
+  opacity: 0;
+  pointer-events: none;
+  background-color: black;
+  box-shadow: 0 -13px 1px 0.1px black;
+  top: 0;
+  width:80%;
+  margin:auto;
+  color:none;
+  bottom:0
+}

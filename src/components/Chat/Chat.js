@@ -31,18 +31,21 @@ const Chat = ({ groupId, user, withoutName = false, isZoom = false }) => {
             isZoom ? " transparent-background" : ""
           }`}
         >
-          <div
-            className={`message-dialog${
-              isZoom ? " transparent-background" : ""
-            }`}
-            ref={messageDialogRef}
-          >
-            <div className="flex-start-message message-dialog-item current-user-message">
-              <span className="content-message">
-                Welcome to AnimeFun, enjoy and have a good day
-              </span>
-              <span className="username-message">Robot</span>
+          <div style={{ backgroundColor: "black" }}>
+            <div
+              className={`message-dialog${
+                isZoom ? " transparent-background" : ""
+              }`}
+              ref={messageDialogRef}
+            >
+              <div className="flex-start-message message-dialog-item current-user-message">
+                <span className="content-message">
+                  Welcome to AnimeFun, enjoy and have a good day
+                </span>
+                <span className="username-message">Robot</span>
+              </div>
             </div>
+            <div className="notification-typing">Someone is typing ...</div>
           </div>
           {!withoutName && <Input label={"Name"} input={inputNameDialogRef} />}
           <div className="input-message-dialog">
@@ -140,6 +143,18 @@ socket.on("send-message-photo-other-users", (username, uri, groupId) => {
     appendNewPhotoMessage(uri, username, false, messageDialogE);
   }
 });
+
+socket.on("new-user-typing",(groupId) =>{
+  if(groupId === idGroup){
+    document.querySelector(".notification-typing").style.opacity = "1";
+  }
+})
+
+socket.on("eliminate-user-typing", (groupId) => {
+  if(groupId === idGroup){
+    document.querySelector(".notification-typing").style.opacity = "0";
+  }
+})
 
 function allowFullscreen() {
   document.querySelector("#root").allowfullscreen = true;

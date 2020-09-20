@@ -36,7 +36,7 @@ const Characters = ({ malId }) => {
   if (buttonSeemore) {
     if (
       characterStream.currentState().page *
-        characterStream.currentState().numberDisplay >
+        characterStream.currentState().numberDisplay >=
       dataCharacterState.length
     )
       buttonSeemore.style.display = "none";

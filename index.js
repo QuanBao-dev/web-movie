@@ -122,6 +122,13 @@ io.on("connection", (socket) => {
       }
     });
   });
+  socket.on("notify-user-typing",(groupId) => {
+    socket.broadcast.emit("new-user-typing",groupId);
+  })
+
+  socket.on("notify-user-stop-type",(groupId) => {
+    socket.broadcast.emit("eliminate-user-typing", groupId);
+  })
 
   socket.on("new-message", (username, message, groupId) => {
     socket.broadcast.emit(

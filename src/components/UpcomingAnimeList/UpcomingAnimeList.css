@@ -12,6 +12,20 @@
   animation: colorChanging 1s infinite forwards;
 }
 
+.upcoming-anime-container{
+  height: 520px;
+}
+
+.upcoming-anime-container .list-anime-nowrap{
+  overflow-x:hidden;
+}
+
+@media (max-width:700px){
+  .upcoming-anime-container{
+    height: 450px;
+  }
+}
+
 @keyframes colorChanging{
   0% {
     color: black;

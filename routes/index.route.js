@@ -39,6 +39,10 @@ router.get("/theater/:groupId", (req, res) => {
   res.sendFile(path.join(__dirname, "../build", "index.html"));
 });
 
+router.get("/faq", (req, res) => {
+  res.sendFile(path.join(__dirname, "../build", "index.html"));
+});
+
 router.get("/*", (req, res) => {
   res.sendFile(path.join(__dirname, "../build", "index.html"));
 });

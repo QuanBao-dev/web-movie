@@ -224,22 +224,20 @@ function App() {
                 </Link>
               </li>
             )}
-            {user && (
-              <li
-                style={{ color: "white", cursor: "pointer" }}
-                className="nav-bar__item"
+            <li
+              style={{ color: "white", cursor: "pointer" }}
+              className="nav-bar__item"
+            >
+              <Link
+                to="/faq"
+                activeClassName="active"
+                onClick={() => {
+                  theaterStream.socket.emit("disconnect-custom");
+                }}
               >
-                <Link
-                  to="/faq"
-                  activeClassName="active"
-                  onClick={() => {
-                    theaterStream.socket.emit("disconnect-custom");
-                  }}
-                >
-                  FAQ
-                </Link>
-              </li>
-            )}
+                FAQ
+              </Link>
+            </li>
           </ul>
         </ul>
       </nav>
@@ -248,7 +246,7 @@ function App() {
         {user && user.role === "Admin" && (
           <Route path="/admin" component={AdminManager} exact />
         )}
-        <Route path="/faq" component={FAQ}/>
+        <Route path="/faq" component={FAQ} />
         <Route path="/anime/search" component={SearchedList} />
         <Route
           path="/anime/:malId/watch/:episode/:mode"

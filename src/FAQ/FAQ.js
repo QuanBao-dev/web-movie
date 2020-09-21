@@ -11,7 +11,7 @@ const FAQ = () => {
       </ul>
       <h2>How to use theater</h2>
       <p>
-        Firstly, This feature require you log in so you need to sign in, you just need to create room, join the room you want by typing
+        Firstly, This feature require you log in so you need to sign in, after that all you need to do is just create room, join the room you want by typing
         in correct password of that room
       </p>
       <p>

@@ -43,19 +43,17 @@ const UpcomingAnimeList = () => {
     <section className="upcoming-anime-container"
       onTouchMove={() => {
         updateModeScrolling("enter");
-        document.querySelector(".upcoming-anime-container .list-anime-nowrap").style.overflowX = "auto";
+        document.querySelector(".upcoming-anime-container .list-anime-nowrap").scrollHeight = "auto";
       }}
       onTouchStart={() => {
         updateModeScrolling("enter");
-        document.querySelector(".upcoming-anime-container .list-anime-nowrap").style.overflowX = "auto";
+        document.querySelector(".upcoming-anime-container .list-anime-nowrap").scrollHeight = "auto";
       }}
       onTouchEnd={() => {
         updateModeScrolling("interval");
-        document.querySelector(".upcoming-anime-container .list-anime-nowrap").style.overflowX = "hidden";
       }}
       onTouchCancel={() => {
         updateModeScrolling("interval");
-        document.querySelector(".upcoming-anime-container .list-anime-nowrap").style.overflowX = "hidden";
       }}
     >
       <h1 className="title-upcoming-anime">Upcoming anime</h1>

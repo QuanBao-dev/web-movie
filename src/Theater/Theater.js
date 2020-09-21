@@ -144,6 +144,7 @@ function InputCreateRoom({
 }) {
   return (
     <div className="input-room-layout">
+      <h1>Create Room</h1>
       <Input label="Room Name" input={inputRoomNameRef} />
       <Input label="Password" type="password" input={inputPasswordRef} />
       <button

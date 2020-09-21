@@ -191,7 +191,13 @@
   padding:1rem;
   text-decoration: none;
   color: white;
+  border: none;
+  outline: none;
   cursor: pointer;
+}
+
+.btn:active{
+  transform: scale(1.1,1.1);
 }
 
 .btn:disabled{

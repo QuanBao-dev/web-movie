@@ -79,18 +79,30 @@ const EpisodePage = (props) => {
             {currentEpisode && currentEpisode.typeVideo && (
               <div className="video-container__episode">
                 {user && (
-                  <button
-                    className="btn btn-primary"
-                    style={{ backgroundColor: "black" }}
-                    onClick={() => {
-                      document.addEventListener("copy", (e) => {
-                        copyToClipboard(e, currentEpisode);
-                      });
-                      document.execCommand("copy");
-                    }}
-                  >
-                    Copy Video Url for theater
-                  </button>
+                  <div className="container-copy">
+                    <button
+                      className="btn btn-primary"
+                      style={{ backgroundColor: "black" }}
+                      onClick={() => {
+                        document.querySelector(
+                          ".result-success"
+                        ).style.display = "inline-block";
+                        document.addEventListener("copy", (e) => {
+                          copyToClipboard(e, currentEpisode);
+                        });
+                        document.execCommand("copy");
+                      }}
+                    >
+                      Copy Video Url for theater
+                    </button>
+                    <div className="result-success">
+                      <img
+                        src="https://thumbs.gfycat.com/ShyCautiousAfricanpiedkingfisher-size_restricted.gif"
+                        alt="NOT FOUND"
+                      />
+                      <span>Ok</span>
+                    </div>
+                  </div>
                 )}
                 <video
                   className="video-player"

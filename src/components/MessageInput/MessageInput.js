@@ -5,7 +5,8 @@ import { fromEvent } from "rxjs";
 import { debounceTime, first } from "rxjs/operators";
 
 import { messageInputStream } from "../../epics/message-input";
-
+import { nanoid } from "nanoid";
+const idTyping = nanoid();
 const MessageInput = ({
   appendNewMessageDialog,
   appendNewPhotoMessage,
@@ -14,6 +15,7 @@ const MessageInput = ({
   socket,
   user,
   messageDialogE,
+  isWithoutName,
 }) => {
   const [messageInputState, setMessageInputState] = useState(
     messageInputStream.initialState
@@ -26,29 +28,42 @@ const MessageInput = ({
       subscription.unsubscribe();
     };
   }, []);
-
   useEffect(() => {
     let subStartTyping, subStopTyping;
     subStartTyping = fromEvent(messageInputRef.current, "input")
       .pipe(first())
       .subscribe(() => {
-        socket.emit("notify-user-typing",idGroup);
+        if (isWithoutName) {
+          socket.emit("notify-user-typing", idGroup, idTyping, user.username);
+        } else {
+          socket.emit("notify-user-typing", idGroup);
+        }
       });
     subStopTyping = fromEvent(messageInputRef.current, "input")
       .pipe(debounceTime(1000))
       .subscribe(() => {
-        socket.emit("notify-user-stop-type", idGroup);
+        socket.emit("notify-user-stop-type", idGroup, idTyping);
         fromEvent(messageInputRef.current, "input")
           .pipe(first())
           .subscribe(() => {
-            socket.emit("notify-user-typing", idGroup);
+            if (isWithoutName) {
+              console.log(idTyping);
+              socket.emit(
+                "notify-user-typing",
+                idGroup,
+                idTyping,
+                user.username
+              );
+            } else {
+              socket.emit("notify-user-typing", idGroup);
+            }
           });
       });
     return () => {
       subStartTyping && subStartTyping.unsubscribe();
       subStopTyping && subStopTyping.unsubscribe();
     };
-  }, []);
+  }, [idGroup, isWithoutName, socket, user]);
   if (messageInputRef.current) {
     messageInputRef.current.innerHTML = messageInputRef.current.innerText;
   }

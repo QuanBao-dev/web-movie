@@ -20,29 +20,53 @@
   margin:0;
 }
 
-.message-dialog{
+.container-message-chat-bot{
   height: 420px;
-  margin-bottom: 10px;
-  background-color: #000000;
-  padding:1px 0;
+  max-height: 420px;
   overflow-y: auto;
   overflow-x: hidden;
 }
 
-.message-dialog::-webkit-scrollbar{
+.image-3dot{
+  width: 50px;
+  padding: 5px;
+  background-color: #484f70;
+  border-radius: 10px;
+}
+
+.notification-typing-theater-room{
+  display: flex;
+  flex-direction: column;
+}
+
+.notification-item-typing{
+  display: inline-block;
+  border-radius: 10px;
+  margin-left: 10px;
+}
+
+.container-message-chat-bot::-webkit-scrollbar{
   border-radius: 10px;
   width:5px;
 }
 
-.message-dialog::-webkit-scrollbar-thumb{
+.container-message-chat-bot::-webkit-scrollbar-thumb{
   border-radius: 10px;
   background-color: #484f70;
   width:5px;
 }
 
-.message-dialog::-webkit-scrollbar-track{
+.container-message-chat-bot::-webkit-scrollbar-track{
   border-radius: 10px;
   width:5px;
+}
+
+.message-dialog{
+  margin-bottom: 10px;
+  background-color: #000000;
+  padding:1px 0;
+  overflow-x: hidden;
+  overflow-y: hidden;
 }
 
 .flex-start-message{
@@ -61,8 +85,6 @@
   display: flex;
   flex-direction: column;
 }
-
-
 
 .current-user-message > .content-message{
   padding:1rem;
@@ -162,13 +184,11 @@
 }
 
 .notification-typing{
-  opacity: 0;
   pointer-events: none;
+  display: none;
   background-color: black;
   box-shadow: 0 -13px 1px 0.1px black;
-  top: 0;
-  width:80%;
+  width:99%;
   margin:auto;
-  color:none;
-  bottom:0
+  color:white;
 }

@@ -26,6 +26,7 @@ import SearchedList from "./Search/SearchedList";
 import { ReplaySubject } from "rxjs";
 import CharacterDetail from "./components/CharacterDetail/CharacterDetail";
 import NotFound from "./404/NotFound";
+import FAQ from "./FAQ/FAQ";
 const scrollSaveSubject = new ReplaySubject(3);
 window.addEventListener("resize", () => {
   const e = document.getElementsByClassName("child-nav-bar__app").item(0);
@@ -223,6 +224,22 @@ function App() {
                 </Link>
               </li>
             )}
+            {user && (
+              <li
+                style={{ color: "white", cursor: "pointer" }}
+                className="nav-bar__item"
+              >
+                <Link
+                  to="/faq"
+                  activeClassName="active"
+                  onClick={() => {
+                    theaterStream.socket.emit("disconnect-custom");
+                  }}
+                >
+                  FAQ
+                </Link>
+              </li>
+            )}
           </ul>
         </ul>
       </nav>
@@ -231,6 +248,7 @@ function App() {
         {user && user.role === "Admin" && (
           <Route path="/admin" component={AdminManager} exact />
         )}
+        <Route path="/faq" component={FAQ}/>
         <Route path="/anime/search" component={SearchedList} />
         <Route
           path="/anime/:malId/watch/:episode/:mode"
@@ -245,7 +263,7 @@ function App() {
         {user && <Route path="/edit" component={EditUser} />}
         {!user && <Route path="/auth/login" component={Login} />}
         {!user && <Route path="/auth/register" component={Register} />}
-        <Route path="/*" component={NotFound}/>
+        <Route path="/*" component={NotFound} />
       </Switch>
     </Router>
   );

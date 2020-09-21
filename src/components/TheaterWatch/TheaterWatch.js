@@ -113,7 +113,7 @@ const TheaterWatch = (props) => {
       }
       updateAllowRemoveVideoWatch(true);
       const buttonScrollTopE = document.querySelector(".button-scroll-top");
-      buttonScrollTopE.style.display = "block";   
+      buttonScrollTopE.style.display = "block"; 
     };
   }, [
     cookies.idCartoonUser,

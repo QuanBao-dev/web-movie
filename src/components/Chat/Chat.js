@@ -17,7 +17,7 @@ const Chat = ({ groupId, user, withoutName = false, isZoom = false }) => {
   useEffect(() => {
     messageDialogE = messageDialogRef.current;
     user && !withoutName && (inputNameDialogRef.current.value = user.username);
-  }, [user, withoutName]);
+  }, [user, withoutName, isZoom]);
 
   return (
     <div className="container-chat-bot">
@@ -31,7 +31,10 @@ const Chat = ({ groupId, user, withoutName = false, isZoom = false }) => {
             isZoom ? " transparent-background" : ""
           }`}
         >
-          <div style={{ backgroundColor: "black" }}>
+          <div
+            className="container-message-chat-bot"
+            style={{ backgroundColor: isZoom ? "" : "black" }}
+          >
             <div
               className={`message-dialog${
                 isZoom ? " transparent-background" : ""
@@ -45,7 +48,12 @@ const Chat = ({ groupId, user, withoutName = false, isZoom = false }) => {
                 <span className="username-message">Robot</span>
               </div>
             </div>
-            <div className="notification-typing">Someone is typing ...</div>
+            {isWithoutName && (
+              <div className="notification-typing-theater-room"></div>
+            )}
+            {!isWithoutName && (
+              <div className="notification-typing">Someone is typing ...</div>
+            )}
           </div>
           {!withoutName && <Input label={"Name"} input={inputNameDialogRef} />}
           <div className="input-message-dialog">
@@ -79,6 +87,7 @@ const Chat = ({ groupId, user, withoutName = false, isZoom = false }) => {
               socket={socket}
               user={user}
               messageDialogE={messageDialogE}
+              isWithoutName={isWithoutName}
             />
             <input
               multiple
@@ -144,18 +153,79 @@ socket.on("send-message-photo-other-users", (username, uri, groupId) => {
   }
 });
 
-socket.on("new-user-typing",(groupId) =>{
-  if(groupId === idGroup){
-    document.querySelector(".notification-typing").style.opacity = "1";
+socket.on("new-user-typing", (groupId, idTyping, username) => {
+  if (groupId === idGroup) {
+    if (!isWithoutName) {
+      document.querySelector(".notification-typing").style.display = "block";
+    } else {
+      appendNewUserTyping(idTyping, username);
+    }
   }
-})
+  const containerChatBotMessage = document.querySelector(
+    ".container-message-chat-bot"
+  );
+  containerChatBotMessage.scroll({
+    top: containerChatBotMessage.scrollHeight,
+    behavior: "smooth",
+  });
+});
 
-socket.on("eliminate-user-typing", (groupId) => {
-  if(groupId === idGroup){
-    document.querySelector(".notification-typing").style.opacity = "0";
+socket.on("eliminate-user-typing", (groupId, idTyping) => {
+  if (groupId === idGroup) {
+    if (!isWithoutName)
+      document.querySelector(".notification-typing").style.display = "none";
+    else {
+      eliminateUserByIdTyping(idTyping);
+    }
   }
-})
+  const containerChatBotMessage = document.querySelector(
+    ".container-message-chat-bot"
+  );
+  containerChatBotMessage.scroll({
+    top: containerChatBotMessage.scrollHeight,
+    behavior: "smooth",
+  });
+});
 
+function appendNewUserTyping(idTyping, username) {
+  const notificationTypingContainerElement = document.querySelector(
+    ".notification-typing-theater-room"
+  );
+  const newNotification = document.createElement("div");
+  newNotification.id = idTyping;
+  newNotification.className = "notification-item-typing";
+  const newImg = document.createElement("img");
+  newImg.className = "image-3dot";
+  newImg.src =
+    "https://support.signal.org/hc/article_attachments/360016877511/typing-animation-3x.gif";
+  newImg.alt = "NOT FOUND";
+  const newUsername = document.createElement("div");
+  newUsername.className = "username-message";
+  newUsername.innerText = `${username}`;
+  newNotification.append(newImg);
+  newNotification.append(newUsername);
+  notificationTypingContainerElement.append(newNotification);
+}
+
+function eliminateUserByIdTyping(idTyping) {
+  const notificationTypingContainerElement = document.querySelector(
+    ".notification-typing-theater-room"
+  );
+  let listNotification = [...notificationTypingContainerElement.children];
+  const elementMatch = listNotification.find(
+    (element) => element.id === idTyping
+  );
+  if (elementMatch) {
+    elementMatch.remove();
+  }
+  const containerChatBotMessage = document.querySelector(
+    ".container-message-chat-bot"
+  );
+  containerChatBotMessage.scroll({
+    top: containerChatBotMessage.scrollHeight,
+    behavior: "smooth",
+  });
+}
 function allowFullscreen() {
   document.querySelector("#root").allowfullscreen = true;
   if (document.querySelector("#root").requestFullscreen) {
@@ -219,8 +289,11 @@ function appendNewMessageDialog(
   newElement.append(newSpanContentMessage);
   newElement.append(newSpanUsernameMessage);
   messageDialogContainerE.append(newElement);
-  messageDialogContainerE.scroll({
-    top: messageDialogContainerE.scrollHeight,
+  const containerChatBotMessage = document.querySelector(
+    ".container-message-chat-bot"
+  );
+  containerChatBotMessage.scroll({
+    top: containerChatBotMessage.scrollHeight,
     behavior: "smooth",
   });
   const e = document.querySelector(".chat-watch-zoom");
@@ -282,8 +355,11 @@ function appendNewPhotoMessage(
   newElement.append(newSpanContentMessage);
   newElement.append(newSpanUsernameMessage);
   messageDialogContainerE.append(newElement);
-  messageDialogContainerE.scroll({
-    top: messageDialogContainerE.scrollHeight,
+  const containerChatBotMessage = document.querySelector(
+    ".container-message-chat-bot"
+  );
+  containerChatBotMessage.scroll({
+    top: containerChatBotMessage.scrollHeight,
     behavior: "smooth",
   });
   const e = document.querySelector(".chat-watch-zoom");

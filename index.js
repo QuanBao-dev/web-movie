@@ -7,8 +7,8 @@ const app = express();
 const port = process.env.PORT || 5000;
 const server = require("http").Server(app);
 const io = require("socket.io")(server, {
-  pingTimeout: 12000,
-  pingInterval: 3000,
+  pingTimeout: 5000,
+  pingInterval: 2000,
 });
 const { ExpressPeerServer } = require("peer");
 
@@ -122,12 +122,12 @@ io.on("connection", (socket) => {
       }
     });
   });
-  socket.on("notify-user-typing",(groupId) => {
-    socket.broadcast.emit("new-user-typing",groupId);
+  socket.on("notify-user-typing",(groupId, idUserTyping, username) => {
+    socket.broadcast.emit("new-user-typing",groupId, idUserTyping, username);
   })
 
-  socket.on("notify-user-stop-type",(groupId) => {
-    socket.broadcast.emit("eliminate-user-typing", groupId);
+  socket.on("notify-user-stop-type",(groupId, idTyping) => {
+    socket.broadcast.emit("eliminate-user-typing", groupId, idTyping);
   })
 
   socket.on("new-message", (username, message, groupId) => {

@@ -1,0 +1,10 @@
+.container-faq{
+  width: 80%;
+  margin: auto;
+  color: white;
+  background-color: rgb(47, 57, 104);
+  padding: 2rem;
+  box-shadow: 0 0 5px 1px black;
+  font-size: larger;
+  line-height: 3rem;
+}

@@ -183,7 +183,7 @@ function Home() {
       }
     }
   }
-  console.log(homeState);
+  // console.log(homeState);
   return (
     <div className="home-page">
       <div className="recently-updated-movie">

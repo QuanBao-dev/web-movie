@@ -133,6 +133,23 @@ io.on("connection", (socket) => {
       });
     }
   );
+  socket.on("update-user-avatar",async(email, groupId, avatar) => {
+    await TheaterRoomMember.findOneAndUpdate(
+      {
+        email,
+        groupId,
+      },
+      {
+        avatar,
+      },
+      {
+        upsert: true,
+        new: true,
+      }
+    )
+      .lean()
+      .select({ _id: false, __v: false });
+  })
   socket.on("notify-user-typing", (groupId, idUserTyping, username) => {
     socket.broadcast.emit("new-user-typing", groupId, idUserTyping, username);
   });

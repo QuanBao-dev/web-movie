@@ -21,6 +21,8 @@
 
 .anime-item:hover .anime-item-info{
   text-shadow: 3px 3px rgb(98, 12, 109);
+  background-color: black;
+  color: rgb(241, 255, 47);
 }
 
 .anime-item-info{

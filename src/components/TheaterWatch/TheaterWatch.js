@@ -122,6 +122,11 @@ const TheaterWatch = (props) => {
     theaterState.allowRemoveVideoWatch,
     theaterState.isSignIn,
   ]);
+  useEffect(() => {
+    socket.emit("update-user-avatar",user.email,groupId,user.avatarImage);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user.avatarImage]);
+
   if (!theaterState.isSignIn && notificationRef.current) {
     notificationRef.current.innerHTML = "";
     if (audioCallRef.current) {
@@ -427,7 +432,7 @@ async function newUserJoin(id, groupId) {
 function UserListOnline({ usersOnline }) {
   return (
     <div className="user-list-online">
-      <div className="title-room">Member Online</div>
+      <div className="title-room">Members Online</div>
       {usersOnline &&
         usersOnline.map((member, key) => {
           return (

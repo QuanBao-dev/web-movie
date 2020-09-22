@@ -265,6 +265,9 @@ function App() {
                     type="file"
                     onChange={async (e) => {
                       try {
+                        if(!["image/png","image/jpeg","image/gif"].includes(e.target.files[0].type)){
+                          return alert("You just can upload image")
+                        }
                         const file = await convertImgToBase64(
                           e.target.files[0]
                         );
@@ -279,10 +282,8 @@ function App() {
                             },
                           }
                         );
-                        userStream.updateAvatarUser(res.data.message)
+                        userStream.updateAvatarUser(res.data.message);
                       } catch (error) {
-                        console.log(error);
-                        alert("Something went wrong");
                         console.log(error);
                       }
                     }}

@@ -175,6 +175,17 @@
   border-radius: 10px;
 }
 
+.select-filter{
+  margin: 10px;
+  padding: 10px;
+  border-radius: 10px;
+  background-color: black;
+  color: white;
+  font-size: 150%;
+  box-shadow: 2px 2px 5px 2px rgb(136, 133, 133);
+  border: none;
+}
+
 @keyframes rotate {
   0% {
       filter: hue-rotate(0deg)

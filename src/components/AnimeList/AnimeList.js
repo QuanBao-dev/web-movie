@@ -12,6 +12,9 @@ const AnimeList = ({ data, error, isWrap = true }) => {
         data.map((anime, index) => {
           return <AnimeItem key={index} anime={anime} />;
         })}
+        {
+          data.length === 0 && <h1 className="empty">Empty</h1>
+        }
       {error && (
         <div
           style={{

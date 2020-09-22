@@ -96,7 +96,6 @@ function Home() {
         (movie.score > homeState.score || homeState.score === 0)
       );
     });
-    console.log({filterAnime});
     updateMaxPage(
       Math.ceil(filterAnime.length / stream.initialState.numberOfProduct)
     );
@@ -386,15 +385,7 @@ function SelectFilterAnime({
       ref={targetScroll}
     >
       <select
-        style={{
-          margin: "10px",
-          padding: "10px",
-          borderRadius: "10px",
-          backgroundColor: "black",
-          color: "white",
-          fontSize: "150%",
-          boxShadow: "2px 2px 5px 2px black",
-        }}
+        className="select-filter"
         onChange={() => stream.updateCurrentPage(1)}
         defaultValue={`${homeState.season}`}
         ref={selectSeason}
@@ -405,16 +396,8 @@ function SelectFilterAnime({
         <option value="fall">fall</option>
       </select>
       <select
+        className="select-filter"
         onChange={() => stream.updateCurrentPage(1)}
-        style={{
-          margin: "10px",
-          padding: "10px",
-          borderRadius: "10px",
-          backgroundColor: "black",
-          color: "white",
-          fontSize: "150%",
-          boxShadow: "2px 2px 5px 2px black",
-        }}
         defaultValue={`${homeState.year}`}
         ref={selectYear}
       >
@@ -427,16 +410,9 @@ function SelectFilterAnime({
         })}
       </select>
       <select
+        className="select-filter"
         onChange={() => stream.updateCurrentPage(1)}
-        style={{
-          margin: "10px",
-          padding: "10px",
-          borderRadius: "10px",
-          backgroundColor: "black",
-          color: "white",
-          fontSize: "150%",
-          boxShadow: "2px 2px 5px 2px black",
-        }}
+        style={{}}
         defaultValue={`${stream.currentState().score}`}
         ref={selectScore}
       >

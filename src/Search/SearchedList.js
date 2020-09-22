@@ -32,7 +32,7 @@ const SearchedList = (props) => {
       {dataSearchDisplay && dataSearchDisplay.length === 0 && (
         <h4 style={{ color: "white" }}>
           Not found any anime. Make sure your key search at least has 3
-          character
+          characters
         </h4>
       )}
     </div>

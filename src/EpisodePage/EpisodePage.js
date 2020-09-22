@@ -98,7 +98,7 @@ const EpisodePage = (props) => {
                     <div className="result-success">
                       <img
                         src="https://thumbs.gfycat.com/ShyCautiousAfricanpiedkingfisher-size_restricted.gif"
-                        alt="NOT FOUND"
+                        alt="check_success"
                       />
                       <span>Ok</span>
                     </div>

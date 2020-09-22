@@ -32,18 +32,20 @@ const Characters = ({ malId }) => {
     };
   }, [charactersState.page]);
   // console.log(dataCharacterState);
-  const buttonSeemore = document.querySelector(".see-more-character");
-  if (buttonSeemore) {
-    if (
-      characterStream.currentState().page *
-        characterStream.currentState().numberDisplay >=
-      dataCharacterState.length
-    )
-      buttonSeemore.style.display = "none";
-    else {
-      buttonSeemore.style.display = "block";
+  useEffect(() => {
+    const buttonSeemore = document.querySelector(".see-more-character");
+    if (buttonSeemore) {
+      if (
+        characterStream.currentState().page *
+          characterStream.currentState().numberDisplay >=
+        dataCharacterState.length
+      )
+        buttonSeemore.style.display = "none";
+      else {
+        buttonSeemore.style.display = "block";
+      }
     }
-  }
+  },[dataCharacterState.length, charactersState.page])
   return (
     dataCharacterState.length > 0 && (
       <div>
@@ -72,7 +74,7 @@ const Characters = ({ malId }) => {
                   <img
                     className="character-image"
                     src={characterData.image_url}
-                    alt="NOT FOUND"
+                    alt="image_character"
                   />
                   <div className="name-character">{characterData.name}</div>
                 </div>

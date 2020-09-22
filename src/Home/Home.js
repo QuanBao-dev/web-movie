@@ -228,16 +228,8 @@ function Home() {
       </div>
       <AnimeSchedule />
       <div className="container-anime-list">
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            paddingBottom: "1rem",
-            flexDirection: "column",
-            alignItems: "center",
-          }}
-        >
-          <div style={{ width: "300px" }}>
+        <div className="wrapper-search-anime-list">
+          <div style={{ width: "90%" }}>
             <Input label="Search Anime" input={searchInput} />
           </div>
           <SearchedAnimeList homeState={homeState} />

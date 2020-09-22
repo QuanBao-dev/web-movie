@@ -255,7 +255,7 @@ function App() {
                         ? "https://iupac.org/wp-content/uploads/2018/05/default-avatar.png"
                         : user.avatarImage
                     }
-                    alt="NOT FOUND"
+                    alt="avatar_user"
                     onClick={() => {
                       document.querySelector(".input-choose-avatar").click();
                     }}

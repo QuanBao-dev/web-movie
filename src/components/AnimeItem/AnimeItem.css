@@ -106,7 +106,7 @@
   .anime-item{
     font-size: 0.7rem;
     height: 200px;
-    width: 130px;
+    width: 150px;
   }
   .anime-info-display_summary{
     font-size: 0.5rem;
@@ -115,5 +115,13 @@
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
+  }
+}
+
+@media (max-width:354px){
+  .anime-item{
+    font-size: 0.7rem;
+    height: 200px;
+    width: 40%;
   }
 }

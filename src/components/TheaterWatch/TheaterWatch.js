@@ -438,7 +438,7 @@ function UserListOnline({ usersOnline }) {
                   width="50"
                   height="50"
                   src={member.avatar}
-                  alt="NOT FOUND"
+                  alt="image_avatar"
                 />
               </div>
               <div

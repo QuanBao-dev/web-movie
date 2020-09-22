@@ -52,6 +52,7 @@
 @media (max-width:697px){
   .nav-bar__app{
     flex-direction: column;
+    padding: 11px 0;
   }
   .child-nav-bar__app{
     display: none;

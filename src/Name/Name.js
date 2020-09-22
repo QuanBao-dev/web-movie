@@ -190,7 +190,7 @@ const Name = (props) => {
               findingAnime.image_url ||
               "https://reactnativecode.com/wp-content/uploads/2018/02/Default_Image_Thumbnail.png"
             }
-            alt="Not found"
+            alt="image_anime"
           />
         </div>
         <div className="menu-control">

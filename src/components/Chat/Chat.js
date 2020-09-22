@@ -60,7 +60,7 @@ const Chat = ({ groupId, user, withoutName = false, isZoom = false }) => {
                 <img
                   className="image-dot"
                   src="https://support.signal.org/hc/article_attachments/360016877511/typing-animation-3x.gif"
-                  alt="NOT FOUND"
+                  alt="gif_3_dot"
                 />
                 <div>Someone</div>
               </div>
@@ -241,7 +241,7 @@ function appendNewUserTyping(idTyping, username) {
   newImg.className = "image-dot";
   newImg.src =
     "https://support.signal.org/hc/article_attachments/360016877511/typing-animation-3x.gif";
-  newImg.alt = "NOT FOUND";
+  newImg.alt = "gif_3dot";
   const newUsername = document.createElement("div");
   newUsername.className = "username-message";
   newUsername.innerText = `${username}`;
@@ -291,7 +291,7 @@ function appendNewUserSeen(avatar) {
   const newSpan = document.createElement("span");
   const newImg = document.createElement("img");
   newImg.src = avatar;
-  newImg.alt = "NOT FOUND";
+  newImg.alt = "image_avatar";
   newSpan.append(newImg);
   newSpanContainer.append(newSpan);
   if (add) {
@@ -423,7 +423,7 @@ function appendNewPhotoMessage(
       }
     };
   };
-  newSpanContentMessage.innerHTML = `<img width="100%" height="100%" src=${uri} alt="NOT FOUND"/>`;
+  newSpanContentMessage.innerHTML = `<img width="100%" height="100%" src=${uri} alt="image_photo"/>`;
   newSpanUsernameMessage.className = "username-message";
   newSpanUsernameMessage.innerText = username;
   newElement.append(newSpanContentMessage);

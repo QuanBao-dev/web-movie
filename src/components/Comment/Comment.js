@@ -265,7 +265,7 @@ function CommentDetail({
             v.avatar ||
             "https://iupac.org/wp-content/uploads/2018/05/default-avatar.png"
           }
-          alt="NOT FOUND"
+          alt="image_avatar"
         />
       </div>
       <div>

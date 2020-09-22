@@ -32,7 +32,7 @@ const CharacterDetail = (props) => {
         <img
           className="image-character"
           src={dataCharacterDetail.image_url}
-          alt="NOT FOUND"
+          alt="image_character"
         ></img>
         <div className="character-information">
           {dataCharacterDetail.name && (
@@ -83,7 +83,7 @@ const CharacterDetail = (props) => {
                 key={index}
                 onClick={() => history.push("/anime/" + anime.mal_id)}
               >
-                <img src={anime.image_url} alt="NOT FOUND" />
+                <img src={anime.image_url} alt="image_anime" />
                 <div className="pop-up-hover">
                   <h3>{anime.name}</h3>
                 </div>

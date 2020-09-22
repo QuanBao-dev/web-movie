@@ -75,7 +75,11 @@ export const submitFormPasswordRoom$ = (
         },
       }).pipe(
         catchError((error) => {
-          alert("ROOM NOT FOUND")
+          if(!groupId){
+            alert("You haven't join any room")
+          } else {
+            alert("Invalid password or This room has been expired")
+          }
           return of(null);
         })
       )

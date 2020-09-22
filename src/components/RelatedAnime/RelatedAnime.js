@@ -27,7 +27,7 @@ const RelatedAnime = ({ malId }) => {
         buttonRef.current.style.display = "none";
       }
     }
-  }, [pageDisplayRelatedAnime]);
+  }, [pageDisplayRelatedAnime,recommendationState.length]);
   return (
     recommendationState.length > 0 && (
       <div>

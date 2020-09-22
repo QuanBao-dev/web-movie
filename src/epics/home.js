@@ -96,6 +96,7 @@ export const fetchAnimeSeason$ = (
       ajax(`https://api.jikan.moe/v3/season/${year}/${season}`).pipe(
         pluck("response", "anime"),
         map((anime) => {
+          updateOriginalData(anime);
           anime = anime.filter(
             (movie) =>
               movie.airing_start &&
@@ -105,7 +106,6 @@ export const fetchAnimeSeason$ = (
           updateMaxPage(
             Math.ceil(anime.length / stream.initialState.numberOfProduct)
           );
-          updateOriginalData(anime);
           stream.catchingError(null);
           const sortedArray = orderBy(anime, ["airing_start"], ["desc"]).slice(
             (page - 1) * numberOfProducts,

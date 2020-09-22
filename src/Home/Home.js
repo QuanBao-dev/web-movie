@@ -96,6 +96,7 @@ function Home() {
         (movie.score > homeState.score || homeState.score === 0)
       );
     });
+    console.log({filterAnime});
     updateMaxPage(
       Math.ceil(filterAnime.length / stream.initialState.numberOfProduct)
     );
@@ -182,7 +183,7 @@ function Home() {
       }
     }
   }
-  // console.log(homeState);
+  console.log(homeState);
   return (
     <div className="home-page">
       <div className="recently-updated-movie">

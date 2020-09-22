@@ -7,6 +7,7 @@ const path = require("path");
 const app = express();
 const port = process.env.PORT || 5000;
 const server = require("http").Server(app);
+const sslRedirect = require('heroku-ssl-redirect').default
 const io = require("socket.io")(server, {
   pingTimeout: 12000,
   pingInterval: 3000,
@@ -225,6 +226,7 @@ TheaterRoomMember.watch().on("change", async () => {
   io.emit("mongo-change-watch");
 });
 
+app.use(sslRedirect());
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ limit: "10mb", extended: true }));
 app.use(cookieParser(process.env.SESSION_SECRET));

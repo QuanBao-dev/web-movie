@@ -8,8 +8,10 @@ const socket = theaterStream.socket;
 let messageDialogE;
 let idGroup;
 let isWithoutName;
+let userGlobal;
 const Chat = ({ groupId, user, withoutName = false, isZoom = false }) => {
   idGroup = groupId;
+  userGlobal = user;
   isWithoutName = withoutName;
   const inputNameDialogRef = useRef();
   const messageDialogRef = useRef();
@@ -46,13 +48,22 @@ const Chat = ({ groupId, user, withoutName = false, isZoom = false }) => {
                   Welcome to AnimeFun, enjoy and have a good day
                 </span>
                 <span className="username-message">Robot</span>
+                {/* {user && <span className="seen-user">
+                </span>} */}
               </div>
             </div>
             {isWithoutName && (
               <div className="notification-typing-theater-room"></div>
             )}
             {!isWithoutName && (
-              <div className="notification-typing">Someone is typing ...</div>
+              <div className="notification-typing">
+                <img
+                  className="image-dot"
+                  src="https://support.signal.org/hc/article_attachments/360016877511/typing-animation-3x.gif"
+                  alt="NOT FOUND"
+                />
+                <div>Someone</div>
+              </div>
             )}
           </div>
           {!withoutName && <Input label={"Name"} input={inputNameDialogRef} />}
@@ -71,7 +82,8 @@ const Chat = ({ groupId, user, withoutName = false, isZoom = false }) => {
                   "new-message",
                   user.username,
                   `<i class="fas fa-thumbs-up fa-3x button-like"></i>`,
-                  idGroup
+                  idGroup,
+                  user.avatarImage
                 );
               }}
             ></i>
@@ -140,16 +152,41 @@ socket.on("disconnected-user", async (username, userId, roomId) => {
   );
 });
 
-socket.on("send-message-other-users", (username, message, groupId) => {
+socket.on("send-message-other-users", (username, message, groupId, avatar) => {
   // console.log(username,"sends", groupId);
   if (groupId === idGroup) {
     appendNewMessageDialog(message, username, false, messageDialogE);
+    if (isWithoutName) {
+      appendNewUserSeen(avatar);
+      const chatBotE = document.querySelector(".chat-bot");
+      if (chatBotE.style.transform !== "scale(0)") {
+        socket.emit("new-user-seen", userGlobal.avatarImage, groupId);
+      }
+    }
   }
 });
 
-socket.on("send-message-photo-other-users", (username, uri, groupId) => {
+socket.on(
+  "send-message-photo-other-users",
+  (username, uri, groupId, avatar) => {
+    if (groupId === idGroup) {
+      appendNewPhotoMessage(uri, username, false, messageDialogE);
+      if (isWithoutName) {
+        appendNewUserSeen(avatar);
+        const chatBotE = document.querySelector(".chat-bot");
+        if (chatBotE.style.transform !== "scale(0)") {
+          socket.emit("new-user-seen", userGlobal.avatarImage, groupId);
+        }
+      }
+    }
+  }
+);
+
+socket.on("send-avatar-seen-user-to-other-user", (avatar, groupId) => {
   if (groupId === idGroup) {
-    appendNewPhotoMessage(uri, username, false, messageDialogE);
+    if (isWithoutName) {
+      appendNewUserSeen(avatar);
+    }
   }
 });
 
@@ -164,38 +201,44 @@ socket.on("new-user-typing", (groupId, idTyping, username) => {
   const containerChatBotMessage = document.querySelector(
     ".container-message-chat-bot"
   );
-  containerChatBotMessage.scroll({
-    top: containerChatBotMessage.scrollHeight,
-    behavior: "smooth",
-  });
+  if (containerChatBotMessage)
+    containerChatBotMessage.scroll({
+      top: containerChatBotMessage.scrollHeight,
+      behavior: "smooth",
+    });
 });
 
 socket.on("eliminate-user-typing", (groupId, idTyping) => {
   if (groupId === idGroup) {
-    if (!isWithoutName)
-      document.querySelector(".notification-typing").style.display = "none";
-    else {
+    if (!isWithoutName) {
+      if (document.querySelector(".notification-typing"))
+        document.querySelector(".notification-typing").style.display = "none";
+    } else {
       eliminateUserByIdTyping(idTyping);
     }
   }
   const containerChatBotMessage = document.querySelector(
     ".container-message-chat-bot"
   );
-  containerChatBotMessage.scroll({
-    top: containerChatBotMessage.scrollHeight,
-    behavior: "smooth",
-  });
+  if (containerChatBotMessage)
+    containerChatBotMessage.scroll({
+      top: containerChatBotMessage.scrollHeight,
+      behavior: "smooth",
+    });
 });
 
 function appendNewUserTyping(idTyping, username) {
   const notificationTypingContainerElement = document.querySelector(
     ".notification-typing-theater-room"
   );
+  if (!notificationTypingContainerElement) {
+    return;
+  }
   const newNotification = document.createElement("div");
   newNotification.id = idTyping;
   newNotification.className = "notification-item-typing";
   const newImg = document.createElement("img");
-  newImg.className = "image-3dot";
+  newImg.className = "image-dot";
   newImg.src =
     "https://support.signal.org/hc/article_attachments/360016877511/typing-animation-3x.gif";
   newImg.alt = "NOT FOUND";
@@ -204,28 +247,58 @@ function appendNewUserTyping(idTyping, username) {
   newUsername.innerText = `${username}`;
   newNotification.append(newImg);
   newNotification.append(newUsername);
-  notificationTypingContainerElement.append(newNotification);
+  if (notificationTypingContainerElement) {
+    notificationTypingContainerElement.append(newNotification);
+  }
 }
 
 function eliminateUserByIdTyping(idTyping) {
   const notificationTypingContainerElement = document.querySelector(
     ".notification-typing-theater-room"
   );
-  let listNotification = [...notificationTypingContainerElement.children];
-  const elementMatch = listNotification.find(
+  let listNotification = [...notificationTypingContainerElement.childNodes];
+  const elementMatchIndex = listNotification.find(
     (element) => element.id === idTyping
   );
-  if (elementMatch) {
-    elementMatch.remove();
+  if (elementMatchIndex) {
+    elementMatchIndex.remove();
   }
   const containerChatBotMessage = document.querySelector(
     ".container-message-chat-bot"
   );
-  containerChatBotMessage.scroll({
-    top: containerChatBotMessage.scrollHeight,
-    behavior: "smooth",
-  });
+  if (containerChatBotMessage)
+    containerChatBotMessage.scroll({
+      top: containerChatBotMessage.scrollHeight,
+      behavior: "smooth",
+    });
 }
+
+function appendNewUserSeen(avatar) {
+  const allMessages = document.querySelector(".message-dialog");
+  if (!allMessages) {
+    return;
+  }
+  const elements = [...allMessages.childNodes];
+  let newSpanContainer = elements[elements.length - 1].querySelector(
+    ".seen-user"
+  );
+  let add = false;
+  if (!newSpanContainer) {
+    add = true;
+    newSpanContainer = document.createElement("div");
+    newSpanContainer.className = "seen-user";
+  }
+  const newSpan = document.createElement("span");
+  const newImg = document.createElement("img");
+  newImg.src = avatar;
+  newImg.alt = "NOT FOUND";
+  newSpan.append(newImg);
+  newSpanContainer.append(newSpan);
+  if (add) {
+    elements[elements.length - 1].append(newSpanContainer);
+  }
+}
+
 function allowFullscreen() {
   document.querySelector("#root").allowfullscreen = true;
   if (document.querySelector("#root").requestFullscreen) {
@@ -292,10 +365,11 @@ function appendNewMessageDialog(
   const containerChatBotMessage = document.querySelector(
     ".container-message-chat-bot"
   );
-  containerChatBotMessage.scroll({
-    top: containerChatBotMessage.scrollHeight,
-    behavior: "smooth",
-  });
+  if (containerChatBotMessage)
+    containerChatBotMessage.scroll({
+      top: containerChatBotMessage.scrollHeight,
+      behavior: "smooth",
+    });
   const e = document.querySelector(".chat-watch-zoom");
   if (e && e.style.transform === "scale(0)") {
     const numMessage = theaterStream.currentState().unreadMessage;

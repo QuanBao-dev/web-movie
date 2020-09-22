@@ -2,13 +2,19 @@ require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 const cookieParser = require("cookie-parser");
+const cloudinary = require("cloudinary");
 const path = require("path");
 const app = express();
 const port = process.env.PORT || 5000;
 const server = require("http").Server(app);
 const io = require("socket.io")(server, {
-  pingTimeout: 5000,
-  pingInterval: 2000,
+  pingTimeout: 12000,
+  pingInterval: 3000,
+});
+cloudinary.config({
+  cloud_name: "storagecloud",
+  api_key: process.env.API_KEY,
+  api_secret: process.env.API_SECRET,
 });
 const { ExpressPeerServer } = require("peer");
 
@@ -41,108 +47,122 @@ mongoose.connect(
 
 let rooms = {};
 io.on("connection", (socket) => {
-  socket.on("new-user", async (username, groupId, userId, email, keepRemote) => {
-    console.log(username);
-    if (!rooms[groupId]) {
-      rooms[groupId] = { users: {} };
-    }
-    socket.join(groupId);
-    console.log(username, "join", groupId);
-    socket.emit("fetch-user-online");
-    socket.to(groupId).emit("fetch-user-online");
-    rooms[groupId].users[userId] = username;
-
-    await TheaterRoomMember.findOneAndUpdate(
-      {
-        email,
-        groupId,
-      },
-      {
-        userId,
-        username,
-        joinAt: Date.now(),
-        keepRemote: keepRemote,
-      },
-      {
-        upsert: true,
-        new: true,
+  socket.on(
+    "new-user",
+    async (avatar, username, groupId, userId, email, keepRemote) => {
+      console.log(username);
+      if (!rooms[groupId]) {
+        rooms[groupId] = { users: {} };
       }
-    )
-      .lean()
-      .select({ _id: false, __v: false });
-    socket.to(groupId).emit("user-join", username, userId, groupId);
-    socket.on("fetch-updated-user-online", () => {
+      socket.join(groupId);
+      console.log(username, "join", groupId);
       socket.emit("fetch-user-online");
       socket.to(groupId).emit("fetch-user-online");
-    });
+      rooms[groupId].users[userId] = username;
 
-    socket.on("new-video", (videoUri, groupId, uploadOtherVideo) => {
-      socket.broadcast.emit(
-        "upload-video",
-        videoUri,
-        groupId,
-        uploadOtherVideo
-      );
-    });
-    socket.on("user-keep-remote-changed", (groupId) => {
-      socket.broadcast.emit("change-user-keep-remote", groupId);
-    });
-    socket.on("play-all-video", (currentTime, groupId) => {
-      socket.broadcast.emit("play-video-user", currentTime, groupId);
-    });
-    socket.on("pause-all-video", (currentTime, groupId) => {
-      socket.broadcast.emit("pause-video-user", currentTime, groupId);
-    });
-    socket.on("disconnect", async () => {
-      await TheaterRoomMember.deleteMany({
-        email,
-        groupId,
-      }).lean();
-      if (rooms[groupId] && rooms[groupId].users[userId]) {
-        socket.emit("disconnected-user", username, userId, groupId);
-        socket.broadcast.emit("disconnected-user", username, userId, groupId);
-        delete rooms[groupId].users[userId];
-        if (Object.keys(rooms[groupId].users).length === 0) {
-          delete rooms[groupId];
+      await TheaterRoomMember.findOneAndUpdate(
+        {
+          email,
+          groupId,
+        },
+        {
+          userId,
+          username,
+          avatar,
+          joinAt: Date.now(),
+          keepRemote: keepRemote,
+        },
+        {
+          upsert: true,
+          new: true,
         }
-      }
-    });
-    socket.on("disconnect-custom", async () => {
-      console.log("disconnect");
-      await TheaterRoomMember.deleteMany({
-        email,
-        groupId,
-      }).lean();
-      if (rooms[groupId] && rooms[groupId].users[userId]) {
-        socket.broadcast.emit("disconnected-user", username, userId, groupId);
-        delete rooms[groupId].users[userId];
-        if (Object.keys(rooms[groupId].users).length === 0) {
-          delete rooms[groupId];
+      )
+        .lean()
+        .select({ _id: false, __v: false });
+      socket.to(groupId).emit("user-join", username, userId, groupId);
+      socket.on("fetch-updated-user-online", () => {
+        socket.emit("fetch-user-online");
+        socket.to(groupId).emit("fetch-user-online");
+      });
+
+      socket.on("new-video", (videoUri, groupId, uploadOtherVideo) => {
+        socket.broadcast.emit(
+          "upload-video",
+          videoUri,
+          groupId,
+          uploadOtherVideo
+        );
+      });
+      socket.on("user-keep-remote-changed", (groupId) => {
+        socket.broadcast.emit("change-user-keep-remote", groupId);
+      });
+      socket.on("play-all-video", (currentTime, groupId) => {
+        socket.broadcast.emit("play-video-user", currentTime, groupId);
+      });
+      socket.on("pause-all-video", (currentTime, groupId) => {
+        socket.broadcast.emit("pause-video-user", currentTime, groupId);
+      });
+      socket.on("disconnect", async () => {
+        await TheaterRoomMember.deleteMany({
+          email,
+          groupId,
+        }).lean();
+        if (rooms[groupId] && rooms[groupId].users[userId]) {
+          socket.emit("disconnected-user", username, userId, groupId);
+          socket.broadcast.emit("disconnected-user", username, userId, groupId);
+          delete rooms[groupId].users[userId];
+          if (Object.keys(rooms[groupId].users).length === 0) {
+            delete rooms[groupId];
+          }
         }
-      }
-    });
+      });
+      socket.on("disconnect-custom", async () => {
+        console.log("disconnect");
+        await TheaterRoomMember.deleteMany({
+          email,
+          groupId,
+        }).lean();
+        if (rooms[groupId] && rooms[groupId].users[userId]) {
+          socket.broadcast.emit("disconnected-user", username, userId, groupId);
+          delete rooms[groupId].users[userId];
+          if (Object.keys(rooms[groupId].users).length === 0) {
+            delete rooms[groupId];
+          }
+        }
+      });
+    }
+  );
+  socket.on("notify-user-typing", (groupId, idUserTyping, username) => {
+    socket.broadcast.emit("new-user-typing", groupId, idUserTyping, username);
   });
-  socket.on("notify-user-typing",(groupId, idUserTyping, username) => {
-    socket.broadcast.emit("new-user-typing",groupId, idUserTyping, username);
-  })
 
-  socket.on("notify-user-stop-type",(groupId, idTyping) => {
+  socket.on("notify-user-stop-type", (groupId, idTyping) => {
     socket.broadcast.emit("eliminate-user-typing", groupId, idTyping);
-  })
+  });
 
-  socket.on("new-message", (username, message, groupId) => {
+  socket.on("new-message", (username, message, groupId, avatar) => {
     socket.broadcast.emit(
       "send-message-other-users",
       username,
       message,
-      groupId
+      groupId,
+      avatar
     );
   });
-  socket.on("new-message-photo", (username, uri, groupId) => {
+  socket.on("new-message-photo", (username, uri, groupId, avatar) => {
     socket.broadcast.emit(
       "send-message-photo-other-users",
       username,
       uri,
+      groupId,
+      avatar
+    );
+  });
+
+  socket.on("new-user-seen", (avatar, groupId) => {
+    socket.broadcast.emit(
+      "send-avatar-seen-user-to-other-user",
+      avatar,
       groupId
     );
   });
@@ -205,8 +225,8 @@ TheaterRoomMember.watch().on("change", async () => {
   io.emit("mongo-change-watch");
 });
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(express.json({ limit: "10mb" }));
+app.use(express.urlencoded({ limit: "10mb", extended: true }));
 app.use(cookieParser(process.env.SESSION_SECRET));
 
 app.use(express.static(path.join(__dirname, "build")));

@@ -43,11 +43,9 @@ const UpcomingAnimeList = () => {
     <section className="upcoming-anime-container"
       onTouchMove={() => {
         updateModeScrolling("enter");
-        document.querySelector(".upcoming-anime-container .list-anime-nowrap").scrollHeight = "auto";
       }}
       onTouchStart={() => {
         updateModeScrolling("enter");
-        document.querySelector(".upcoming-anime-container .list-anime-nowrap").scrollHeight = "auto";
       }}
       onTouchEnd={() => {
         updateModeScrolling("interval");

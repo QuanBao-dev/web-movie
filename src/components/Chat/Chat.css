@@ -27,7 +27,7 @@
   overflow-x: hidden;
 }
 
-.image-3dot{
+.image-dot{
   width: 50px;
   padding: 5px;
   background-color: #484f70;
@@ -67,6 +67,12 @@
   padding:1px 0;
   overflow-x: hidden;
   overflow-y: hidden;
+}
+
+.seen-user img{
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
 }
 
 .flex-start-message{

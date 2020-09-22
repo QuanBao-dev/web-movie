@@ -24,6 +24,18 @@
   margin-bottom: 10px;
   position: relative;
   font-size: 1.2rem;
+  position: relative;
+}
+
+.image-avatar{
+  border-radius: 5px;
+}
+
+.container-avatar{
+  position: absolute;
+  right: 100%;
+  margin-right:3px;
+  top:0;
 }
 
 .delete-symbol{

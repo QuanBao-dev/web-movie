@@ -75,7 +75,7 @@ export const submitFormPasswordRoom$ = (
         },
       }).pipe(
         catchError((error) => {
-          alert(error.response.message);
+          alert("ROOM NOT FOUND")
           return of(null);
         })
       )

@@ -15,7 +15,8 @@ const BoxMovie = require("../models/boxMovie.model");
 const {
   verifyChangeInfoUser,
 } = require("../middleware/verify-change-info-user");
-
+const cloudinary = require("cloudinary");
+const { nanoid } = require("nanoid");
 router.get("/", verifyRole("Admin"), async (req, res) => {
   try {
     const users = await User.find({});
@@ -43,7 +44,10 @@ router.post("/login", verifyLogin, async (req, res) => {
   if (!checkPassword) {
     return res.status(400).send({ error: "Invalid password" });
   }
-  const userVm = ignoreProps(["_id", "__v", "password"], user.toJSON());
+  const userVm = ignoreProps(
+    ["_id", "__v", "password", "avatarImage"],
+    user.toJSON()
+  );
   try {
     const token = jwt.sign(userVm, process.env.JWT_KEY, {
       expiresIn: "12h",
@@ -152,10 +156,11 @@ router.put(
       user.password = await bcrypt.hash(req.body.newPassword, salt);
     }
     ///change cookie
+    if (!user.userId) user.userId = nanoid();
     try {
       const userSaved = await user.save();
       const userVm = ignoreProps(
-        ["_id", "__v", "password"],
+        ["_id", "__v", "password", "avatarImage"],
         userSaved.toJSON()
       );
       const token = jwt.sign(userVm, process.env.JWT_KEY);
@@ -180,6 +185,36 @@ router.put(
     }
   }
 );
+
+router.put("/current/avatar", verifyRole("Admin", "User"), async (req, res) => {
+  const { avatarImage } = req.body;
+  try {
+    const user = await User.findOne({ email: req.user.email });
+    let result;
+    if (!user) {
+      throw Error("Something went wrong");
+    }
+    if (!user.userId) {
+      user.userId = nanoid();
+    }
+    result = await cloudinary.v2.uploader.upload(avatarImage, {
+      width: 50,
+      height: 50,
+      overwrite: true,
+      folder: "my-web-movie/avatar_user",
+      public_id: user.userId,
+      invalidate: true,
+    });
+    user.avatarImage = result.secure_url;
+    user.avatarImage = user.avatarImage.replace("upload/","upload/f_auto,q_auto/")
+    const savedUser = await user.save();
+    res.send({
+      message: savedUser.avatarImage,
+    });
+  } catch (error) {
+    res.status(404).send({ error: "Something went wrong" });
+  }
+});
 
 router.delete("/:id", verifyRole("Admin"), async (req, res) => {
   const { id } = req.params;

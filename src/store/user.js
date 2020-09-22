@@ -15,6 +15,13 @@ const userStore = {
   updateUser: (user) =>{
     state = user;
     behaviorSubject.next(state);
+  },
+  updateAvatarUser:(image) => {
+    state = {
+      ...state,
+      avatarImage:image
+    };
+    behaviorSubject.next(state);
   }
 }
 

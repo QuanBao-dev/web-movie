@@ -39,9 +39,8 @@
 .user-list-online{
   box-shadow: 0 0 5px 5px black;
   background-color: #1f2238e5;
-  padding:1rem;
+  display: flex;
   margin-left: 1rem;
-  margin: 0 0 0 auto;
   overflow-x: auto;
   overflow-y: hidden;
   max-height: 900px;
@@ -64,8 +63,11 @@
 }
 
 .user-list-online div{
-  display: inline-block;
-  margin-right: 1em;
+  margin: 0.6em;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
 .user-list-online p{

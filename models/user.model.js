@@ -1,6 +1,9 @@
 const mongoose = require("mongoose");
 
 const userSchema = new mongoose.Schema({
+  userId:{
+    type:String,
+  },
   createdAt: {
     type: Date,
     default: Date.now,
@@ -24,6 +27,9 @@ const userSchema = new mongoose.Schema({
   password: {
     type: String,
     required: true,
+  },
+  avatarImage: {
+    type: String,
   },
 });
 

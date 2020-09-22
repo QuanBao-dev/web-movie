@@ -49,7 +49,6 @@ const TheaterWatch = (props) => {
   const videoWatchRef = useRef();
   const videoUrlUpload = useRef();
   const [cookies] = useCookies(["idCartoonUser"]);
-
   useEffect(() => {
     videoWatchElement = videoWatchRef.current;
     notificationE = notificationRef.current;
@@ -113,7 +112,7 @@ const TheaterWatch = (props) => {
       }
       updateAllowRemoveVideoWatch(true);
       const buttonScrollTopE = document.querySelector(".button-scroll-top");
-      buttonScrollTopE.style.display = "block"; 
+      buttonScrollTopE.style.display = "block";
     };
   }, [
     cookies.idCartoonUser,
@@ -137,7 +136,7 @@ const TheaterWatch = (props) => {
       socket.emit("disconnect-custom");
     }
   }
-  // console.log(theaterState);
+  // console.log(theaterState.usersOnline);
   return (
     <div className="theater-user-login">
       {theaterState.isSignIn && theaterState.currentRoomDetail && (
@@ -241,6 +240,12 @@ const TheaterWatch = (props) => {
                     const chatBot = document.querySelector(".chat-bot");
                     if (e) {
                       if (chatBot.style.transform === "scale(0)") {
+                        if (theaterState.unreadMessage !== 0)
+                          socket.emit(
+                            "new-user-seen",
+                            user.avatarImage,
+                            groupId
+                          );
                         e.style.transform = "scale(1)";
                         chatBot.style.transform = "scale(1)";
                         chatBot.scroll({
@@ -334,8 +339,9 @@ function allowFullscreen() {
   }
 }
 
-function newUserJoinHandleVideo(audioCallE) {
+async function newUserJoinHandleVideo(audioCallE) {
   const id = nanoid();
+  let isError = false;
   updateUserIdNow(id);
   try {
     navigator.mediaDevices
@@ -361,50 +367,61 @@ function newUserJoinHandleVideo(audioCallE) {
           const buttonGetRemoteElement = document.getElementById(
             "button-get-remote"
           );
-          socket.emit(
-            "new-user",
-            user.username,
-            groupId,
-            id,
-            user.email,
-            buttonGetRemoteElement.disabled
-          );
-          addAudioStream(myAudio, stream, audioCallE);
-          appendNewMessageNotification(
-            "Your " + elementCall + " is connected",
-            notificationE,
-            "audio-connected"
-          );
-          myPeer.on("call", (call) => {
-            call.answer(stream);
-            const audio = document.createElement(elementCall);
-            call.on("stream", (stream) => {
-              addAudioStream(audio, stream, audioCallE);
+          if (buttonGetRemoteElement) {
+            socket.emit(
+              "new-user",
+              user.avatarImage,
+              user.username,
+              groupId,
+              id,
+              user.email,
+              buttonGetRemoteElement.disabled
+            );
+            addAudioStream(myAudio, stream, audioCallE);
+            appendNewMessageNotification(
+              "Your " + elementCall + " is connected",
+              notificationE,
+              "audio-connected"
+            );
+            myPeer.on("call", (call) => {
+              call.answer(stream);
+              const audio = document.createElement(elementCall);
+              call.on("stream", (stream) => {
+                addAudioStream(audio, stream, audioCallE);
+              });
             });
-          });
+          }
         });
       })
       .catch(async (err) => {
+        isError = true;
         await newUserJoin(id, groupId);
-        console.log(err);
+        console.log(err, ": join error 1");
       });
   } catch (error) {
-    newUserJoin(id, groupId);
+    isError = true;
+    console.log(error, ": join error 2");
+  }
+  if (isError) {
+    await newUserJoin(id, groupId);
+    console.log("user join error");
   }
 }
 
 async function newUserJoin(id, groupId) {
   const buttonGetRemoteElement = document.getElementById("button-get-remote");
-  console.log(buttonGetRemoteElement);
-  socket.emit(
-    "new-user",
-    user.username,
-    groupId,
-    id,
-    user.email,
-    buttonGetRemoteElement.disabled
-  );
-  socket.emit("fetch-updated-user-online");
+  if (buttonGetRemoteElement) {
+    socket.emit(
+      "new-user",
+      user.avatarImage,
+      user.username,
+      groupId,
+      id,
+      user.email,
+      buttonGetRemoteElement.disabled
+    );
+    socket.emit("fetch-updated-user-online");
+  }
 }
 
 function UserListOnline({ usersOnline }) {
@@ -415,13 +432,23 @@ function UserListOnline({ usersOnline }) {
         usersOnline.map((member, key) => {
           return (
             <div key={key}>
-              <p
+              <div>
+                <img
+                  style={{ borderRadius: "50%" }}
+                  width="50"
+                  height="50"
+                  src={member.avatar}
+                  alt="NOT FOUND"
+                />
+              </div>
+              <div
                 style={{
                   color: member.keepRemote ? "red" : "",
+                  margin: "0",
                 }}
               >
                 {member.username}
-              </p>
+              </div>
             </div>
           );
         })}

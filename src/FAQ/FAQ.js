@@ -31,20 +31,17 @@ const FAQ = () => {
         </li>
       </ul>
       <h2>How to get video url for theater easily</h2>
-      <p>There are two way to get video url on this website</p>
+      <p>There are two ways to get video url on this website</p>
       <ul>
         <li>
-          You need to go to the page watching anime and clicking in the button
-          "Copy url for theater" to get url. But there's some case the video
-          wouldn't have that button. So you need to use another solution
+          You need to go to the page watching anime and click in the button with the name "Copy url for theater" to get url. But there's some cases the video wouldn't have that button. So you need to use another solution
         </li>
         <li>
-          You need to manually get the link video from console.
+          Extracting the link video from console.
           <ul>
             <li>
               Press f12 to open the console, go to network, reload the page and
-              search for mp4 by typing "mp4" in filter input in the console,
-              choose the one will lead you to the video which is video we need
+              search for mp4 by typing "mp4" in filter input in the console, play the video to load video stream, and then you just choose the one will lead you to the video which is video we need
             </li>
             <li>
               Note: This method currently works on the server "xstreamcdn" of

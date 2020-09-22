@@ -22,7 +22,7 @@ export const validateInput$ = (
   buttonSubmitElement.disabled = true;
   const inputAuthor$ = fromEvent(inputAuthorElement, "input").pipe(
     pluck("target", "value"),
-    startWith(user.username)
+    startWith(chatStream.currentState().currentName)
   );
   const input$ = fromEvent(inputElement, "input").pipe(
     pluck("target", "value"),

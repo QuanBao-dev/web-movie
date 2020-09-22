@@ -6,7 +6,8 @@ const initialState = {
   numberCommentOfEachPage: 5,
   indexInputDisplayBlock: null,
   malId: null,
-  shouldFetchComment: true
+  shouldFetchComment: true,
+  currentName:"",
 };
 
 const behaviorSubject = new BehaviorSubject();
@@ -101,5 +102,8 @@ const chatStore = {
 
 export const allowShouldFetchComment = (bool) =>{
   state.shouldFetchComment = bool;
+}
+export const updateCurrentName = (name) => {
+  state.currentName = name;
 }
 export default chatStore;

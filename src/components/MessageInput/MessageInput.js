@@ -40,14 +40,13 @@ const MessageInput = ({
         }
       });
     subStopTyping = fromEvent(messageInputRef.current, "input")
-      .pipe(debounceTime(1000))
+      .pipe(debounceTime(600))
       .subscribe(() => {
         socket.emit("notify-user-stop-type", idGroup, idTyping);
         fromEvent(messageInputRef.current, "input")
           .pipe(first())
           .subscribe(() => {
             if (isWithoutName) {
-              console.log(idTyping);
               socket.emit(
                 "notify-user-typing",
                 idGroup,
@@ -167,28 +166,52 @@ const MessageInput = ({
             if (message.images.length > 0) {
               message.images.forEach((uri) => {
                 appendNewPhotoMessage(uri, "You", true, messageDialogE);
-                socket.emit(
-                  "new-message-photo",
-                  inputNameDialogRef.current &&
-                    inputNameDialogRef.current.value.trim() !== ""
-                    ? inputNameDialogRef.current.value
-                    : user.username,
-                  uri,
-                  idGroup
-                );
+                if (user)
+                  socket.emit(
+                    "new-message-photo",
+                    inputNameDialogRef.current &&
+                      inputNameDialogRef.current.value.trim() !== ""
+                      ? inputNameDialogRef.current.value
+                      : user.username,
+                    uri,
+                    idGroup,
+                    user.avatarImage
+                  );
+                else
+                  socket.emit(
+                    "new-message-photo",
+                    inputNameDialogRef.current &&
+                      inputNameDialogRef.current.value.trim() !== ""
+                      ? inputNameDialogRef.current.value
+                      : user.username,
+                    uri,
+                    idGroup
+                  );
               });
             }
             if (message.text && message.text.trim() !== "") {
               appendNewMessageDialog(message.text, "You", true, messageDialogE);
-              socket.emit(
-                "new-message",
-                inputNameDialogRef.current &&
-                  inputNameDialogRef.current.value.trim() !== ""
-                  ? inputNameDialogRef.current.value
-                  : user.username,
-                message.text,
-                idGroup
-              );
+              if (user)
+                socket.emit(
+                  "new-message",
+                  inputNameDialogRef.current &&
+                    inputNameDialogRef.current.value.trim() !== ""
+                    ? inputNameDialogRef.current.value
+                    : user.username,
+                  message.text,
+                  idGroup,
+                  user.avatarImage
+                );
+              else
+                socket.emit(
+                  "new-message",
+                  inputNameDialogRef.current &&
+                    inputNameDialogRef.current.value.trim() !== ""
+                    ? inputNameDialogRef.current.value
+                    : user.username,
+                  message.text,
+                  idGroup
+                );
             }
             e.target.innerHTML = "";
             messageInputStream.init();

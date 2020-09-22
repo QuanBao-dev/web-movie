@@ -166,8 +166,21 @@ function App() {
                 </Link>
               </li>
             )}
-
-            <li className="left-nav-item nav-bar__item" ref={navLoginRef}>
+            <li
+              style={{ color: "white", cursor: "pointer" }}
+              className="left-nav-item nav-bar__item"
+            >
+              <Link
+                to="/faq"
+                activeClassName="active"
+                onClick={() => {
+                  theaterStream.socket.emit("disconnect-custom");
+                }}
+              >
+                FAQ
+              </Link>
+            </li>
+            <li className="nav-bar__item" ref={navLoginRef}>
               {!user && (
                 <Link
                   to="/auth/login"
@@ -185,9 +198,11 @@ function App() {
                     color: "white",
                     cursor: "pointer",
                     display: "inline",
+                    padding: "10px",
                   }}
                   onClick={() => {
                     logoutUser(setCookie, cookies.idCartoonUser);
+                    window.location.replace("/");
                     theaterStream.socket.emit("disconnect-custom");
                   }}
                 >
@@ -224,20 +239,57 @@ function App() {
                 </Link>
               </li>
             )}
-            <li
-              style={{ color: "white", cursor: "pointer" }}
-              className="nav-bar__item"
-            >
-              <Link
-                to="/faq"
-                activeClassName="active"
-                onClick={() => {
-                  theaterStream.socket.emit("disconnect-custom");
-                }}
-              >
-                FAQ
-              </Link>
-            </li>
+            {user && (
+              <li className="nav-bar__item">
+                <div
+                  style={{
+                    color: "white",
+                    cursor: "pointer",
+                    display: "inline",
+                  }}
+                >
+                  <img
+                    className="avatar-user"
+                    src={
+                      !user.avatarImage
+                        ? "https://iupac.org/wp-content/uploads/2018/05/default-avatar.png"
+                        : user.avatarImage
+                    }
+                    alt="NOT FOUND"
+                    onClick={() => {
+                      document.querySelector(".input-choose-avatar").click();
+                    }}
+                  />
+                  <input
+                    className="input-choose-avatar"
+                    type="file"
+                    onChange={async (e) => {
+                      try {
+                        const file = await convertImgToBase64(
+                          e.target.files[0]
+                        );
+                        const res = await Axios.put(
+                          "/api/users/current/avatar",
+                          {
+                            avatarImage: file.target.result,
+                          },
+                          {
+                            headers: {
+                              authorization: `Bearer ${cookies.idCartoonUser}`,
+                            },
+                          }
+                        );
+                        userStream.updateAvatarUser(res.data.message)
+                      } catch (error) {
+                        console.log(error);
+                        alert("Something went wrong");
+                        console.log(error);
+                      }
+                    }}
+                  />
+                </div>
+              </li>
+            )}
           </ul>
         </ul>
       </nav>
@@ -281,5 +333,19 @@ async function logoutUser(setCookie, cookie) {
     userStream.updateUser(undefined);
     // window.location.replace("/");
   } catch (error) {}
+}
+
+async function convertImgToBase64(files) {
+  return new Promise((res, rej) => {
+    const reader = new FileReader();
+    reader.onload = (fileContent) => {
+      res(fileContent);
+    };
+
+    reader.onerror = (error) => {
+      rej(error);
+    };
+    reader.readAsDataURL(files);
+  });
 }
 export default App;

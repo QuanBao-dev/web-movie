@@ -23,7 +23,11 @@ import {
   topMovieUpdatedScrolling$,
 } from "../epics/home";
 import { userStream } from "../epics/user";
-import { allowScrollToSeeMore, updateMaxPage } from "../store/home";
+import {
+  allowScrollToSeeMore,
+  updateMaxPage,
+  updatePageTopMovieOnDestroy,
+} from "../store/home";
 import UpcomingAnimeList from "../components/UpcomingAnimeList/UpcomingAnimeList";
 import Genres from "../components/Genres/Genres";
 
@@ -32,7 +36,9 @@ window.addEventListener("resize", () => {
   stream.init();
 });
 function Home() {
-  const [homeState, setHomeState] = useState(stream.initialState);
+  const [homeState, setHomeState] = useState(
+    stream.currentState() ? stream.currentState() : stream.initialState
+  );
   const [limitShowRecentlyUpdated, setLimitShowRecentlyUpdated] = useState(
     numberOfMovieShown
   );
@@ -65,15 +71,6 @@ function Home() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [subNavToggle]);
 
-  useEffect(() => {
-    const subscription7 = fetchTopMovie$().subscribe((topMovieList) => {
-      console.log("fetch top movie");
-      stream.updateTopMovie(topMovieList);
-    });
-    return () => {
-      subscription7.unsubscribe();
-    };
-  }, [homeState.pageTopMovie]);
   useEffect(() => {
     const subscription2 = fetchAnimeSeason$(
       homeState.year,
@@ -121,8 +118,6 @@ function Home() {
 
     const subscription6 = changeSearchInput$(searchInput.current).subscribe();
 
-    let subscription8;
-
     if (subNavToggle === 1 && !user) {
       setSubNavToggle(0);
     }
@@ -132,18 +127,7 @@ function Home() {
     ).subscribe((v) => {
       history.push("/anime/search?key=" + v);
     });
-    let subscription11;
-    const topAnimeElement = document.querySelector(".top-anime-list-container");
-    if (topAnimeElement) {
-      subscription11 = topMovieUpdatedScrolling$(topAnimeElement).subscribe(
-        () => {
-          updateDataTopScrolling();
-        }
-      );
-    }
     return () => {
-      subscription8 && subscription8.unsubscribe();
-      subscription11 && subscription11.unsubscribe();
       unsubscribeSubscription(
         subscription,
         subscription3,
@@ -156,7 +140,6 @@ function Home() {
   }, [
     cookies.idCartoonUser,
     subNavToggle,
-    homeState.dataTopMovie.length,
     homeState.shouldScrollToSeeMore,
     homeState.textSearch,
     homeState.screenWidth,
@@ -429,6 +412,36 @@ function SelectFilterAnime({
 }
 
 function TopAnimeList({ homeState }) {
+  useEffect(() => {
+    return () => {
+      updatePageTopMovieOnDestroy(stream.currentState().pageTopMovie);
+    };
+  }, []);
+  useEffect(() => {
+    let subscription7;
+    if (stream.currentState().pageTopMovieOnDestroy !== homeState.pageTopMovie)
+      subscription7 = fetchTopMovie$().subscribe((topMovieList) => {
+        console.log("fetch top movie");
+        stream.updateTopMovie(topMovieList);
+      });
+    return () => {
+      subscription7 && subscription7.unsubscribe();
+    };
+  }, [homeState.pageTopMovie]);
+  useEffect(() => {
+    let subscription11;
+    const topAnimeElement = document.querySelector(".top-anime-list-container");
+    if (topAnimeElement) {
+      subscription11 = topMovieUpdatedScrolling$(topAnimeElement).subscribe(
+        () => {
+          updateDataTopScrolling();
+        }
+      );
+    }
+    return () => {
+      subscription11 && subscription11.unsubscribe();
+    };
+  }, [homeState.pageTopMovie]);
   return (
     <div className="top-anime-list-container">
       <h1>Top Anime {new Date(Date.now()).getFullYear()}</h1>

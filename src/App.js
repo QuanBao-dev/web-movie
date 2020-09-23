@@ -9,25 +9,27 @@ import {
   Route,
   Switch,
 } from "react-router-dom";
+import { ReplaySubject } from "rxjs";
 
+import NotFound from "./404/NotFound";
+import AdminManager from "./AdminManager/AdminManager";
+import CharacterDetail from "./components/CharacterDetail/CharacterDetail";
+import GenreDetail from "./components/GenreDetail/GenreDetail";
+import EditUser from "./EditUser/EditUser";
+import { theaterStream } from "./epics/theater";
+import { fetchingUser$, userStream } from "./epics/user";
 import EpisodePage from "./EpisodePage/EpisodePage";
+import FAQ from "./FAQ/FAQ";
 import Home from "./Home/Home";
 import Login from "./Login/Login";
 import Name from "./Name/Name";
 import Register from "./Register/Register";
-import { fetchingUser$, userStream } from "./epics/user";
-import AdminManager from "./AdminManager/AdminManager";
-import { allowShouldFetchAllUser } from "./store/admin";
-import EditUser from "./EditUser/EditUser";
-import Theater from "./Theater/Theater";
-import { theaterStream } from "./epics/theater";
-import navBarStore from "./store/navbar";
 import SearchedList from "./Search/SearchedList";
-import { ReplaySubject } from "rxjs";
-import CharacterDetail from "./components/CharacterDetail/CharacterDetail";
-import NotFound from "./404/NotFound";
-import FAQ from "./FAQ/FAQ";
-import GenreDetail from "./components/GenreDetail/GenreDetail";
+import { allowShouldFetchAllUser } from "./store/admin";
+import { updatePageOnDestroy } from "./store/home";
+import navBarStore from "./store/navbar";
+import Theater from "./Theater/Theater";
+
 const scrollSaveSubject = new ReplaySubject(3);
 window.addEventListener("resize", () => {
   const e = document.getElementsByClassName("child-nav-bar__app").item(0);
@@ -104,7 +106,12 @@ function App() {
       >
         <i className="fas fa-arrow-up fa-2x"></i>
       </div>
-      <nav className="nav-bar">
+      <nav
+        className="nav-bar"
+        onClick={() => {
+          updatePageOnDestroy(null);
+        }}
+      >
         <ul className="nav-bar__app">
           <div
             className="toggle-show__nav"
@@ -266,8 +273,12 @@ function App() {
                     type="file"
                     onChange={async (e) => {
                       try {
-                        if(!["image/png","image/jpeg","image/gif"].includes(e.target.files[0].type)){
-                          return alert("You just can upload image")
+                        if (
+                          !["image/png", "image/jpeg", "image/gif"].includes(
+                            e.target.files[0].type
+                          )
+                        ) {
+                          return alert("You just can upload image");
                         }
                         const file = await convertImgToBase64(
                           e.target.files[0]
@@ -311,7 +322,7 @@ function App() {
           component={CharacterDetail}
         />
         <Route path="/anime/:name" component={Name} />
-        <Route path="/genre/:genreId/:genre" component={GenreDetail}/>
+        <Route path="/genre/:genreId/:genre" component={GenreDetail} />
         {user && <Route path="/theater" component={Theater} />}
         {user && <Route path="/edit" component={EditUser} />}
         {!user && <Route path="/auth/login" component={Login} />}

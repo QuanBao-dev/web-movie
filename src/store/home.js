@@ -49,6 +49,8 @@ const initialState = {
   upcomingAnimeList: [],
   score: 0,
   modeScrolling: "interval",
+  pageOnDestroy:null,
+  pageTopMovieOnDestroy:null
 };
 
 const subject = new BehaviorSubject(initialState);
@@ -207,6 +209,15 @@ export const resetGenreDetail = () => {
   state.pageGenre = 1;
   state.genreDetailData = [];
 }
+
+export const updatePageOnDestroy = (page) => {
+  state.pageOnDestroy = page;
+}
+
+export const updatePageTopMovieOnDestroy = (page) => {
+  state.pageTopMovieOnDestroy = page;
+}
+
 
 export const resetScheduleDate = () => {
   const week = [

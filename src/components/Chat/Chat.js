@@ -109,6 +109,12 @@ const Chat = ({ groupId, user, withoutName = false, isZoom = false }) => {
               onChange={async () => {
                 try {
                   for (let i = 0; i < inputRefFile.current.files.length; i++) {
+                    if (
+                      inputRefFile.current.files[i].type.indexOf("image") === -1
+                    ) {
+                      alert("Just image or gif")
+                      continue;
+                    }
                     const uri = await base64DataUrl(
                       inputRefFile.current.files[i]
                     );

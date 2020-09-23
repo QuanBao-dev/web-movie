@@ -15,18 +15,23 @@ import {
 
 import AnimeList from "../AnimeList/AnimeList";
 import { stream } from "../../epics/home";
+import { updatePageOnDestroy } from "../../store/home";
 
 const GenreDetail = (props) => {
   const { genreId, genre } = props.match.params;
-  const [homeState, setHomeState] = useState(stream.initialState);
+  const [homeState, setHomeState] = useState(
+    stream.currentState() ? stream.currentState() : stream.initialState
+  );
   useEffect(() => {
     const subscription = stream.subscribe(setHomeState);
     return () => {
       subscription.unsubscribe();
+      updatePageOnDestroy(stream.currentState().pageGenre);
     };
   }, []);
   useEffect(() => {
-    const subscription = updatePageScrollingWindow$().subscribe((v) => {
+    let subscription;
+    subscription = updatePageScrollingWindow$().subscribe((v) => {
       const currentPage = homeState.pageGenre;
       stream.updatePageGenre(currentPage + 1);
     });
@@ -35,15 +40,18 @@ const GenreDetail = (props) => {
     };
   }, [homeState.pageGenre]);
   useEffect(() => {
-    const subscription = fetchDataGenreAnimeList(
-      genreId,
-      homeState.pageGenre
-    ).subscribe((v) => {
-      const updatedAnime = [...homeState.genreDetailData, ...v];
-      stream.updateGenreDetailData(updatedAnime);
-    });
+    let subscription;
+    console.log(homeState.pageGenre , stream.currentState().pageOnDestroy)
+    if (homeState.pageGenre !== stream.currentState().pageOnDestroy)
+      subscription = fetchDataGenreAnimeList(
+        genreId,
+        homeState.pageGenre
+      ).subscribe((v) => {
+        const updatedAnime = [...homeState.genreDetailData, ...v];
+        stream.updateGenreDetailData(updatedAnime);
+      });
     return () => {
-      subscription.unsubscribe();
+      subscription && subscription.unsubscribe();
     };
   }, [homeState.pageGenre]);
   return (

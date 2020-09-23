@@ -178,8 +178,6 @@ const Name = (props) => {
   let sourceFilmList;
   if (episodeData && episodeData.sourceFilmList)
     sourceFilmList = Object.entries(episodeData.sourceFilmList);
-  episodeDataDisplay.episodeList[0] &&
-    console.log(episodeDataDisplay.episodeList[0].episode);
   return (
     findingAnime && (
       <div className="anime-name-info layout">
@@ -402,8 +400,8 @@ function ListInformation({ arrKeys }) {
                       <span className="title-capitalize">
                         {capitalizeString(v)}
                       </span>
-                      {findingAnime[v].map((nameAnime) => {
-                        return <li key={nameAnime}>{nameAnime}</li>;
+                      {findingAnime[v].map((nameAnime,index) => {
+                        return <li key={index}>{nameAnime}</li>;
                       })}
                     </ul>
                   )}

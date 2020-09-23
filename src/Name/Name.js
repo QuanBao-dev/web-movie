@@ -86,7 +86,7 @@ const Name = (props) => {
           setData({
             ...anime,
             dataPromo: api,
-            image_url: pictures[random(pictures.length - 1)].large,
+            image_url: pictures[random(pictures.length - 1)] ? pictures[random(pictures.length - 1)].large: undefined,
           });
         }
       });

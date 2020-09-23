@@ -25,6 +25,7 @@ import {
 import { userStream } from "../epics/user";
 import { allowScrollToSeeMore, updateMaxPage } from "../store/home";
 import UpcomingAnimeList from "../components/UpcomingAnimeList/UpcomingAnimeList";
+import Genres from "../components/Genres/Genres";
 
 const numberOfMovieShown = 18;
 window.addEventListener("resize", () => {
@@ -161,7 +162,7 @@ function Home() {
     homeState.screenWidth,
   ]);
   middleWare(homeState);
-  const startYear = 2000;
+  const startYear = 1963;
   const endYear = new Date(Date.now()).getFullYear();
   const numberOfYears = endYear - startYear + 1;
   const numberOfPagesDisplay = homeState.maxPage < 4 ? homeState.maxPage : 4;
@@ -265,6 +266,7 @@ function Home() {
           </div>
           <TopAnimeList homeState={homeState} />
         </div>
+        <Genres />
       </div>
     </div>
   );

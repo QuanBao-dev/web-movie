@@ -23,7 +23,8 @@
 .day-schedule-movie .title{
   font-size: 1.2rem;
   text-transform: capitalize;
-  text-align: center;
+  text-align: start;
+  margin-left: 2rem;
   text-shadow: 2px 2px black;
   text-transform: uppercase;
   font-weight: bolder;

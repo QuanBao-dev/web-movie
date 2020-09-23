@@ -27,6 +27,7 @@ import { ReplaySubject } from "rxjs";
 import CharacterDetail from "./components/CharacterDetail/CharacterDetail";
 import NotFound from "./404/NotFound";
 import FAQ from "./FAQ/FAQ";
+import GenreDetail from "./components/GenreDetail/GenreDetail";
 const scrollSaveSubject = new ReplaySubject(3);
 window.addEventListener("resize", () => {
   const e = document.getElementsByClassName("child-nav-bar__app").item(0);
@@ -310,6 +311,7 @@ function App() {
           component={CharacterDetail}
         />
         <Route path="/anime/:name" component={Name} />
+        <Route path="/genre/:genreId/:genre" component={GenreDetail}/>
         {user && <Route path="/theater" component={Theater} />}
         {user && <Route path="/edit" component={EditUser} />}
         {!user && <Route path="/auth/login" component={Login} />}

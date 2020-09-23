@@ -26,7 +26,7 @@ const initialState = {
   dataDetailOriginal: [],
   currentPage: 1,
   numberOfProduct: 36,
-  year: 2020,
+  year: new Date(Date.now()).getFullYear(),
   season: currentSeason,
   maxPage: 1,
   isLoading: true,

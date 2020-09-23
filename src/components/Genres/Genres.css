@@ -1,0 +1,42 @@
+.genre-section{
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  background-color: rgb(36, 39, 87);
+  justify-content: flex-start;
+  width: 100%;
+  margin: auto;
+  box-shadow: 0 -40px 10px 1px rgb(36, 39, 87),0 -40px 10px 1px rgb(97, 113, 136);
+}
+.genre-section h1{
+  margin: auto;
+  text-transform: capitalize;
+  color: white;
+  display: inline-block;
+  border-radius: 10px;
+  font-size: 3rem;
+}
+.container-genre-list{
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  margin: 1rem;
+  padding: 1rem;
+}
+
+.container-genre-list a{
+  text-decoration: none;
+  color: white;
+  padding: 1rem;
+  margin: 0.2em;
+  background-color:black;
+  border-radius: 10px;
+  font-weight: bolder;
+  transition: 0.2s;
+}
+
+
+.container-genre-list a:hover{
+  transform: scale(1.1);
+  color: green;
+}

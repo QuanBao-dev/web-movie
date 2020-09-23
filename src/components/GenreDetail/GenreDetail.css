@@ -1,0 +1,17 @@
+.container-genre-detail{
+  width: 80%;
+  margin: auto;
+  background-color: #1f2741;
+  box-shadow: 0 0 5px 1px black;
+  color: white;
+  padding-bottom:3rem ;
+  padding-top: 1rem;
+}
+
+.container-genre-detail h1{
+  text-transform: capitalize;
+  text-align: center;
+  padding: 1rem;
+  background-color: #323a53;
+  border-top: 4px solid rgb(136, 41, 41);
+}

@@ -15,3 +15,9 @@
   background-color: #323a53;
   border-top: 4px solid rgb(136, 41, 41);
 }
+
+@media (max-width:700px){
+  .container-genre-detail{
+    width: 100%;
+  }
+}

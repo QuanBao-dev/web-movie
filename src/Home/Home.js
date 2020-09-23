@@ -227,9 +227,9 @@ function Home() {
           <div>See more</div>
         </div>
       </div>
+      <Genres />
       <AnimeSchedule />
       <div className="container-anime-list">
-        <Genres />
         <div className="wrapper-search-anime-list">
           <div style={{ width: "90%" }}>
             <Input label="Search Anime" input={searchInput} />

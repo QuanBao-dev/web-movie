@@ -48,6 +48,7 @@ const genresData = [
 const Genres = () => {
   return (
     <section className="genre-section">
+      <h1>Genres</h1>
       <div className="container-genre-list">
         {genresData.map(
           (data) =>

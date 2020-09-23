@@ -229,6 +229,7 @@ function Home() {
       </div>
       <AnimeSchedule />
       <div className="container-anime-list">
+        <Genres />
         <div className="wrapper-search-anime-list">
           <div style={{ width: "90%" }}>
             <Input label="Search Anime" input={searchInput} />
@@ -266,7 +267,6 @@ function Home() {
           </div>
           <TopAnimeList homeState={homeState} />
         </div>
-        <Genres />
       </div>
     </div>
   );

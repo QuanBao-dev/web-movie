@@ -38,6 +38,8 @@ const initialState = {
   dateSchedule: Array.from(Array(7).keys()).map(() => false),
   updatedMovie: [],
   boxMovie: [],
+  genreDetailData:[],
+  pageGenre:1,
   shouldFetchLatestUpdatedMovie: true,
   shouldFetchBoxMovie: false,
   shouldScrollToSeeMore: false,
@@ -66,7 +68,20 @@ const homeStore = {
     };
     subject.next(state);
   },
-
+  updatePageGenre:(page) => {
+    state = {
+      ...state,
+      pageGenre:page
+    }
+    subject.next(state);
+  },
+  updateGenreDetailData:(genreDetail) => {
+    state = {
+      ...state,
+      genreDetailData:genreDetail
+    };
+    subject.next(state);
+  },
   updatePageTopMovie: (num) => {
     state = {
       ...state,
@@ -187,6 +202,11 @@ const homeStore = {
     subject.next(state);
   },
 };
+
+export const resetGenreDetail = () => {
+  state.pageGenre = 1;
+  state.genreDetailData = [];
+}
 
 export const resetScheduleDate = () => {
   const week = [

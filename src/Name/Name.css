@@ -86,6 +86,7 @@
   .anime-name-info{
     margin: 100px 0;
     width: 100%;
+    padding: 0;
   }
 
   .anime-name-info .box{
@@ -114,7 +115,6 @@
   box-shadow: 2px 0 10px 1px black;
   text-align: center;
   max-height: 100%;
-  font-size: 0.8em;
   overflow-y: auto;
 }
 

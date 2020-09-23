@@ -1,6 +1,7 @@
 import "./Genres.css";
 import React from "react";
 import { Link } from "react-router-dom";
+import { resetGenreDetail } from "../../store/home";
 const genresData = [
   { genreId: "1", genre: "Action" },
   { genreId: "2", genre: "Adventure" },
@@ -56,6 +57,12 @@ const Genres = () => {
               <Link
                 to={`/genre/${data.genreId}/${data.genre.toLowerCase()}`}
                 key={data.genreId}
+                onClick={() => {
+                  window.scroll({
+                    top: 0,
+                  });
+                  resetGenreDetail();
+                }}
               >
                 {data.genre}
               </Link>

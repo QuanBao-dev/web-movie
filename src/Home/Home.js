@@ -418,18 +418,7 @@ function TopAnimeList({ homeState }) {
     };
   }, []);
   useEffect(() => {
-    let subscription7;
-    if (stream.currentState().pageTopMovieOnDestroy !== homeState.pageTopMovie)
-      subscription7 = fetchTopMovie$().subscribe((topMovieList) => {
-        console.log("fetch top movie");
-        stream.updateTopMovie(topMovieList);
-      });
-    return () => {
-      subscription7 && subscription7.unsubscribe();
-    };
-  }, [homeState.pageTopMovie]);
-  useEffect(() => {
-    let subscription11;
+    let subscription7; let subscription11;
     const topAnimeElement = document.querySelector(".top-anime-list-container");
     if (topAnimeElement) {
       subscription11 = topMovieUpdatedScrolling$(topAnimeElement).subscribe(
@@ -438,7 +427,13 @@ function TopAnimeList({ homeState }) {
         }
       );
     }
+    if (stream.currentState().pageTopMovieOnDestroy !== homeState.pageTopMovie)
+      subscription7 = fetchTopMovie$(subscription11).subscribe((topMovieList) => {
+        console.log("fetch top movie");
+        stream.updateTopMovie(topMovieList);
+      });
     return () => {
+      subscription7 && subscription7.unsubscribe();
       subscription11 && subscription11.unsubscribe();
     };
   }, [homeState.pageTopMovie]);

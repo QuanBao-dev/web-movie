@@ -209,7 +209,7 @@ export const changeSearchInput$ = (searchInputElement) => {
   );
 };
 
-export const fetchTopMovie$ = () => {
+export const fetchTopMovie$ = (subscription) => {
   return timer(0).pipe(
     exhaustMap(() =>
       ajax({
@@ -218,8 +218,9 @@ export const fetchTopMovie$ = () => {
         }/airing`,
       }).pipe(
         pluck("response", "top"),
-        retry(20),
+        retry(5),
         catchError((err) => {
+          subscription && subscription.unsubscribe();
           return of(stream.currentState().dataTopMovie);
         })
       )

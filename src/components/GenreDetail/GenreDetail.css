@@ -16,6 +16,12 @@
   border-top: 4px solid rgb(136, 41, 41);
 }
 
+.loading-symbol{
+  display: flex;
+  justify-content: center;
+  text-align: center;
+}
+
 @media (max-width:700px){
   .container-genre-detail{
     width: 100%;

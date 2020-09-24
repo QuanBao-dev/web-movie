@@ -1,23 +1,14 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import "./GenreDetail.css";
+import './GenreDetail.css';
 
-import React, { useEffect, useState } from "react";
-import { fromEvent, of, timer } from "rxjs";
-import { ajax } from "rxjs/ajax";
-import {
-  catchError,
-  debounceTime,
-  exhaustMap,
-  filter,
-  first,
-  pluck,
-  retry,
-  tap,
-} from "rxjs/operators";
+import React, { useEffect, useState } from 'react';
+import { fromEvent, of, timer } from 'rxjs';
+import { ajax } from 'rxjs/ajax';
+import { catchError, debounceTime, exhaustMap, filter, pluck, retry, tap } from 'rxjs/operators';
 
-import AnimeList from "../AnimeList/AnimeList";
-import { stream } from "../../epics/home";
-import { updatePageOnDestroy } from "../../store/home";
+import { stream } from '../../epics/home';
+import { updatePageOnDestroy } from '../../store/home';
+import AnimeList from '../AnimeList/AnimeList';
 
 const GenreDetail = (props) => {
   const { genreId, genre } = props.match.params;

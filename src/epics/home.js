@@ -4,10 +4,10 @@ import { orderBy } from "lodash";
 import { asyncScheduler, from, fromEvent, interval, of, timer } from "rxjs";
 import { ajax } from "rxjs/ajax";
 import {
-  delay,
   catchError,
   combineAll,
   debounceTime,
+  delay,
   exhaustMap,
   filter,
   map,
@@ -119,7 +119,7 @@ export const fetchAnimeSeason$ = (
           return of([]);
         })
       )
-    ),
+    )
   );
 };
 
@@ -281,7 +281,7 @@ export const fetchBoxMovie$ = (idCartoonUser) => {
         retry(20),
         catchError((err) => from([]))
       )
-    ),
+    )
   );
 };
 

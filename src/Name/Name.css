@@ -113,7 +113,7 @@
 
 .anime-name-info .box-info{
   box-shadow: 2px 0 10px 1px black;
-  text-align: center;
+  text-align: start;
   max-height: 100%;
   overflow-y: auto;
 }

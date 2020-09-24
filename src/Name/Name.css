@@ -115,6 +115,7 @@
   box-shadow: 2px 0 10px 1px black;
   text-align: start;
   max-height: 100%;
+  font-size: 0.85em;
   overflow-y: auto;
 }
 
@@ -242,6 +243,7 @@
   font-weight: 500;
   font-size: 140%;
   display: block;
+  color: rgb(255, 255, 255);
   margin: 1rem;
 }
 

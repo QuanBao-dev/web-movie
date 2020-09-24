@@ -12,7 +12,7 @@ const FAQ = () => {
       <h2>How to use theater</h2>
       <p>
         Firstly, This feature require you log in so you need to sign in, after that all you need to do is just create room, join the room you want by typing
-        in correct password of that room
+        correct password into input field of that room
       </p>
       <p>
         Secondly, uploading video. There are two ways to upload video by using
@@ -46,7 +46,7 @@ const FAQ = () => {
             <li>
               Note: This method currently works on the server "xstreamcdn" of
               video Engsub or Engdub. Maybe it will not work at some point in
-              the future. I have no guarantee that It will work eternally
+              the future. I have no guarantee that It will work eternally. you can try other servers in case it's not working
             </li>
           </ul>
         </li>

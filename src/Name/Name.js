@@ -86,7 +86,9 @@ const Name = (props) => {
           setData({
             ...anime,
             dataPromo: api,
-            image_url: pictures[random(pictures.length - 1)] ? pictures[random(pictures.length - 1)].large: undefined,
+            image_url: pictures[random(pictures.length - 1)]
+              ? pictures[random(pictures.length - 1)].large
+              : undefined,
           });
         }
       });
@@ -203,9 +205,9 @@ const Name = (props) => {
                 "/anime/" +
                 name +
                 `/watch/${episodeDataDisplay.episodeList[0].episode}/${
-                  episodeDataDisplay.key.replace("episodes","") === ""
+                  episodeDataDisplay.key.replace("episodes", "") === ""
                     ? "vie"
-                    : episodeDataDisplay.key.replace("episodes","")
+                    : episodeDataDisplay.key.replace("episodes", "")
                 }`
               }
             >
@@ -366,14 +368,7 @@ function ListInformation({ arrKeys }) {
                         : "inherit",
                   }}
                 >
-                  <span
-                    style={{
-                      fontFamily: "Arial",
-                    }}
-                  >
-                    {capitalizeString(v)}:
-                  </span>{" "}
-                  {`${findingAnime[v]}`}
+                  <span>{capitalizeString(v)}:</span> {`${findingAnime[v]}`}
                 </li>
               );
           } else {
@@ -387,9 +382,15 @@ function ListInformation({ arrKeys }) {
               if (!check) {
                 const array = findingAnime[v].map((anime) => anime.name);
                 return (
-                  <li key={index}>
-                    <span>{capitalizeString(v)}: </span>
-                    {`${array.join(" || ")}`}
+                  <li>
+                    <ul className="title-synonym-list">
+                      <span className="title-capitalize">
+                        {capitalizeString(v)}
+                      </span>
+                      {array.map((nameAnime, index) => {
+                        return <li key={index}>{nameAnime}</li>;
+                      })}
+                    </ul>
                   </li>
                 );
               }
@@ -400,7 +401,7 @@ function ListInformation({ arrKeys }) {
                       <span className="title-capitalize">
                         {capitalizeString(v)}
                       </span>
-                      {findingAnime[v].map((nameAnime,index) => {
+                      {findingAnime[v].map((nameAnime, index) => {
                         return <li key={index}>{nameAnime}</li>;
                       })}
                     </ul>

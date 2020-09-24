@@ -356,7 +356,7 @@ async function newUserJoinHandleVideo(audioCallE) {
       })
       .then((stream) => {
         let options = {
-          host: "my-web-movie.herokuapp.com",
+          host: "animefun-tv.herokuapp.com",
           path: "/peerjs",
         };
         if (process.env.NODE_ENV === "development") {

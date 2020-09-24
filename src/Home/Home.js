@@ -331,7 +331,7 @@ function SubNavBar({ subNavToggle, setSubNavToggle, user }) {
         className={`sub-nav-item${subNavToggle === 0 ? " sub-nav-active" : ""}`}
         onClick={() => setSubNavToggle(0)}
       >
-        Updated Movies
+        Updated Anime
       </h1>
       {user && (
         <h1
@@ -342,7 +342,7 @@ function SubNavBar({ subNavToggle, setSubNavToggle, user }) {
             setSubNavToggle(1);
           }}
         >
-          Box Movies
+          Box Anime
         </h1>
       )}
     </div>

@@ -1,20 +1,29 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import './GenreDetail.css';
+import "./GenreDetail.css";
 
-import React, { useEffect, useState } from 'react';
-import { fromEvent, of, timer } from 'rxjs';
-import { ajax } from 'rxjs/ajax';
-import { catchError, debounceTime, exhaustMap, filter, pluck, retry, tap } from 'rxjs/operators';
+import React, { useEffect, useState } from "react";
+import { fromEvent, of, timer } from "rxjs";
+import { ajax } from "rxjs/ajax";
+import {
+  catchError,
+  debounceTime,
+  exhaustMap,
+  filter,
+  pluck,
+  retry,
+  tap,
+} from "rxjs/operators";
 
-import { stream } from '../../epics/home';
-import { updatePageOnDestroy } from '../../store/home';
-import AnimeList from '../AnimeList/AnimeList';
+import { limitAdultGenre, stream } from "../../epics/home";
+import { updatePageOnDestroy } from "../../store/home";
+import AnimeList from "../AnimeList/AnimeList";
 
 const GenreDetail = (props) => {
-  const { genreId, genre } = props.match.params;
+  const { genreId } = props.match.params;
   const [homeState, setHomeState] = useState(
     stream.currentState() ? stream.currentState() : stream.initialState
   );
+  const [name, setName] = useState("");
   useEffect(() => {
     const subscription = stream.subscribe(setHomeState);
     return () => {
@@ -35,7 +44,13 @@ const GenreDetail = (props) => {
         homeState.pageGenre,
         subscription1
       ).subscribe((v) => {
-        const updatedAnime = [...homeState.genreDetailData, ...v];
+        if (genreId !== "12") {
+          v.anime = v.anime.filter((movie) => limitAdultGenre(movie.genres));
+        }
+        const updatedAnime = [...homeState.genreDetailData, ...v.anime];
+        if (v.mal_url) {
+          setName(v.mal_url.name);
+        }
         stream.updateGenreDetailData(updatedAnime);
       });
     return () => {
@@ -45,7 +60,7 @@ const GenreDetail = (props) => {
   }, [homeState.pageGenre]);
   return (
     <div className="container-genre-detail">
-      <h1>{genre} anime</h1>
+      <h1>{name}</h1>
       <AnimeList data={homeState.genreDetailData} error={null} />
       <div className="loading-symbol">
         <i className="fas fa-spinner fa-3x fa-spin"></i>
@@ -62,7 +77,7 @@ function fetchDataGenreAnimeList(genreId, page, subscription1) {
     exhaustMap(() =>
       ajax(`https://api.jikan.moe/v3/genre/anime/${genreId}/${page}`).pipe(
         retry(5),
-        pluck("response", "anime"),
+        pluck("response"),
         tap(
           () =>
             (document.querySelector(".loading-symbol").style.display = "none")
@@ -77,7 +92,7 @@ function fetchDataGenreAnimeList(genreId, page, subscription1) {
           ).style.paddingBottom = "0";
           document.querySelector(".container-genre-detail").appendChild(h1);
           subscription1 && subscription1.unsubscribe();
-          return of([]);
+          return of({ anime: [] });
         })
       )
     )

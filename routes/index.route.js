@@ -4,6 +4,10 @@ router.get("/", function (req, res) {
   res.sendFile(path.join(__dirname, "../build", "index.html"));
 });
 
+router.get("/genre/:genreId",(req,res) => {
+  res.sendFile(path.join(__dirname, "../build", "index.html"));
+})
+
 router.get("/anime/search", (req, res) => {
   res.sendFile(path.join(__dirname, "../build", "index.html"));
 });

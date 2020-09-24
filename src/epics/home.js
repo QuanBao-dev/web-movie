@@ -123,7 +123,7 @@ export const fetchAnimeSeason$ = (
   );
 };
 
-function limitAdultGenre(genres) {
+export function limitAdultGenre(genres) {
   let check = true;
   genres.forEach((genre) => {
     if (genre.name === "Hentai") {

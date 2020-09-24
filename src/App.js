@@ -322,7 +322,7 @@ function App() {
           component={CharacterDetail}
         />
         <Route path="/anime/:name" component={Name} />
-        <Route path="/genre/:genreId/:genre" component={GenreDetail} />
+        <Route path="/genre/:genreId" component={GenreDetail} />
         {user && <Route path="/theater" component={Theater} />}
         {user && <Route path="/edit" component={EditUser} />}
         {!user && <Route path="/auth/login" component={Login} />}

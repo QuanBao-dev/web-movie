@@ -55,7 +55,7 @@ const Genres = () => {
           (data) =>
             data.genreId !== "12" && (
               <Link
-                to={`/genre/${data.genreId}/${data.genre.toLowerCase()}`}
+                to={`/genre/${data.genreId}`}
                 key={data.genreId}
                 onClick={() => {
                   window.scroll({

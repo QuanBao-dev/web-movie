@@ -26,7 +26,7 @@ const SearchedList = (props) => {
       (data) => !["Rx"].includes(data.rated)
     );
   return (
-    <div>
+    <div className="container-search-anime">
       <h1 style={{ color: "white" }}>Results searched for "{key}"</h1>
       {dataSearchDisplay && <AnimeList data={dataSearchDisplay} error={null} />}
       {dataSearchDisplay && dataSearchDisplay.length === 0 && (

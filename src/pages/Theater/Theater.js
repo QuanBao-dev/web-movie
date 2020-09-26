@@ -4,20 +4,20 @@ import React, { useEffect, useRef, useState } from "react";
 import { useCookies } from "react-cookie";
 import { Link, Route, Switch } from "react-router-dom";
 
-import Input from "../components/Input/Input";
-import TheaterWatch from "../components/TheaterWatch/TheaterWatch";
+import Input from "../../components/Input/Input";
+import TheaterWatch from "../../components/TheaterWatch/TheaterWatch";
 import {
   fetchRoomsData$,
   theaterStream,
   validateForm$,
-} from "../epics/theater";
+} from "../../epics/theater";
 import {
   updateAllowFetchCurrentRoomDetail,
   updateAllowFetchRooms,
   updateSignIn,
-} from "../store/theater";
+} from "../../store/theater";
 import Axios from "axios";
-import Toggle from "../components/Toggle/Toggle";
+import Toggle from "../../components/Toggle/Toggle";
 import { of, timer } from "rxjs";
 import { switchMap } from "rxjs/operators";
 
@@ -167,7 +167,7 @@ function InputCreateRoom({
             updateAllowFetchRooms(true);
             theaterStream.addRoomTheater(res.data.message);
           } catch (error) {
-            console.error(error);
+            alert(error.response.data.error);
           }
         }}
         ref={buttonSubmitRef}

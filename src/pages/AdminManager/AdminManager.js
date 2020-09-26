@@ -1,16 +1,11 @@
-import "./AdminManager.css";
+import './AdminManager.css';
 
-import Axios from "axios";
-import React, { useEffect, useRef, useState } from "react";
-import { useCookies } from "react-cookie";
-import {
-  adminStream,
-  createDataFilter,
-  fetchAllUsers$,
-  listenChangeFilter$,
-  filterUsers
-} from "../epics/admin";
-import { allowShouldFetchAllUser } from "../store/admin";
+import Axios from 'axios';
+import React, { useEffect, useRef, useState } from 'react';
+import { useCookies } from 'react-cookie';
+
+import { adminStream, createDataFilter, fetchAllUsers$, filterUsers, listenChangeFilter$ } from '../../epics/admin';
+import { allowShouldFetchAllUser } from '../../store/admin';
 
 const AdminManager = () => {
   const [cookies] = useCookies(["idCartoonUser"]);

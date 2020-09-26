@@ -1,0 +1,148 @@
+.person-detail-container{
+  background-color: #292946;
+  width: 90%;
+  margin: auto;
+  padding: 2rem;
+  color: white;
+  box-shadow: 0 0 6px 5px black;
+}
+  .person-information-wrapper{
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    background-color: rgb(34, 37, 75);
+    border-radius: 10px;
+    padding: 1rem;
+    flex-wrap: wrap;
+    box-shadow: 0 0 10px 1px rgb(18, 71, 73);
+  }
+    .image-person{
+      max-width: 610px;
+      margin: 1rem;
+      display: block;
+      width: 100%;
+      box-shadow: 0 0 20px 5px rgba(255, 255, 255, 0.733);
+    }
+    .person-information{
+      max-width: 661px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      margin:1rem;
+      font-size: 1.6rem;
+      text-align: center;
+      letter-spacing: 0.05em;
+      line-height: 2rem;
+      padding: 2rem;
+      background-color: rgb(68, 68, 61);
+      box-shadow: 0 0 10px 5px rgba(0, 0, 0, 0.733);
+      border-radius: 10px;
+    }
+
+.text-capitalize{
+  text-transform: capitalize;
+  font-size: 2.9rem;
+  font-family: 'Times New Roman', Times, serif;
+  margin:10px 0;
+  color: orange;
+  line-height: 1em;
+  display: block;
+  padding: 1rem;
+  background-color: rgb(68, 68, 61);
+  text-align: center;
+  font-style: italic;
+}
+
+.wrapper-text{
+  margin-bottom: 1rem;
+  border-bottom: 2px double rgb(0, 0, 0);
+  padding-bottom: 1rem;
+  padding: 1em 1rem;
+  box-shadow: 0 22px 10px 1px rgba(82, 77, 77, 0.753);
+}
+
+.text-about-person{
+  white-space: pre-wrap;
+  font-family: Arial, Helvetica, sans-serif;
+  text-align: start;
+  font-size: larger;
+  letter-spacing: 0.05em;
+  line-height: 2rem;
+}
+
+.anime-theme-song-performance-role{
+  border: 2px solid red;
+  animation: victoryEnlighten 2s forwards infinite;
+  border-radius: 10px;
+}
+
+@keyframes victoryEnlighten{
+  0%{
+    box-shadow: 0 0 1px 1px red;
+  }
+  50%{
+    box-shadow: 0 0 10px 1px red;
+  }
+  100%{
+    box-shadow: 0 0 1px 1px red;
+  }
+}
+
+.person-voice-acting-container .all-anime-related{
+  background-color: rgb(30, 36, 85);
+  margin-left: 1rem;
+  box-shadow: 0 0 4px 1px black;
+  width: 100%;
+}
+
+.list-anime-voice-acting{
+  display: flex;
+  flex-direction: column;
+}
+
+.person-voice-item{
+  display: flex;
+  background-color: #3c3c66;
+  border-radius: 20px;
+  margin-bottom: 1rem;
+  overflow: hidden;
+  box-shadow: 0 0 4px 1px black;
+  width: 100%;
+  justify-content: flex-start;
+}
+
+.character-item-voice{
+  position: relative;
+  cursor: pointer;
+  width: initial;
+  height: 100%;
+  margin:auto 5px;
+}
+
+.character-item-voice img{
+  height: 100%;
+  width: 100%;
+  min-width: 100px;
+  display: block;
+  object-fit: contain;
+}
+
+.character-item-voice:hover .pop-up-hover-character{
+  opacity: 0;
+}
+
+.pop-up-hover-character{
+  opacity: 1;
+  display: flex;
+  transition: 0.4s;
+  background-color: #3c3c6663;
+  align-items: center;
+  text-align: center;
+  text-shadow: 2px 2px black;
+  justify-content: center;
+  position: absolute;
+  top:0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}

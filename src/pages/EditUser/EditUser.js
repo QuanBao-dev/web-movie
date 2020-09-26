@@ -6,7 +6,7 @@ import { from, timer } from 'rxjs';
 import { ajax } from 'rxjs/ajax';
 import { catchError, debounceTime, exhaustMap, pluck } from 'rxjs/operators';
 
-import { userStream } from '../epics/user';
+import { userStream } from '../../epics/user';
 
 const EditUser = () => {
   const user = userStream.currentState();

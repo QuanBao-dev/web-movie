@@ -1,9 +1,11 @@
+/* eslint-disable no-useless-escape */
 const Movie = require("../models/movie.model");
 const UpdatedMovie = require("../models/updatedMovie");
 const ignoreProps = require("../validations/ignore.validation");
 const { verifyRole } = require("../middleware/verify-role");
 const { default: Axios } = require("axios");
 const puppeteer = require("@scaleleap/puppeteer");
+const CarouselMovie = require("../models/carouselMovie.model");
 const router = require("express").Router();
 
 router.get("/", verifyRole("Admin"), async (req, res) => {
@@ -27,6 +29,49 @@ router.get("/latest", async (req, res) => {
       message: updatedMovies.map((movie) => {
         return ignoreProps(["_id", "__v"], movie.toJSON());
       }),
+    });
+  } catch (error) {
+    res.status(404).send({ error: "Something went wrong" });
+  }
+});
+
+router.get("/carousel", async (req, res) => {
+  try {
+    const dataSend = await CarouselMovie.findOne({ name: "data" })
+      .lean()
+      .select({ _id: 0, data: 1 });
+    res.send({ message: dataSend.data });
+  } catch (error) {
+    res.status(404).send({ error: "Something went wrong" });
+  }
+});
+
+router.post("/carousel/crawl", verifyRole("Admin"), async (req, res) => {
+  try {
+    const dataCrawl = await crawlCarousel("https://animetvn.tv/");
+    const data = await CarouselMovie.findOneAndUpdate(
+      { name: "data" },
+      {
+        data: dataCrawl,
+      },
+      {
+        new: true,
+        upsert: true,
+      }
+    ).lean();
+    res.send({
+      message: data.data,
+    });
+  } catch (error) {
+    res.status(404).send({ error: "Something went wrong" });
+  }
+});
+
+router.post("/carousel/crawl/trial", verifyRole("Admin"), async (req, res) => {
+  try {
+    const dataCrawl = await crawlCarousel("https://animetvn.tv/");
+    res.send({
+      message: dataCrawl,
     });
   } catch (error) {
     res.status(404).send({ error: "Something went wrong" });
@@ -352,6 +397,43 @@ async function addMovieUpdated(malId) {
   }
 }
 
+async function crawlCarousel(url) {
+  const browser = await puppeteer.launch({
+    extra: {
+      stealth: true,
+    },
+    headless: true,
+    args: ["--start-maximized", "--no-sandbox"],
+    defaultViewport: null,
+    timeout: 0,
+  });
+  try {
+    const context = await browser.createIncognitoBrowserContext();
+    const page = await context.newPage();
+    await page.setDefaultNavigationTimeout(0);
+    const options = {
+      waitUntil: "networkidle2",
+      timeout: 0,
+    };
+    await page.goto(url, options);
+    const data = await page.evaluate(() => {
+      return [...document.querySelectorAll(".row .carousel-inner .item")].map(
+        (anime) => {
+          return {
+            url: anime.style.backgroundImage
+              .replace("url", "")
+              .replace(/[\"()]/g, ""),
+            title: anime.querySelector(".main-link").innerText,
+          };
+        }
+      );
+    });
+    return data;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
 async function crawl(start, end, url, serverWeb, serverVideo) {
   const browser = await puppeteer.launch({
     extra: {
@@ -482,7 +564,8 @@ async function crawl(start, end, url, serverWeb, serverVideo) {
             url: link.children[0].href,
             textContent: link.children[0].children[1].textContent
               .replace(/[0-9][a-z]+/g, "")
-              .match(/Episode [0-9]+/g)[0].replace("Episode ",""),
+              .match(/Episode [0-9]+/g)[0]
+              .replace("Episode ", ""),
           }));
         }, start);
         break;

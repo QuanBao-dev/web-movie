@@ -1,15 +1,18 @@
-import "./Home.css";
+import './Home.css';
 
-import { capitalize, orderBy } from "lodash";
-import React, { useEffect, useRef, useState } from "react";
-import { useCookies } from "react-cookie";
-import { Link, useHistory } from "react-router-dom";
+import { capitalize, orderBy } from 'lodash';
+import React, { useEffect, useRef, useState } from 'react';
+import { useCookies } from 'react-cookie';
+import { Link, useHistory } from 'react-router-dom';
 
-import AnimeList from "../components/AnimeList/AnimeList";
-import AnimeSchedule from "../components/AnimeSchedule/AnimeSchedule";
-import Input from "../components/Input/Input";
-import PageNavList from "../components/PageNavList/PageNavList";
-import SearchedAnimeList from "../components/SearchedAnimeList/SearchedAnimeList";
+import AnimeList from '../../components/AnimeList/AnimeList';
+import AnimeSchedule from '../../components/AnimeSchedule/AnimeSchedule';
+import Carousel from '../../components/Carousel/Carousel';
+import Genres from '../../components/Genres/Genres';
+import Input from '../../components/Input/Input';
+import PageNavList from '../../components/PageNavList/PageNavList';
+import SearchedAnimeList from '../../components/SearchedAnimeList/SearchedAnimeList';
+import UpcomingAnimeList from '../../components/UpcomingAnimeList/UpcomingAnimeList';
 import {
   changeCurrentPage$,
   changeSearchInput$,
@@ -21,24 +24,16 @@ import {
   listenSearchInputPressEnter$,
   stream,
   topMovieUpdatedScrolling$,
-} from "../epics/home";
-import { userStream } from "../epics/user";
-import {
-  allowScrollToSeeMore,
-  updateMaxPage,
-  updatePageTopMovieOnDestroy,
-} from "../store/home";
-import UpcomingAnimeList from "../components/UpcomingAnimeList/UpcomingAnimeList";
-import Genres from "../components/Genres/Genres";
+} from '../../epics/home';
+import { userStream } from '../../epics/user';
+import { allowScrollToSeeMore, updateMaxPage, updatePageTopMovieOnDestroy } from '../../store/home';
 
 const numberOfMovieShown = 18;
 window.addEventListener("resize", () => {
   stream.init();
 });
 function Home() {
-  const [homeState, setHomeState] = useState(
-    stream.currentState() ? stream.currentState() : stream.initialState
-  );
+  const [homeState, setHomeState] = useState(stream.initialState);
   const [limitShowRecentlyUpdated, setLimitShowRecentlyUpdated] = useState(
     numberOfMovieShown
   );
@@ -70,12 +65,14 @@ function Home() {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [subNavToggle]);
+  // console.log(homeState);
 
   useEffect(() => {
+    stream.updateCurrentPage(1);
     const subscription2 = fetchAnimeSeason$(
       homeState.year,
       homeState.season,
-      homeState.currentPage,
+      1,
       homeState.numberOfProduct,
       homeState.score
     ).subscribe((v) => {
@@ -169,6 +166,7 @@ function Home() {
   // console.log(homeState);
   return (
     <div className="home-page">
+      <Carousel />
       <div className="recently-updated-movie">
         <UpcomingAnimeList />
         <SubNavBar
@@ -382,7 +380,6 @@ function SelectFilterAnime({
       </select>
       <select
         className="select-filter"
-        onChange={() => stream.updateCurrentPage(1)}
         defaultValue={`${homeState.year}`}
         ref={selectYear}
       >
@@ -396,7 +393,6 @@ function SelectFilterAnime({
       </select>
       <select
         className="select-filter"
-        onChange={() => stream.updateCurrentPage(1)}
         style={{}}
         defaultValue={`${stream.currentState().score}`}
         ref={selectScore}
@@ -418,7 +414,8 @@ function TopAnimeList({ homeState }) {
     };
   }, []);
   useEffect(() => {
-    let subscription7; let subscription11;
+    let subscription7;
+    let subscription11;
     const topAnimeElement = document.querySelector(".top-anime-list-container");
     if (topAnimeElement) {
       subscription11 = topMovieUpdatedScrolling$(topAnimeElement).subscribe(
@@ -428,10 +425,12 @@ function TopAnimeList({ homeState }) {
       );
     }
     if (stream.currentState().pageTopMovieOnDestroy !== homeState.pageTopMovie)
-      subscription7 = fetchTopMovie$(subscription11).subscribe((topMovieList) => {
-        console.log("fetch top movie");
-        stream.updateTopMovie(topMovieList);
-      });
+      subscription7 = fetchTopMovie$(subscription11).subscribe(
+        (topMovieList) => {
+          console.log("fetch top movie");
+          stream.updateTopMovie(topMovieList);
+        }
+      );
     return () => {
       subscription7 && subscription7.unsubscribe();
       subscription11 && subscription11.unsubscribe();

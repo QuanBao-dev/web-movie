@@ -54,7 +54,7 @@
     align-items: center;
     box-shadow: 0 0 10px 1px black;
     position: relative;
-    transition: 0.5s;
+    transition: 0.1s;
   }
   @media (max-width:855px){
     .all-anime-related > div{
@@ -96,11 +96,38 @@
       text-align: center;
       height: 100%;
       background-color: #1f1f3d6b;
+      flex-direction: column;
+      text-shadow: 2px 2px black;
     }
-      .pop-up-hover > h3{
-        text-shadow: 2px 2px black;
-      }
 
+.voice-actor-list{
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.actor-item{
+  position: relative;
+  text-align: center;
+  cursor: pointer;
+  padding: 1em;
+  transition: 0.3s;
+  min-width: 200px;
+  display: flex;
+  flex-direction: column;
+}
+
+.actor-name{
+  display: block;
+}
+
+.actor-item img{
+  object-fit: contain;
+}
+
+.actor-item:hover{
+  background-color: #454561;
+}
 
 .text-about-character{
   white-space: pre-wrap;
@@ -122,6 +149,7 @@
   font-size: 2.9rem;
   font-family: 'Times New Roman', Times, serif;
   margin:10px 0;
+  color: orange;
   line-height: 1em;
   display: block;
   padding: 1rem;

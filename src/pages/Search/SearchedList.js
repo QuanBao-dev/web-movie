@@ -1,7 +1,7 @@
 import "./SearchedList.css";
 import React, { useEffect, useState } from "react";
-import { stream } from "../epics/home";
-import AnimeList from "../components/AnimeList/AnimeList";
+import { stream } from "../../epics/home";
+import AnimeList from "../../components/AnimeList/AnimeList";
 import { ajax } from "rxjs/ajax";
 import { catchError, pluck, retry } from "rxjs/operators";
 import { of } from "rxjs";

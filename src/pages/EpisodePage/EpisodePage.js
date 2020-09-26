@@ -1,15 +1,16 @@
 /* eslint-disable eqeqeq */
-import "./EpisodePage.css";
+import './EpisodePage.css';
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 
-import Comment from "../components/Comment/Comment";
-import { fetchEpisodesOfMovie$, pageWatchStream } from "../epics/pageWatch";
-import { Link } from "react-router-dom";
-import { allowShouldFetchComment } from "../store/comment";
-import { userStream } from "../epics/user";
-import Chat from "../components/Chat/Chat";
-import { theaterStream } from "../epics/theater";
+import Chat from '../../components/Chat/Chat';
+import Comment from '../../components/Comment/Comment';
+import { fetchEpisodesOfMovie$, pageWatchStream } from '../../epics/pageWatch';
+import { userStream } from '../../epics/user';
+import { allowShouldFetchComment } from '../../store/comment';
+import { theaterStream } from '../../epics/theater';
+
 const EpisodePage = (props) => {
   const { malId, episode, mode } = props.match.params;
   const [pageWatchState, setPageWatchState] = useState(

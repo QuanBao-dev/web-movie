@@ -14,6 +14,7 @@ const genresData = [
   { genreId: "9", genre: "Ecchi" },
   { genreId: "10", genre: "Fantasy" },
   { genreId: "11", genre: "Game" },
+  { genreId: "12", genre: "Hentai" },
   { genreId: "13", genre: "Historical" },
   { genreId: "14", genre: "Horror" },
   { genreId: "15", genre: "Kids" },
@@ -51,23 +52,20 @@ const Genres = () => {
     <section className="genre-section">
       <h1>Genres</h1>
       <div className="container-genre-list">
-        {genresData.map(
-          (data) =>
-            data.genreId !== "12" && (
-              <Link
-                to={`/genre/${data.genreId}`}
-                key={data.genreId}
-                onClick={() => {
-                  window.scroll({
-                    top: 0,
-                  });
-                  resetGenreDetail();
-                }}
-              >
-                {data.genre}
-              </Link>
-            )
-        )}
+        {genresData.map((data) => (
+          <Link
+            to={`/genre/${data.genreId}`}
+            key={data.genreId}
+            onClick={() => {
+              window.scroll({
+                top: 0,
+              });
+              resetGenreDetail();
+            }}
+          >
+            {data.genre}
+          </Link>
+        ))}
       </div>
     </section>
   );

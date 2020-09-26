@@ -1,6 +1,8 @@
-import React from "react";
-import "./AnimeItem.css";
-import { useHistory } from "react-router-dom";
+import './AnimeItem.css';
+
+import React from 'react';
+import { useHistory } from 'react-router-dom';
+
 const AnimeItem = ({ anime }) => {
   const history = useHistory();
   // console.log(anime);
@@ -46,10 +48,13 @@ const AnimeItem = ({ anime }) => {
         </div>
       )}
       <div className="anime-item-info">
-        <h3>
+        <h3 style={{ margin: "5px" }}>
           {anime.title.slice(0, 52)}
           {anime.title.length > anime.title.slice(0, 52).length ? "..." : ""}
         </h3>
+        {anime.airing_start && (
+          <div>{new Date(anime.airing_start).toUTCString().slice(0, 17)}</div>
+        )}
       </div>
     </div>
   );

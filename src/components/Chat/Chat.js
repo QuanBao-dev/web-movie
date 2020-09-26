@@ -48,8 +48,6 @@ const Chat = ({ groupId, user, withoutName = false, isZoom = false }) => {
                   Welcome to AnimeFun, enjoy and have a good day
                 </span>
                 <span className="username-message">Robot</span>
-                {/* {user && <span className="seen-user">
-                </span>} */}
               </div>
             </div>
             {isWithoutName && (
@@ -112,7 +110,7 @@ const Chat = ({ groupId, user, withoutName = false, isZoom = false }) => {
                     if (
                       inputRefFile.current.files[i].type.indexOf("image") === -1
                     ) {
-                      alert("Just image or gif")
+                      alert("Just image or gif");
                       continue;
                     }
                     const uri = await base64DataUrl(
@@ -362,6 +360,15 @@ function appendNewMessageDialog(
   }
   if (!/button-like/g.test(message))
     newSpanContentMessage.className = "content-message";
+  const link = message.match(
+    /http[s]?:\/\/(?:[a-z]|[0-9]|[$-_@.&+]|[!*(),]|(?:%[0-9a-f][0-9a-f]))+/g
+  );
+  if (link) {
+    message = message.replace(
+      link[0],
+      `<a href=${link[0]} target="_blank" style="color:white">${link[0]}</a>`
+    );
+  }
   newSpanContentMessage.innerHTML = `<p>${message}</p>`;
   newSpanUsernameMessage.className = "username-message";
   newSpanUsernameMessage.innerText = username;

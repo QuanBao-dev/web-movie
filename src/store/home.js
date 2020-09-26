@@ -25,7 +25,7 @@ const initialState = {
   dataDetail: [],
   dataDetailOriginal: [],
   currentPage: 1,
-  numberOfProduct: 36,
+  numberOfProduct: 45,
   year: new Date(Date.now()).getFullYear(),
   season: currentSeason,
   maxPage: 1,
@@ -38,8 +38,8 @@ const initialState = {
   dateSchedule: Array.from(Array(7).keys()).map(() => false),
   updatedMovie: [],
   boxMovie: [],
-  genreDetailData:[],
-  pageGenre:1,
+  genreDetailData: [],
+  pageGenre: 1,
   shouldFetchLatestUpdatedMovie: true,
   shouldFetchBoxMovie: false,
   shouldScrollToSeeMore: false,
@@ -49,8 +49,10 @@ const initialState = {
   upcomingAnimeList: [],
   score: 0,
   modeScrolling: "interval",
-  pageOnDestroy:null,
-  pageTopMovieOnDestroy:null
+  dataCarousel: [],
+  pageOnDestroy: null,
+  pageTopMovieOnDestroy: null,
+  allowFetchIncreaseGenrePage:false,
 };
 
 const subject = new BehaviorSubject(initialState);
@@ -67,20 +69,43 @@ const homeStore = {
     state = {
       ...state,
       screenWidth: window.innerWidth,
+      allowFetchIncreaseGenrePage:false,
+      pageOnDestroy:null
     };
     subject.next(state);
   },
-  updatePageGenre:(page) => {
+  updateError:(bool) => {
     state = {
       ...state,
-      pageGenre:page
-    }
+      errorFetchGenre:bool
+    };
     subject.next(state);
   },
-  updateGenreDetailData:(genreDetail) => {
+  updateAllowUpdatePageGenre:(bool) => {
+    state={
+      ...state,
+      allowFetchIncreaseGenrePage:bool
+    };
+    subject.next(state)
+  },
+  updatePageGenre: (page) => {
     state = {
       ...state,
-      genreDetailData:genreDetail
+      pageGenre: page,
+    };
+    subject.next(state);
+  },
+  updateDataCarousel: (data) => {
+    state = {
+      ...state,
+      dataCarousel: [...data],
+    };
+    subject.next(state);
+  },
+  updateGenreDetailData: (genreDetail) => {
+    state = {
+      ...state,
+      genreDetailData: genreDetail,
     };
     subject.next(state);
   },
@@ -208,16 +233,15 @@ const homeStore = {
 export const resetGenreDetail = () => {
   state.pageGenre = 1;
   state.genreDetailData = [];
-}
+};
 
 export const updatePageOnDestroy = (page) => {
   state.pageOnDestroy = page;
-}
+};
 
 export const updatePageTopMovieOnDestroy = (page) => {
   state.pageTopMovieOnDestroy = page;
-}
-
+};
 
 export const resetScheduleDate = () => {
   const week = [
@@ -228,7 +252,7 @@ export const resetScheduleDate = () => {
     "friday",
     "saturday",
     "sunday",
-  ];  
+  ];
   const todayDate = new Date(Date.now())
     .toDateString()
     .slice(0, 3)

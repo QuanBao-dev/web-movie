@@ -1,12 +1,12 @@
-import "./Name.css";
+import './Name.css';
 
-import Axios from "axios";
-import { capitalize, orderBy, random } from "lodash";
-import React, { useEffect, useRef, useState } from "react";
-import { useCookies } from "react-cookie";
-import { Link } from "react-router-dom";
-import { from, fromEvent, of, timer } from "rxjs";
-import { ajax } from "rxjs/ajax";
+import Axios from 'axios';
+import { capitalize, orderBy, random } from 'lodash';
+import React, { useEffect, useRef, useState } from 'react';
+import { useCookies } from 'react-cookie';
+import { Link } from 'react-router-dom';
+import { from, fromEvent, of, timer } from 'rxjs';
+import { ajax } from 'rxjs/ajax';
 import {
   catchError,
   combineAll,
@@ -18,14 +18,16 @@ import {
   pluck,
   retry,
   switchMap,
-} from "rxjs/operators";
-import Input from "../components/Input/Input";
-import { userStream } from "../epics/user";
-import { allowShouldFetchComment } from "../store/comment";
-import { allowShouldFetchEpisodeMovie } from "../store/pageWatch";
-import navBarStore from "../store/navbar";
-import RelatedAnime from "../components/RelatedAnime/RelatedAnime";
-import Characters from "../components/Characters/Characters";
+} from 'rxjs/operators';
+
+import Characters from '../../components/Characters/Characters';
+import Input from '../../components/Input/Input';
+import RelatedAnime from '../../components/RelatedAnime/RelatedAnime';
+import { userStream } from '../../epics/user';
+import { allowShouldFetchComment } from '../../store/comment';
+import navBarStore from '../../store/navbar';
+import { allowShouldFetchEpisodeMovie } from '../../store/pageWatch';
+
 let episodeDataDisplay;
 const Name = (props) => {
   const { name } = props.match.params;
@@ -382,7 +384,7 @@ function ListInformation({ arrKeys }) {
               if (!check) {
                 const array = findingAnime[v].map((anime) => anime.name);
                 return (
-                  <li>
+                  <li key={index}>
                     <ul className="title-synonym-list">
                       <span className="title-capitalize">
                         {capitalizeString(v)}

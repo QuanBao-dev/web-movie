@@ -1,35 +1,36 @@
-import React, { useEffect, useRef } from "react";
-import Input from "../components/Input/Input";
-import { validateFormSubmit$ } from "../epics/home";
-import "./Register.css";
-import { useHistory } from "react-router-dom";
-import Axios from "axios";
+import "./Login.css";
 
-const Register = () => {
+import React, { useEffect, useRef } from "react";
+
+import Input from "../../components/Input/Input";
+import { validateFormSubmitLogin$ } from "../../epics/home";
+import Axios from "axios";
+import { useCookies } from "react-cookie";
+import { useHistory } from "react-router-dom";
+const Login = () => {
   // eslint-disable-next-line no-unused-vars
+  const [cookies, setCookie, removeCookie] = useCookies(["idCartoonUser"]);
+  const history = useHistory();
   const emailRef = useRef();
   const passwordRef = useRef();
   const submitRef = useRef();
-  const usernameRef = useRef();
-  const history = useHistory();
   useEffect(() => {
-    const subscription = validateFormSubmit$(
+    const subscription = validateFormSubmitLogin$(
       emailRef.current,
       passwordRef.current,
-      usernameRef.current,
       submitRef.current
     ).subscribe();
     return () => {
       subscription.unsubscribe();
     };
   }, []);
+
   return (
     <div className="container-background-form">
-      <div className="form-register">
-        <h1 style={{ color: "white", textAlign: "center" }}>Register</h1>
+      <div className="form-login">
+        <h1 style={{ color: "white", textAlign: "center" }}>Login</h1>
         <Input label="Email" input={emailRef} />
         <Input label="Password" input={passwordRef} type="password" />
-        <Input label="Username" input={usernameRef} />
         <button
           type="submit"
           ref={submitRef}
@@ -37,12 +38,11 @@ const Register = () => {
             submitForm(
               emailRef.current.value,
               passwordRef.current.value,
-              usernameRef.current.value,
               history,
+              setCookie
             );
             emailRef.current.value = "";
             passwordRef.current.value = "";
-            usernameRef.current.value = "";
           }}
         >
           Submit
@@ -52,19 +52,24 @@ const Register = () => {
   );
 };
 
-async function submitForm(email, password, username, history) {
+async function submitForm(email, password, history, setCookie) {
   try {
-    await Axios.post("/api/users/register", {
+    const res = await Axios.post("/api/users/login", {
       email,
       password,
-      username
     });
-    // console.log(resJson);
-    history.push("/auth/login");
+    const resJson = res.data;
+    const token = resJson.message;
+    setCookie("idCartoonUser", token, {
+      expires: new Date(Date.now() + 43200000),
+      path: "/",
+    });
+    window.location.replace("/");
+    // history.push("/");
   } catch (error) {
-    alert("Account already existed");
     // console.log(email,password);
+    alert(error.response.data.error);
   }
 }
 
-export default Register;
+export default Login;

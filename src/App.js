@@ -212,9 +212,10 @@ function App() {
                   onClick={() => {
                     logoutUser(setCookie, cookies.idCartoonUser);
                     theaterStream.socket.emit("disconnect-custom");
+                    window.location.replace("/")
                   }}
                 >
-                  <Link to={"/"}>Logout</Link>
+                  Logout
                 </div>
               )}
             </li>

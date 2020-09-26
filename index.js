@@ -7,7 +7,7 @@ const path = require("path");
 const app = express();
 const port = process.env.PORT || 5000;
 const server = require("http").Server(app);
-const sslRedirect = require('heroku-ssl-redirect').default
+const sslRedirect = require("heroku-ssl-redirect").default;
 const io = require("socket.io")(server, {
   pingTimeout: 12000,
   pingInterval: 3000,
@@ -60,7 +60,27 @@ io.on("connection", (socket) => {
       socket.emit("fetch-user-online");
       socket.to(groupId).emit("fetch-user-online");
       rooms[groupId].users[userId] = username;
-
+      socket.on("new-message", async () => {
+        await TheaterRoomMember.findOneAndUpdate(
+          {
+            email,
+            groupId,
+          },
+          {
+            userId,
+            username,
+            avatar,
+            joinAt: Date.now(),
+            keepRemote: keepRemote,
+          },
+          {
+            upsert: true,
+            new: true,
+          }
+        )
+          .lean()
+          .select({ _id: false, __v: false });
+      });
       await TheaterRoomMember.findOneAndUpdate(
         {
           email,
@@ -133,7 +153,7 @@ io.on("connection", (socket) => {
       });
     }
   );
-  socket.on("update-user-avatar",async(email, groupId, avatar) => {
+  socket.on("update-user-avatar", async (email, groupId, avatar) => {
     await TheaterRoomMember.findOneAndUpdate(
       {
         email,
@@ -149,7 +169,7 @@ io.on("connection", (socket) => {
     )
       .lean()
       .select({ _id: false, __v: false });
-  })
+  });
   socket.on("notify-user-typing", (groupId, idUserTyping, username) => {
     socket.broadcast.emit("new-user-typing", groupId, idUserTyping, username);
   });

@@ -42,6 +42,7 @@ const TheaterWatch = (props) => {
   user = userStream.currentState() || {};
   const [theaterState, setTheaterState] = useState(theaterStream.initialState);
   const [isFullScreenState, setIsFullScreenState] = useState(null);
+  const [errorPassword, setErrorPassword] = useState(null);
   const inputPasswordRef = useRef();
   const notificationRef = useRef();
   const audioCallRef = useRef();
@@ -90,7 +91,8 @@ const TheaterWatch = (props) => {
       submitFormSub = submitFormPasswordRoom$(
         inputPasswordRef.current,
         groupId,
-        cookies.idCartoonUser
+        cookies.idCartoonUser,
+        setErrorPassword
       ).subscribe((v) => {
         if (!!v) {
           inputPasswordRef.current.value = "";
@@ -123,7 +125,7 @@ const TheaterWatch = (props) => {
     theaterState.isSignIn,
   ]);
   useEffect(() => {
-    socket.emit("update-user-avatar",user.email,groupId,user.avatarImage);
+    socket.emit("update-user-avatar", user.email, groupId, user.avatarImage);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user.avatarImage]);
 
@@ -283,6 +285,7 @@ const TheaterWatch = (props) => {
           label={"Password Room"}
           type={"password"}
           input={inputPasswordRef}
+          error={errorPassword}
         />
       </div>
     </div>
@@ -437,15 +440,6 @@ function UserListOnline({ usersOnline }) {
         usersOnline.map((member, key) => {
           return (
             <div key={key}>
-              <div>
-                <img
-                  style={{ borderRadius: "50%" }}
-                  width="50"
-                  height="50"
-                  src={member.avatar}
-                  alt="image_avatar"
-                />
-              </div>
               <div
                 style={{
                   color: member.keepRemote ? "red" : "",

@@ -57,7 +57,8 @@ export const fetchRoomsData$ = (idCartoonUser) => {
 export const submitFormPasswordRoom$ = (
   inputElement,
   groupId,
-  idCartoonUser
+  idCartoonUser,
+  setErrorPassword
 ) => {
   return fromEvent(inputElement, "keydown").pipe(
     filter((e) => e.keyCode === 13),
@@ -75,10 +76,11 @@ export const submitFormPasswordRoom$ = (
         },
       }).pipe(
         catchError((error) => {
-          if(!groupId){
-            alert("You haven't join any room")
+          console.log(error.response.error);
+          if (error) {
+            setErrorPassword(error.response.error);
           } else {
-            alert("Invalid password or This room has been expired")
+            setErrorPassword(null);
           }
           return of(null);
         })
@@ -115,7 +117,7 @@ export const createNewMessageNotSignIn$ = (user, ...elements) => {
   const elementsListen = elements.map((element) => fromEvent(element, "input"));
   elementsListen[0] = elementsListen[0].pipe(
     pluck("target", "value"),
-    startWith(user ? user.username:"")
+    startWith(user ? user.username : "")
   );
   elementsListen[1] = elementsListen[1].pipe(
     pluck("target", "value"),

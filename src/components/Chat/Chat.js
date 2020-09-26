@@ -4,6 +4,8 @@ import { theaterStream } from "../../epics/theater";
 import Input from "../Input/Input";
 import MessageInput from "../MessageInput/MessageInput";
 import { messageInputStream } from "../../epics/message-input";
+import { fromEvent } from "rxjs";
+import { debounceTime } from "rxjs/operators";
 const socket = theaterStream.socket;
 let messageDialogE;
 let idGroup;
@@ -16,11 +18,38 @@ const Chat = ({ groupId, user, withoutName = false, isZoom = false }) => {
   const inputNameDialogRef = useRef();
   const messageDialogRef = useRef();
   const inputRefFile = useRef();
+  const buttonLikeRef = useRef();
   useEffect(() => {
     messageDialogE = messageDialogRef.current;
     user && !withoutName && (inputNameDialogRef.current.value = user.username);
   }, [user, withoutName, isZoom]);
-
+  useEffect(() => {
+    let subscription;
+    if (buttonLikeRef.current) {
+      subscription = fromEvent(buttonLikeRef.current, "click")
+        .pipe(debounceTime(1000))
+        .subscribe(() => {
+          if (messageDialogE) {
+            appendNewMessageDialog(
+              `<i class="fas fa-thumbs-up fa-3x button-like"></i>`,
+              "you",
+              true,
+              messageDialogE
+            );
+            socket.emit(
+              "new-message",
+              user.username,
+              `<i class="fas fa-thumbs-up fa-3x button-like"></i>`,
+              idGroup,
+              user.avatarImage
+            );
+          }
+        });
+    }
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [user.avatarImage, user.username]);
   return (
     <div className="container-chat-bot">
       <div className="container-popup-img">
@@ -69,21 +98,8 @@ const Chat = ({ groupId, user, withoutName = false, isZoom = false }) => {
             <i
               className="fas fa-thumbs-up fa-2x button-like"
               style={{ color: "white" }}
-              onClick={() => {
-                appendNewMessageDialog(
-                  `<i class="fas fa-thumbs-up fa-3x button-like"></i>`,
-                  "you",
-                  true,
-                  messageDialogE
-                );
-                socket.emit(
-                  "new-message",
-                  user.username,
-                  `<i class="fas fa-thumbs-up fa-3x button-like"></i>`,
-                  idGroup,
-                  user.avatarImage
-                );
-              }}
+              ref={buttonLikeRef}
+              onClick={() => {}}
             ></i>
             <i
               className="fas fa-images fa-2x symbol-choose-picture"
@@ -163,7 +179,7 @@ socket.on("send-message-other-users", (username, message, groupId, avatar) => {
     if (isWithoutName) {
       appendNewUserSeen(avatar);
       const chatBotE = document.querySelector(".chat-bot");
-      if (chatBotE.style.transform !== "scale(0)") {
+      if (chatBotE && chatBotE.style.transform !== "scale(0)") {
         socket.emit("new-user-seen", userGlobal.avatarImage, groupId);
       }
     }
@@ -178,7 +194,7 @@ socket.on(
       if (isWithoutName) {
         appendNewUserSeen(avatar);
         const chatBotE = document.querySelector(".chat-bot");
-        if (chatBotE.style.transform !== "scale(0)") {
+        if (chatBotE && chatBotE.style.transform !== "scale(0)") {
           socket.emit("new-user-seen", userGlobal.avatarImage, groupId);
         }
       }
@@ -197,7 +213,8 @@ socket.on("send-avatar-seen-user-to-other-user", (avatar, groupId) => {
 socket.on("new-user-typing", (groupId, idTyping, username) => {
   if (groupId === idGroup) {
     if (!isWithoutName) {
-      document.querySelector(".notification-typing").style.display = "block";
+      if (document.querySelector(".notification-typing"))
+        document.querySelector(".notification-typing").style.display = "block";
     } else {
       appendNewUserTyping(idTyping, username);
     }
@@ -260,12 +277,14 @@ function eliminateUserByIdTyping(idTyping) {
   const notificationTypingContainerElement = document.querySelector(
     ".notification-typing-theater-room"
   );
-  let listNotification = [...notificationTypingContainerElement.childNodes];
-  const elementMatchIndex = listNotification.find(
-    (element) => element.id === idTyping
-  );
-  if (elementMatchIndex) {
-    elementMatchIndex.remove();
+  if (notificationTypingContainerElement) {
+    let listNotification = [...notificationTypingContainerElement.childNodes];
+    const elementMatchIndex = listNotification.find(
+      (element) => element.id === idTyping
+    );
+    if (elementMatchIndex) {
+      elementMatchIndex.remove();
+    }
   }
   const containerChatBotMessage = document.querySelector(
     ".container-message-chat-bot"
@@ -445,10 +464,11 @@ function appendNewPhotoMessage(
   const containerChatBotMessage = document.querySelector(
     ".container-message-chat-bot"
   );
-  containerChatBotMessage.scroll({
-    top: containerChatBotMessage.scrollHeight,
-    behavior: "smooth",
-  });
+  if (containerChatBotMessage)
+    containerChatBotMessage.scroll({
+      top: containerChatBotMessage.scrollHeight,
+      behavior: "smooth",
+    });
   const e = document.querySelector(".chat-watch-zoom");
   if (e && e.style.transform === "scale(0)") {
     const numMessage = theaterStream.currentState().unreadMessage;

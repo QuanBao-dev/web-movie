@@ -26,6 +26,8 @@ const Theater = (props) => {
   const locationPath = props.location.pathname.replace(/\/theater\//g, "");
   const [theaterState, setTheaterState] = useState(theaterStream.initialState);
   const [cookies] = useCookies(["idCartoonUser"]);
+  const [roomNameError, setRoomNameError] = useState(null);
+  const [passwordError, setPasswordError] = useState(null);
   const inputRoomNameRef = useRef();
   const inputPasswordRef = useRef();
   const buttonSubmitRef = useRef();
@@ -78,6 +80,10 @@ const Theater = (props) => {
           inputPasswordRef={inputPasswordRef}
           buttonSubmitRef={buttonSubmitRef}
           cookies={cookies}
+          roomNameError={roomNameError}
+          passwordError={passwordError}
+          setRoomNameError={setRoomNameError}
+          setPasswordError={setPasswordError}
         />
       </div>
       <div className="container-watch-interface">
@@ -97,7 +103,7 @@ function toggleAnimation(theaterState) {
         // console.log(theaterState.modeRoom);
         if (theaterState.modeRoom === 0) {
           return of("none");
-        };
+        }
         return of("block");
       })
     )
@@ -141,12 +147,21 @@ function InputCreateRoom({
   inputPasswordRef,
   buttonSubmitRef,
   cookies,
+  roomNameError,
+  passwordError,
+  setRoomNameError,
+  setPasswordError,
 }) {
   return (
     <div className="input-room-layout">
       <h1>Create Room</h1>
-      <Input label="Room Name" input={inputRoomNameRef} />
-      <Input label="Password" type="password" input={inputPasswordRef} />
+      <Input label="Room Name" input={inputRoomNameRef} error={roomNameError} />
+      <Input
+        label="Password"
+        type="password"
+        input={inputPasswordRef}
+        error={passwordError}
+      />
       <button
         className="btn btn-primary"
         onClick={async () => {
@@ -154,8 +169,6 @@ function InputCreateRoom({
             roomName: inputRoomNameRef.current.value,
             password: inputPasswordRef.current.value,
           };
-          inputRoomNameRef.current.value = "";
-          inputPasswordRef.current.value = "";
           buttonSubmitRef.current.disabled = true;
           try {
             const res = await Axios.post("/api/theater", data, {
@@ -167,7 +180,16 @@ function InputCreateRoom({
             updateAllowFetchRooms(true);
             theaterStream.addRoomTheater(res.data.message);
           } catch (error) {
-            alert(error.response.data.error);
+            if (error.response.data.error.toLowerCase().includes("roomname")) {
+              setRoomNameError(error.response.data.error);
+            } else {
+              setRoomNameError(null);
+            }
+            if (error.response.data.error.toLowerCase().includes("password")) {
+              setPasswordError(error.response.data.error);
+            } else {
+              setPasswordError(null);
+            }
           }
         }}
         ref={buttonSubmitRef}

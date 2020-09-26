@@ -3,6 +3,7 @@ const { verifyRole } = require("../middleware/verify-role");
 const TheaterRoom = require("../models/theaterRoom.model");
 const TheaterRoomMember = require("../models/theaterRoomMember.model");
 const ignoreProps = require("../validations/ignore.validation");
+const { createRoomValidation } = require("../validations/room.validation");
 
 const router = require("express").Router();
 
@@ -154,6 +155,10 @@ router.get("/:groupId", verifyRole("User", "Admin"), async (req, res) => {
 router.post("/", verifyRole("User", "Admin"), async (req, res) => {
   //TODO create new Room
   const { roomName, password } = req.body;
+  const result = createRoomValidation(req.body);
+  if (result.error) {
+    return res.status(400).send({ error: result.error.details[0].message });
+  }
   const room = await TheaterRoom.create({
     roomName,
     password,
@@ -171,8 +176,11 @@ router.post("/:groupId/join", verifyRole("User", "Admin"), async (req, res) => {
   const { password } = req.body;
   try {
     const room = await TheaterRoom.findOne({ groupId }).lean();
+    if(!room){
+      return res.status(400).send({ error: "Room is not existed" });
+    }
     if (password !== room.password) {
-      return res.status(401).send({ message: "Invalid password" });
+      return res.status(400).send({ error: "Invalid password" });
     }
     res.send({ message: "Success" });
   } catch (error) {

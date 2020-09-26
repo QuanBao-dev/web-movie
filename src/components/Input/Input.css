@@ -54,3 +54,8 @@
 .form-custom input:valid + .label-name::before{
   right: 0;
 }
+
+.error-message{
+  color: red;
+  font-weight: bolder;
+}

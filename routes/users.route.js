@@ -135,7 +135,9 @@ router.put(
         password: req.body.newPassword,
       };
     }
-
+    if (Object.keys(data).length === 0) {
+      return res.status(400).send({ error: "Bad request" });
+    }
     const result = changeInfoAccountValidation(data);
     if (result.error) {
       return res.status(400).send({ error: result.error.details[0].message });
@@ -149,7 +151,7 @@ router.put(
     }
     const emailExist = await User.findOne({ email: req.body.newEmail });
     if (emailExist) {
-      return res.status(400).send({ error: "Email already existed" });
+      return res.status(400).send({ error: "Email is existed" });
     }
     if (req.body.newPassword) {
       const salt = await bcrypt.genSalt(10);
@@ -206,7 +208,10 @@ router.put("/current/avatar", verifyRole("Admin", "User"), async (req, res) => {
       invalidate: true,
     });
     user.avatarImage = result.secure_url;
-    user.avatarImage = user.avatarImage.replace("upload/","upload/f_auto,q_auto/")
+    user.avatarImage = user.avatarImage.replace(
+      "upload/",
+      "upload/f_auto,q_auto/"
+    );
     const savedUser = await user.save();
     res.send({
       message: savedUser.avatarImage,

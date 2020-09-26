@@ -1,30 +1,35 @@
-import './App.css';
+import "./App.css";
 
-import Axios from 'axios';
-import React, { useEffect, useRef, useState } from 'react';
-import { useCookies } from 'react-cookie';
-import { BrowserRouter as Router, NavLink as Link, Route, Switch } from 'react-router-dom';
-import { ReplaySubject } from 'rxjs';
+import Axios from "axios";
+import React, { useEffect, useRef, useState } from "react";
+import { useCookies } from "react-cookie";
+import {
+  BrowserRouter as Router,
+  NavLink as Link,
+  Route,
+  Switch,
+} from "react-router-dom";
+import { ReplaySubject } from "rxjs";
 
-import { theaterStream } from './epics/theater';
-import { fetchingUser$, userStream } from './epics/user';
-import NotFound from './pages/404/NotFound';
-import AdminManager from './pages/AdminManager/AdminManager';
-import CharacterDetail from './pages/CharacterDetail/CharacterDetail';
-import EditUser from './pages/EditUser/EditUser';
-import EpisodePage from './pages/EpisodePage/EpisodePage';
-import FAQ from './pages/FAQ/FAQ';
-import GenreDetail from './pages/GenreDetail/GenreDetail';
-import Home from './pages/Home/Home';
-import Login from './pages/Login/Login';
-import Name from './pages/Name/Name';
-import Register from './pages/Register/Register';
-import SearchedList from './pages/Search/SearchedList';
-import Theater from './pages/Theater/Theater';
-import { allowShouldFetchAllUser } from './store/admin';
-import { updatePageOnDestroy } from './store/home';
-import navBarStore from './store/navbar';
-import PersonDetail from './pages/PersonDetail/PersonDetail';
+import { theaterStream } from "./epics/theater";
+import { fetchingUser$, userStream } from "./epics/user";
+import NotFound from "./pages/404/NotFound";
+import AdminManager from "./pages/AdminManager/AdminManager";
+import CharacterDetail from "./pages/CharacterDetail/CharacterDetail";
+import EditUser from "./pages/EditUser/EditUser";
+import EpisodePage from "./pages/EpisodePage/EpisodePage";
+import FAQ from "./pages/FAQ/FAQ";
+import GenreDetail from "./pages/GenreDetail/GenreDetail";
+import Home from "./pages/Home/Home";
+import Login from "./pages/Login/Login";
+import Name from "./pages/Name/Name";
+import Register from "./pages/Register/Register";
+import SearchedList from "./pages/Search/SearchedList";
+import Theater from "./pages/Theater/Theater";
+import { allowShouldFetchAllUser } from "./store/admin";
+import { updatePageOnDestroy } from "./store/home";
+import navBarStore from "./store/navbar";
+import PersonDetail from "./pages/PersonDetail/PersonDetail";
 
 const scrollSaveSubject = new ReplaySubject(3);
 window.addEventListener("resize", () => {
@@ -206,11 +211,10 @@ function App() {
                   }}
                   onClick={() => {
                     logoutUser(setCookie, cookies.idCartoonUser);
-                    window.location.replace("/");
                     theaterStream.socket.emit("disconnect-custom");
                   }}
                 >
-                  Logout
+                  <Link to={"/"}>Logout</Link>
                 </div>
               )}
             </li>
@@ -313,10 +317,7 @@ function App() {
           path="/anime/:malId/watch/:episode/:mode"
           component={EpisodePage}
         />
-        <Route 
-          path="/anime/person/:personId"
-          component={PersonDetail}
-        />
+        <Route path="/anime/person/:personId" component={PersonDetail} />
         <Route
           path="/anime/character/:characterId"
           component={CharacterDetail}

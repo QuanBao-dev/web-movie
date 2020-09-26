@@ -37,16 +37,20 @@ const Carousel = () => {
   // console.log(pageCarousel);
   if (pageCarousel === dataCarousel.length) {
     setTimeout(() => {
-      document.querySelector(".section-carousel-container").style.transition =
-        "0s";
-      setPageCarousel(0);
+      if (document.querySelector(".section-carousel-container")) {
+        document.querySelector(".section-carousel-container").style.transition =
+          "0s";
+        setPageCarousel(0);
+      }
     }, 400);
   }
   if (pageCarousel === -1) {
     setTimeout(() => {
-      document.querySelector(".section-carousel-container").style.transition =
-        "0s";
-      setPageCarousel(dataCarousel.length - 1);
+      if (document.querySelector(".section-carousel-container")) {
+        document.querySelector(".section-carousel-container").style.transition =
+          "0s";
+        setPageCarousel(dataCarousel.length - 1);
+      }
     }, 400);
   }
   // console.log(stream.currentState());

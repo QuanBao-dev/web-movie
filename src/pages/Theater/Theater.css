@@ -20,6 +20,7 @@
   flex-grow: 3;
   padding-left:0.5em;
   padding-bottom: 3rem;
+  min-height: 70vh;
 }
 
 .input-room-layout{

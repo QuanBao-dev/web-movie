@@ -47,7 +47,6 @@ const GenreDetail = (props) => {
   }, [homeState.allowFetchIncreaseGenrePage, homeState.pageGenre]);
   useEffect(() => {
     let subscription;
-    console.log(homeState.pageGenre, stream.currentState().pageOnDestroy);
     if (
       homeState.pageGenre !== stream.currentState().pageOnDestroy &&
       homeState.isStopScrollingUpdated === false
@@ -74,7 +73,6 @@ const GenreDetail = (props) => {
       subscription && subscription.unsubscribe();
     };
   }, [homeState.pageGenre]);
-  console.log(homeState);
   return (
     <div className="container-genre-detail">
       <h1>{name}</h1>

@@ -5,7 +5,7 @@ import { useCookies } from "react-cookie";
 import { Link, Route, Switch } from "react-router-dom";
 
 import Input from "../../components/Input/Input";
-import TheaterWatch from "../../components/TheaterWatch/TheaterWatch";
+import TheaterWatch from "../../pages/TheaterWatch/TheaterWatch";
 import {
   fetchRoomsData$,
   theaterStream,
@@ -18,8 +18,8 @@ import {
 } from "../../store/theater";
 import Axios from "axios";
 import Toggle from "../../components/Toggle/Toggle";
-import { of, timer } from "rxjs";
-import { switchMap } from "rxjs/operators";
+import { asyncScheduler, fromEvent, of, timer } from "rxjs";
+import { switchMap, throttleTime } from "rxjs/operators";
 
 const socket = theaterStream.socket;
 const Theater = (props) => {
@@ -28,9 +28,24 @@ const Theater = (props) => {
   const [cookies] = useCookies(["idCartoonUser"]);
   const [roomNameError, setRoomNameError] = useState(null);
   const [passwordError, setPasswordError] = useState(null);
+  const [filterKeyRoom, setFilterKeyRoom] = useState("");
   const inputRoomNameRef = useRef();
   const inputPasswordRef = useRef();
   const buttonSubmitRef = useRef();
+  const inputSearchRoom = useRef();
+  useEffect(() => {
+    const subscription = fromEvent(inputSearchRoom.current, "input")
+      .pipe(throttleTime(400, asyncScheduler,{
+        leading:true,
+        trailing:true
+      }))
+      .subscribe((e) => {
+        setFilterKeyRoom(e.target.value);
+      });
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
   useEffect(() => {
     const subscription = theaterStream.subscribe(setTheaterState);
     theaterStream.init();
@@ -74,7 +89,13 @@ const Theater = (props) => {
               : "translate(-350px,0)",
         }}
       >
-        <RoomList rooms={theaterState.rooms} locationPath={locationPath} />
+        <RoomList
+          rooms={theaterState.rooms.filter((room) =>
+            room.roomName.toLocaleLowerCase().includes(filterKeyRoom)
+          )}
+          locationPath={locationPath}
+          inputSearchRoom={inputSearchRoom}
+        />
         <InputCreateRoom
           inputRoomNameRef={inputRoomNameRef}
           inputPasswordRef={inputPasswordRef}
@@ -114,9 +135,10 @@ function toggleAnimation(theaterState) {
     });
 }
 
-function RoomList({ rooms, locationPath }) {
+function RoomList({ rooms, locationPath, inputSearchRoom }) {
   return (
     <div className="container-room-list">
+      <Input label={"Search room"} input={inputSearchRoom} />
       {rooms &&
         rooms.map((room, index) => {
           return (

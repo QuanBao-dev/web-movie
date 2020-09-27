@@ -1,28 +1,24 @@
-import "./TheaterWatch.css";
+import './TheaterWatch.css';
 
-import Axios from "axios";
-import { nanoid } from "nanoid";
-import Peer from "peerjs";
-import React, { useEffect, useRef, useState } from "react";
-import { useCookies } from "react-cookie";
-import { ReplaySubject } from "rxjs";
-import { first } from "rxjs/operators";
+import Axios from 'axios';
+import { nanoid } from 'nanoid';
+import Peer from 'peerjs';
+import React, { useEffect, useRef, useState } from 'react';
+import { useCookies } from 'react-cookie';
+import { ReplaySubject } from 'rxjs';
+import { first } from 'rxjs/operators';
 
-import {
-  fetchUserOnline$,
-  submitFormPasswordRoom$,
-  theaterStream,
-} from "../../epics/theater";
-import { userStream } from "../../epics/user";
+import Chat from '../../components/Chat/Chat';
+import Input from '../../components/Input/Input';
+import { fetchUserOnline$, submitFormPasswordRoom$, theaterStream } from '../../epics/theater';
+import { userStream } from '../../epics/user';
 import {
   updateAllowFetchCurrentRoomDetail,
   updateAllowRemoveVideoWatch,
   updateAllowUserJoin,
   updateSignIn,
   updateUserIdNow,
-} from "../../store/theater";
-import Input from "../Input/Input";
-import Chat from "../Chat/Chat";
+} from '../../store/theater';
 
 const socket = theaterStream.socket;
 const peers = {};
@@ -61,6 +57,7 @@ const TheaterWatch = (props) => {
     if (theaterState.isSignIn) {
       if (theaterStream.currentState().allowUserJoin) {
         newUserJoinHandleVideo(audioCallRef.current);
+        setErrorPassword(null);
         updateAllowUserJoin(false);
       }
       if (isFullScreenState) {

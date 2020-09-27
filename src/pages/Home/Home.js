@@ -50,7 +50,7 @@ function Home() {
     let subscription8, subscription9;
     if (subNavToggle === 0) {
       subscription8 = fetchUpdatedMovie$().subscribe((updatedMovie) => {
-        console.log("updated movie");
+        // console.log("updated movie");
         stream.updateUpdatedMovie(updatedMovie);
       });
     }
@@ -163,7 +163,7 @@ function Home() {
       }
     }
   }
-  console.log(homeState);
+  // console.log(homeState);
   return (
     <div className="home-page">
       <Carousel />
@@ -427,7 +427,7 @@ function TopAnimeList({ homeState }) {
     if (stream.currentState().pageTopMovieOnDestroy !== homeState.pageTopMovie)
       subscription7 = fetchTopMovie$(subscription11).subscribe(
         (topMovieList) => {
-          console.log("fetch top movie");
+          // console.log("fetch top movie");
           stream.updateTopMovie(topMovieList);
         }
       );

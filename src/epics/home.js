@@ -159,7 +159,7 @@ export const changeSeasonYear$ = (
   selectSeasonElement,
   selectScoreElement
 ) => {
-  console.log("change")
+  // console.log("change")
   const listenEventYear$ = fromEvent(selectYearElement, "change").pipe(
     pluck("target", "value"),
     map((v) => parseInt(v))

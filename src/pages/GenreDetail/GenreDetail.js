@@ -26,15 +26,19 @@ const GenreDetail = (props) => {
     const subscription = stream.subscribe(setHomeState);
     return () => {
       subscription.unsubscribe();
-      updatePageOnDestroy(stream.currentState().pageGenre);
     };
   }, []);
+  useEffect(() => {
+    if (genreId !== stream.currentState().currentGenreId) {
+      updatePageOnDestroy(null);
+      stream.updateIsStopScrollingUpdated(false);
+    }
+  }, [homeState.currentGenreId]);
   useEffect(() => {
     let subscription1;
     if (homeState.allowFetchIncreaseGenrePage) {
       subscription1 = updatePageScrollingWindow$().subscribe((v) => {
-        const currentPage = homeState.pageGenre;
-        stream.updatePageGenre(currentPage + 1);
+        stream.updatePageGenre(homeState.genreDetailData.length / 100 + 1);
       });
     }
     return () => {
@@ -43,8 +47,11 @@ const GenreDetail = (props) => {
   }, [homeState.allowFetchIncreaseGenrePage, homeState.pageGenre]);
   useEffect(() => {
     let subscription;
-    // console.log(homeState.pageGenre, stream.currentState().pageOnDestroy);
-    if (homeState.pageGenre !== stream.currentState().pageOnDestroy)
+    console.log(homeState.pageGenre, stream.currentState().pageOnDestroy);
+    if (
+      homeState.pageGenre !== stream.currentState().pageOnDestroy &&
+      homeState.isStopScrollingUpdated === false
+    )
       subscription = fetchDataGenreAnimeList(
         genreId,
         homeState.pageGenre
@@ -55,8 +62,11 @@ const GenreDetail = (props) => {
             setName(v.mal_url.name);
           }
           stream.updateGenreDetailData(updatedAnime);
+          stream.updateCurrentGenreId(genreId);
+          updatePageOnDestroy(stream.currentState().pageGenre);
           stream.updateAllowUpdatePageGenre(true);
         } else {
+          stream.updateIsStopScrollingUpdated(true);
           stream.updateAllowUpdatePageGenre(false);
         }
       });
@@ -64,29 +74,25 @@ const GenreDetail = (props) => {
       subscription && subscription.unsubscribe();
     };
   }, [homeState.pageGenre]);
-  // console.log(homeState);
+  console.log(homeState);
   return (
     <div className="container-genre-detail">
       <h1>{name}</h1>
       <AnimeList data={homeState.genreDetailData} error={null} />
-      <div
-        className="loading-symbol"
-        style={{
-          display: homeState.allowFetchIncreaseGenrePage ? "flex" : "none",
-        }}
-      >
+      <div className="loading-symbol">
         <i className="fas fa-spinner fa-3x fa-spin"></i>
       </div>
+      {homeState.isStopScrollingUpdated && <h1>End</h1>}
     </div>
   );
 };
 
-function fetchDataGenreAnimeList(genreId, page, subscription1) {
+function fetchDataGenreAnimeList(genreId, page) {
   return timer(0).pipe(
     tap(() => {
       stream.updateAllowUpdatePageGenre(false);
-      if (document.querySelector(".loading-symbol").style.display !== "block")
-        document.querySelector(".loading-symbol").style.display = "block";
+      if (document.querySelector(".loading-symbol").style.display !== "flex")
+        document.querySelector(".loading-symbol").style.display = "flex";
       else endFetching();
     }),
     mergeMap(() =>
@@ -99,7 +105,6 @@ function fetchDataGenreAnimeList(genreId, page, subscription1) {
         ),
         catchError(() => {
           endFetching();
-          subscription1 && subscription1.unsubscribe();
           return of({ error: true });
         })
       )
@@ -110,11 +115,6 @@ function fetchDataGenreAnimeList(genreId, page, subscription1) {
 function endFetching() {
   if (document.querySelector(".loading-symbol")) {
     document.querySelector(".loading-symbol").style.display = "none";
-    const h1 = document.createElement("h1");
-    h1.innerText = "End";
-    h1.style.marginBottom = "0";
-    document.querySelector(".container-genre-detail").style.paddingBottom = "0";
-    document.querySelector(".container-genre-detail").appendChild(h1);
   }
 }
 

@@ -53,6 +53,8 @@ const initialState = {
   pageOnDestroy: null,
   pageTopMovieOnDestroy: null,
   allowFetchIncreaseGenrePage:false,
+  currentGenreId:null,
+  isStopScrollingUpdated:false,
 };
 
 const subject = new BehaviorSubject(initialState);
@@ -69,9 +71,21 @@ const homeStore = {
     state = {
       ...state,
       screenWidth: window.innerWidth,
-      allowFetchIncreaseGenrePage:false,
-      pageOnDestroy:null
     };
+    subject.next(state);
+  },
+  updateIsStopScrollingUpdated:(bool) => {
+    state={
+      ...state,
+      isStopScrollingUpdated:bool
+    }
+    subject.next(state);
+  },
+  updateCurrentGenreId:(genreId) => {
+    state={
+      ...state,
+      currentGenreId:genreId
+    }
     subject.next(state);
   },
   updateError:(bool) => {

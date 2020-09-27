@@ -341,17 +341,59 @@ router.put(
 
 router.put("/:malId", verifyRole("Admin", "User"), async (req, res) => {
   const { malId } = req.params;
-  const dataModified = req.body;
+  const { newMessage, index, isPush } = req.body;
   try {
-    const movie = await Movie.findOneAndUpdate({ malId }, dataModified, {
-      new: true,
-      upsert: true,
+    const movie = await Movie.findOne({ malId });
+    movie.messages = updateComment(movie, newMessage, index, isPush);
+    const movieSaved = await movie.save();
+    res.send({
+      message: movieSaved.messages.map((message) =>
+        ignoreProps(["_id", "__v"], message)
+      ),
     });
-    res.send({ message: ignoreProps(["_id", "__v"], movie.toJSON()) });
   } catch (error) {
     res.status(404).send({ error: "Something went wrong" });
   }
 });
+function updateComment(movie, newMessage, index, isPush = true) {
+  let suitablePositionToAdd = movie.messages.length;
+  if (index !== null) {
+    const marginLeftSource = parseInt(
+      movie.messages[index].marginLeft.replace(/px/g, "")
+    );
+    for (let i = index + 1; i < movie.messages.length; i++) {
+      if (
+        marginLeftSource >=
+        parseInt(movie.messages[i].marginLeft.replace(/px/g, ""))
+      ) {
+        suitablePositionToAdd = i;
+        // console.log({suitablePositionToAdd});
+        break;
+      }
+    }
+  }
+  // console.log(suitablePositionToAdd);
+  if (isPush) {
+    movie = {
+      ...movie,
+      messages: [
+        ...movie.messages.slice(0, suitablePositionToAdd),
+        newMessage,
+        ...movie.messages.slice(suitablePositionToAdd, movie.messages.length),
+      ],
+    };
+  } else {
+    movie = {
+      ...movie,
+      messages: [
+        ...movie.messages.slice(suitablePositionToAdd, movie.messages.length),
+        newMessage,
+        ...movie.messages.slice(0, suitablePositionToAdd),
+      ],
+    };
+  }
+  return movie.messages;
+}
 
 router.delete("/:malId", verifyRole("Admin"), async (req, res) => {
   const { malId } = req.params;

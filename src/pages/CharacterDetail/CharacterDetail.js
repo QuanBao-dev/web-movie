@@ -100,7 +100,7 @@ const CharacterDetail = (props) => {
             </div>
           </div>
         )}
-      {dataCharacterDetail && dataCharacterDetail.voice_actors && (
+      {dataCharacterDetail.voice_actors && dataCharacterDetail.voice_actors.length > 0 && (
         <div className="voice-actor-container">
           <h1 className="text-capitalize">Voice actor</h1>
           <div className="voice-actor-list">

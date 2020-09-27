@@ -16,6 +16,8 @@ const MessageInput = ({
   user,
   messageDialogE,
   isWithoutName,
+  errorName,
+  setErrorName,
 }) => {
   const [messageInputState, setMessageInputState] = useState(
     messageInputStream.initialState
@@ -161,12 +163,14 @@ const MessageInput = ({
             };
             if (!user && inputNameDialogRef.current.value.trim() === "") {
               e.preventDefault();
-              return alert("please type in your name");
+              return setErrorName("please type in your name");
+            } else {
+              setErrorName(null);
             }
             if (message.images.length > 0) {
               message.images.forEach((uri) => {
                 appendNewPhotoMessage(uri, "You", true, messageDialogE);
-                if (user)
+                if (user) {
                   socket.emit(
                     "new-message-photo",
                     inputNameDialogRef.current &&
@@ -177,7 +181,16 @@ const MessageInput = ({
                     idGroup,
                     user.avatarImage
                   );
-                else
+                  const buttonGetRemoteElement = document.getElementById(
+                    "button-get-remote"
+                  );
+                  if (buttonGetRemoteElement) {
+                    socket.emit(
+                      "update-user-online",
+                      buttonGetRemoteElement.disabled
+                    );
+                  }
+                } else
                   socket.emit(
                     "new-message-photo",
                     inputNameDialogRef.current &&
@@ -191,7 +204,7 @@ const MessageInput = ({
             }
             if (message.text && message.text.trim() !== "") {
               appendNewMessageDialog(message.text, "You", true, messageDialogE);
-              if (user)
+              if (user) {
                 socket.emit(
                   "new-message",
                   inputNameDialogRef.current &&
@@ -202,7 +215,16 @@ const MessageInput = ({
                   idGroup,
                   user.avatarImage
                 );
-              else
+                const buttonGetRemoteElement = document.getElementById(
+                  "button-get-remote"
+                );
+                if (buttonGetRemoteElement) {
+                  socket.emit(
+                    "update-user-online",
+                    buttonGetRemoteElement.disabled
+                  );
+                }
+              } else
                 socket.emit(
                   "new-message",
                   inputNameDialogRef.current &&

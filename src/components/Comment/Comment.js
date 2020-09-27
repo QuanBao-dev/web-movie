@@ -14,6 +14,7 @@ import {
   allowShouldFetchComment,
   updateCurrentName,
 } from "../../store/comment";
+import  navBarStore from "../../store/navbar";
 let idCartoonUser;
 let userGlobal;
 function Comment({ malId, user }) {
@@ -43,26 +44,25 @@ function Comment({ malId, user }) {
     let subscription2;
     let subscription3;
 
+    if (chatState.shouldFetchComment) {
+      subscription1 = fetchPageMessage$(malId).subscribe((responseMessage) => {
+        chatStream.updateMessages(responseMessage);
+        chatStream.updateCurrentPage(chatState.currentPage);
+        wrapperMessage.current.style.display = "block";
+        allowShouldFetchComment(false);
+      });
+    }
     if (user) {
       inputAuthor.current.value = chatStream.currentState().currentName;
-      if (chatState.shouldFetchComment) {
-        subscription1 = fetchPageMessage$(malId).subscribe(
-          (responseMessage) => {
-            chatStream.initMessage(responseMessage);
-            chatStream.updateCurrentPage(chatState.currentPage);
-            wrapperMessage.current.style.display = "block";
-            allowShouldFetchComment(false);
-          }
-        );
-      }
       if (
         chatState.indexInputDisplayBlock !== null &&
         inputRefs[chatState.indexInputDisplayBlock] &&
         inputAuthorRefs[chatState.indexInputDisplayBlock] &&
         buttonSubmitRefs[chatState.indexInputDisplayBlock]
       ) {
-        inputAuthorRefs[chatState.indexInputDisplayBlock].current.value =
-          chatStream.currentState().currentName;
+        inputAuthorRefs[
+          chatState.indexInputDisplayBlock
+        ].current.value = chatStream.currentState().currentName;
         subscription2 = validateInput$(
           inputRefs[chatState.indexInputDisplayBlock].current,
           inputAuthorRefs[chatState.indexInputDisplayBlock].current,
@@ -75,7 +75,6 @@ function Comment({ malId, user }) {
         input.current,
         inputAuthor.current,
         buttonSubmit.current,
-        user
       ).subscribe();
     }
     return () => {
@@ -394,14 +393,16 @@ async function handleUpdateMessage(
     marginLeft: elementMarginLeft,
     avatar: userGlobal.avatarImage,
   };
-  chatStream.updateMessage(newMessage, index, isPush);
   updateCurrentName(newMessage.author);
   // console.log(currentUser);
   try {
-    await Axios.put(
+    navBarStore.updateIsShowBlockPopUp(true);
+    const messages = await Axios.put(
       `/api/movies/${malId}`,
       {
-        messages: chatStream.currentState().messages,
+        newMessage,
+        index,
+        isPush
       },
       {
         headers: {
@@ -409,6 +410,9 @@ async function handleUpdateMessage(
         },
       }
     );
+    navBarStore.updateIsShowBlockPopUp(false);
+    chatStream.updateMessages(messages.data.message);
+    console.log(messages.data);
     allowShouldFetchComment(true);
     inputElement.value = "";
   } catch (error) {}

@@ -25,51 +25,11 @@ const chatStore = {
     });
     return ans;
   },
-  initMessage: (messages) => {
+  updateMessages: (messages) => {
     state = {
       ...state,
       messages: [...messages],
     };
-    behaviorSubject.next(state);
-  },
-  updateMessage: (newMessage, index, isPush = true) => {
-    // console.log(state.messages[index]);
-    let suitablePositionToAdd = state.messages.length;
-    if (index !== null) {
-      const marginLeftSource = parseInt(
-        state.messages[index].marginLeft.replace(/px/g, "")
-      );
-      for (let i = index + 1; i < state.messages.length; i++) {
-        if (
-          marginLeftSource >=
-          parseInt(state.messages[i].marginLeft.replace(/px/g, ""))
-        ) {
-          suitablePositionToAdd = i;
-          // console.log({suitablePositionToAdd});
-          break;
-        }
-      }
-    }
-    // console.log(suitablePositionToAdd);
-    if(isPush){
-      state = {
-        ...state,
-        messages: [
-          ...state.messages.slice(0, suitablePositionToAdd),
-          newMessage,
-          ...state.messages.slice(suitablePositionToAdd, state.messages.length),
-        ],
-      };
-    } else {
-      state = {
-        ...state,
-        messages: [
-          ...state.messages.slice(suitablePositionToAdd, state.messages.length),
-          newMessage,
-          ...state.messages.slice(0, suitablePositionToAdd),
-        ],
-      };
-    }
     behaviorSubject.next(state);
   },
 

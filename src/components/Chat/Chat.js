@@ -1,5 +1,5 @@
 import "./Chat.css";
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { theaterStream } from "../../epics/theater";
 import Input from "../Input/Input";
 import MessageInput from "../MessageInput/MessageInput";
@@ -19,6 +19,7 @@ const Chat = ({ groupId, user, withoutName = false, isZoom = false }) => {
   const messageDialogRef = useRef();
   const inputRefFile = useRef();
   const buttonLikeRef = useRef();
+  const [errorName,setErrorName] = useState(null);
   useEffect(() => {
     messageDialogE = messageDialogRef.current;
     user && !withoutName && (inputNameDialogRef.current.value = user.username);
@@ -27,7 +28,7 @@ const Chat = ({ groupId, user, withoutName = false, isZoom = false }) => {
     let subscription;
     if (buttonLikeRef.current) {
       subscription = fromEvent(buttonLikeRef.current, "click")
-        .pipe(debounceTime(1000))
+        .pipe(debounceTime(500))
         .subscribe(() => {
           if (messageDialogE) {
             appendNewMessageDialog(
@@ -36,20 +37,38 @@ const Chat = ({ groupId, user, withoutName = false, isZoom = false }) => {
               true,
               messageDialogE
             );
-            socket.emit(
-              "new-message",
-              user.username,
-              `<i class="fas fa-thumbs-up fa-3x button-like"></i>`,
-              idGroup,
-              user.avatarImage
+            if (user) {
+              socket.emit(
+                "new-message",
+                user.username,
+                `<i class="fas fa-thumbs-up fa-3x button-like"></i>`,
+                idGroup,
+                user.avatarImage
+              );
+            } else {
+              socket.emit(
+                "new-message",
+                user.username,
+                `<i class="fas fa-thumbs-up fa-3x button-like"></i>`,
+                idGroup,
+              );
+            }
+            const buttonGetRemoteElement = document.getElementById(
+              "button-get-remote"
             );
+            if (buttonGetRemoteElement) {
+              socket.emit(
+                "update-user-online",
+                buttonGetRemoteElement.disabled
+              );
+            }
           }
         });
     }
     return () => {
       subscription.unsubscribe();
     };
-  }, [user.avatarImage, user.username]);
+  }, [user]);
   return (
     <div className="container-chat-bot">
       <div className="container-popup-img">
@@ -93,7 +112,7 @@ const Chat = ({ groupId, user, withoutName = false, isZoom = false }) => {
               </div>
             )}
           </div>
-          {!withoutName && <Input label={"Name"} input={inputNameDialogRef} />}
+          {!withoutName && <Input label={"Name"} input={inputNameDialogRef} error={errorName} />}
           <div className="input-message-dialog">
             <i
               className="fas fa-thumbs-up fa-2x button-like"
@@ -114,6 +133,8 @@ const Chat = ({ groupId, user, withoutName = false, isZoom = false }) => {
               user={user}
               messageDialogE={messageDialogE}
               isWithoutName={isWithoutName}
+              errorName={errorName}
+              setErrorName={setErrorName}
             />
             <input
               multiple

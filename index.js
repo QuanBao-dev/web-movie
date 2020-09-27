@@ -60,7 +60,7 @@ io.on("connection", (socket) => {
       socket.emit("fetch-user-online");
       socket.to(groupId).emit("fetch-user-online");
       rooms[groupId].users[userId] = username;
-      socket.on("new-message", async () => {
+      socket.on("update-user-online", async (keepRemote) => {
         await TheaterRoomMember.findOneAndUpdate(
           {
             email,

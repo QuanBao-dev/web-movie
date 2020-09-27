@@ -17,7 +17,6 @@ export const validateInput$ = (
   inputElement,
   inputAuthorElement,
   buttonSubmitElement,
-  user
 ) => {
   buttonSubmitElement.disabled = true;
   const inputAuthor$ = fromEvent(inputAuthorElement, "input").pipe(

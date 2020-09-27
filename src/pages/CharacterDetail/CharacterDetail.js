@@ -22,6 +22,7 @@ const CharacterDetail = (props) => {
     );
     return () => {
       subscription.unsubscribe();
+      characterStream.updateRole(null)
     };
   }, [characterId]);
   // console.log(dataCharacterDetail);

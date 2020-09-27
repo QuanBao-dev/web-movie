@@ -29,7 +29,9 @@ const GenreDetail = (props) => {
     };
   }, []);
   useEffect(() => {
-    if (genreId !== stream.currentState().currentGenreId) {
+    if (
+      stream.currentState().genreDetailData.length === 0
+    ) {
       updatePageOnDestroy(null);
       stream.updateIsStopScrollingUpdated(false);
     }
@@ -37,7 +39,7 @@ const GenreDetail = (props) => {
   useEffect(() => {
     let subscription1;
     if (homeState.allowFetchIncreaseGenrePage) {
-      subscription1 = updatePageScrollingWindow$().subscribe((v) => {
+      subscription1 = updatePageScrollingWindow$().subscribe(() => {
         stream.updatePageGenre(homeState.genreDetailData.length / 100 + 1);
       });
     }
@@ -61,7 +63,6 @@ const GenreDetail = (props) => {
             setName(v.mal_url.name);
           }
           stream.updateGenreDetailData(updatedAnime);
-          stream.updateCurrentGenreId(genreId);
           updatePageOnDestroy(stream.currentState().pageGenre);
           stream.updateAllowUpdatePageGenre(true);
         } else {

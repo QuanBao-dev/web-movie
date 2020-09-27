@@ -53,7 +53,6 @@ const initialState = {
   pageOnDestroy: null,
   pageTopMovieOnDestroy: null,
   allowFetchIncreaseGenrePage:false,
-  currentGenreId:null,
   isStopScrollingUpdated:false,
 };
 
@@ -78,13 +77,6 @@ const homeStore = {
     state={
       ...state,
       isStopScrollingUpdated:bool
-    }
-    subject.next(state);
-  },
-  updateCurrentGenreId:(genreId) => {
-    state={
-      ...state,
-      currentGenreId:genreId
     }
     subject.next(state);
   },

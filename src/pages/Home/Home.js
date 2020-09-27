@@ -163,7 +163,7 @@ function Home() {
       }
     }
   }
-  // console.log(homeState);
+  console.log(homeState);
   return (
     <div className="home-page">
       <Carousel />

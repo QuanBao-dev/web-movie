@@ -14,7 +14,7 @@ import {
   allowShouldFetchComment,
   updateCurrentName,
 } from "../../store/comment";
-import  navBarStore from "../../store/navbar";
+import navBarStore from "../../store/navbar";
 let idCartoonUser;
 let userGlobal;
 function Comment({ malId, user }) {
@@ -74,7 +74,7 @@ function Comment({ malId, user }) {
       subscription3 = validateInput$(
         input.current,
         inputAuthor.current,
-        buttonSubmit.current,
+        buttonSubmit.current
       ).subscribe();
     }
     return () => {
@@ -268,7 +268,9 @@ function CommentDetail({
         />
       </div>
       <div>
-        <div>{new Date(v.createdAt).toUTCString()}</div>
+        <div>
+          {timeSince(new Date(v.createdAt).getTime())} ago
+        </div>
         <div className="author">{v.author}</div>
         <div className="content-comment">
           <div>{v.textContent}</div>
@@ -284,6 +286,35 @@ function CommentDetail({
       </div>
     </div>
   );
+}
+function timeSince(date) {
+  var seconds = Math.floor((new Date() - date) / 1000);
+
+  var interval = seconds / 31536000;
+
+  if (interval > 1) {
+    return Math.floor(interval) + " years";
+  }
+  interval = seconds / 2592000;
+  if (interval > 1) {
+    return Math.floor(interval) + " months";
+  }
+  interval = seconds / 86400;
+  if (interval > 1) {
+    return Math.floor(interval) + " days";
+  }
+  interval = seconds / 3600;
+  if (interval > 1) {
+    return Math.floor(interval) + " hours";
+  }
+  interval = seconds / 60;
+  if (interval > 1) {
+    return Math.floor(interval) + " minutes";
+  }
+  if(Math.floor(seconds) === 1){
+    return Math.floor(seconds) + " second";
+  }
+  return Math.floor(seconds) + " seconds";
 }
 
 function FormReply({
@@ -402,7 +433,7 @@ async function handleUpdateMessage(
       {
         newMessage,
         index,
-        isPush
+        isPush,
       },
       {
         headers: {

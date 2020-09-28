@@ -98,7 +98,7 @@ router.post("/register", verifyLogin, async (req, res) => {
 
 router.delete("/logout", verifyRole("Admin", "User"), (req, res) => {
   let options = {
-    expires: new Date(Date.now() + 43200000),
+    expires: new Date(Date.now() - 43200000),
     path: "/",
     signed: true,
   };

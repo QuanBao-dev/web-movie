@@ -1,18 +1,18 @@
-import './Home.css';
+import "./Home.css";
 
-import { capitalize, orderBy } from 'lodash';
-import React, { useEffect, useRef, useState } from 'react';
-import { useCookies } from 'react-cookie';
-import { Link, useHistory } from 'react-router-dom';
+import { capitalize, orderBy } from "lodash";
+import React, { useEffect, useRef, useState } from "react";
+import { useCookies } from "react-cookie";
+import { Link, useHistory } from "react-router-dom";
 
-import AnimeList from '../../components/AnimeList/AnimeList';
-import AnimeSchedule from '../../components/AnimeSchedule/AnimeSchedule';
-import Carousel from '../../components/Carousel/Carousel';
-import Genres from '../../components/Genres/Genres';
-import Input from '../../components/Input/Input';
-import PageNavList from '../../components/PageNavList/PageNavList';
-import SearchedAnimeList from '../../components/SearchedAnimeList/SearchedAnimeList';
-import UpcomingAnimeList from '../../components/UpcomingAnimeList/UpcomingAnimeList';
+import AnimeList from "../../components/AnimeList/AnimeList";
+import AnimeSchedule from "../../components/AnimeSchedule/AnimeSchedule";
+import Carousel from "../../components/Carousel/Carousel";
+import Genres from "../../components/Genres/Genres";
+import Input from "../../components/Input/Input";
+import PageNavList from "../../components/PageNavList/PageNavList";
+import SearchedAnimeList from "../../components/SearchedAnimeList/SearchedAnimeList";
+import UpcomingAnimeList from "../../components/UpcomingAnimeList/UpcomingAnimeList";
 import {
   changeCurrentPage$,
   changeSearchInput$,
@@ -24,16 +24,23 @@ import {
   listenSearchInputPressEnter$,
   stream,
   topMovieUpdatedScrolling$,
-} from '../../epics/home';
-import { userStream } from '../../epics/user';
-import { allowScrollToSeeMore, updateMaxPage, updatePageTopMovieOnDestroy } from '../../store/home';
+} from "../../epics/home";
+import { userStream } from "../../epics/user";
+import {
+  allowScrollToSeeMore,
+  updateDataOnDestroy,
+  updateMaxPage,
+  updatePageTopMovieOnDestroy,
+} from "../../store/home";
 
 const numberOfMovieShown = 18;
 window.addEventListener("resize", () => {
   stream.init();
 });
 function Home() {
-  const [homeState, setHomeState] = useState(stream.initialState);
+  const [homeState, setHomeState] = useState(
+    stream.currentState() ? stream.currentState() : stream.initialState
+  );
   const [limitShowRecentlyUpdated, setLimitShowRecentlyUpdated] = useState(
     numberOfMovieShown
   );
@@ -65,25 +72,34 @@ function Home() {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [subNavToggle]);
-  // console.log(homeState);
-
   useEffect(() => {
-    stream.updateCurrentPage(1);
-    const subscription2 = fetchAnimeSeason$(
-      homeState.year,
-      homeState.season,
-      1,
-      homeState.numberOfProduct,
-      homeState.score
-    ).subscribe((v) => {
-      stream.updateAnimeData(v);
-    });
+    let subscription2;
+    if (
+      homeState.currentPage !== homeState.currentPageOnDestroy ||
+      homeState.season !== homeState.currentSeasonOnDestroy ||
+      homeState.year !== homeState.currentYearOnDestroy
+    )
+      subscription2 = fetchAnimeSeason$(
+        homeState.year,
+        homeState.season,
+        1,
+        homeState.numberOfProduct,
+        homeState.score
+      ).subscribe((v) => {
+        stream.updateAnimeData(v);
+      });
     return () => {
-      subscription2.unsubscribe();
+      subscription2 && subscription2.unsubscribe();
+      updateDataOnDestroy(
+        stream.currentState().currentPage,
+        homeState.season,
+        homeState.year
+      );
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [homeState.year, homeState.season]);
   useEffect(() => {
+    // console.log(homeState);
     const filterAnime = homeState.dataDetailOriginal.filter((movie) => {
       return (
         movie.airing_start &&
@@ -234,6 +250,13 @@ function Home() {
               selectScore={selectScore}
               numberOfYears={numberOfYears}
             />
+            <div style={{ width: "50%", textAlign: "center" }}>
+              <PageNavList
+                numberOfPagesDisplay={numberOfPagesDisplay}
+                stream={stream}
+                homeState={homeState}
+              />
+            </div>
             <AnimeList
               data={homeState.dataDetail}
               error={homeState.error || null}
@@ -369,7 +392,6 @@ function SelectFilterAnime({
     >
       <select
         className="select-filter"
-        onChange={() => stream.updateCurrentPage(1)}
         defaultValue={`${homeState.season}`}
         ref={selectSeason}
       >

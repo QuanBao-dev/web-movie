@@ -54,6 +54,9 @@ const initialState = {
   pageTopMovieOnDestroy: null,
   allowFetchIncreaseGenrePage:false,
   isStopScrollingUpdated:false,
+  currentPageOnDestroy:null,
+  currentYearOnDestroy:null,
+  currentSeasonOnDestroy:null
 };
 
 const subject = new BehaviorSubject(initialState);
@@ -241,9 +244,16 @@ export const resetGenreDetail = () => {
   state.genreDetailData = [];
 };
 
+export const updateDataOnDestroy = (page, season, year) => {
+  state.currentPageOnDestroy = page;
+  state.currentSeasonOnDestroy = season;
+  state.currentYearOnDestroy = year
+};
+
 export const updatePageOnDestroy = (page) => {
   state.pageOnDestroy = page;
 };
+
 
 export const updatePageTopMovieOnDestroy = (page) => {
   state.pageTopMovieOnDestroy = page;
@@ -271,8 +281,13 @@ export const updateMaxPage = (max) => {
   state.maxPage = max;
 };
 
+export const updateCurrentPageOnDestroy = (page) => {
+  state.currentPageOnDestroy = page;
+}
+
 export const updateOriginalData = (data) => {
   state.dataDetailOriginal = data;
+  state.currentPage = 1;
 };
 
 export const savingTextSearch = (text) => {

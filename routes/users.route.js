@@ -62,6 +62,8 @@ router.post("/login", verifyLogin, async (req, res) => {
       options = {
         ...options,
         httpOnly: true,
+        secure:true,
+        sameSite:"none"
       };
     }
     res.cookie("idCartoonUser", token, options);
@@ -104,6 +106,8 @@ router.delete("/logout", verifyRole("Admin", "User"), (req, res) => {
     options = {
       ...options,
       httpOnly: true,
+      sameSite:"none",
+      secure:true
     };
   }
 
@@ -176,6 +180,8 @@ router.put(
         options = {
           ...options,
           httpOnly: true,
+          secure:true,
+          sameSite:"none"
         };
       }
       res.cookie("idCartoonUser", token, options);

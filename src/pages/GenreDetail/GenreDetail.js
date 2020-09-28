@@ -29,9 +29,7 @@ const GenreDetail = (props) => {
     };
   }, []);
   useEffect(() => {
-    if (
-      stream.currentState().genreDetailData.length === 0
-    ) {
+    if (stream.currentState().genreDetailData.length === 0) {
       updatePageOnDestroy(null);
       stream.updateIsStopScrollingUpdated(false);
     }
@@ -78,7 +76,10 @@ const GenreDetail = (props) => {
     <div className="container-genre-detail">
       <h1>{name}</h1>
       <AnimeList data={homeState.genreDetailData} error={null} />
-      <div className="loading-symbol">
+      <div
+        className="loading-symbol"
+        style={{ display: homeState.isStopScrollingUpdated ? "none" : "flex" }}
+      >
         <i className="fas fa-spinner fa-3x fa-spin"></i>
       </div>
       {homeState.isStopScrollingUpdated && <h1>End</h1>}
@@ -90,7 +91,10 @@ function fetchDataGenreAnimeList(genreId, page) {
   return timer(0).pipe(
     tap(() => {
       stream.updateAllowUpdatePageGenre(false);
-      if (document.querySelector(".loading-symbol").style.display !== "flex")
+      if (
+        document.querySelector(".loading-symbol") &&
+        document.querySelector(".loading-symbol").style.display !== "flex"
+      )
         document.querySelector(".loading-symbol").style.display = "flex";
       else endFetching();
     }),
@@ -100,6 +104,7 @@ function fetchDataGenreAnimeList(genreId, page) {
         pluck("response"),
         tap(
           () =>
+            document.querySelector(".loading-symbol") &&
             (document.querySelector(".loading-symbol").style.display = "none")
         ),
         catchError(() => {

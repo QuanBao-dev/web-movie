@@ -10,11 +10,13 @@ import Axios from "axios";
 import { useCookies } from "react-cookie";
 import navBarStore from "../../store/navbar";
 import { interval } from "rxjs";
+import { useHistory } from "react-router-dom";
 const Carousel = () => {
   const { dataCarousel } = stream.currentState();
   const user = userStream.currentState();
   const [cookies] = useCookies(["idCartoonUser"]);
   const [pageCarousel, setPageCarousel] = useState(3);
+  const history = useHistory();
   useEffect(() => {
     const subscription = fetchData$().subscribe((v) => {
       stream.updateDataCarousel(v);
@@ -162,7 +164,11 @@ const Carousel = () => {
           )}
           {dataCarousel &&
             dataCarousel.map((data, index) => (
-              <div className="item" key={index}>
+              <div className="item" key={index} onClick={() => {
+                if(data.malId){
+                  history.push("/anime/"+data.malId);
+                }
+              }}>
                 <img src={data.url} alt="NOT_FOUND" />
                 <div className="container-title">
                   <h1>{data.title}</h1>

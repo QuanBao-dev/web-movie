@@ -62,6 +62,17 @@
 .section-carousel-container .item{
   width: 20%;
   position: relative;
+  cursor: pointer;
+}
+
+.section-carousel-container .item h1{
+  transition: 0.4s;
+}
+
+.section-carousel-container .item:hover h1{
+  color: yellow;
+  transform: scale(1.1);
+  text-shadow: 3px 3px rgb(99, 96, 60);
 }
 
 .container-title{

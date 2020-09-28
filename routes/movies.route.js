@@ -49,6 +49,7 @@ router.get("/carousel", async (req, res) => {
 router.post("/carousel/crawl", verifyRole("Admin"), async (req, res) => {
   try {
     const dataCrawl = await crawlCarousel("https://animetvn.tv/");
+    await extractMalId(dataCrawl);
     const data = await CarouselMovie.findOneAndUpdate(
       { name: "data" },
       {
@@ -69,11 +70,13 @@ router.post("/carousel/crawl", verifyRole("Admin"), async (req, res) => {
 
 router.post("/carousel/crawl/trial", verifyRole("Admin"), async (req, res) => {
   try {
-    const dataCrawl = await crawlCarousel("https://animetvn.tv/");
+    let dataCrawl = await crawlCarousel("https://animetvn.tv/");
+    await extractMalId(dataCrawl);
     res.send({
       message: dataCrawl,
     });
   } catch (error) {
+    console.log(error);
     res.status(404).send({ error: "Something went wrong" });
   }
 });
@@ -355,6 +358,36 @@ router.put("/:malId", verifyRole("Admin", "User"), async (req, res) => {
     res.status(404).send({ error: "Something went wrong" });
   }
 });
+async function extractMalId(dataCrawl) {
+  await Promise.all(
+    dataCrawl.slice(0, 2).map((data) => {
+      return Axios(
+        `https://api.jikan.moe/v3/search/anime?q=${data.title}&limit=1`
+      )
+        .then((response) => response.data)
+        .then((res) => (data.malId = res.results[0].mal_id));
+    })
+  );
+  await Promise.all(
+    dataCrawl.slice(2, 4).map((data) => {
+      return Axios(
+        `https://api.jikan.moe/v3/search/anime?q=${data.title}&limit=1`
+      )
+        .then((response) => response.data)
+        .then((res) => (data.malId = res.results[0].mal_id));
+    })
+  );
+  await Promise.all(
+    dataCrawl.slice(4, dataCrawl.length).map((data) => {
+      return Axios(
+        `https://api.jikan.moe/v3/search/anime?q=${data.title}&limit=1`
+      )
+        .then((response) => response.data)
+        .then((res) => (data.malId = res.results[0].mal_id));
+    })
+  );
+}
+
 function updateComment(movie, newMessage, index, isPush = true) {
   let suitablePositionToAdd = movie.messages.length;
   if (index !== null) {

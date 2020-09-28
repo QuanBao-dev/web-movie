@@ -2,25 +2,11 @@
 import { BehaviorSubject } from "rxjs";
 let today = new Date(Date.now()).getMonth() + 1;
 let currentSeason;
-let numSeason = parseInt(((today + 1) / 3).toString());
-
-switch (numSeason) {
-  case 2:
-    currentSeason = "spring";
-    break;
-  case 3:
-    currentSeason = "summer";
-    break;
-  case 4:
-    currentSeason = "fall";
-    break;
-  case 1:
-    currentSeason = "winter";
-    break;
-  default:
-    break;
-}
-
+let numSeason = today / 3;
+if (numSeason <= 1) currentSeason = "winter";
+if (1 <= numSeason && numSeason < 2) currentSeason = "spring";
+if (2 <= numSeason && numSeason < 3) currentSeason = "summer";
+if (3 <= numSeason) currentSeason = "fall";
 const initialState = {
   dataDetail: [],
   dataDetailOriginal: [],
@@ -52,11 +38,11 @@ const initialState = {
   dataCarousel: [],
   pageOnDestroy: null,
   pageTopMovieOnDestroy: null,
-  allowFetchIncreaseGenrePage:false,
-  isStopScrollingUpdated:false,
-  currentPageOnDestroy:null,
-  currentYearOnDestroy:null,
-  currentSeasonOnDestroy:null
+  allowFetchIncreaseGenrePage: false,
+  isStopScrollingUpdated: false,
+  currentPageOnDestroy: null,
+  currentYearOnDestroy: null,
+  currentSeasonOnDestroy: null,
 };
 
 const subject = new BehaviorSubject(initialState);
@@ -76,26 +62,26 @@ const homeStore = {
     };
     subject.next(state);
   },
-  updateIsStopScrollingUpdated:(bool) => {
-    state={
-      ...state,
-      isStopScrollingUpdated:bool
-    }
-    subject.next(state);
-  },
-  updateError:(bool) => {
+  updateIsStopScrollingUpdated: (bool) => {
     state = {
       ...state,
-      errorFetchGenre:bool
+      isStopScrollingUpdated: bool,
     };
     subject.next(state);
   },
-  updateAllowUpdatePageGenre:(bool) => {
-    state={
+  updateError: (bool) => {
+    state = {
       ...state,
-      allowFetchIncreaseGenrePage:bool
+      errorFetchGenre: bool,
     };
-    subject.next(state)
+    subject.next(state);
+  },
+  updateAllowUpdatePageGenre: (bool) => {
+    state = {
+      ...state,
+      allowFetchIncreaseGenrePage: bool,
+    };
+    subject.next(state);
   },
   updatePageGenre: (page) => {
     state = {
@@ -247,13 +233,12 @@ export const resetGenreDetail = () => {
 export const updateDataOnDestroy = (page, season, year) => {
   state.currentPageOnDestroy = page;
   state.currentSeasonOnDestroy = season;
-  state.currentYearOnDestroy = year
+  state.currentYearOnDestroy = year;
 };
 
 export const updatePageOnDestroy = (page) => {
   state.pageOnDestroy = page;
 };
-
 
 export const updatePageTopMovieOnDestroy = (page) => {
   state.pageTopMovieOnDestroy = page;
@@ -283,7 +268,7 @@ export const updateMaxPage = (max) => {
 
 export const updateCurrentPageOnDestroy = (page) => {
   state.currentPageOnDestroy = page;
-}
+};
 
 export const updateOriginalData = (data) => {
   state.dataDetailOriginal = data;

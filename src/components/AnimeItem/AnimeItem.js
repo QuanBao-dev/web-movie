@@ -1,7 +1,7 @@
-import './AnimeItem.css';
+import "./AnimeItem.css";
 
-import React from 'react';
-import { useHistory } from 'react-router-dom';
+import React from "react";
+import { useHistory } from "react-router-dom";
 
 const AnimeItem = ({ anime }) => {
   const history = useHistory();
@@ -53,7 +53,11 @@ const AnimeItem = ({ anime }) => {
           {anime.title.length > anime.title.slice(0, 52).length ? "..." : ""}
         </h3>
         {anime.airing_start && (
-          <div>{new Date(anime.airing_start).toUTCString().slice(0, 17)}</div>
+          <div>
+            {new Date(anime.airing_start).getMonth() + 1}-
+            {new Date(anime.airing_start).getDate()}-
+            {new Date(anime.airing_start).getFullYear()}
+          </div>
         )}
       </div>
     </div>

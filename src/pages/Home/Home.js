@@ -99,7 +99,6 @@ function Home() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [homeState.year, homeState.season]);
   useEffect(() => {
-    // console.log(homeState);
     const filterAnime = homeState.dataDetailOriginal.filter((movie) => {
       return (
         movie.airing_start &&
@@ -110,6 +109,11 @@ function Home() {
     updateMaxPage(
       Math.ceil(filterAnime.length / stream.initialState.numberOfProduct)
     );
+    if (
+      Math.ceil(filterAnime.length / stream.initialState.numberOfProduct) <
+      homeState.currentPage
+    )
+      stream.updateCurrentPage(1);
     const sortedArray = orderBy(filterAnime, ["airing_start"], ["desc"]).slice(
       (homeState.currentPage - 1) * homeState.numberOfProduct,
       homeState.currentPage * homeState.numberOfProduct

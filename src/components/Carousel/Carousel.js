@@ -165,8 +165,11 @@ const Carousel = () => {
           {dataCarousel &&
             dataCarousel.map((data, index) => (
               <div className="item" key={index} onClick={() => {
+                console.log(data.malId);
                 if(data.malId){
                   history.push("/anime/"+data.malId);
+                } else {
+                  history.push(`/anime/search?key=${data.title}`)
                 }
               }}>
                 <img src={data.url} alt="NOT_FOUND" />

@@ -361,29 +361,41 @@ router.put("/:malId", verifyRole("Admin", "User"), async (req, res) => {
 async function extractMalId(dataCrawl) {
   await Promise.all(
     dataCrawl.slice(0, 2).map((data) => {
+      console.log(data);
       return Axios(
         `https://api.jikan.moe/v3/search/anime?q=${data.title}&limit=1`
       )
         .then((response) => response.data)
-        .then((res) => (data.malId = res.results[0].mal_id));
+        .then((res) => (data.malId = res.results[0].mal_id))
+        .catch((err) => {
+          console.log(err);
+        });
     })
   );
   await Promise.all(
     dataCrawl.slice(2, 4).map((data) => {
+      console.log(data);
       return Axios(
         `https://api.jikan.moe/v3/search/anime?q=${data.title}&limit=1`
       )
         .then((response) => response.data)
-        .then((res) => (data.malId = res.results[0].mal_id));
+        .then((res) => (data.malId = res.results[0].mal_id))
+        .catch((err) => {
+          console.log(err);
+        });
     })
   );
   await Promise.all(
     dataCrawl.slice(4, dataCrawl.length).map((data) => {
+      console.log(data);
       return Axios(
         `https://api.jikan.moe/v3/search/anime?q=${data.title}&limit=1`
       )
         .then((response) => response.data)
-        .then((res) => (data.malId = res.results[0].mal_id));
+        .then((res) => (data.malId = res.results[0].mal_id))
+        .catch((err) => {
+          console.log(err);
+        });
     })
   );
 }

@@ -1,8 +1,10 @@
 const mongoose = require("mongoose");
+const { nanoid } = require("nanoid");
 
 const userSchema = new mongoose.Schema({
   userId:{
     type:String,
+    default:nanoid()
   },
   createdAt: {
     type: Date,

@@ -31,11 +31,13 @@ const movieSchema = new mongoose.Schema({
   messages: {
     type: [
       {
+        userId:String,
         createdAt: Date,
         author: String,
         textContent: String,
         marginLeft: String,
-        avatar:String
+        avatar:String,
+        commentId:String
       },
     ],
     default: [],

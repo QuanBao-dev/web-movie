@@ -15,6 +15,7 @@ import {
   updateCurrentName,
 } from "../../store/comment";
 import navBarStore from "../../store/navbar";
+import { nanoid } from "nanoid";
 let idCartoonUser;
 let userGlobal;
 function Comment({ malId, user }) {
@@ -135,7 +136,22 @@ function Comment({ malId, user }) {
         }}
       >
         <Input label={"Name"} input={inputAuthor} />
-        <Input label={"Your comment"} input={input} />
+        <h2 style={{ width: "100%" }}>Your comment</h2>
+        <div className="textarea-comment-container">
+          <div
+            className="textarea-comment"
+            onPaste={(e) => {
+              e.preventDefault();
+              let text = (e.originalEvent || e).clipboardData.getData(
+                "text/plain"
+              );
+              document.execCommand("insertHTML", false, text);
+            }}
+            ref={input}
+            contentEditable
+            suppressContentEditableWarning
+          />
+        </div>
         {user && (
           <button
             className="btn btn-danger button-submit-comment"
@@ -174,7 +190,6 @@ function Comment({ malId, user }) {
                 v={v}
                 user={user}
                 index={index}
-                chatState={chatState}
                 malId={malId}
                 cookies={cookies}
                 containerInputRefs={containerInputRefs}
@@ -196,8 +211,7 @@ function Comment({ malId, user }) {
         className="comment-button-see"
         onClick={(e) => {
           e.target.scrollIntoView({
-            behavior: "smooth",
-            block: "start",
+            block: "end",
             inline: "nearest",
           });
           const nextPage = chatState.currentPage;
@@ -219,7 +233,6 @@ function UserComment({
   v,
   user,
   index,
-  chatState,
   malId,
   cookies,
   containerInputRefs,
@@ -227,13 +240,8 @@ function UserComment({
 }) {
   return (
     <div style={{ marginLeft: v.marginLeft }} className="comment">
-      {user && user.role === "Admin" && (
-        <DeleteComment
-          index={index}
-          chatState={chatState}
-          malId={malId}
-          cookies={cookies}
-        />
+      {user && user.userId === v.userId && (
+        <DeleteComment v={v} malId={malId} cookies={cookies} />
       )}
       <CommentDetail
         v={v}
@@ -268,12 +276,10 @@ function CommentDetail({
         />
       </div>
       <div>
-        <div>
-          {timeSince(new Date(v.createdAt).getTime())} ago
-        </div>
+        <div>{timeSince(new Date(v.createdAt).getTime())} ago</div>
         <div className="author">{v.author}</div>
         <div className="content-comment">
-          <div>{v.textContent}</div>
+          <div dangerouslySetInnerHTML={{ __html: v.textContent }}></div>
           <div
             className="button-comment-reply"
             onClick={() =>
@@ -311,7 +317,7 @@ function timeSince(date) {
   if (interval > 1) {
     return Math.floor(interval) + " minutes";
   }
-  if(Math.floor(seconds) === 1){
+  if (Math.floor(seconds) === 1) {
     return Math.floor(seconds) + " second";
   }
   return Math.floor(seconds) + " seconds";
@@ -336,7 +342,22 @@ function FormReply({
       }}
     >
       <Input label={"Name"} input={inputAuthorRefs[index]} />
-      <Input label={"Your comment"} input={inputRefs[index]} />
+      <h1>Your comment</h1>
+      <div className="textarea-comment-container">
+        <div
+          className="textarea-comment"
+          onPaste={(e) => {
+            e.preventDefault();
+            let text = (e.originalEvent || e).clipboardData.getData(
+              "text/plain"
+            );
+            document.execCommand("insertHTML", false, text);
+          }}
+          ref={inputRefs[index]}
+          contentEditable
+          suppressContentEditableWarning
+        />
+      </div>
       <button
         className="btn btn-danger button-submit-comment"
         ref={buttonSubmitRefs[index]}
@@ -357,31 +378,30 @@ function FormReply({
   );
 }
 
-function DeleteComment({ index, chatState, malId, cookies }) {
+function DeleteComment({ v, malId, cookies }) {
   return (
     <div
       onClick={async () => {
-        let listDelete = [index];
-        allowShouldFetchComment(false);
-        for (let i = index + 1; i < chatState.messages.length; i++) {
-          if (
-            convertPxToInt(chatState.messages[i].marginLeft) <=
-            convertPxToInt(chatState.messages[index].marginLeft)
-          ) {
-            break;
-          }
-          listDelete.push(i);
-        }
-        chatStream.updateDeleteMessage(listDelete);
-        await Axios.put(
-          "/api/movies/admin/" + malId,
-          chatStream.currentState().messages,
-          {
-            headers: {
-              authorization: `Bearer ${cookies.idCartoonUser}`,
+        navBarStore.updateIsShowBlockPopUp(true);
+        try {
+          const messages = await Axios.put(
+            "/api/movies/message/delete/" + malId,
+            {
+              commentId: v.commentId,
             },
-          }
-        );
+            {
+              headers: {
+                authorization: `Bearer ${cookies.idCartoonUser}`,
+              },
+            }
+          );
+          chatStream.updateMessages(messages.data.message);
+        } catch (error) {
+          const {message, comments} = error.response.data.error;
+          alert(message);
+          chatStream.updateMessages(comments);
+        }
+        navBarStore.updateIsShowBlockPopUp(false);    
       }}
       className="delete-symbol"
     >
@@ -417,22 +437,35 @@ async function handleUpdateMessage(
   index,
   isPush
 ) {
+  const link = inputElement.innerText.match(
+    /http[s]?:\/\/(?:[a-z]|[0-9]|[$-_@.&+#]|[!*(),]|(?:%[0-9a-f][0-9a-f]))+/g
+  );
+  if (link) {
+    inputElement.innerHTML = inputElement.innerHTML.replace(
+      link[0],
+      `<a href=${link[0]} target="_blank" style="color:white">${link[0]}</a>`
+    );
+  }
   const newMessage = {
+    userId: userGlobal.userId,
     author: inputAuthorElement.value,
     createdAt: new Date(Date.now()).toISOString(),
-    textContent: inputElement.value,
+    textContent: inputElement.innerHTML,
+    commentId: nanoid(),
     marginLeft: elementMarginLeft,
     avatar: userGlobal.avatarImage,
   };
   updateCurrentName(newMessage.author);
-  // console.log(currentUser);
+  const commentId = chatStream.currentState().messages[index]
+    ? chatStream.currentState().messages[index].commentId
+    : null;
   try {
     navBarStore.updateIsShowBlockPopUp(true);
     const messages = await Axios.put(
       `/api/movies/${malId}`,
       {
         newMessage,
-        index,
+        commentId,
         isPush,
       },
       {
@@ -441,12 +474,14 @@ async function handleUpdateMessage(
         },
       }
     );
-    navBarStore.updateIsShowBlockPopUp(false);
     chatStream.updateMessages(messages.data.message);
-    console.log(messages.data);
-    allowShouldFetchComment(true);
-    inputElement.value = "";
-  } catch (error) {}
+    inputElement.innerText = "";
+  } catch (error) {
+    const {message, comments} = error.response.data.error;
+    alert(message);
+    chatStream.updateMessages(comments);
+  }
+  navBarStore.updateIsShowBlockPopUp(false);
 }
 
 export default Comment;

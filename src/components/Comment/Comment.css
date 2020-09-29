@@ -38,6 +38,39 @@
   top:0;
 }
 
+.textarea-comment-container{
+  width: 100%;
+  border: none;
+  color: white;
+  outline: none;
+  max-height: 200px;
+  background-color: #3d4669;
+  overflow: hidden;
+}
+
+.textarea-comment{
+  width: 100%;
+  padding: 1rem;
+  border: none;
+  color: white;
+  font-size: 1.4rem;
+  outline: none;
+  max-height: 200px;
+  background-color: #3d4669;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.textarea-comment::-webkit-scrollbar{
+  width: 5px;
+  background-color: #000000;
+}
+
+.textarea-comment::-webkit-scrollbar-thumb{
+  background-color: #534c4c;
+}
+
+
 .delete-symbol{
   color:white;
   position: absolute;

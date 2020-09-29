@@ -136,6 +136,7 @@
   font-size: larger;
   letter-spacing: 0.05em;
   line-height: 2rem;
+  overflow-wrap: break-word;
 }
 
 .anime-main-role{

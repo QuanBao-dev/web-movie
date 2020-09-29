@@ -24,7 +24,7 @@ export const validateInput$ = (
     startWith(chatStream.currentState().currentName)
   );
   const input$ = fromEvent(inputElement, "input").pipe(
-    pluck("target", "value"),
+    pluck("target", "innerText"),
     startWith("")
   );
   return from([inputAuthor$, input$]).pipe(

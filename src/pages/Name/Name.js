@@ -26,7 +26,7 @@ import RelatedAnime from '../../components/RelatedAnime/RelatedAnime';
 import { userStream } from '../../epics/user';
 import { allowShouldFetchComment } from '../../store/comment';
 import navBarStore from '../../store/navbar';
-import { allowShouldFetchEpisodeMovie } from '../../store/pageWatch';
+import Reviews from '../../components/Reviews/Reviews';
 
 let episodeDataDisplay;
 const Name = (props) => {
@@ -62,10 +62,6 @@ const Name = (props) => {
     setShowThemeMusic(false);
   }, []);
   useEffect(() => {
-    window.scroll({
-      top: 0,
-      behavior: "smooth",
-    });
     let subscription;
     let fetchSub;
     fetchSub = fetchData$(name)
@@ -201,7 +197,6 @@ const Name = (props) => {
               className="btn btn-success"
               onClick={() => {
                 allowShouldFetchComment(true);
-                allowShouldFetchEpisodeMovie(true);
               }}
               to={
                 "/anime/" +
@@ -333,6 +328,7 @@ const Name = (props) => {
         <Characters malId={name} />
         <RelatedAnime malId={name} />
         {data.dataPromo && <VideoPromotionList data={data} />}
+        <Reviews malId={name}/>
       </div>
     )
   );
@@ -695,7 +691,6 @@ function ListVideoUrl({ episodeData, name, keyListEpisode }) {
                 }`}
                 onClick={() => {
                   allowShouldFetchComment(true);
-                  allowShouldFetchEpisodeMovie(true);
                 }}
               >
                 {episode.episode}

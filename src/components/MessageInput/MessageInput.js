@@ -16,7 +16,6 @@ const MessageInput = ({
   user,
   messageDialogE,
   isWithoutName,
-  errorName,
   setErrorName,
 }) => {
   const [messageInputState, setMessageInputState] = useState(
@@ -97,7 +96,7 @@ const MessageInput = ({
         suppressContentEditableWarning
         onPaste={(event) => {
           event.preventDefault();
-          var text = (event.originalEvent || event).clipboardData.getData(
+          let text = (event.originalEvent || event).clipboardData.getData(
             "text/plain"
           );
           if (event.clipboardData.items[0].type.indexOf("image") !== -1) {
@@ -161,7 +160,7 @@ const MessageInput = ({
               text: e.target.innerText,
               images: messageInputState.imgsMessage,
             };
-            if (!user && inputNameDialogRef.current.value.trim() === "") {
+            if (inputNameDialogRef.current.value.trim() === "") {
               e.preventDefault();
               return setErrorName("please type in your name");
             } else {

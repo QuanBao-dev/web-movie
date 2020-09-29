@@ -135,20 +135,62 @@ router.get("/:malId", async (req, res) => {
   }
 });
 
-router.put("/admin/:malId", verifyRole("Admin"), async (req, res) => {
-  try {
+router.put(
+  "/message/delete/:malId",
+  verifyRole("Admin", "User"),
+  async (req, res) => {
+    const { commentId } = req.body;
     const movie = await Movie.findOne({ malId: req.params.malId });
-    movie.messages = req.body;
-    const movieAfterDeleteMessage = await movie.save();
-    res.send({
-      message: movieAfterDeleteMessage.messages.map((message) => {
-        return ignoreProps(["_id", "__v"], message.toJSON());
-      }),
-    });
-  } catch (error) {
-    res.status(404).send({ error: "Something went wrong" });
+    const index = movie.messages.findIndex(
+      (message) => message.commentId === commentId
+    );
+    if (index === -1) {
+      return res.status(404).send({
+        error: {
+          message: "comment has been deleted",
+          comments: movie.messages.map((message) => {
+            return ignoreProps(["_id", "__v"], message.toJSON());
+          }),
+        },
+      });
+    }
+    if (!movie) {
+      return res.status(400).send({ error: "movie not found" });
+    }
+    let listDelete = [index];
+    if (movie.messages[index].userId !== req.user.userId) {
+      return res.status(401).send({ error: "Can't delete comment" });
+    }
+    for (let i = index + 1; i < movie.messages.length; i++) {
+      if (
+        convertPxToInt(movie.messages[i].marginLeft) <=
+        convertPxToInt(movie.messages[index].marginLeft)
+      ) {
+        break;
+      }
+      listDelete.push(i);
+    }
+    try {
+      movie.messages = updateDeleteComment(movie, listDelete);
+      const movieAfterDeleteMessage = await movie.save();
+      res.send({
+        message: movieAfterDeleteMessage.messages.map((message) => {
+          return ignoreProps(["_id", "__v"], message.toJSON());
+        }),
+      });
+    } catch (error) {
+      res.status(404).send({ error: "Something went wrong" });
+    }
   }
-});
+);
+
+function convertPxToInt(string = "") {
+  return parseInt(string.replace(/px/g, ""));
+}
+
+function updateDeleteComment(state, listDelete = []) {
+  return state.messages.filter((message, index) => !listDelete.includes(index));
+}
 
 router.put("/:malId/episodes/crawl", verifyRole("Admin"), async (req, res) => {
   const { start, end, url, serverWeb, serverVideo, isDub } = req.body;
@@ -344,14 +386,30 @@ router.put(
 
 router.put("/:malId", verifyRole("Admin", "User"), async (req, res) => {
   const { malId } = req.params;
-  const { newMessage, index, isPush } = req.body;
+  const { newMessage, commentId, isPush } = req.body;
+  const movie = await Movie.findOne({ malId });
+  let index = null;
+  if (commentId) {
+    index = movie.messages.findIndex(
+      (message) => message.commentId === commentId
+    );
+    if (index === -1) {
+      return res.status(404).send({
+        error: {
+          message: "The comment you answer has just been deleted",
+          comments: movie.messages.map((message) => {
+            return ignoreProps(["_id", "__v"], message.toJSON());
+          }),
+        },
+      });
+    }
+  }
   try {
-    const movie = await Movie.findOne({ malId });
     movie.messages = updateComment(movie, newMessage, index, isPush);
     const movieSaved = await movie.save();
     res.send({
       message: movieSaved.messages.map((message) =>
-        ignoreProps(["_id", "__v"], message)
+        ignoreProps(["_id", "__v"], message.toJSON())
       ),
     });
   } catch (error) {

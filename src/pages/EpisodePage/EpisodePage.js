@@ -1,15 +1,15 @@
 /* eslint-disable eqeqeq */
-import './EpisodePage.css';
+import "./EpisodePage.css";
 
-import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 
-import Chat from '../../components/Chat/Chat';
-import Comment from '../../components/Comment/Comment';
-import { fetchEpisodesOfMovie$, pageWatchStream } from '../../epics/pageWatch';
-import { userStream } from '../../epics/user';
-import { allowShouldFetchComment } from '../../store/comment';
-import { theaterStream } from '../../epics/theater';
+import Chat from "../../components/Chat/Chat";
+import Comment from "../../components/Comment/Comment";
+import { fetchEpisodesOfMovie$, pageWatchStream } from "../../epics/pageWatch";
+import { theaterStream } from "../../epics/theater";
+import { userStream } from "../../epics/user";
+import { allowShouldFetchComment } from "../../store/comment";
 
 const EpisodePage = (props) => {
   const { malId, episode, mode } = props.match.params;
@@ -25,17 +25,14 @@ const EpisodePage = (props) => {
       theaterStream.socket.emit("user-join-watch", malId, user.username);
     fetchEpisodesSub = fetchEpisodesOfMovie$(malId).subscribe((v) => {
       pageWatchStream.updateEpisodes(v);
-      const e = document.getElementsByClassName("active-episode").item(0);
-      if (e) {
-        e.scrollIntoView();
-      }
     });
     return () => {
       subscription.unsubscribe();
       fetchEpisodesSub && fetchEpisodesSub.unsubscribe();
       pageWatchStream.updateEpisodes([]);
     };
-  }, [malId, pageWatchState.shouldFetchEpisodeMovie, user]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [malId]);
   let currentEpisode = {};
   let episodes = [];
   if (mode === "vie") {

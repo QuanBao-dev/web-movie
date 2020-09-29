@@ -133,7 +133,6 @@ const Chat = ({ groupId, user, withoutName = false, isZoom = false }) => {
               user={user}
               messageDialogE={messageDialogE}
               isWithoutName={isWithoutName}
-              errorName={errorName}
               setErrorName={setErrorName}
             />
             <input

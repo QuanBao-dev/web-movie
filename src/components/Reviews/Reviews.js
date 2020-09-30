@@ -54,7 +54,6 @@ const Reviews = ({ malId }) => {
         pageWatchStream.currentState().pageReviewsData
       ).subscribe((v) => {
         if (!v.error) {
-          console.log(v);
           pageWatchStream.updateReviewsData(v);
           pageWatchStream.updatePreviousMalId(malId);
           pageWatchStream.allowUpdatePageReviewsData(true);

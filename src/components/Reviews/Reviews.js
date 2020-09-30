@@ -7,6 +7,7 @@ import {
   pageWatchStream,
   updatePageScrolling$,
 } from "../../epics/pageWatch";
+import { timeSince } from "../../epics/comment";
 
 const Reviews = ({ malId }) => {
   const [reviewState, setReviewState] = useState(pageWatchStream.initialState);
@@ -68,8 +69,8 @@ const Reviews = ({ malId }) => {
   }, [malId, reviewState.pageReviewsData]);
   return (
     <div className="container-reviews">
-      <h1>Reviews</h1>
-      {reviewState && reviewState.reviewsData.length === 0 &&(
+      <h1 className="title">Reviews</h1>
+      {reviewState && reviewState.reviewsData.length === 0 && (
         <div>Don't have any reviews</div>
       )}
       {reviewState && reviewState.reviewsData.length > 0 && (
@@ -77,25 +78,43 @@ const Reviews = ({ malId }) => {
           {reviewState &&
             reviewState.reviewsData.map((review, index) => (
               <div className="review-item" key={index}>
-                <div className="user-info-review">
-                  <img src={review.reviewer.image_url} alt="Image_reviewer" />
-                  <div>
-                    <div className="username">{review.reviewer.username}</div>
-                    <div className="helpful-count">
-                      {review.helpful_count} people found this review helpful
+                <div className="user-info-review-container">
+                  <div className="user-info-review">
+                    <img src={review.reviewer.image_url} alt="Image_reviewer" />
+                    <div>
+                      <div className="username">{review.reviewer.username}</div>
+                      <div className="helpful-count">
+                        {review.helpful_count} people found this review helpful
+                      </div>
                     </div>
                   </div>
+                  <div>
+                    {review.reviewer.episodes_seen} episodes seen
+                  </div>
                 </div>
-                <ul>
-                  {Object.entries(review.reviewer.scores).map(
-                    ([key, value], index) => (
-                      <li key={index}>
-                        {key}: {value}
-                      </li>
-                    )
-                  )}
-                </ul>
-                <div>{timeSince(new Date(review.date).getTime())} ago</div>
+                <div className="time-since-review">
+                  {timeSince(new Date(review.date).getTime()) === "Recently"
+                    ? `Recently`
+                    : `${timeSince(new Date(review.date).getTime())} ago`}
+                </div>
+                <div className="container-board-evaluate">
+                  <div>
+                    {Object.keys(review.reviewer.scores).map((key, index) => (
+                      <div className="section-evaluate" key={index}>
+                        <span>{key}</span>
+                      </div>
+                    ))}
+                  </div>
+                  <div>
+                    {Object.values(review.reviewer.scores).map(
+                      (value, index) => (
+                        <div key={index}>
+                          <span className="score-section">{value}</span>
+                        </div>
+                      )
+                    )}
+                  </div>
+                </div>
                 <pre>
                   {review.content.replace(/\\n/g, "").slice(0, 893)}
                   {review.content.replace(/\\n/g, "").length > 893 ? (
@@ -125,35 +144,5 @@ const Reviews = ({ malId }) => {
     </div>
   );
 };
-
-function timeSince(date) {
-  var seconds = Math.floor((new Date() - date) / 1000);
-
-  var interval = seconds / 31536000;
-
-  if (interval > 1) {
-    return Math.floor(interval) + " years";
-  }
-  interval = seconds / 2592000;
-  if (interval > 1) {
-    return Math.floor(interval) + " months";
-  }
-  interval = seconds / 86400;
-  if (interval > 1) {
-    return Math.floor(interval) + " days";
-  }
-  interval = seconds / 3600;
-  if (interval > 1) {
-    return Math.floor(interval) + " hours";
-  }
-  interval = seconds / 60;
-  if (interval > 1) {
-    return Math.floor(interval) + " minutes";
-  }
-  if (Math.floor(seconds) === 1) {
-    return Math.floor(seconds) + " second";
-  }
-  return Math.floor(seconds) + " seconds";
-}
 
 export default Reviews;

@@ -6,6 +6,7 @@ import React, { createRef, useEffect, useRef, useState } from "react";
 import {
   chatStream,
   fetchPageMessage$,
+  timeSince,
   validateInput$,
 } from "../../epics/comment";
 import Input from "../Input/Input";
@@ -16,10 +17,21 @@ import {
 } from "../../store/comment";
 import navBarStore from "../../store/navbar";
 import { nanoid } from "nanoid";
+import theaterStore from "../../store/theater";
+const socket = theaterStore.socket;
 let idCartoonUser;
 let userGlobal;
+let malIdGlobal;
+socket.on("comment-change", () => {
+  fetchPageMessage$(malIdGlobal).subscribe((responseMessage) => {
+    chatStream.updateMessages(responseMessage);
+    chatStream.updateCurrentPage(chatStream.currentState().currentPage);
+    allowShouldFetchComment(false);
+  });
+});
 function Comment({ malId, user }) {
   userGlobal = user;
+  malIdGlobal = malId;
   chatStream.initialState.malId = malId;
   let [chatState, setChatState] = useState(chatStream.initialState);
   const [cookies] = useCookies(["idCartoonUser"]);
@@ -276,7 +288,11 @@ function CommentDetail({
         />
       </div>
       <div>
-        <div>{timeSince(new Date(v.createdAt).getTime())} ago</div>
+        <div>
+          {timeSince(new Date(v.createdAt).getTime()) === "Recently"
+            ? `Recently`
+            : `${timeSince(new Date(v.createdAt).getTime())} ago`}
+        </div>
         <div className="author">{v.author}</div>
         <div className="content-comment">
           <div dangerouslySetInnerHTML={{ __html: v.textContent }}></div>
@@ -292,35 +308,6 @@ function CommentDetail({
       </div>
     </div>
   );
-}
-function timeSince(date) {
-  var seconds = Math.floor((new Date() - date) / 1000);
-
-  var interval = seconds / 31536000;
-
-  if (interval > 1) {
-    return Math.floor(interval) + " years";
-  }
-  interval = seconds / 2592000;
-  if (interval > 1) {
-    return Math.floor(interval) + " months";
-  }
-  interval = seconds / 86400;
-  if (interval > 1) {
-    return Math.floor(interval) + " days";
-  }
-  interval = seconds / 3600;
-  if (interval > 1) {
-    return Math.floor(interval) + " hours";
-  }
-  interval = seconds / 60;
-  if (interval > 1) {
-    return Math.floor(interval) + " minutes";
-  }
-  if (Math.floor(seconds) === 1) {
-    return Math.floor(seconds) + " second";
-  }
-  return Math.floor(seconds) + " seconds";
 }
 
 function FormReply({
@@ -397,11 +384,11 @@ function DeleteComment({ v, malId, cookies }) {
           );
           chatStream.updateMessages(messages.data.message);
         } catch (error) {
-          const {message, comments} = error.response.data.error;
+          const { message, comments } = error.response.data.error;
           alert(message);
           chatStream.updateMessages(comments);
         }
-        navBarStore.updateIsShowBlockPopUp(false);    
+        navBarStore.updateIsShowBlockPopUp(false);
       }}
       className="delete-symbol"
     >
@@ -477,7 +464,7 @@ async function handleUpdateMessage(
     chatStream.updateMessages(messages.data.message);
     inputElement.innerText = "";
   } catch (error) {
-    const {message, comments} = error.response.data.error;
+    const { message, comments } = error.response.data.error;
     alert(message);
     chatStream.updateMessages(comments);
   }

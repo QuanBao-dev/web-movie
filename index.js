@@ -26,6 +26,7 @@ const boxMovieRoute = require("./routes/boxMovie.route");
 const renderRoute = require("./routes/index.route");
 const theaterRoute = require("./routes/theaterRoom.route");
 const TheaterRoomMember = require("./models/theaterRoomMember.model");
+const Movie = require("./models/movie.model");
 
 const peerServer = ExpressPeerServer(server, {
   path: "/",
@@ -262,6 +263,10 @@ io.on("connection", (socket) => {
 TheaterRoomMember.watch().on("change", async () => {
   io.emit("mongo-change-watch");
 });
+
+Movie.watch().on("change",async() => {
+  io.emit("comment-change");
+})
 
 app.use(sslRedirect());
 app.use(express.json({ limit: "50mb" }));

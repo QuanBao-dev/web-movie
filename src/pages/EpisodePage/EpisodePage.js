@@ -2,7 +2,7 @@
 import "./EpisodePage.css";
 
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 
 import Chat from "../../components/Chat/Chat";
 import Comment from "../../components/Comment/Comment";
@@ -13,6 +13,7 @@ import { allowShouldFetchComment } from "../../store/comment";
 
 const EpisodePage = (props) => {
   const { malId, episode, mode } = props.match.params;
+  const history = useHistory();
   const [pageWatchState, setPageWatchState] = useState(
     pageWatchStream.initialState
   );
@@ -51,6 +52,11 @@ const EpisodePage = (props) => {
     });
   return (
     <div className="container-episode-movie">
+      <div className="button-go-back" onClick={() => {
+        history.push("/anime/"+malId)
+      }}>
+        <i className="fas fa-arrow-left"></i>
+      </div>
       <div className="wrapper-player-video">
         <div className="wrapper-discuss-section">
           <h1>DISCUSS</h1>

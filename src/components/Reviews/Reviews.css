@@ -3,8 +3,40 @@
   box-shadow: 0 0 1px 1px #000000;
   display: block;
   background-color: #262c41;
-  padding: 2rem;
   margin-top: 1em;
+  width: 100%;
+}
+
+.section-evaluate{
+  text-transform: capitalize;
+  border-right: 1px solid white;
+  padding-right: 1rem;
+}
+
+.score-section{
+
+}
+
+.container-board-evaluate{
+  display: flex;
+  width: 240px;
+  padding: 1rem;
+  margin: auto;
+  font-size: 2rem;
+  background-color: #332b2b;
+  box-shadow: 0 0 10px 1px rgba(255, 255, 255, 0.452);
+  justify-content: space-around;
+  margin-top: 1rem;
+}
+
+.user-info-review-container{
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+.time-since-review{
+  color: grey;
 }
 
 .review-item{

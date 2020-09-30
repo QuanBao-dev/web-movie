@@ -160,12 +160,13 @@ const MessageInput = ({
               text: e.target.innerText,
               images: messageInputState.imgsMessage,
             };
-            if (inputNameDialogRef.current.value.trim() === "") {
-              e.preventDefault();
-              return setErrorName("please type in your name");
-            } else {
-              setErrorName(null);
-            }
+            if (!isWithoutName)
+              if (inputNameDialogRef.current.value.trim() === "") {
+                e.preventDefault();
+                return setErrorName("please type in your name");
+              } else {
+                setErrorName(null);
+              }
             if (message.images.length > 0) {
               message.images.forEach((uri) => {
                 appendNewPhotoMessage(uri, "You", true, messageDialogE);

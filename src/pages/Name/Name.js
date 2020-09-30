@@ -710,7 +710,7 @@ function VideoPromotionList({ data }) {
             <div className="video-promotion-item" key={index}>
               <h1 className="title">{video.title}</h1>
               <iframe
-                style={{ margin: "1rem 0" }}
+                style={{ margin: "auto" }}
                 width="100%"
                 height="500px"
                 src={video.video_url.replace(/autoplay=1/g, "autoplay=0")}

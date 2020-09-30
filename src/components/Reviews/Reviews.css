@@ -13,13 +13,9 @@
   padding-right: 1rem;
 }
 
-.score-section{
-
-}
-
 .container-board-evaluate{
   display: flex;
-  width: 240px;
+  max-width: 240px;
   padding: 1rem;
   margin: auto;
   font-size: 2rem;

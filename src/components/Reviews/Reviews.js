@@ -68,9 +68,8 @@ const Reviews = ({ malId }) => {
   }, [malId, reviewState.pageReviewsData]);
   return (
     <div className="container-reviews">
-      <h1 className="title">Reviews</h1>
-      {reviewState && reviewState.reviewsData.length === 0 && (
-        <div>Don't have any reviews</div>
+      {reviewState && reviewState.reviewsData.length > 0 && (
+        <h1 className="title">Reviews</h1>
       )}
       {reviewState && reviewState.reviewsData.length > 0 && (
         <div className="reviews-list-container">
@@ -88,7 +87,8 @@ const Reviews = ({ malId }) => {
                     </div>
                   </div>
                   <div>
-                    {review.reviewer.episodes_seen} episodes seen
+                    {review.reviewer.episodes_seen} episode
+                    {review.reviewer.episodes_seen > 1 ? "s" : ""} seen
                   </div>
                 </div>
                 <div className="time-since-review">

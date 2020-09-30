@@ -4,7 +4,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { fromEvent } from "rxjs";
 import { debounceTime, first } from "rxjs/operators";
 
-import { messageInputStream } from "../../epics/message-input";
+import { createCaretPlacer, messageInputStream } from "../../epics/message-input";
 import { nanoid } from "nanoid";
 const idTyping = nanoid();
 const MessageInput = ({
@@ -147,6 +147,7 @@ const MessageInput = ({
           }
         }}
         onKeyDown={(e) => {
+          createCaretPlacer(e.target, false);
           if (e.keyCode === 13) {
             const checkInnerHTML = e.target.innerHTML;
             if (

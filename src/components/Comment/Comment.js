@@ -18,6 +18,7 @@ import {
 import navBarStore from "../../store/navbar";
 import { nanoid } from "nanoid";
 import theaterStore from "../../store/theater";
+import { createCaretPlacer } from "../../epics/message-input";
 const socket = theaterStore.socket;
 let idCartoonUser;
 let userGlobal;
@@ -333,6 +334,9 @@ function FormReply({
       <div className="textarea-comment-container">
         <div
           className="textarea-comment"
+          onKeyDown={(e) => {
+            createCaretPlacer(e.target,false);
+          }}
           onPaste={(e) => {
             e.preventDefault();
             let text = (e.originalEvent || e).clipboardData.getData(

@@ -244,26 +244,22 @@ export const fetchUpdatedMovie$ = () => {
 };
 
 export const fetchAnimeSchedule$ = (weekIndex) => {
-  const week = [
-    "monday",
-    "tuesday",
-    "wednesday",
-    "thursday",
-    "friday",
-    "saturday",
-    "sunday",
-  ];
-  const filterWeek = week.filter((v, index) => weekIndex[index]);
-  const source$ = from(filterWeek);
+  const source$ = from(weekIndex);
   return source$.pipe(
     mergeMap((day) =>
-      ajax(`https://api.jikan.moe/v3/schedule/${day}`).pipe(
-        pluck("response", day),
-        retry(20),
-        catchError((err) => {
-          return of([]);
-        }),
-        tap((v) => stream.updateDataSchedule({ [day]: v }))
+      timer(0).pipe(
+        filter(() => !stream.currentState().dataScheduleMovie[day]),
+        tap(() => console.log(stream.currentState().dataScheduleMovie[day])),
+        mergeMap(() =>
+          ajax(`https://api.jikan.moe/v3/schedule/${day}`).pipe(
+            pluck("response", day),
+            retry(20),
+            catchError((err) => {
+              return of([]);
+            }),
+            tap((v) => stream.updateDataSchedule({ [day]: v }))
+          )
+        )
       )
     )
   );

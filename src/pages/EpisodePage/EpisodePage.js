@@ -59,7 +59,7 @@ const EpisodePage = (props) => {
       </div>
       <div className="wrapper-player-video">
         <div className="wrapper-discuss-section">
-          <h1>DISCUSS</h1>
+          <h1>CHAT</h1>
           <Chat groupId={malId} user={user} />
         </div>
         <div className="video-player-container">

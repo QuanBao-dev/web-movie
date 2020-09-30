@@ -23,9 +23,19 @@ const AnimeSchedule = () => {
   useEffect(() => {
     const subscription = stream.subscribe(setHomeState);
     stream.init();
-    const fetchDataScheduleSub = fetchAnimeSchedule$(
-      homeState.dateSchedule
-    ).subscribe();
+    console.log(stream.currentState().dataScheduleMovie);
+    const week = [
+      "monday",
+      "tuesday",
+      "wednesday",
+      "thursday",
+      "friday",
+      "saturday",
+      "sunday",
+    ];
+    const filterWeek = week.filter((v, index) => homeState.dateSchedule[index]);
+    // console.log(filterWeek);
+    const fetchDataScheduleSub = fetchAnimeSchedule$(filterWeek).subscribe();
     return () => {
       subscription.unsubscribe();
       fetchDataScheduleSub.unsubscribe();
@@ -43,10 +53,12 @@ const AnimeSchedule = () => {
               className="day-schedule-movie"
               onClick={() => {
                 homeState.dateSchedule[index] = !homeState.dateSchedule[index];
-                const display = homeState.dateSchedule[index] ? "grid" : "none";
-                movieRefs[index].current.style.display = display;
+                const maxHeight = homeState.dateSchedule[index]
+                  ? "1000px"
+                  : "3px";
+                movieRefs[index].current.style.maxHeight = maxHeight;
                 const showMovie = movieRefs.map((movie) => {
-                  return movie.current.style.display !== "none";
+                  return movie.current.style.maxHeight !== "3px";
                 });
                 stream.updateDate(showMovie);
               }}
@@ -54,7 +66,8 @@ const AnimeSchedule = () => {
               <div className="title">{date}</div>
               <div
                 style={{
-                  display: homeState.dateSchedule[index] ? "block" : "none",
+                  maxHeight: homeState.dateSchedule[index] ? "1000px" : "3px",
+                  transition: "0.4s",
                 }}
                 ref={movieRefs[index]}
               >

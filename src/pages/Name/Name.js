@@ -1,12 +1,12 @@
-import './Name.css';
+import "./Name.css";
 
-import Axios from 'axios';
-import { capitalize, orderBy, random } from 'lodash';
-import React, { useEffect, useRef, useState } from 'react';
-import { useCookies } from 'react-cookie';
-import { Link } from 'react-router-dom';
-import { from, fromEvent, of, timer } from 'rxjs';
-import { ajax } from 'rxjs/ajax';
+import Axios from "axios";
+import { capitalize, orderBy, random } from "lodash";
+import React, { useEffect, useRef, useState } from "react";
+import { useCookies } from "react-cookie";
+import { Link } from "react-router-dom";
+import { from, fromEvent, of, timer } from "rxjs";
+import { ajax } from "rxjs/ajax";
 import {
   catchError,
   combineAll,
@@ -18,15 +18,15 @@ import {
   pluck,
   retry,
   switchMap,
-} from 'rxjs/operators';
+} from "rxjs/operators";
 
-import Characters from '../../components/Characters/Characters';
-import Input from '../../components/Input/Input';
-import RelatedAnime from '../../components/RelatedAnime/RelatedAnime';
-import { userStream } from '../../epics/user';
-import { allowShouldFetchComment } from '../../store/comment';
-import navBarStore from '../../store/navbar';
-import Reviews from '../../components/Reviews/Reviews';
+import Characters from "../../components/Characters/Characters";
+import Input from "../../components/Input/Input";
+import RelatedAnime from "../../components/RelatedAnime/RelatedAnime";
+import { userStream } from "../../epics/user";
+import { allowShouldFetchComment } from "../../store/comment";
+import navBarStore from "../../store/navbar";
+import Reviews from "../../components/Reviews/Reviews";
 
 let episodeDataDisplay;
 const Name = (props) => {
@@ -43,6 +43,7 @@ const Name = (props) => {
   const [boxMovie, setBoxMovie] = useState();
   const [showThemeMusic, setShowThemeMusic] = useState(false);
   const [crawlAnimeMode, setCrawlAnimeMode] = useState("animehay");
+  const [toggleNavTitle, setToggleNavTitle] = useState(false);
 
   const selectModeEngVideoRef = useRef();
   const controlBoxMovieRef = useRef();
@@ -178,6 +179,9 @@ const Name = (props) => {
   let sourceFilmList;
   if (episodeData && episodeData.sourceFilmList)
     sourceFilmList = Object.entries(episodeData.sourceFilmList);
+  let arrayTagTitle =
+    document.querySelectorAll(".anime-name-info.layout .title") || [];
+  const elementTitle = [...arrayTagTitle];
   return (
     findingAnime && (
       <div className="anime-name-info layout">
@@ -191,6 +195,10 @@ const Name = (props) => {
             alt="image_anime"
           />
         </div>
+        <MenuTable
+          elementTitle={elementTitle}
+          toggleNavTitle={toggleNavTitle}
+        />
         <div className="menu-control">
           {episodeDataDisplay && episodeDataDisplay.episodeList.length > 0 && (
             <Link
@@ -225,6 +233,14 @@ const Name = (props) => {
               )}
             </span>
           )}
+          <span
+            className="btn btn-yellow"
+            onClick={() => {
+              setToggleNavTitle(!toggleNavTitle);
+            }}
+          >
+            Shortcut
+          </span>
         </div>
         <div className="box">
           <div className="box-info">
@@ -328,11 +344,38 @@ const Name = (props) => {
         <Characters malId={name} />
         <RelatedAnime malId={name} />
         {data.dataPromo && <VideoPromotionList data={data} />}
-        <Reviews malId={name}/>
+        <Reviews malId={name} />
       </div>
     )
   );
 };
+
+function MenuTable({ elementTitle, toggleNavTitle }) {
+  return (
+    <div
+      className="tag-scrolling-nav"
+      style={{
+        maxHeight: toggleNavTitle ? "1000px" : "0",
+        boxShadow: toggleNavTitle ? "0 0 4px 1px white":"none"
+      }}
+    >
+      {elementTitle &&
+        elementTitle.slice(1, elementTitle.length).map((e, key) => (
+          <div
+            key={key}
+            className="tag-scrolling-nav_item"
+            onClick={() => {
+              e.scrollIntoView({
+                behavior: "smooth",
+              });
+            }}
+          >
+            {e.innerText}
+          </div>
+        ))}
+    </div>
+  );
+}
 
 function ListInformation({ arrKeys }) {
   return (

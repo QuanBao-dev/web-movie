@@ -27,6 +27,7 @@
 
 .button-go-back:hover{
   transform: scale(1.2);
+  background-color: rgb(48, 66, 105);
 }
 
 .wrapper-discuss-section{
@@ -43,7 +44,7 @@
 .wrapper-discuss-section h1{
   position: absolute;
   bottom:91%;
-  left:32%;
+  left:36%;
   padding: 10px;
   background-color: #00000093;
   border-radius: 10px;

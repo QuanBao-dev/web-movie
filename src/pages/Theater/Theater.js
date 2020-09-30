@@ -35,10 +35,12 @@ const Theater = (props) => {
   const inputSearchRoom = useRef();
   useEffect(() => {
     const subscription = fromEvent(inputSearchRoom.current, "input")
-      .pipe(throttleTime(400, asyncScheduler,{
-        leading:true,
-        trailing:true
-      }))
+      .pipe(
+        throttleTime(400, asyncScheduler, {
+          leading: true,
+          trailing: true,
+        })
+      )
       .subscribe((e) => {
         setFilterKeyRoom(e.target.value);
       });
@@ -74,19 +76,17 @@ const Theater = (props) => {
       validationFormSub.unsubscribe();
     };
   }, [cookies.idCartoonUser, theaterState.allowFetchRooms]);
-  toggleAnimation(theaterState);
+  // toggleAnimation(theaterState);
   return (
     <div className="container-theater-watch">
       <Toggle mode={theaterState.modeRoom} />
       <div
         className="container-room"
         style={{
-          display: "block",
-          transition: "0.3s linear",
-          transform:
-            theaterState.modeRoom === 1
-              ? "translate(0,0)"
-              : "translate(-350px,0)",
+          borderRight:
+            theaterState.modeRoom === 1 ? "1px solid #ffffff70" : "none",
+          maxWidth: theaterState.modeRoom === 1 ? "300px" : "0",
+          minWidth: theaterState.modeRoom === 1 ? "300px" : "0",
         }}
       >
         <RoomList
@@ -115,25 +115,6 @@ const Theater = (props) => {
     </div>
   );
 };
-
-function toggleAnimation(theaterState) {
-  const e = document.querySelector(".container-room");
-  timer(300)
-    .pipe(
-      switchMap(() => {
-        // console.log(theaterState.modeRoom);
-        if (theaterState.modeRoom === 0) {
-          return of("none");
-        }
-        return of("block");
-      })
-    )
-    .subscribe((v) => {
-      if (e) {
-        e.style.display = v;
-      }
-    });
-}
 
 function RoomList({ rooms, locationPath, inputSearchRoom }) {
   return (

@@ -249,7 +249,6 @@ export const fetchAnimeSchedule$ = (weekIndex) => {
     mergeMap((day) =>
       timer(0).pipe(
         filter(() => !stream.currentState().dataScheduleMovie[day]),
-        tap(() => console.log(stream.currentState().dataScheduleMovie[day])),
         mergeMap(() =>
           ajax(`https://api.jikan.moe/v3/schedule/${day}`).pipe(
             pluck("response", day),

@@ -52,9 +52,12 @@ const EpisodePage = (props) => {
     });
   return (
     <div className="container-episode-movie">
-      <div className="button-go-back" onClick={() => {
-        history.push("/anime/"+malId)
-      }}>
+      <div
+        className="button-go-back"
+        onClick={() => {
+          history.push("/anime/" + malId);
+        }}
+      >
         <i className="fas fa-arrow-left"></i>
       </div>
       <div className="wrapper-player-video">
@@ -120,6 +123,72 @@ const EpisodePage = (props) => {
             )}
           </div>
         </div>
+      </div>
+      <div className="next-previous-episode-container">
+        {episode - 1 > 0 && (
+          <div
+            className="previous-episode"
+            onClick={() => {
+              history.push(`/anime/${malId}/watch/${episode - 1}/${mode}`);
+            }}
+          >
+            <i className="fas fa-chevron-left"></i>
+            <i className="fas fa-chevron-left"></i> Watch episode {episode - 1}
+          </div>
+        )}
+        {mode === "Eng" &&
+          pageWatchState.episodes &&
+          pageWatchState.episodes.episodesEng &&
+          parseInt(episode) + 1 <=
+            pageWatchState.episodes.episodesEng.length && (
+            <div
+              className="next-episode"
+              onClick={() => {
+                history.push(
+                  `/anime/${malId}/watch/${parseInt(episode) + 1}/${mode}`
+                );
+              }}
+            >
+              Watch episode {parseInt(episode) + 1}{" "}
+              <i className="fas fa-chevron-right"></i>
+              <i className="fas fa-chevron-right"></i>
+            </div>
+          )}
+        {mode === "vie" &&
+          pageWatchState.episodes &&
+          pageWatchState.episodes.episodes &&
+          parseInt(episode) + 1 <= pageWatchState.episodes.episodes.length && (
+            <div
+              className="next-episode"
+              onClick={() => {
+                history.push(
+                  `/anime/${malId}/watch/${parseInt(episode) + 1}/${mode}`
+                );
+              }}
+            >
+              Watch episode {parseInt(episode) + 1}{" "}
+              <i className="fas fa-chevron-right"></i>
+              <i className="fas fa-chevron-right"></i>
+            </div>
+          )}
+        {mode === "EngDub" &&
+          pageWatchState.episodes &&
+          pageWatchState.episodes.episodesEngDub &&
+          parseInt(episode) + 1 <=
+            pageWatchState.episodes.episodesEngDub.length && (
+            <div
+              className="next-episode"
+              onClick={() => {
+                history.push(
+                  `/anime/${malId}/watch/${parseInt(episode) + 1}/${mode}`
+                );
+              }}
+            >
+              Watch episode {parseInt(episode) + 1}{" "}
+              <i className="fas fa-chevron-right"></i>
+              <i className="fas fa-chevron-right"></i>
+            </div>
+          )}
       </div>
       <div className="section-episodes-display">
         {pageWatchState.episodes &&

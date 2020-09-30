@@ -23,7 +23,6 @@ const AnimeSchedule = () => {
   useEffect(() => {
     const subscription = stream.subscribe(setHomeState);
     stream.init();
-    console.log(stream.currentState().dataScheduleMovie);
     const week = [
       "monday",
       "tuesday",

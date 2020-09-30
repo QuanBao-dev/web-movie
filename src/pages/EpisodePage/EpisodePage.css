@@ -25,6 +25,34 @@
   transition: 0.4s;
 }
 
+.next-previous-episode-container{
+  display: flex;
+  width: 96%;
+  margin:2rem 0 0 0;
+  font-size: 1.3rem;
+}
+
+.previous-episode{
+  color: yellow;
+  margin:auto 0 0 0;
+  cursor:pointer
+}
+
+.next-episode{
+  color: yellow;
+  margin:0 0 0 auto;
+  cursor: pointer;
+}
+
+.previous-episode:hover{
+  text-decoration: underline;
+}
+
+.next-episode:hover{
+  text-decoration: underline;
+}
+
+
 .button-go-back:hover{
   transform: scale(1.2);
   background-color: rgb(48, 66, 105);
@@ -56,6 +84,13 @@
     width: 98%;
   }
 }
+
+@media(max-width:500px){
+  .next-previous-episode-container{
+    font-size: 0.7rem;
+  }  
+}
+
 
 .section-episodes-display{
   padding: 2rem;

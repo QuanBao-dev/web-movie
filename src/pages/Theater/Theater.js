@@ -1,25 +1,17 @@
-import "./Theater.css";
+import './Theater.css';
 
-import React, { useEffect, useRef, useState } from "react";
-import { useCookies } from "react-cookie";
-import { Link, Route, Switch } from "react-router-dom";
+import Axios from 'axios';
+import React, { useEffect, useRef, useState } from 'react';
+import { useCookies } from 'react-cookie';
+import { Link, Route, Switch } from 'react-router-dom';
+import { asyncScheduler, fromEvent } from 'rxjs';
+import { throttleTime } from 'rxjs/operators';
 
-import Input from "../../components/Input/Input";
-import TheaterWatch from "../../pages/TheaterWatch/TheaterWatch";
-import {
-  fetchRoomsData$,
-  theaterStream,
-  validateForm$,
-} from "../../epics/theater";
-import {
-  updateAllowFetchCurrentRoomDetail,
-  updateAllowFetchRooms,
-  updateSignIn,
-} from "../../store/theater";
-import Axios from "axios";
-import Toggle from "../../components/Toggle/Toggle";
-import { asyncScheduler, fromEvent, of, timer } from "rxjs";
-import { switchMap, throttleTime } from "rxjs/operators";
+import Input from '../../components/Input/Input';
+import Toggle from '../../components/Toggle/Toggle';
+import { fetchRoomsData$, theaterStream, validateForm$ } from '../../epics/theater';
+import TheaterWatch from '../../pages/TheaterWatch/TheaterWatch';
+import { updateAllowFetchCurrentRoomDetail, updateAllowFetchRooms, updateSignIn } from '../../store/theater';
 
 const socket = theaterStream.socket;
 const Theater = (props) => {

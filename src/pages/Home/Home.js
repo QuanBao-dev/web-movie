@@ -165,7 +165,14 @@ function Home() {
   const startYear = 1963;
   const endYear = new Date(Date.now()).getFullYear();
   const numberOfYears = endYear - startYear + 1;
-  const numberOfPagesDisplay = homeState.maxPage < 4 ? homeState.maxPage : 4;
+  let numberOfPagesDisplay;
+  if(stream.currentState().screenWidth > 354){
+    numberOfPagesDisplay = homeState.maxPage < 4 ? homeState.maxPage : 4;
+  } else if(stream.currentState().screenWidth > 305) {
+    numberOfPagesDisplay = homeState.maxPage < 3 ? homeState.maxPage : 3;
+  } else {
+    numberOfPagesDisplay = homeState.maxPage < 2 ? homeState.maxPage : 2;
+  }
   const e = document.getElementById("button-see-more__home");
   if (e) {
     if (subNavToggle === 0) {
@@ -188,6 +195,12 @@ function Home() {
     <div className="home-page">
       <Carousel />
       <div className="recently-updated-movie">
+        <div className="wrapper-search-anime-list">
+          <div style={{ width: "90%" }}>
+            <Input label="Search Anime" input={searchInput} />
+          </div>
+          <SearchedAnimeList homeState={homeState} />
+        </div>
         <UpcomingAnimeList />
         <SubNavBar
           subNavToggle={subNavToggle}
@@ -231,12 +244,6 @@ function Home() {
       <Genres />
       <AnimeSchedule />
       <div className="container-anime-list">
-        <div className="wrapper-search-anime-list">
-          <div style={{ width: "90%" }}>
-            <Input label="Search Anime" input={searchInput} />
-          </div>
-          <SearchedAnimeList homeState={homeState} />
-        </div>
         <div className="container-display-anime__home">
           <div className="anime-pagination">
             <h1 style={{ textAlign: "center" }}>
@@ -293,9 +300,11 @@ function Home() {
     selectSeason.current.value = homeState.season;
     selectYear.current.value = homeState.year;
     if (
-      document.querySelector(".container-anime-list input").value.trim() === ""
+      document
+        .querySelector(".wrapper-search-anime-list input")
+        .value.trim() === ""
     )
-      document.querySelector(".container-anime-list input").value =
+      document.querySelector(".wrapper-search-anime-list input").value =
         homeState.textSearch;
 
     return subscription;

@@ -20,6 +20,7 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
+  justify-content: space-between;
   margin: 1rem;
   padding: 1rem;
 }
@@ -28,7 +29,7 @@
   text-decoration: none;
   color: white;
   padding: 1rem;
-  margin: 0.2em;
+  margin: 0.3em;
   background-color:black;
   border-radius: 10px;
   font-weight: bolder;

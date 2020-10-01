@@ -17,7 +17,6 @@
 .container-menu-control{
   position: absolute;
   width: 100%;
-  z-index:10;
   display: flex;
   margin: auto;
   top:0;

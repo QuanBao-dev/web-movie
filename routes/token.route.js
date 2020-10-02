@@ -3,7 +3,7 @@ const User = require("../models/user.model");
 const router = require("express").Router();
 
 router.get("/", verifyRole("User", "Admin"), async (req, res) => {
-  const user = await User.findOne({ email: req.user.email });
+  const user = await User.findOne({ userId: req.user.userId });
   //TODO  send userVm to define the role in client
   res.send({
     message: {

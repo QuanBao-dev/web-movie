@@ -122,7 +122,7 @@ const TheaterWatch = (props) => {
     theaterState.isSignIn,
   ]);
   useEffect(() => {
-    socket.emit("update-user-avatar", user.email, groupId, user.avatarImage);
+    socket.emit("update-user-avatar", user.userId, groupId, user.avatarImage);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user.avatarImage]);
 
@@ -204,7 +204,7 @@ const TheaterWatch = (props) => {
                         const element = e.target;
                         addEventListenerVideoElement(videoWatchElement);
                         element.disabled = true;
-                        await updateUserKeepRemote(groupId, user.email);
+                        await updateUserKeepRemote(groupId, user.userId);
                         socket.emit("user-keep-remote-changed", groupId);
                       }
                     }}
@@ -379,7 +379,7 @@ async function newUserJoinHandleVideo(audioCallE) {
               user.username,
               groupId,
               id,
-              user.email,
+              user.userId,
               buttonGetRemoteElement.disabled
             );
             addAudioStream(myAudio, stream, audioCallE);
@@ -422,7 +422,7 @@ async function newUserJoin(id, groupId) {
       user.username,
       groupId,
       id,
-      user.email,
+      user.userId,
       buttonGetRemoteElement.disabled
     );
     socket.emit("fetch-updated-user-online");
@@ -465,15 +465,15 @@ async function createNewVideo(source, uploadOtherUser = false) {
   uploadNewVideo(source, videoWatchElement, true);
   addEventListenerVideoElement(videoWatchElement);
   document.getElementById("button-get-remote").disabled = true;
-  await updateUserKeepRemote(groupId, user.email);
+  await updateUserKeepRemote(groupId, user.userId);
   socket.emit("new-video", source, groupId, uploadOtherUser);
 }
 
-async function updateUserKeepRemote(groupId, email) {
+async function updateUserKeepRemote(groupId, userId) {
   await Axios.put(
     `/api/theater/${groupId}/members`,
     {
-      email: email,
+      userId: userId,
       keepRemote: true,
     },
     {

@@ -166,9 +166,9 @@ function Home() {
   const endYear = new Date(Date.now()).getFullYear();
   const numberOfYears = endYear - startYear + 1;
   let numberOfPagesDisplay;
-  if(stream.currentState().screenWidth > 354){
+  if (stream.currentState().screenWidth > 354) {
     numberOfPagesDisplay = homeState.maxPage < 4 ? homeState.maxPage : 4;
-  } else if(stream.currentState().screenWidth > 305) {
+  } else if (stream.currentState().screenWidth > 305) {
     numberOfPagesDisplay = homeState.maxPage < 3 ? homeState.maxPage : 3;
   } else {
     numberOfPagesDisplay = homeState.maxPage < 2 ? homeState.maxPage : 2;
@@ -347,9 +347,7 @@ function limitAdultGenre(genres) {
 
 function updateDataTopScrolling() {
   let page = stream.currentState().pageTopMovie;
-  if (page < 5) {
-    stream.updatePageTopMovie(page + 1);
-  }
+  stream.updatePageTopMovie(page + 1);
 }
 
 function unsubscribeSubscription(...subscriptions) {
@@ -473,7 +471,7 @@ function TopAnimeList({ homeState }) {
   }, [homeState.pageTopMovie]);
   return (
     <div className="top-anime-list-container">
-      <h1>Top Anime {new Date(Date.now()).getFullYear()}</h1>
+      <h1>Top Anime</h1>
       <ul className="top-anime-list">
         {homeState.dataTopMovie &&
           homeState.dataTopMovie.map((movie, index) => (

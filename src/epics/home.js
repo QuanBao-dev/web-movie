@@ -107,7 +107,21 @@ export const fetchAnimeSeason$ = (
             Math.ceil(anime.length / stream.initialState.numberOfProduct)
           );
           stream.catchingError(null);
-          const sortedArray = orderBy(anime, ["airing_start"], ["desc"]).slice(
+          let sortedArray = orderBy(anime, ["airing_start"], ["desc"]);
+          const latestAiringIndex = sortedArray.findIndex(
+            (anime) =>
+              new Date(anime.airing_start).getTime() <=
+              new Date(Date.now()).getTime()
+          );
+          if (
+            stream.initialState.year === year &&
+            stream.initialState.season === season
+          ) {
+            page = Math.ceil(latestAiringIndex / numberOfProducts);
+            stream.updateCurrentPage(page);
+          }
+          if (page === 0) page = 1;
+          sortedArray = sortedArray.slice(
             (page - 1) * numberOfProducts,
             page * numberOfProducts
           );
@@ -216,7 +230,7 @@ export const fetchTopMovie$ = (subscription) => {
       ajax({
         url: `https://api.jikan.moe/v3/top/anime/${
           stream.currentState().pageTopMovie
-        }/airing`,
+        }`,
       }).pipe(
         pluck("response", "top"),
         retry(5),

@@ -12,22 +12,22 @@
 }
 
 .day-schedule-movie{
-  padding: 1rem 0;
   background-color: #1e1e1e;
   margin: 1rem 0;
   overflow: hidden;
   box-shadow: 0 0 3px 2px rgb(3, 3, 3),  0 0 3px 2px #131414;
-  cursor: pointer;
 }
 
 .day-schedule-movie .title{
   font-size: 1.2rem;
   text-transform: capitalize;
   text-align: start;
+  padding: 1rem 0;
   margin-left: 2rem;
   text-shadow: 2px 2px black;
   text-transform: uppercase;
   font-weight: bolder;
+  cursor: pointer;
 }
 
 .all-movies-day{
@@ -38,7 +38,7 @@
   cursor: default!important;
 }
 
-.day-schedule-movie:hover{
+.day-schedule-movie .title:hover{
   color: aquamarine;
 }
 

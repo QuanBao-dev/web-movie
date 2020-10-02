@@ -45,7 +45,7 @@ router.post("/login", verifyLogin, async (req, res) => {
     return res.status(400).send({ error: "Invalid password" });
   }
   const userVm = ignoreProps(
-    ["_id", "__v", "password", "avatarImage"],
+    ["_id", "__v", "password", "avatarImage","email"],
     user.toJSON()
   );
   try {
@@ -197,7 +197,7 @@ router.put(
 router.put("/current/avatar", verifyRole("Admin", "User"), async (req, res) => {
   const { avatarImage } = req.body;
   try {
-    const user = await User.findOne({ email: req.user.email });
+    const user = await User.findOne({ userId: req.user.userId });
     let result;
     if (!user) {
       throw Error("Something went wrong");

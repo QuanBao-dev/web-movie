@@ -51,7 +51,7 @@ let rooms = {};
 io.on("connection", (socket) => {
   socket.on(
     "new-user",
-    async (avatar, username, groupId, userId, email, keepRemote) => {
+    async (avatar, username, groupId, userId, publicUserId, keepRemote) => {
       console.log(username);
       if (!rooms[groupId]) {
         rooms[groupId] = { users: {} };
@@ -64,11 +64,10 @@ io.on("connection", (socket) => {
       socket.on("update-user-online", async (keepRemote) => {
         await TheaterRoomMember.findOneAndUpdate(
           {
-            email,
+            userId:publicUserId,
             groupId,
           },
           {
-            userId,
             username,
             avatar,
             joinAt: Date.now(),
@@ -84,11 +83,10 @@ io.on("connection", (socket) => {
       });
       await TheaterRoomMember.findOneAndUpdate(
         {
-          email,
+          userId:publicUserId,
           groupId,
         },
         {
-          userId,
           username,
           avatar,
           joinAt: Date.now(),
@@ -126,7 +124,7 @@ io.on("connection", (socket) => {
       });
       socket.on("disconnect", async () => {
         await TheaterRoomMember.deleteMany({
-          email,
+          userId:publicUserId,
           groupId,
         }).lean();
         if (rooms[groupId] && rooms[groupId].users[userId]) {
@@ -141,7 +139,7 @@ io.on("connection", (socket) => {
       socket.on("disconnect-custom", async () => {
         console.log("disconnect");
         await TheaterRoomMember.deleteMany({
-          email,
+          userId:publicUserId,
           groupId,
         }).lean();
         if (rooms[groupId] && rooms[groupId].users[userId]) {
@@ -154,10 +152,10 @@ io.on("connection", (socket) => {
       });
     }
   );
-  socket.on("update-user-avatar", async (email, groupId, avatar) => {
+  socket.on("update-user-avatar", async (publicUserId, groupId, avatar) => {
     await TheaterRoomMember.findOneAndUpdate(
       {
-        email,
+        userId:publicUserId,
         groupId,
       },
       {

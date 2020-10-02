@@ -47,25 +47,28 @@ const AnimeSchedule = () => {
         <h1>Schedule</h1>
         {week.map((date, index) => {
           return (
-            <li
-              key={index}
-              className="day-schedule-movie"
-              onClick={() => {
-                homeState.dateSchedule[index] = !homeState.dateSchedule[index];
-                const maxHeight = homeState.dateSchedule[index]
-                  ? "1000px"
-                  : "3px";
-                movieRefs[index].current.style.maxHeight = maxHeight;
-                const showMovie = movieRefs.map((movie) => {
-                  return movie.current.style.maxHeight !== "3px";
-                });
-                stream.updateDate(showMovie);
-              }}
-            >
-              <div className="title">{date}</div>
+            <li key={index} className="day-schedule-movie">
+              <div
+                className="title"
+                onClick={() => {
+                  homeState.dateSchedule[index] = !homeState.dateSchedule[
+                    index
+                  ];
+                  const maxHeight = homeState.dateSchedule[index]
+                    ? "4000px"
+                    : "3px";
+                  movieRefs[index].current.style.maxHeight = maxHeight;
+                  const showMovie = movieRefs.map((movie) => {
+                    return movie.current.style.maxHeight !== "3px";
+                  });
+                  stream.updateDate(showMovie);
+                }}
+              >
+                {date}
+              </div>
               <div
                 style={{
-                  maxHeight: homeState.dateSchedule[index] ? "1000px" : "3px",
+                  maxHeight: homeState.dateSchedule[index] ? "4000px" : "3px",
                   transition: "0.4s",
                 }}
                 ref={movieRefs[index]}

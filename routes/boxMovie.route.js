@@ -5,7 +5,7 @@ const ignoreProps = require("../validations/ignore.validation");
 const { verifyRole } = require("../middleware/verify-role");
 router.get("/", verifyRole("Admin", "User"), async (req, res) => {
   //TODO Get all box movie of user login
-  const user = await User.findOne({ email: req.user.email });
+  const user = await User.findOne({ userId: req.user.userId });
   const userId = user._id;
   const boxMovie = await BoxMovie.find({ user: userId });
   try {
@@ -21,7 +21,7 @@ router.get("/", verifyRole("Admin", "User"), async (req, res) => {
 
 router.get("/:malId", verifyRole("Admin", "User"), async (req, res) => {
   try {
-    const user = await User.findOne({ email: req.user.email });
+    const user = await User.findOne({ userId: req.user.userId });
     const userId = user._id;
     const boxMovie = await BoxMovie.findOne({
       $and: [{ user: userId }, { malId: req.params.malId }],
@@ -39,7 +39,7 @@ router.get("/:malId", verifyRole("Admin", "User"), async (req, res) => {
 
 router.post("/", verifyRole("Admin", "User"), async (req, res) => {
   //TODO Adding one movie from one user in BoxMovie list
-  const user = await User.findOne({ email: req.user.email });
+  const user = await User.findOne({ userId: req.user.userId });
   const userId = user._id;
   try {
     const movie = await BoxMovie.findOneAndUpdate({
@@ -65,7 +65,7 @@ router.post("/", verifyRole("Admin", "User"), async (req, res) => {
 });
 
 router.delete("/:malId", verifyRole("Admin", "User"), async (req, res) => {
-  const user = await User.findOne({ email: req.user.email });
+  const user = await User.findOne({ userId: req.user.userId });
   const userId = user._id;
   const movie = await BoxMovie.findOne({
     $and: [{ user: userId }, { malId: req.params.malId }],

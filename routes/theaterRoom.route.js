@@ -28,12 +28,12 @@ router.put(
   "/:groupId/members",
   verifyRole("User", "Admin"),
   async (req, res) => {
-    const { keepRemote, email } = req.body;
+    const { keepRemote, userId } = req.body;
     const { groupId } = req.params;
     try {
       const [updatedMember] = await Promise.all([
         TheaterRoomMember.findOneAndUpdate(
-          { email, groupId },
+          { userId, groupId },
           {
             keepRemote,
           },
@@ -44,7 +44,7 @@ router.put(
         TheaterRoomMember.updateMany(
           {
             groupId,
-            email: { $ne: email },
+            userId: { $ne: userId },
           },
           {
             keepRemote: false,

@@ -355,7 +355,7 @@ function MenuTable({ elementTitle, toggleNavTitle }) {
     <div
       className="tag-scrolling-nav"
       style={{
-        maxHeight: toggleNavTitle ? "1000px" : "0",
+        maxHeight: toggleNavTitle ? "5000px" : "0",
         boxShadow: toggleNavTitle ? "0 0 4px 1px white":"none"
       }}
     >

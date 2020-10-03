@@ -529,11 +529,10 @@ socket.on("user-join", async (username, userId, roomId) => {
 socket.on("disconnected-user", async (username, userId, roomId) => {
   // console.log(roomId, groupId);
   if (roomId !== groupId) {
-    return;
+    fetchUserOnline$(groupId, idCartoonUser).subscribe((users) => {
+      theaterStream.updateUsersOnline(users);
+    });  
   }
-  fetchUserOnline$(groupId, idCartoonUser).subscribe((users) => {
-    theaterStream.updateUsersOnline(users);
-  });
   if (audioCallE)
     if (peers[userId]) {
       peers[userId].close();

@@ -1,6 +1,7 @@
 import { BehaviorSubject } from "rxjs";
 const initialState = {
   imgsMessage: [],
+  isInBottomChatBot:true
 };
 
 const behaviorSubject = new BehaviorSubject(initialState);
@@ -10,7 +11,9 @@ const messageInputStore = {
   subscribe: (setState) => behaviorSubject.subscribe(setState),
   init: () => {
     state = {
+      ...state,
       imgsMessage: [],
+      isInBottomChatBot:true
     };
     behaviorSubject.next(state);
   },
@@ -21,12 +24,14 @@ const messageInputStore = {
   },
   updateImgsMessage: (newImage) => {
     state = {
+      ...state,
       imgsMessage: [...state.imgsMessage, newImage],
     };
     behaviorSubject.next(state);
   },
   deleteImageByIndex: (index) => {
     state = {
+      ...state,
       imgsMessage: [
         ...state.imgsMessage.slice(0, index),
         ...state.imgsMessage.slice(index+1, state.imgsMessage.length),
@@ -34,6 +39,13 @@ const messageInputStore = {
     };
     behaviorSubject.next(state);
   },
+  updateIsInBottomChatBot:(bool) => {
+    state = {
+      ...state,
+      isInBottomChatBot: bool,
+    };
+    behaviorSubject.next(state);
+  }
 };
 
 export default messageInputStore;

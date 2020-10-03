@@ -1,11 +1,14 @@
 import "./Chat.css";
+
 import React, { useEffect, useRef, useState } from "react";
+import { fromEvent } from "rxjs";
+import { debounceTime, filter } from "rxjs/operators";
+
+import { messageInputStream } from "../../epics/message-input";
 import { theaterStream } from "../../epics/theater";
 import Input from "../Input/Input";
 import MessageInput from "../MessageInput/MessageInput";
-import { messageInputStream } from "../../epics/message-input";
-import { fromEvent } from "rxjs";
-import { debounceTime } from "rxjs/operators";
+
 const socket = theaterStream.socket;
 let messageDialogE;
 let idGroup;
@@ -19,11 +22,40 @@ const Chat = ({ groupId, user, withoutName = false, isZoom = false }) => {
   const messageDialogRef = useRef();
   const inputRefFile = useRef();
   const buttonLikeRef = useRef();
-  const [errorName,setErrorName] = useState(null);
+  const containerMessageChatBotRef = useRef(null);
+  const [errorName, setErrorName] = useState(null);
   useEffect(() => {
     messageDialogE = messageDialogRef.current;
     user && !withoutName && (inputNameDialogRef.current.value = user.username);
   }, [user, withoutName, isZoom]);
+  useEffect(() => {
+    messageInputStream.init();
+    const subscription = fromEvent(containerMessageChatBotRef.current, "scroll")
+      .pipe(
+        debounceTime(500),
+        filter(() => isInBottom())
+      )
+      .subscribe(() => {
+        messageInputStream.updateIsInBottomChatBot(true);
+        const buttonScroll = document.querySelector(".button-scroll-bottom");
+        buttonScroll.style.transform = "translateY(-100px)";
+      });
+    const subscription2 = fromEvent(
+      containerMessageChatBotRef.current,
+      "scroll"
+    )
+      .pipe(
+        debounceTime(500),
+        filter(() => !isInBottom())
+      )
+      .subscribe(() => {
+        messageInputStream.updateIsInBottomChatBot(false);
+      });
+    return () => {
+      subscription.unsubscribe();
+      subscription2.unsubscribe();
+    };
+  }, []);
   useEffect(() => {
     let subscription;
     if (buttonLikeRef.current) {
@@ -31,13 +63,14 @@ const Chat = ({ groupId, user, withoutName = false, isZoom = false }) => {
         .pipe(debounceTime(500))
         .subscribe(() => {
           if (messageDialogE) {
-            appendNewMessageDialog(
-              `<i class="fas fa-thumbs-up fa-3x button-like"></i>`,
-              "you",
-              true,
-              messageDialogE
-            );
             if (user) {
+              appendNewMessageDialog(
+                `<i class="fas fa-thumbs-up fa-3x button-like"></i>`,
+                "you",
+                true,
+                messageDialogE,
+                user.avatarImage
+              );
               socket.emit(
                 "new-message",
                 user.username,
@@ -46,11 +79,17 @@ const Chat = ({ groupId, user, withoutName = false, isZoom = false }) => {
                 user.avatarImage
               );
             } else {
+              appendNewMessageDialog(
+                `<i class="fas fa-thumbs-up fa-3x button-like"></i>`,
+                "you",
+                true,
+                messageDialogE
+              );
               socket.emit(
                 "new-message",
-                user.username,
+                inputNameDialogRef.current.value,
                 `<i class="fas fa-thumbs-up fa-3x button-like"></i>`,
-                idGroup,
+                idGroup
               );
             }
             const buttonGetRemoteElement = document.getElementById(
@@ -77,12 +116,21 @@ const Chat = ({ groupId, user, withoutName = false, isZoom = false }) => {
       <div className="block-pop-up" style={{ display: "none" }}></div>
       <div className={`chat-bot${isZoom ? " chat-watch-zoom" : ""}`}>
         <div
+          className="button-scroll-bottom"
+          onClick={() => {
+            scrollToBottom();
+          }}
+        >
+          <i className="fas fa-arrow-alt-circle-down fa-3x"></i>
+        </div>
+        <div
           className={`message-dialog-container${
             isZoom ? " transparent-background" : ""
           }`}
         >
           <div
             className="container-message-chat-bot"
+            ref={containerMessageChatBotRef}
             style={{ backgroundColor: isZoom ? "" : "black" }}
           >
             <div
@@ -112,7 +160,13 @@ const Chat = ({ groupId, user, withoutName = false, isZoom = false }) => {
               </div>
             )}
           </div>
-          {!withoutName && <Input label={"Name"} input={inputNameDialogRef} error={errorName} />}
+          {!withoutName && (
+            <Input
+              label={"Name"}
+              input={inputNameDialogRef}
+              error={errorName}
+            />
+          )}
           <div className="input-message-dialog">
             <i
               className="fas fa-thumbs-up fa-2x button-like"
@@ -168,7 +222,7 @@ const Chat = ({ groupId, user, withoutName = false, isZoom = false }) => {
   );
 };
 
-socket.on("user-join", (username, userId, roomId) => {
+socket.on("user-join", (username, userId, roomId, avatarImage) => {
   if (roomId !== idGroup) {
     return;
   }
@@ -176,26 +230,38 @@ socket.on("user-join", (username, userId, roomId) => {
     `NOTIFICATION: ${username} joined`,
     "Robot",
     false,
-    messageDialogE
+    messageDialogE,
+    avatarImage
   );
 });
 
-socket.on("disconnected-user", async (username, userId, roomId) => {
-  if (roomId !== idGroup || !isWithoutName) {
-    return;
+socket.on(
+  "disconnected-user",
+  async (username, userId, roomId, avatarImage) => {
+    if (roomId !== idGroup || !isWithoutName) {
+      return;
+    }
+    appendNewMessageDialog(
+      `NOTIFICATION: ${username} left`,
+      "Robot",
+      false,
+      messageDialogE,
+      avatarImage
+    );
   }
-  appendNewMessageDialog(
-    `NOTIFICATION: ${username} left`,
-    "Robot",
-    false,
-    messageDialogE
-  );
-});
+);
 
 socket.on("send-message-other-users", (username, message, groupId, avatar) => {
   // console.log(username,"sends", groupId);
   if (groupId === idGroup) {
-    appendNewMessageDialog(message, username, false, messageDialogE);
+    appendNewMessageDialog(
+      message,
+      username,
+      false,
+      messageDialogE,
+      avatar ||
+        "https://iupac.org/wp-content/uploads/2018/05/default-avatar.png"
+    );
     if (isWithoutName) {
       appendNewUserSeen(avatar);
       const chatBotE = document.querySelector(".chat-bot");
@@ -210,7 +276,14 @@ socket.on(
   "send-message-photo-other-users",
   (username, uri, groupId, avatar) => {
     if (groupId === idGroup) {
-      appendNewPhotoMessage(uri, username, false, messageDialogE);
+      appendNewPhotoMessage(
+        uri,
+        username,
+        false,
+        messageDialogE,
+        avatar ||
+          "https://iupac.org/wp-content/uploads/2018/05/default-avatar.png"
+      );
       if (isWithoutName) {
         appendNewUserSeen(avatar);
         const chatBotE = document.querySelector(".chat-bot");
@@ -239,14 +312,8 @@ socket.on("new-user-typing", (groupId, idTyping, username) => {
       appendNewUserTyping(idTyping, username);
     }
   }
-  const containerChatBotMessage = document.querySelector(
-    ".container-message-chat-bot"
-  );
-  if (containerChatBotMessage)
-    containerChatBotMessage.scroll({
-      top: containerChatBotMessage.scrollHeight,
-      behavior: "smooth",
-    });
+  if (messageInputStream.currentState())
+    if (messageInputStream.currentState().isInBottomChatBot) scrollToBottom();
 });
 
 socket.on("eliminate-user-typing", (groupId, idTyping) => {
@@ -258,14 +325,7 @@ socket.on("eliminate-user-typing", (groupId, idTyping) => {
       eliminateUserByIdTyping(idTyping);
     }
   }
-  const containerChatBotMessage = document.querySelector(
-    ".container-message-chat-bot"
-  );
-  if (containerChatBotMessage)
-    containerChatBotMessage.scroll({
-      top: containerChatBotMessage.scrollHeight,
-      behavior: "smooth",
-    });
+  if (messageInputStream.currentState().isInBottomChatBot) scrollToBottom();
 });
 
 function appendNewUserTyping(idTyping, username) {
@@ -306,14 +366,7 @@ function eliminateUserByIdTyping(idTyping) {
       elementMatchIndex.remove();
     }
   }
-  const containerChatBotMessage = document.querySelector(
-    ".container-message-chat-bot"
-  );
-  if (containerChatBotMessage)
-    containerChatBotMessage.scroll({
-      top: containerChatBotMessage.scrollHeight,
-      behavior: "smooth",
-    });
+  if (messageInputStream.currentState().isInBottomChatBot) scrollToBottom();
 }
 
 function appendNewUserSeen(avatar) {
@@ -385,11 +438,16 @@ function appendNewMessageDialog(
   message,
   username,
   isYourMessage,
-  messageDialogContainerE
+  messageDialogContainerE,
+  avatarImage = "https://iupac.org/wp-content/uploads/2018/05/default-avatar.png"
 ) {
   const newElement = document.createElement("div");
   const newSpanContentMessage = document.createElement("span");
   const newSpanUsernameMessage = document.createElement("p");
+  const imageAvatarMessage = document.createElement("img");
+  imageAvatarMessage.src = avatarImage;
+  imageAvatarMessage.className = "avatar-user-chat";
+  imageAvatarMessage.alt = "avatar";
   if (!isYourMessage) {
     newElement.className =
       "flex-start-message message-dialog-item current-user-message";
@@ -397,6 +455,7 @@ function appendNewMessageDialog(
     newElement.className =
       "flex-end-message message-dialog-item other-user-message";
   }
+  newElement.append(imageAvatarMessage);
   if (!/button-like/g.test(message))
     newSpanContentMessage.className = "content-message";
   const link = message.match(
@@ -414,6 +473,38 @@ function appendNewMessageDialog(
   newElement.append(newSpanContentMessage);
   newElement.append(newSpanUsernameMessage);
   messageDialogContainerE.append(newElement);
+  handleScrollingToBottom(isYourMessage);
+  const e = document.querySelector(".chat-watch-zoom");
+  if (e && e.style.transform === "scale(0)") {
+    const numMessage = theaterStream.currentState().unreadMessage;
+    theaterStream.updateUnreadMessage(numMessage + 1);
+  }
+}
+
+function handleScrollingToBottom(isYourMessage) {
+  if (!isYourMessage) {
+    if (messageInputStream.currentState()) {
+      if (messageInputStream.currentState().isInBottomChatBot) scrollToBottom();
+      else {
+        const buttonScroll = document.querySelector(".button-scroll-bottom");
+        buttonScroll.style.transform = "translateY(0)";
+      }
+    }
+  } else scrollToBottom();
+}
+
+function isInBottom() {
+  const containerMessageChatBot = document.querySelector(
+    ".container-message-chat-bot"
+  );
+  if (!containerMessageChatBot) return false;
+  const distance =
+    containerMessageChatBot.scrollHeight -
+    (containerMessageChatBot.scrollTop + containerMessageChatBot.offsetHeight);
+  return distance < 100;
+}
+
+function scrollToBottom() {
   const containerChatBotMessage = document.querySelector(
     ".container-message-chat-bot"
   );
@@ -422,22 +513,22 @@ function appendNewMessageDialog(
       top: containerChatBotMessage.scrollHeight,
       behavior: "smooth",
     });
-  const e = document.querySelector(".chat-watch-zoom");
-  if (e && e.style.transform === "scale(0)") {
-    const numMessage = theaterStream.currentState().unreadMessage;
-    theaterStream.updateUnreadMessage(numMessage + 1);
-  }
 }
 
 function appendNewPhotoMessage(
   uri,
   username,
   isYourMessage,
-  messageDialogContainerE
+  messageDialogContainerE,
+  avatarImage = "https://iupac.org/wp-content/uploads/2018/05/default-avatar.png"
 ) {
   const newElement = document.createElement("div");
   const newSpanContentMessage = document.createElement("span");
   const newSpanUsernameMessage = document.createElement("p");
+  const newImageAvatar = document.createElement("img");
+  newImageAvatar.className = "avatar-user-chat";
+  newImageAvatar.src = avatarImage;
+  newImageAvatar.alt = "avatar";
   if (!isYourMessage) {
     newElement.className =
       "flex-start-message message-dialog-item current-user-message";
@@ -445,6 +536,7 @@ function appendNewPhotoMessage(
     newElement.className =
       "flex-end-message message-dialog-item other-user-message";
   }
+  newElement.append(newImageAvatar);
   newSpanContentMessage.className = `pop-up`;
   const popUpActiveContainer = document.querySelector(".container-popup-img");
   const popUpActive = document.querySelector(".pop-up-active");
@@ -481,14 +573,7 @@ function appendNewPhotoMessage(
   newElement.append(newSpanContentMessage);
   newElement.append(newSpanUsernameMessage);
   messageDialogContainerE.append(newElement);
-  const containerChatBotMessage = document.querySelector(
-    ".container-message-chat-bot"
-  );
-  if (containerChatBotMessage)
-    containerChatBotMessage.scroll({
-      top: containerChatBotMessage.scrollHeight,
-      behavior: "smooth",
-    });
+  handleScrollingToBottom(isYourMessage);
   const e = document.querySelector(".chat-watch-zoom");
   if (e && e.style.transform === "scale(0)") {
     const numMessage = theaterStream.currentState().unreadMessage;

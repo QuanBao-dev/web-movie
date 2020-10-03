@@ -39,6 +39,30 @@
   flex-direction: column;
 }
 
+.avatar-user-chat{
+  width: 35px;
+  height: 35px;
+  position: relative;
+  top: 9px;
+  border-radius: 50%;
+}
+
+.chat-bot{
+  position: relative;
+  overflow: hidden;
+}
+
+.button-scroll-bottom{
+  position: absolute;
+  top:0;
+  left: 43%;
+  transition: 0.4s;
+  cursor: pointer;
+  background-color: #000000;
+  border-radius: 50%;
+  transform: translateY(-100px);
+}
+
 .notification-item-typing{
   display: inline-block;
   border-radius: 10px;

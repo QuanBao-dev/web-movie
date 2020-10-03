@@ -4,7 +4,10 @@ import React, { useEffect, useRef, useState } from "react";
 import { fromEvent } from "rxjs";
 import { debounceTime, first } from "rxjs/operators";
 
-import { createCaretPlacer, messageInputStream } from "../../epics/message-input";
+import {
+  createCaretPlacer,
+  messageInputStream,
+} from "../../epics/message-input";
 import { nanoid } from "nanoid";
 const idTyping = nanoid();
 const MessageInput = ({
@@ -170,7 +173,13 @@ const MessageInput = ({
               }
             if (message.images.length > 0) {
               message.images.forEach((uri) => {
-                appendNewPhotoMessage(uri, "You", true, messageDialogE);
+                appendNewPhotoMessage(
+                  uri,
+                  "You",
+                  true,
+                  messageDialogE,
+                  user ? user.avatarImage : undefined
+                );
                 if (user) {
                   socket.emit(
                     "new-message-photo",
@@ -204,7 +213,13 @@ const MessageInput = ({
               });
             }
             if (message.text && message.text.trim() !== "") {
-              appendNewMessageDialog(message.text, "You", true, messageDialogE);
+              appendNewMessageDialog(
+                message.text,
+                "You",
+                true,
+                messageDialogE,
+                user ? user.avatarImage : undefined
+              );
               if (user) {
                 socket.emit(
                   "new-message",

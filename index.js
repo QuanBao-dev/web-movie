@@ -64,7 +64,7 @@ io.on("connection", (socket) => {
       socket.on("update-user-online", async (keepRemote) => {
         await TheaterRoomMember.findOneAndUpdate(
           {
-            userId:publicUserId,
+            userId: publicUserId,
             groupId,
           },
           {
@@ -83,7 +83,7 @@ io.on("connection", (socket) => {
       });
       await TheaterRoomMember.findOneAndUpdate(
         {
-          userId:publicUserId,
+          userId: publicUserId,
           groupId,
         },
         {
@@ -99,7 +99,7 @@ io.on("connection", (socket) => {
       )
         .lean()
         .select({ _id: false, __v: false });
-      socket.to(groupId).emit("user-join", username, userId, groupId);
+      socket.to(groupId).emit("user-join", username, userId, groupId, avatar);
       socket.on("fetch-updated-user-online", () => {
         socket.emit("fetch-user-online");
         socket.to(groupId).emit("fetch-user-online");
@@ -124,7 +124,7 @@ io.on("connection", (socket) => {
       });
       socket.on("disconnect", async () => {
         await TheaterRoomMember.deleteMany({
-          userId:publicUserId,
+          userId: publicUserId,
           groupId,
         }).lean();
         if (rooms[groupId] && rooms[groupId].users[userId]) {
@@ -139,11 +139,17 @@ io.on("connection", (socket) => {
       socket.on("disconnect-custom", async () => {
         console.log("disconnect");
         await TheaterRoomMember.deleteMany({
-          userId:publicUserId,
+          userId: publicUserId,
           groupId,
         }).lean();
         if (rooms[groupId] && rooms[groupId].users[userId]) {
-          socket.broadcast.emit("disconnected-user", username, userId, groupId);
+          socket.broadcast.emit(
+            "disconnected-user",
+            username,
+            userId,
+            groupId,
+            avatar
+          );
           delete rooms[groupId].users[userId];
           if (Object.keys(rooms[groupId].users).length === 0) {
             delete rooms[groupId];
@@ -155,7 +161,7 @@ io.on("connection", (socket) => {
   socket.on("update-user-avatar", async (publicUserId, groupId, avatar) => {
     await TheaterRoomMember.findOneAndUpdate(
       {
-        userId:publicUserId,
+        userId: publicUserId,
         groupId,
       },
       {
@@ -262,9 +268,9 @@ TheaterRoomMember.watch().on("change", async () => {
   io.emit("mongo-change-watch");
 });
 
-Movie.watch().on("change",async() => {
+Movie.watch().on("change", async () => {
   io.emit("comment-change");
-})
+});
 
 app.use(sslRedirect());
 app.use(express.json({ limit: "50mb" }));

@@ -11,7 +11,6 @@ import {
 } from "react-router-dom";
 import { ReplaySubject } from "rxjs";
 
-import { theaterStream } from "./epics/theater";
 import { fetchingUser$, userStream } from "./epics/user";
 import NotFound from "./pages/404/NotFound";
 import AdminManager from "./pages/AdminManager/AdminManager";
@@ -27,7 +26,6 @@ import Register from "./pages/Register/Register";
 import SearchedList from "./pages/Search/SearchedList";
 import Theater from "./pages/Theater/Theater";
 import { allowShouldFetchAllUser } from "./store/admin";
-import { updatePageOnDestroy } from "./store/home";
 import navBarStore from "./store/navbar";
 import PersonDetail from "./pages/PersonDetail/PersonDetail";
 
@@ -96,23 +94,10 @@ function App() {
           </div>
         </div>
       )}
-      <div
-        className="button-scroll-top"
-        onClick={() => {
-          window.scroll({
-            top: 0,
-            behavior: "smooth",
-          });
-        }}
-      >
+      <div className="button-scroll-top">
         <i className="fas fa-arrow-up fa-2x"></i>
       </div>
-      <nav
-        className="nav-bar"
-        onClick={() => {
-          updatePageOnDestroy(null);
-        }}
-      >
+      <nav className="nav-bar">
         <ul className="nav-bar__app">
           <div
             className="toggle-show__nav"
@@ -137,9 +122,7 @@ function App() {
                 onClick={() => {
                   window.scroll({
                     top: 0,
-                    behavior: "smooth",
                   });
-                  theaterStream.socket.emit("disconnect-custom");
                 }}
                 exact
               >
@@ -153,7 +136,6 @@ function App() {
                   to="/admin"
                   onClick={() => {
                     allowShouldFetchAllUser(true);
-                    theaterStream.socket.emit("disconnect-custom");
                   }}
                   activeClassName="active"
                 >
@@ -164,13 +146,7 @@ function App() {
 
             {user && (
               <li className="nav-bar__item">
-                <Link
-                  to="/theater"
-                  activeClassName="active"
-                  onClick={() => {
-                    theaterStream.socket.emit("disconnect-custom");
-                  }}
-                >
+                <Link to="/theater" activeClassName="active">
                   Theater
                 </Link>
               </li>
@@ -179,13 +155,7 @@ function App() {
               style={{ color: "white", cursor: "pointer" }}
               className="left-nav-item nav-bar__item"
             >
-              <Link
-                to="/faq"
-                activeClassName="active"
-                onClick={() => {
-                  theaterStream.socket.emit("disconnect-custom");
-                }}
-              >
+              <Link to="/faq" activeClassName="active">
                 FAQ
               </Link>
             </li>
@@ -194,9 +164,7 @@ function App() {
                 <Link
                   to="/auth/login"
                   activeClassName="active"
-                  onClick={() => {
-                    theaterStream.socket.emit("disconnect-custom");
-                  }}
+                  onClick={() => {}}
                 >
                   Login
                 </Link>
@@ -211,8 +179,7 @@ function App() {
                   }}
                   onClick={() => {
                     logoutUser(setCookie, cookies.idCartoonUser);
-                    theaterStream.socket.emit("disconnect-custom");
-                    window.location.replace("/")
+                    window.location.replace("/");
                   }}
                 >
                   Logout
@@ -222,13 +189,7 @@ function App() {
 
             {!user && (
               <li ref={navRegisterRef} className="nav-bar__item">
-                <Link
-                  to="/auth/register"
-                  activeClassName="active"
-                  onClick={() => {
-                    theaterStream.socket.emit("disconnect-custom");
-                  }}
-                >
+                <Link to="/auth/register" activeClassName="active">
                   Register
                 </Link>
               </li>
@@ -238,14 +199,7 @@ function App() {
                 style={{ color: "white", cursor: "pointer" }}
                 className="nav-bar__item"
               >
-                <Link
-                  to={`/edit`}
-                  onClick={() => {
-                    theaterStream.socket.emit("disconnect-custom");
-                  }}
-                >
-                  {user.username}
-                </Link>
+                <Link to={`/edit`}>{user.username}</Link>
               </li>
             )}
             {user && (

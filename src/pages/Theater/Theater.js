@@ -37,6 +37,7 @@ const Theater = (props) => {
         setFilterKeyRoom(e.target.value);
       });
     return () => {
+      theaterStream.socket.emit("disconnect-custom");
       subscription.unsubscribe();
     };
   }, []);

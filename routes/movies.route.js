@@ -262,8 +262,8 @@ router.put("/:malId/episodes/crawl", verifyRole("Admin"), async (req, res) => {
       });
       movie.episodesEng.sort((a, b) => a.episode - b.episode);
     }
-    const savedMovie = await movie.save();
     updateSourceFilmList(movie, serverWeb, isDub, url);
+    const savedMovie = await movie.save();
     res.send({
       message: {
         source: movie.sourceFilm,

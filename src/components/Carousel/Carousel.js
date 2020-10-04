@@ -15,7 +15,7 @@ const Carousel = () => {
   const { dataCarousel } = stream.currentState();
   const user = userStream.currentState();
   const [cookies] = useCookies(["idCartoonUser"]);
-  const [pageCarousel, setPageCarousel] = useState(3);
+  const [pageCarousel, setPageCarousel] = useState(0);
   const history = useHistory();
   useEffect(() => {
     const subscription = fetchData$().subscribe((v) => {
@@ -26,7 +26,7 @@ const Carousel = () => {
     };
   }, []);
   useEffect(() => {
-    const intervalSub = interval(5000).subscribe(() => {
+    const intervalSub = interval(3000).subscribe(() => {
       const page = pageCarousel;
       document.querySelector(".section-carousel-container").style.transition =
         "0.4s";
@@ -55,139 +55,162 @@ const Carousel = () => {
       }
     }, 400);
   }
+  const pageDisplay =
+    pageCarousel === -1
+      ? dataCarousel.length - 1
+      : pageCarousel === dataCarousel.length
+      ? 0
+      : pageCarousel;
   // console.log(stream.currentState());
   return (
-    <div className="background">
-      <div className="container-menu-control">
-        <div
-          className="button-left hover-button"
-          onClick={() => {
-            const page = pageCarousel;
-            if (page - 1 >= -1) {
-              document.querySelector(
-                ".section-carousel-container"
-              ).style.transition = "0.4s";
-              setPageCarousel(page - 1);
-            }
-          }}
-        >
-          <i className="fas fa-caret-left fa-4x"></i>
-        </div>
-        <div
-          className="button-right hover-button"
-          onClick={() => {
-            const page = pageCarousel;
-            if (page + 1 <= dataCarousel.length) {
-              document.querySelector(
-                ".section-carousel-container"
-              ).style.transition = "0.4s";
-              setPageCarousel(page + 1);
-            }
-          }}
-        >
-          <i className="fas fa-caret-right fa-4x"></i>
-        </div>
-      </div>
-      {user && user.role === "Admin" && (
-        <div className="button-update-carousel-container">
-          <button
-            className="btn btn-success"
-            onClick={async () => {
-              navBarStore.updateIsShowBlockPopUp(true);
-              try {
-                const dataRes = await Axios.post(
-                  "/api/movies/carousel/crawl",
-                  {},
-                  {
-                    headers: {
-                      authorization: `Bearer ${cookies.idCartoonUser}`,
-                    },
-                  }
-                );
-                stream.updateDataCarousel(dataRes.data.message);
-              } catch (error) {
-                alert(error.response.data.error);
+    <div>
+      <div className="background">
+        <div className="container-menu-control">
+          <div
+            className="button-left hover-button"
+            onClick={() => {
+              const page = pageCarousel;
+              if (page - 1 >= -1) {
+                document.querySelector(
+                  ".section-carousel-container"
+                ).style.transition = "0.4s";
+                setPageCarousel(page - 1);
               }
-              navBarStore.updateIsShowBlockPopUp(false);
             }}
           >
-            Update
-          </button>
-
-          <button
-            className="btn btn-primary"
-            onClick={async () => {
-              navBarStore.updateIsShowBlockPopUp(true);
-              try {
-                const dataRes = await Axios.post(
-                  "/api/movies/carousel/crawl/trial",
-                  {},
-                  {
-                    headers: {
-                      authorization: `Bearer ${cookies.idCartoonUser}`,
-                    },
-                  }
-                );
-                stream.updateDataCarousel(dataRes.data.message);
-              } catch (error) {
-                alert(error.response.data.error);
+            <i className="fas fa-caret-left fa-4x"></i>
+          </div>
+          <div
+            className="button-right hover-button"
+            onClick={() => {
+              const page = pageCarousel;
+              if (page + 1 <= dataCarousel.length) {
+                document.querySelector(
+                  ".section-carousel-container"
+                ).style.transition = "0.4s";
+                setPageCarousel(page + 1);
               }
-              navBarStore.updateIsShowBlockPopUp(false);
             }}
           >
-            Trial
-          </button>
+            <i className="fas fa-caret-right fa-4x"></i>
+          </div>
         </div>
-      )}
-      <section className="layout-section">
-        <div
-          className="section-carousel-container"
-          style={{
-            transform: `translateX(${
-              document.querySelector(".item")
-                ? -document.querySelector(".item").offsetWidth * pageCarousel -
-                  document.querySelector(".item").offsetWidth
-                : 0
-            }px)`,
-          }}
-        >
-          {dataCarousel && dataCarousel[dataCarousel.length - 1] && (
-            <div className="item">
-              <img
-                src={dataCarousel[dataCarousel.length - 1].url}
-                alt="NOT_FOUND"
-              />
-              <div className="container-title">
-                <h1>{dataCarousel[dataCarousel.length - 1].title}</h1>
-              </div>
-            </div>
-          )}
-          {dataCarousel &&
-            dataCarousel.map((data, index) => (
-              <div className="item" key={index} onClick={() => {
-                console.log(data.malId);
-                if(data.malId){
-                  history.push("/anime/"+data.malId);
-                } else {
-                  history.push(`/anime/search?key=${data.title}`)
+        {user && user.role === "Admin" && (
+          <div className="button-update-carousel-container">
+            <button
+              className="btn btn-success"
+              onClick={async () => {
+                navBarStore.updateIsShowBlockPopUp(true);
+                try {
+                  const dataRes = await Axios.post(
+                    "/api/movies/carousel/crawl",
+                    {},
+                    {
+                      headers: {
+                        authorization: `Bearer ${cookies.idCartoonUser}`,
+                      },
+                    }
+                  );
+                  stream.updateDataCarousel(dataRes.data.message);
+                } catch (error) {
+                  alert(error.response.data.error);
                 }
-              }}>
-                <img src={data.url} alt="NOT_FOUND" />
+                navBarStore.updateIsShowBlockPopUp(false);
+              }}
+            >
+              Update
+            </button>
+
+            <button
+              className="btn btn-primary"
+              onClick={async () => {
+                navBarStore.updateIsShowBlockPopUp(true);
+                try {
+                  const dataRes = await Axios.post(
+                    "/api/movies/carousel/crawl/trial",
+                    {},
+                    {
+                      headers: {
+                        authorization: `Bearer ${cookies.idCartoonUser}`,
+                      },
+                    }
+                  );
+                  stream.updateDataCarousel(dataRes.data.message);
+                } catch (error) {
+                  alert(error.response.data.error);
+                }
+                navBarStore.updateIsShowBlockPopUp(false);
+              }}
+            >
+              Trial
+            </button>
+          </div>
+        )}
+        <section className="layout-section">
+          <div
+            className="section-carousel-container"
+            style={{
+              transform: `translateX(${
+                document.querySelector(".item")
+                  ? -document.querySelector(".item").offsetWidth *
+                      pageCarousel -
+                    document.querySelector(".item").offsetWidth
+                  : 0
+              }px)`,
+            }}
+          >
+            {dataCarousel && dataCarousel[dataCarousel.length - 1] && (
+              <div className="item">
+                <img
+                  src={dataCarousel[dataCarousel.length - 1].url}
+                  alt="NOT_FOUND"
+                />
                 <div className="container-title">
-                  <h1>{data.title}</h1>
+                  <h1>{dataCarousel[dataCarousel.length - 1].title}</h1>
                 </div>
               </div>
-            ))}
-          {dataCarousel && dataCarousel[0] && (
-            <div className="item">
-              <img src={dataCarousel[0].url} alt="NOT_FOUND" />
-              <div className="container-title">
-                <h1>{dataCarousel[0].title}</h1>
+            )}
+            {dataCarousel &&
+              dataCarousel.map((data, index) => (
+                <div
+                  className="item"
+                  key={index}
+                  onClick={() => {
+                    console.log(data.malId);
+                    if (data.malId) {
+                      history.push("/anime/" + data.malId);
+                    } else {
+                      history.push(`/anime/search?key=${data.title}`);
+                    }
+                  }}
+                >
+                  <img src={data.url} alt="NOT_FOUND" />
+                  <div className="container-title">
+                    <h1>{data.title}</h1>
+                  </div>
+                </div>
+              ))}
+            {dataCarousel && dataCarousel[0] && (
+              <div className="item">
+                <img src={dataCarousel[0].url} alt="NOT_FOUND" />
+                <div className="container-title">
+                  <h1>{dataCarousel[0].title}</h1>
+                </div>
               </div>
-            </div>
-          )}
-        </div>
-      </section>
+            )}
+          </div>
+        </section>
+      </div>
+      <div className="list-dot-carousel">
+        {dataCarousel &&
+          dataCarousel.map((data, key) => (
+            <div
+              key={key}
+              onClick={() => setPageCarousel(key)}
+              className={`dot-item${pageDisplay === key ? " active-dot" : ""}`}
+            ></div>
+          ))}
+      </div>
     </div>
   );
 };

@@ -149,6 +149,18 @@
   width: 100%;
 }
 
+.wrapper-search-anime-list label{
+  font-family: 'Times New Roman', Times, serif;
+  color:yellow;
+}
+
+.wrapper-search-anime-list > div{
+  box-shadow: 0 0 10px 1px rgba(0, 0, 0, 0.596);
+  padding: 0 1rem 1rem 1rem;
+  margin-top: 1rem;
+  border-radius: 10px;
+}
+
 @media (max-width:1465px){
   .sub-nav-bar{
     flex-direction: column;

@@ -203,21 +203,6 @@ router.put("/:malId/episodes/crawl", verifyRole("Admin"), async (req, res) => {
   let movie = await Movie.findOne({ malId });
   if (movie) {
     movie.sourceFilm = url;
-    if (!movie.sourceFilmList)
-      movie.sourceFilmList = {
-        episodes: "",
-        episodesEng: "",
-        episodesEngDub: "",
-      };
-    const keySourceFilm =
-      serverWeb === "animehay" || serverWeb === "animevsub"
-        ? "episodes"
-        : serverWeb === "gogostream" && isDub
-        ? "episodesEngDub"
-        : serverWeb === "gogostream" && !isDub
-        ? "episodesEng"
-        : "";
-    movie.sourceFilmList = { ...movie.sourceFilmList, [keySourceFilm]: url };
   } else {
     movie = new Movie({
       sourceFilm: url,
@@ -278,6 +263,7 @@ router.put("/:malId/episodes/crawl", verifyRole("Admin"), async (req, res) => {
       movie.episodesEng.sort((a, b) => a.episode - b.episode);
     }
     const savedMovie = await movie.save();
+    updateSourceFilmList(movie, serverWeb, isDub, url);
     res.send({
       message: {
         source: movie.sourceFilm,
@@ -426,6 +412,23 @@ router.put("/:malId", verifyRole("Admin", "User"), async (req, res) => {
     res.status(404).send({ error: "Something went wrong" });
   }
 });
+function updateSourceFilmList(movie, serverWeb, isDub, url) {
+  if (!movie.sourceFilmList)
+    movie.sourceFilmList = {
+      episodes: "",
+      episodesEng: "",
+      episodesEngDub: "",
+    };
+  const keySourceFilm = serverWeb === "animehay" || serverWeb === "animevsub"
+    ? "episodes"
+    : serverWeb === "gogostream" && isDub
+      ? "episodesEngDub"
+      : serverWeb === "gogostream" && !isDub
+        ? "episodesEng"
+        : "";
+  movie.sourceFilmList[keySourceFilm] = url;
+}
+
 async function extractMalId(dataCrawl) {
   await Promise.all(
     dataCrawl.slice(0, 2).map((data) => {

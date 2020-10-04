@@ -11,7 +11,7 @@
   transition: 0.3s;
   transform: scale(1,1);
   position: relative;
-  font-size: 0.9rem;
+  font-size: 0.87rem;
   overflow: hidden;
 }
 
@@ -33,7 +33,7 @@
   background-color: rgba(0, 0, 0, 0.521);
   border-radius: 10px;
   text-align: center;
-  transition: 0.5s;
+  transition: 0.2s;
   max-height: 140px;
 }
 
@@ -52,6 +52,7 @@
   color: white;
   background-color: rgb(78, 24, 128);
   text-align: start;
+  hyphens: manual;
   padding-top: 50px;
   top:0;
   opacity: 0;
@@ -106,7 +107,7 @@
 
 @media (max-width:700px){
   .anime-item{
-    font-size: 0.7rem;
+    font-size: 0.8rem;
     height: 200px;
     width: 150px;
   }
@@ -122,7 +123,7 @@
 
 @media (max-width:354px){
   .anime-item{
-    font-size: 0.7rem;
+    font-size: 0.75rem;
     width: 40%;
   }
 }

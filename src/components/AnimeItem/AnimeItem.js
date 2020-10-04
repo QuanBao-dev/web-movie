@@ -36,21 +36,25 @@ const AnimeItem = ({ anime }) => {
           <p className="text-synopsis">
             {anime.synopsis === " " && "No content."}
             {anime.synopsis
-              ? anime.synopsis.slice(0, window.innerWidth <= 700 ? 85 : 200)
+              ? anime.synopsis
+                  .split(" ")
+                  .slice(0, window.innerWidth <= 700 ? 10 : 40)
+                  .join(" ")
               : "No content."}
             {anime.synopsis &&
-            anime.synopsis.length >
-              anime.synopsis.slice(0, window.innerWidth <= 700 ? 85 : 220)
-                .length
-              ? "..."
+            anime.synopsis.split(" ").length >
+              anime.synopsis
+                .split(" ")
+                .slice(0, window.innerWidth <= 700 ? 10 : 40).length
+              ? "....."
               : ""}
           </p>
         </div>
       )}
       <div className="anime-item-info">
         <h3 style={{ margin: "5px" }}>
-          {anime.title.slice(0, 52)}
-          {anime.title.length > anime.title.slice(0, 52).length ? "..." : ""}
+          {anime.title.split(" ").slice(0, 6).join(" ")}
+          {anime.title.split(" ").length > anime.title.split(" ").slice(0, 6).length ? "..." : ""}
         </h3>
         {anime.airing_start && (
           <div>

@@ -96,26 +96,6 @@ router.post(
   }
 );
 
-router.delete(
-  "/:groupId/members",
-  verifyRole("User", "Admin"),
-  async (req, res) => {
-    const { groupId } = req.params;
-    try {
-      await TheaterRoomMember.deleteMany({
-        groupId,
-      })
-        .lean()
-        .select({ _id: false, __v: false });
-      res.send({
-        message: "success",
-      });
-    } catch (error) {
-      res.status(404).send({ error: "Something went wrong" });
-    }
-  }
-);
-
 router.get("/", verifyRole("User", "Admin"), async (req, res) => {
   //TODO get all rooms
   try {

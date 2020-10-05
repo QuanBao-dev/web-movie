@@ -61,26 +61,6 @@ io.on("connection", (socket) => {
       socket.emit("fetch-user-online");
       socket.to(groupId).emit("fetch-user-online");
       rooms[groupId].users[userId] = username;
-      socket.on("update-user-online", async (keepRemote) => {
-        await TheaterRoomMember.findOneAndUpdate(
-          {
-            userId: publicUserId,
-            groupId,
-          },
-          {
-            username,
-            avatar,
-            joinAt: Date.now(),
-            keepRemote: keepRemote,
-          },
-          {
-            upsert: true,
-            new: true,
-          }
-        )
-          .lean()
-          .select({ _id: false, __v: false });
-      });
       await TheaterRoomMember.findOneAndUpdate(
         {
           userId: publicUserId,
@@ -104,6 +84,13 @@ io.on("connection", (socket) => {
         socket.emit("fetch-user-online");
         socket.to(groupId).emit("fetch-user-online");
       });
+
+      socket.on("delete-specific-member",async(publicUserId,groupId) => {
+        await TheaterRoomMember.deleteMany({
+          userId: publicUserId,
+          groupId,
+        }).lean();
+      })
 
       socket.on("new-video", (videoUri, groupId, uploadOtherVideo) => {
         socket.broadcast.emit(

@@ -135,7 +135,7 @@ const TheaterWatch = (props) => {
     if (audioCallRef.current) {
       if (theaterState.usersOnline.length === 1) {
         replaySubject.pipe(first()).subscribe((groupId) => {
-          deleteAllMembers(groupId);
+          socket.emit("delete-specific-member",user.userId,groupId)
         });
       }
       theaterState.usersOnline = [];
@@ -376,31 +376,29 @@ async function newUserJoinHandleVideo(audioCallE) {
           const buttonGetRemoteElement = document.getElementById(
             "button-get-remote"
           );
-          if (buttonGetRemoteElement) {
-            socket.emit(
-              "new-user",
-              user.avatarImage,
-              user.username,
-              groupId,
-              id,
-              user.userId,
-              buttonGetRemoteElement.disabled
-            );
-            addAudioStream(myAudio, stream, audioCallE);
-            appendNewMessageNotification(
-              "Your " + elementCall + " is connected",
-              notificationE,
-              "audio-connected"
-            );
-            myPeer.on("call", (call) => {
-              call.answer(stream);
-              const audio = document.createElement(elementCall);
-              call.on("stream", (stream) => {
-                addAudioStream(audio, stream, audioCallE);
-              });
+          socket.emit(
+            "new-user",
+            user.avatarImage,
+            user.username,
+            groupId,
+            id,
+            user.userId,
+            buttonGetRemoteElement ? buttonGetRemoteElement.disabled:false
+          );
+          addAudioStream(myAudio, stream, audioCallE);
+          appendNewMessageNotification(
+            "Your " + elementCall + " is connected",
+            notificationE,
+            "audio-connected"
+          );
+          myPeer.on("call", (call) => {
+            call.answer(stream);
+            const audio = document.createElement(elementCall);
+            call.on("stream", (stream) => {
+              addAudioStream(audio, stream, audioCallE);
             });
-          }
-        });
+          });
+      });
       })
       .catch(async (err) => {
         isError = true;
@@ -532,23 +530,20 @@ socket.on("user-join", async (username, userId, roomId) => {
 
 socket.on("disconnected-user", async (username, userId, roomId) => {
   // console.log(roomId, groupId);
-  if (roomId !== groupId) {
-    fetchUserOnline$(groupId, idCartoonUser).subscribe((users) => {
-      theaterStream.updateUsersOnline(users);
-    });
-  }
+  fetchUserOnline$(groupId, idCartoonUser).subscribe((users) => {
+    theaterStream.updateUsersOnline(users);
+  });
   if (peers[userId]) {
     peers[userId].close();
-  } else {
-    if (audioCallE) {
-      const audioCallChildList = [...audioCallE.childNodes];
-      audioCallChildList.forEach((child) => {
-        if (!child.id) {
-          child.muted = true;
-          child.remove();
-        }
-      });
-    }
+  }
+  if (audioCallE) {
+    const audioCallChildList = [...audioCallE.childNodes];
+    audioCallChildList.forEach((child) => {
+      if (!child.id) {
+        child.muted = true;
+        child.remove();
+      }
+    });
   }
 });
 
@@ -628,14 +623,6 @@ function appendNewMessageNotification(message, notificationE, className) {
   }
 }
 
-async function deleteAllMembers(groupId) {
-  await Axios.delete(`/api/theater/${groupId}/members`, {
-    headers: {
-      authorization: `Bearer ${idCartoonUser}`,
-    },
-  });
-}
-
 function addAudioStream(audioElement, stream, audioGridElement) {
   audioElement.srcObject = stream;
   audioElement.addEventListener("loadedmetadata", () => {
@@ -658,13 +645,15 @@ function connectToNewUser(userId, stream, audioGridElement) {
   });
   call.on("close", () => {
     audio.remove();
-    const audioCallChildList = [...audioCallE.childNodes];
-    audioCallChildList.forEach((child) => {
-      if (!child.id) {
-        child.muted = true;
-        child.remove();
-      }
-    });
+    if (audioCallE) {
+      const audioCallChildList = [...audioCallE.childNodes];
+      audioCallChildList.forEach((child) => {
+        if (!child.id) {
+          child.muted = true;
+          child.remove();
+        }
+      });
+    }
   });
   peers[userId] = call;
 }

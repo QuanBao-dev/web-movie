@@ -118,15 +118,6 @@ const Chat = ({ groupId, user, withoutName = false, isZoom = false }) => {
                 );
               } else setErrorName("Error: please type in your name");
             }
-            const buttonGetRemoteElement = document.getElementById(
-              "button-get-remote"
-            );
-            if (buttonGetRemoteElement) {
-              socket.emit(
-                "update-user-online",
-                buttonGetRemoteElement.disabled
-              );
-            }
           }
         });
     }
@@ -513,7 +504,7 @@ function handleScrollingToBottom(isYourMessage) {
       if (messageInputStream.currentState().isInBottomChatBot) scrollToBottom();
       else {
         const buttonScroll = document.querySelector(".button-scroll-bottom");
-        buttonScroll.style.transform = "translateY(0)";
+        if (buttonScroll) buttonScroll.style.transform = "translateY(0)";
       }
     }
   } else scrollToBottom();

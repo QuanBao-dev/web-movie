@@ -64,20 +64,42 @@ const Chat = ({ groupId, user, withoutName = false, isZoom = false }) => {
         .subscribe(() => {
           if (messageDialogE) {
             if (user) {
-              appendNewMessageDialog(
-                `<i class="fas fa-thumbs-up fa-3x button-like"></i>`,
-                "you",
-                true,
-                messageDialogE,
-                user.avatarImage
-              );
-              socket.emit(
-                "new-message",
-                user.username,
-                `<i class="fas fa-thumbs-up fa-3x button-like"></i>`,
-                idGroup,
-                user.avatarImage
-              );
+              if (inputNameDialogRef.current) {
+                if (inputNameDialogRef.current.value.trim() !== "") {
+                  setErrorName(null);
+                  appendNewMessageDialog(
+                    `<i class="fas fa-thumbs-up fa-3x button-like"></i>`,
+                    "you",
+                    true,
+                    messageDialogE,
+                    user.avatarImage
+                  );
+                  socket.emit(
+                    "new-message",
+                    inputNameDialogRef.current.value,
+                    `<i class="fas fa-thumbs-up fa-3x button-like"></i>`,
+                    idGroup,
+                    user.avatarImage
+                  );
+                } else {
+                  setErrorName("please type in your name");
+                }
+              } else {
+                appendNewMessageDialog(
+                  `<i class="fas fa-thumbs-up fa-3x button-like"></i>`,
+                  "you",
+                  true,
+                  messageDialogE,
+                  user.avatarImage
+                );
+                socket.emit(
+                  "new-message",
+                  user.username,
+                  `<i class="fas fa-thumbs-up fa-3x button-like"></i>`,
+                  idGroup,
+                  user.avatarImage
+                );
+              }
             } else {
               if (inputNameDialogRef.current.value.trim() !== "") {
                 setErrorName(null);

@@ -1,24 +1,28 @@
-import './TheaterWatch.css';
+import "./TheaterWatch.css";
 
-import Axios from 'axios';
-import { nanoid } from 'nanoid';
-import Peer from 'peerjs';
-import React, { useEffect, useRef, useState } from 'react';
-import { useCookies } from 'react-cookie';
-import { ReplaySubject } from 'rxjs';
-import { first } from 'rxjs/operators';
+import Axios from "axios";
+import { nanoid } from "nanoid";
+import Peer from "peerjs";
+import React, { useEffect, useRef, useState } from "react";
+import { useCookies } from "react-cookie";
+import { ReplaySubject } from "rxjs";
+import { first } from "rxjs/operators";
 
-import Chat from '../../components/Chat/Chat';
-import Input from '../../components/Input/Input';
-import { fetchUserOnline$, submitFormPasswordRoom$, theaterStream } from '../../epics/theater';
-import { userStream } from '../../epics/user';
+import Chat from "../../components/Chat/Chat";
+import Input from "../../components/Input/Input";
+import {
+  fetchUserOnline$,
+  submitFormPasswordRoom$,
+  theaterStream,
+} from "../../epics/theater";
+import { userStream } from "../../epics/user";
 import {
   updateAllowFetchCurrentRoomDetail,
   updateAllowRemoveVideoWatch,
   updateAllowUserJoin,
   updateSignIn,
   updateUserIdNow,
-} from '../../store/theater';
+} from "../../store/theater";
 
 const socket = theaterStream.socket;
 const peers = {};
@@ -356,7 +360,7 @@ async function newUserJoinHandleVideo(audioCallE) {
       })
       .then((stream) => {
         let options = {
-          host: window.location.origin.replace(/http(s)?:\/\//g,""),
+          host: window.location.origin.replace(/http(s)?:\/\//g, ""),
           path: "/peerjs",
         };
         if (process.env.NODE_ENV === "development") {
@@ -531,12 +535,12 @@ socket.on("disconnected-user", async (username, userId, roomId) => {
   if (roomId !== groupId) {
     fetchUserOnline$(groupId, idCartoonUser).subscribe((users) => {
       theaterStream.updateUsersOnline(users);
-    });  
+    });
   }
-  if (audioCallE)
-    if (peers[userId]) {
-      peers[userId].close();
-    } else {
+  if (peers[userId]) {
+    peers[userId].close();
+  } else {
+    if (audioCallE) {
       const audioCallChildList = [...audioCallE.childNodes];
       audioCallChildList.forEach((child) => {
         if (!child.id) {
@@ -545,6 +549,7 @@ socket.on("disconnected-user", async (username, userId, roomId) => {
         }
       });
     }
+  }
 });
 
 socket.on("disconnect", () => {

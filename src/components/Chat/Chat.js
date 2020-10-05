@@ -79,18 +79,22 @@ const Chat = ({ groupId, user, withoutName = false, isZoom = false }) => {
                 user.avatarImage
               );
             } else {
-              appendNewMessageDialog(
-                `<i class="fas fa-thumbs-up fa-3x button-like"></i>`,
-                "you",
-                true,
-                messageDialogE
-              );
-              socket.emit(
-                "new-message",
-                inputNameDialogRef.current.value,
-                `<i class="fas fa-thumbs-up fa-3x button-like"></i>`,
-                idGroup
-              );
+              if (inputNameDialogRef.current.value.trim() !== "") {
+                setErrorName(null);
+                appendNewMessageDialog(
+                  `<i class="fas fa-thumbs-up fa-3x button-like"></i>`,
+                  "you",
+                  true,
+                  messageDialogE
+                );
+
+                socket.emit(
+                  "new-message",
+                  inputNameDialogRef.current.value,
+                  `<i class="fas fa-thumbs-up fa-3x button-like"></i>`,
+                  idGroup
+                );
+              } else setErrorName("Error: please type in your name");
             }
             const buttonGetRemoteElement = document.getElementById(
               "button-get-remote"

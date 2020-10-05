@@ -46,7 +46,7 @@ const FAQ = () => {
               Press f12 to open the console, go to network, reload the page and
               search for mp4 by typing "mp4" in filter input in the console,
               play the video to load video stream, and then you just choose the
-              one will lead you to the video which is video we need
+              one will lead you to the video which is video we need. Maybe, video will has multiple server. So make sure you check out all of them 
             </li>
           </ul>
         </li>
@@ -65,10 +65,9 @@ const FAQ = () => {
         </li>
       </ul>
       <div>
-        Note: Method 2 and 3 currently just works on the Engsub or Engdub episodes.
+        Note: Method 2 and 3 currently just work on the Engsub or Engdub episodes.
         Maybe it will not work at some point in the future. I have no guarantee
-        that It will work eternally. you can try other servers in case it's not
-        working
+        that It will work eternally.
       </div>
     </div>
   );

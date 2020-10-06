@@ -1,33 +1,28 @@
-import "./App.css";
+import './App.css';
 
-import Axios from "axios";
-import React, { useEffect, useRef, useState } from "react";
-import { useCookies } from "react-cookie";
-import {
-  BrowserRouter as Router,
-  NavLink as Link,
-  Route,
-  Switch,
-} from "react-router-dom";
-import { ReplaySubject } from "rxjs";
+import Axios from 'axios';
+import React, { useEffect, useRef, useState } from 'react';
+import { useCookies } from 'react-cookie';
+import { BrowserRouter as Router, NavLink as Link, Route, Switch } from 'react-router-dom';
+import { ReplaySubject } from 'rxjs';
 
-import { fetchingUser$, userStream } from "./epics/user";
-import NotFound from "./pages/404/NotFound";
-import AdminManager from "./pages/AdminManager/AdminManager";
-import CharacterDetail from "./pages/CharacterDetail/CharacterDetail";
-import EditUser from "./pages/EditUser/EditUser";
-import EpisodePage from "./pages/EpisodePage/EpisodePage";
-import FAQ from "./pages/FAQ/FAQ";
-import GenreDetail from "./pages/GenreDetail/GenreDetail";
-import Home from "./pages/Home/Home";
-import Login from "./pages/Login/Login";
-import Name from "./pages/Name/Name";
-import Register from "./pages/Register/Register";
-import SearchedList from "./pages/Search/SearchedList";
-import Theater from "./pages/Theater/Theater";
-import { allowShouldFetchAllUser } from "./store/admin";
-import navBarStore from "./store/navbar";
-import PersonDetail from "./pages/PersonDetail/PersonDetail";
+import { fetchingUser$, userStream } from './epics/user';
+import NotFound from './pages/404/NotFound';
+import AdminManager from './pages/AdminManager/AdminManager';
+import CharacterDetail from './pages/CharacterDetail/CharacterDetail';
+import EditUser from './pages/EditUser/EditUser';
+import EpisodePage from './pages/EpisodePage/EpisodePage';
+import FAQ from './pages/FAQ/FAQ';
+import GenreDetail from './pages/GenreDetail/GenreDetail';
+import Home from './pages/Home/Home';
+import Login from './pages/Login/Login';
+import Name from './pages/Name/Name';
+import PersonDetail from './pages/PersonDetail/PersonDetail';
+import Register from './pages/Register/Register';
+import SearchedList from './pages/Search/SearchedList';
+import Theater from './pages/Theater/Theater';
+import { allowShouldFetchAllUser } from './store/admin';
+import navBarStore from './store/navbar';
 
 const scrollSaveSubject = new ReplaySubject(3);
 window.addEventListener("resize", () => {

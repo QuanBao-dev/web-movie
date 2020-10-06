@@ -1,10 +1,13 @@
 import "./Characters.css";
-import React, { useEffect, useState } from "react";
+import React, { Suspense, useEffect, useState } from "react";
 import { ajax } from "rxjs/ajax";
 import { catchError, pluck, retry } from "rxjs/operators";
 import { of } from "rxjs";
 import { useHistory } from "react-router-dom";
 import { characterStream } from "../../epics/character";
+const CharacterItem = React.lazy(() =>
+  import("../CharacterItem/CharacterItem")
+);
 const Characters = ({ malId }) => {
   const history = useHistory();
   const [dataCharacterState, setDataCharacterState] = useState([]);
@@ -13,9 +16,9 @@ const Characters = ({ malId }) => {
   );
   useEffect(() => {
     window.scroll({
-      top:0,
-      behavior:"smooth"
-    })
+      top: 0,
+      behavior: "smooth",
+    });
     const subscription = fetchDataCharacter$(malId).subscribe((data) => {
       setDataCharacterState(data);
     });
@@ -45,7 +48,7 @@ const Characters = ({ malId }) => {
         buttonSeemore.style.display = "block";
       }
     }
-  },[dataCharacterState.length, charactersState.page])
+  }, [dataCharacterState.length, charactersState.page]);
   return (
     dataCharacterState.length > 0 && (
       <div>
@@ -59,25 +62,20 @@ const Characters = ({ malId }) => {
                   characterStream.currentState().numberDisplay
               )
               .map((characterData, index) => (
-                <div
-                  className={`character-item${
-                    characterData.role === "Main" ? " border-yellow" : ""
-                  }`}
+                <Suspense
                   key={index}
-                  onClick={() => {
-                    characterStream.updateRole(characterData.role);
-                    history.push(
-                      `/anime/character/${characterData.mal_id}`
-                    );
-                  }}
+                  fallback={
+                    <div>
+                      <i className="fas fa-spinner fa-2x fa-spin"></i>
+                    </div>
+                  }
                 >
-                  <img
-                    className="character-image"
-                    src={characterData.image_url}
-                    alt="image_character"
+                  <CharacterItem
+                    key={index}
+                    characterData={characterData}
+                    history={history}
                   />
-                  <div className="name-character">{characterData.name}</div>
-                </div>
+                </Suspense>
               ))}
             <button
               className="see-more-character"

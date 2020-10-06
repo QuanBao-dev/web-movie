@@ -1,37 +1,44 @@
 import "./Home.css";
 
 import { capitalize, orderBy } from "lodash";
-import React, { useEffect, useRef, useState } from "react";
+import React, { Suspense, useEffect, useRef, useState } from "react";
 import { useCookies } from "react-cookie";
-import { Link, useHistory } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 
-import AnimeList from "../../components/AnimeList/AnimeList";
 import AnimeSchedule from "../../components/AnimeSchedule/AnimeSchedule";
-import Carousel from "../../components/Carousel/Carousel";
 import Genres from "../../components/Genres/Genres";
 import Input from "../../components/Input/Input";
 import PageNavList from "../../components/PageNavList/PageNavList";
 import SearchedAnimeList from "../../components/SearchedAnimeList/SearchedAnimeList";
-import UpcomingAnimeList from "../../components/UpcomingAnimeList/UpcomingAnimeList";
 import {
   changeCurrentPage$,
   changeSearchInput$,
   changeSeasonYear$,
   fetchAnimeSeason$,
   fetchBoxMovie$,
-  fetchTopMovie$,
   fetchUpdatedMovie$,
   listenSearchInputPressEnter$,
   stream,
-  topMovieUpdatedScrolling$,
 } from "../../epics/home";
 import { userStream } from "../../epics/user";
 import {
   allowScrollToSeeMore,
   updateDataOnDestroy,
   updateMaxPage,
-  updatePageTopMovieOnDestroy,
 } from "../../store/home";
+
+const AnimeList = React.lazy(() =>
+  import("../../components/AnimeList/AnimeList")
+);
+const UpcomingAnimeList = React.lazy(() =>
+  import("../../components/UpcomingAnimeList/UpcomingAnimeList")
+);
+
+const TopAnimeList = React.lazy(() =>
+  import("../../components/TopAnimeList/TopAnimeList")
+);
+
+const Carousel = React.lazy(() => import("../../components/Carousel/Carousel"));
 
 const numberOfMovieShown = 18;
 window.addEventListener("resize", () => {
@@ -193,7 +200,9 @@ function Home() {
   // console.log(homeState);
   return (
     <div className="home-page">
-      <Carousel />
+      <Suspense fallback={<div>Loading...</div>}>
+        <Carousel />
+      </Suspense>
       <div className="recently-updated-movie">
         <div className="wrapper-search-anime-list">
           <div style={{ width: "90%" }}>
@@ -201,32 +210,40 @@ function Home() {
           </div>
           <SearchedAnimeList homeState={homeState} />
         </div>
-        <UpcomingAnimeList />
+        <Suspense fallback={<div>Loading....</div>}>
+          <UpcomingAnimeList />
+        </Suspense>
         <SubNavBar
           subNavToggle={subNavToggle}
           setSubNavToggle={setSubNavToggle}
           user={user}
         />
-        <AnimeList
-          data={
-            subNavToggle === 0
-              ? orderBy(homeState.updatedMovie, ["updatedAt"], ["desc"]).slice(
-                  0,
-                  limitShowRecentlyUpdated > homeState.updatedMovie.length
-                    ? homeState.updatedMovie.length
-                    : limitShowRecentlyUpdated
-                )
-              : subNavToggle === 1 && user
-              ? orderBy(homeState.boxMovie, ["dateAdded"], ["desc"]).slice(
-                  0,
-                  limitShowRecentlyUpdated > homeState.boxMovie.length
-                    ? homeState.boxMovie.length
-                    : limitShowRecentlyUpdated
-                )
-              : []
-          }
-          error={homeState.error || null}
-        />
+        <Suspense fallback={<div>Loading...</div>}>
+          <AnimeList
+            data={
+              subNavToggle === 0
+                ? orderBy(
+                    homeState.updatedMovie,
+                    ["updatedAt"],
+                    ["desc"]
+                  ).slice(
+                    0,
+                    limitShowRecentlyUpdated > homeState.updatedMovie.length
+                      ? homeState.updatedMovie.length
+                      : limitShowRecentlyUpdated
+                  )
+                : subNavToggle === 1 && user
+                ? orderBy(homeState.boxMovie, ["dateAdded"], ["desc"]).slice(
+                    0,
+                    limitShowRecentlyUpdated > homeState.boxMovie.length
+                      ? homeState.boxMovie.length
+                      : limitShowRecentlyUpdated
+                  )
+                : []
+            }
+            error={homeState.error || null}
+          />
+        </Suspense>
         <div
           style={{
             backgroundColor: "black",
@@ -268,10 +285,12 @@ function Home() {
                 homeState={homeState}
               />
             </div>
-            <AnimeList
-              data={homeState.dataDetail}
-              error={homeState.error || null}
-            />
+            <Suspense fallback={<div>Loading...</div>}>
+              <AnimeList
+                data={homeState.dataDetail}
+                error={homeState.error || null}
+              />
+            </Suspense>
             <div style={{ width: "50%", textAlign: "center" }}>
               <PageNavList
                 numberOfPagesDisplay={numberOfPagesDisplay}
@@ -280,7 +299,9 @@ function Home() {
               />
             </div>
           </div>
-          <TopAnimeList homeState={homeState} />
+          <Suspense fallback={<div>Loading...</div>}>
+            <TopAnimeList homeState={homeState} />
+          </Suspense>
         </div>
       </div>
     </div>
@@ -343,11 +364,6 @@ function limitAdultGenre(genres) {
     }
   });
   return check;
-}
-
-function updateDataTopScrolling() {
-  let page = stream.currentState().pageTopMovie;
-  stream.updatePageTopMovie(page + 1);
 }
 
 function unsubscribeSubscription(...subscriptions) {
@@ -436,59 +452,6 @@ function SelectFilterAnime({
           </option>
         ))}
       </select>
-    </div>
-  );
-}
-
-function TopAnimeList({ homeState }) {
-  useEffect(() => {
-    return () => {
-      updatePageTopMovieOnDestroy(stream.currentState().pageTopMovie);
-    };
-  }, []);
-  useEffect(() => {
-    let subscription7;
-    let subscription11;
-    const topAnimeElement = document.querySelector(".top-anime-list-container");
-    if (topAnimeElement) {
-      subscription11 = topMovieUpdatedScrolling$(topAnimeElement).subscribe(
-        () => {
-          updateDataTopScrolling();
-        }
-      );
-    }
-    if (stream.currentState().pageTopMovieOnDestroy !== homeState.pageTopMovie)
-      subscription7 = fetchTopMovie$(subscription11).subscribe(
-        (topMovieList) => {
-          // console.log("fetch top movie");
-          stream.updateTopMovie(topMovieList);
-        }
-      );
-    return () => {
-      subscription7 && subscription7.unsubscribe();
-      subscription11 && subscription11.unsubscribe();
-    };
-  }, [homeState.pageTopMovie]);
-  return (
-    <div className="top-anime-list-container">
-      <h1>Top Anime</h1>
-      <ul className="top-anime-list">
-        {homeState.dataTopMovie &&
-          homeState.dataTopMovie.map((movie, index) => (
-            <li key={index}>
-              <h2>Rank {movie.rank}</h2>
-              <div>
-                <div className="top-anime-list-info">
-                  <div className="top-movie-score__home">{movie.score}/10</div>
-                  <Link to={"/anime/" + movie.mal_id}>
-                    <img src={movie.image_url} alt="Preview" />
-                  </Link>
-                  <div className="title">{movie.title}</div>
-                </div>
-              </div>
-            </li>
-          ))}
-      </ul>
     </div>
   );
 }

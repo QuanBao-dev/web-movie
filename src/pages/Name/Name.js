@@ -2,7 +2,7 @@ import "./Name.css";
 
 import Axios from "axios";
 import { capitalize, orderBy, random } from "lodash";
-import React, { useEffect, useRef, useState } from "react";
+import React, { Suspense, useEffect, useRef, useState } from "react";
 import { useCookies } from "react-cookie";
 import { Link } from "react-router-dom";
 import { from, fromEvent, of, timer } from "rxjs";
@@ -26,7 +26,7 @@ import RelatedAnime from "../../components/RelatedAnime/RelatedAnime";
 import { userStream } from "../../epics/user";
 import { allowShouldFetchComment } from "../../store/comment";
 import navBarStore from "../../store/navbar";
-import Reviews from "../../components/Reviews/Reviews";
+const Reviews = React.lazy(() => import("../../components/Reviews/Reviews"));
 
 let episodeDataDisplay;
 const Name = (props) => {
@@ -344,7 +344,9 @@ const Name = (props) => {
         <Characters malId={name} />
         <RelatedAnime malId={name} />
         {data.dataPromo && <VideoPromotionList data={data} />}
-        <Reviews malId={name} />
+        <Suspense fallback={<div>Loading...</div>}>
+          <Reviews malId={name} />
+        </Suspense>
       </div>
     )
   );
@@ -356,7 +358,7 @@ function MenuTable({ elementTitle, toggleNavTitle }) {
       className="tag-scrolling-nav"
       style={{
         maxHeight: toggleNavTitle ? "2000px" : "0",
-        boxShadow: toggleNavTitle ? "0 0 4px 1px white":"none"
+        boxShadow: toggleNavTitle ? "0 0 4px 1px white" : "none",
       }}
     >
       {elementTitle &&

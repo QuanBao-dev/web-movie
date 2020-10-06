@@ -1,8 +1,8 @@
 import "./AnimeList.css";
 
-import React from "react";
+import React, { Suspense } from "react";
 
-import AnimeItem from "../AnimeItem/AnimeItem";
+const AnimeItem = React.lazy(() => import("../AnimeItem/AnimeItem"));
 
 const AnimeList = ({ data, error, isWrap = true }) => {
   return (
@@ -10,11 +10,22 @@ const AnimeList = ({ data, error, isWrap = true }) => {
       {data &&
         !error &&
         data.map((anime, index) => {
-          return <AnimeItem key={index} anime={anime} />;
+          return (
+            <Suspense
+              key={index}
+              fallback={
+                <div>
+                  <i>
+                    <i className="fas fa-spinner fa-2x fa-spin"></i>
+                  </i>
+                </div>
+              }
+            >
+              <AnimeItem key={index} anime={anime} />
+            </Suspense>
+          );
         })}
-        {
-          data.length === 0 && <h1 className="empty"> </h1>
-        }
+      {data.length === 0 && <h1 className="empty"> </h1>}
       {error && (
         <div
           style={{

@@ -176,7 +176,6 @@ const Carousel = () => {
                   className="item"
                   key={index}
                   onClick={() => {
-                    console.log(data.malId);
                     if (data.malId) {
                       history.push("/anime/" + data.malId);
                     } else {

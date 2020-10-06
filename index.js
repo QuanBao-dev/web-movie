@@ -25,6 +25,7 @@ const tokenRoute = require("./routes/token.route");
 const boxMovieRoute = require("./routes/boxMovie.route");
 const renderRoute = require("./routes/index.route");
 const theaterRoute = require("./routes/theaterRoom.route");
+const faqRoute = require("./routes/faq.route");
 const TheaterRoomMember = require("./models/theaterRoomMember.model");
 const Movie = require("./models/movie.model");
 
@@ -273,6 +274,7 @@ app.use((req, res, next) => {
   next();
 });
 app.use("/peerjs", peerServer);
+app.use("/api/faq",faqRoute);
 app.use("/api/theater/", theaterRoute);
 app.use("/api/movies/box", boxMovieRoute);
 app.use("/api/movies", moviesRoute);

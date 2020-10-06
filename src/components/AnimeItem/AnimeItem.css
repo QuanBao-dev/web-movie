@@ -36,6 +36,9 @@
   transition: 0.2s;
   min-height: 40px;
   max-height: 140px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 

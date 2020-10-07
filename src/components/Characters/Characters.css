@@ -17,9 +17,6 @@
 }
 
 @media (max-width:950px){
-  .character-item{
-    width: 100px;
-  }
   .character-list{
     overflow-y:hidden;
     max-height: 100%;

@@ -53,6 +53,12 @@
   cursor: pointer;
 }
 
+@media (max-width:950px){
+  .character-item{
+    width: 100px;
+  }
+}
+
 @keyframes enlighten{
   0%{
     box-shadow: 0 0 1px 1px wheat;

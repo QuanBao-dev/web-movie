@@ -1,0 +1,46 @@
+.top-anime-list-container{
+  color: aliceblue;
+  margin:50px auto 50px 0;
+  box-shadow: 0 0 10px 10px black, 0 0 10px 6px white;
+  border-radius: 10px;
+  background-color: rgb(49, 47, 71);
+  overflow-x: hidden;
+  overflow-y: auto;
+  max-height: 4124px;
+  text-align: center;
+}
+
+.top-anime-list{
+  padding: 0;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  list-style-type: none;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.top-anime-list-container::-webkit-scrollbar {
+  width: 0;
+  display: hidden;
+  background-color: #F5F5F5;
+}
+
+.top-anime-list-container::-webkit-scrollbar-thumb {
+  display: hidden;
+}
+
+@media (max-width:1465px){
+  .top-anime-list-container{
+    overflow-y: hidden;
+    max-height: 100%;
+  }
+}
+
+@media (min-width:1510px){
+  .top-anime-list-container{
+    width: 30%;
+    height: 100%;
+  }
+}

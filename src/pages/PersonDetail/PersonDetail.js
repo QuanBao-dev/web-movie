@@ -1,10 +1,18 @@
 import "./PersonDetail.css";
 
-import React, { useEffect, useState } from "react";
+import React, { Suspense, useEffect, useState } from "react";
+import { useHistory } from "react-router-dom";
 import { fromEvent, of } from "rxjs";
 import { ajax } from "rxjs/ajax";
-import { catchError, debounceTime, pluck, retry, filter } from "rxjs/operators";
-import { useHistory } from "react-router-dom";
+import { catchError, debounceTime, filter, pluck, retry } from "rxjs/operators";
+
+const AnimeStaffPositions = React.lazy(() =>
+  import("../../components/AnimeStaffPositions/AnimeStaffPositions")
+);
+
+const AllAnimeRelated = React.lazy(() =>
+  import("../../components/AllAnimeRelated/AllAnimeRelated")
+);
 let updateStaffPosition;
 let updateVoiceActingRoles;
 let numberDisplay = 10;
@@ -121,47 +129,19 @@ const PersonDetail = (props) => {
           </div>
         )}
         {updateStaffPosition && Object.keys(updateStaffPosition).length !== 0 && (
-          <div className="person-appear-container">
+          <div>
             <h1 className="text-capitalize">Anime Staff Positions</h1>
-            <div className="all-anime-related">
-              {updateStaffPosition &&
-                Object.keys(updateStaffPosition) &&
-                Object.keys(updateStaffPosition).map((key, index) => (
-                  <div
-                    className={
-                      updateStaffPosition[key].positions.includes(
-                        "Theme Song Performance"
-                      )
-                        ? "anime-theme-song-performance-role"
-                        : ""
-                    }
-                    key={index}
-                    onClick={() =>
-                      history.push("/anime/" + updateStaffPosition[key].mal_id)
-                    }
-                  >
-                    <img
-                      src={updateStaffPosition[key].image_url}
-                      alt="image_anime"
-                    />
-                    <div className="pop-up-hover">
-                      <h3 title="name">{updateStaffPosition[key].name}</h3>
-                      {updateStaffPosition[key].positions.map(
-                        (theme, index) => (
-                          <span title="role" key={index}>
-                            ( {theme} )
-                          </span>
-                        )
-                      )}
-                    </div>
-                  </div>
-                ))}
-            </div>
+            <Suspense fallback={<div>Loading...</div>}>
+              <AnimeStaffPositions
+                history={history}
+                updateStaffPosition={updateStaffPosition}
+              />
+            </Suspense>
           </div>
         )}
         {updateVoiceActingRoles &&
           Object.keys(updateVoiceActingRoles).length !== 0 && (
-            <div className="person-voice-acting-container">
+            <div>
               <h1 className="text-capitalize">Voice Acting Roles</h1>
               <div className="list-anime-voice-acting">
                 {Object.keys(updateVoiceActingRoles)
@@ -185,10 +165,12 @@ const PersonDetail = (props) => {
                           <h3>{updateVoiceActingRoles[key].name}</h3>
                         </div>
                       </div>
-                      <AllAnimeRelated
-                        animeList={updateVoiceActingRoles[key].animeList}
-                        history={history}
-                      />
+                      <Suspense fallback={<div>Loading...</div>}>
+                        <AllAnimeRelated
+                          animeList={updateVoiceActingRoles[key].animeList}
+                          history={history}
+                        />
+                      </Suspense>
                     </div>
                   ))}
               </div>
@@ -203,27 +185,6 @@ const PersonDetail = (props) => {
       </div>
     );
 };
-
-function AllAnimeRelated({ animeList, history }) {
-  return (
-    <div className="all-anime-related">
-      {animeList &&
-        animeList.map((anime, index) => (
-          <div
-            className={anime.role === "Main" ? "anime-main-role" : ""}
-            key={index}
-            onClick={() => history.push("/anime/" + anime.mal_id)}
-          >
-            <img src={anime.image_url} alt="image_anime" />
-            <div className="pop-up-hover">
-              <h3>{anime.name}</h3>
-              <div title="role">( {anime.role} )</div>
-            </div>
-          </div>
-        ))}
-    </div>
-  );
-}
 
 function validateDataStaff(updateStaffPosition, personDetail) {
   updateStaffPosition = personDetail.anime_staff_positions.reduce(

@@ -1,6 +1,10 @@
-import React from "react";
-import { characterStream } from "../../epics/character";
-function CharacterItem({characterData, index, history}) {
+import './CharacterItem.css';
+
+import React from 'react';
+
+import { characterStream } from '../../epics/character';
+
+function CharacterItem({characterData, history}) {
   return (
     <div
       className={`character-item${

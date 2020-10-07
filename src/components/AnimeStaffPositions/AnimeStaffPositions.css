@@ -1,0 +1,32 @@
+.container-staff-position{
+  background-color: rgb(30, 36, 85);
+  margin-left: 1rem;
+  box-shadow: 0 0 4px 1px black;
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.container-staff-position > div{
+  cursor: pointer;
+  margin: 1rem;
+  max-width: 410px;
+  display: flex;
+  align-items: center;
+  box-shadow: 0 0 10px 1px black;
+  position: relative;
+  transition: 0.1s;
+}
+
+.container-staff-position > div:hover{
+  transform: scale(1.1);
+}
+.container-staff-position > div:hover .pop-up-hover{
+  transform: scale(1);
+}
+
+.container-staff-position div img{
+  border-radius: 10px;
+  width: 100%;
+}

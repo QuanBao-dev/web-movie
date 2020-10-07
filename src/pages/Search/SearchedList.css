@@ -13,3 +13,23 @@
   border-top: 4px solid red;
   padding: 0.5em;
 }
+
+.page-list{
+  display: flex;
+  width: 100%;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin: auto;
+}
+
+.page-item-search{
+  padding: 1rem;
+  background-color: black;
+  margin:0 0.2em;
+  cursor: pointer;
+}
+
+.active-page-search{
+  background-color: rgb(41, 62, 119);
+  box-shadow: 0 0 2px 1px black;
+}

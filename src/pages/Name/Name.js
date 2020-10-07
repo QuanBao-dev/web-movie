@@ -22,10 +22,14 @@ import {
 
 import Characters from "../../components/Characters/Characters";
 import Input from "../../components/Input/Input";
-import RelatedAnime from "../../components/RelatedAnime/RelatedAnime";
 import { userStream } from "../../epics/user";
 import { allowShouldFetchComment } from "../../store/comment";
 import navBarStore from "../../store/navbar";
+import { pageWatchStream } from "../../epics/pageWatch";
+
+const RelatedAnime = React.lazy(() =>
+  import("../../components/RelatedAnime/RelatedAnime")
+);
 const Reviews = React.lazy(() => import("../../components/Reviews/Reviews"));
 
 let episodeDataDisplay;
@@ -33,7 +37,7 @@ const Name = (props) => {
   const { name } = props.match.params;
   const user = userStream.currentState();
   const [cookies] = useCookies();
-
+  const [reviewState, setReviewState] = useState(pageWatchStream.initialState);
   const [data, setData] = useState({});
   const [episodeData, setEpisodeData] = useState({
     episodes: [],
@@ -43,7 +47,8 @@ const Name = (props) => {
   const [boxMovie, setBoxMovie] = useState();
   const [showThemeMusic, setShowThemeMusic] = useState(false);
   const [crawlAnimeMode, setCrawlAnimeMode] = useState("animehay");
-  const [toggleNavTitle, setToggleNavTitle] = useState(false);
+  const [toggleNavTitle, setToggleNavTitle] = useState(true);
+  const [elementTitle, setElementTitle] = useState([]);
 
   const selectModeEngVideoRef = useRef();
   const controlBoxMovieRef = useRef();
@@ -60,7 +65,12 @@ const Name = (props) => {
   const typeVideoSelectRef = useRef();
   const selectCrawlServerVideo = useRef();
   useEffect(() => {
+    const subscription = pageWatchStream.subscribe(setReviewState);
+    pageWatchStream.init();
     setShowThemeMusic(false);
+    return () => {
+      subscription.unsubscribe();
+    };
   }, []);
   useEffect(() => {
     let subscription;
@@ -179,9 +189,21 @@ const Name = (props) => {
   let sourceFilmList;
   if (episodeData && episodeData.sourceFilmList)
     sourceFilmList = Object.entries(episodeData.sourceFilmList);
-  let arrayTagTitle =
+  const arrayTagTitle =
     document.querySelectorAll(".anime-name-info.layout .title") || [];
-  const elementTitle = [...arrayTagTitle];
+  const a = [...arrayTagTitle];
+  let promo = [];
+  if (data && data.dataPromo) promo = data.dataPromo.promo;
+  useEffect(() => {
+    setElementTitle(a);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    a.length,
+    name,
+    elementTitle.length,
+    reviewState.reviewsData.length,
+    promo.length,
+  ]);
   return (
     findingAnime && (
       <div className="anime-name-info layout">
@@ -233,14 +255,26 @@ const Name = (props) => {
               )}
             </span>
           )}
-          <span
-            className="btn btn-yellow"
-            onClick={() => {
-              setToggleNavTitle(!toggleNavTitle);
-            }}
-          >
-            Shortcut
-          </span>
+          {!toggleNavTitle && (
+            <span
+              className="btn btn-yellow"
+              onClick={() => {
+                setToggleNavTitle(!toggleNavTitle);
+              }}
+            >
+              Shortcut
+            </span>
+          )}
+          {toggleNavTitle && (
+            <span
+              className="btn btn-dark"
+              onClick={() => {
+                setToggleNavTitle(!toggleNavTitle);
+              }}
+            >
+              Hide Shortcut
+            </span>
+          )}
         </div>
         <div className="box">
           <div className="box-info">
@@ -342,7 +376,9 @@ const Name = (props) => {
           </div>
         </div>
         <Characters malId={name} />
-        <RelatedAnime malId={name} />
+        <Suspense fallback={<div>Loading...</div>}>
+          <RelatedAnime malId={name} />
+        </Suspense>
         {data.dataPromo && <VideoPromotionList data={data} />}
         <Suspense fallback={<div>Loading...</div>}>
           <Reviews malId={name} />

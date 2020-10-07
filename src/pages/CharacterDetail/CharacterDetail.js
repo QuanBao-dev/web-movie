@@ -1,11 +1,14 @@
 import "./CharacterDetail.css";
 
-import React, { useEffect, useState } from "react";
+import React, { Suspense, useEffect, useState } from "react";
 import { of } from "rxjs";
 import { ajax } from "rxjs/ajax";
 import { catchError, pluck, retry } from "rxjs/operators";
 import { useHistory } from "react-router-dom";
 import { characterStream } from "../../epics/character";
+const AllAnimeRelated = React.lazy(() =>
+  import("../../components/AllAnimeRelated/AllAnimeRelated")
+);
 
 const CharacterDetail = (props) => {
   const { characterId } = props.match.params;
@@ -22,7 +25,7 @@ const CharacterDetail = (props) => {
     );
     return () => {
       subscription.unsubscribe();
-      characterStream.updateRole(null)
+      characterStream.updateRole(null);
     };
   }, [characterId]);
   // console.log(dataCharacterDetail);
@@ -83,53 +86,44 @@ const CharacterDetail = (props) => {
         dataCharacterDetail.animeography.length !== 0 && (
           <div className="character-appear-container">
             <h1 className="text-capitalize">Character appears in...</h1>
-            <div className="all-anime-related">
-              {dataCharacterDetail.animeography &&
-                dataCharacterDetail.animeography.map((anime, index) => (
+            <Suspense fallback={<div>Loading...</div>}>
+              <AllAnimeRelated
+                animeList={dataCharacterDetail.animeography}
+                history={history}
+              />
+            </Suspense>
+          </div>
+        )}
+      {dataCharacterDetail.voice_actors &&
+        dataCharacterDetail.voice_actors.length > 0 && (
+          <div className="voice-actor-container">
+            <h1 className="text-capitalize">Voice actor</h1>
+            <div className="voice-actor-list">
+              {dataCharacterDetail.voice_actors.map((actor, index) => {
+                return (
                   <div
-                    className={anime.role === "Main" ? "anime-main-role" : ""}
+                    className="actor-item"
                     key={index}
-                    onClick={() => history.push("/anime/" + anime.mal_id)}
+                    onClick={() => {
+                      history.push("/anime/person/" + actor.mal_id);
+                    }}
                   >
-                    <img src={anime.image_url} alt="image_anime" />
-                    <div className="pop-up-hover">
-                      <h3>{anime.name}</h3>
-                      <div title="role">( {anime.role} )</div>
+                    <img
+                      src={actor.image_url}
+                      alt="person_image"
+                      width="100%"
+                      height="100%"
+                    ></img>
+                    <div className="actor-name">
+                      <h3 title="name">{actor.name}</h3>
+                      <div title="language">( {actor.language} )</div>
                     </div>
                   </div>
-                ))}
+                );
+              })}
             </div>
           </div>
         )}
-      {dataCharacterDetail.voice_actors && dataCharacterDetail.voice_actors.length > 0 && (
-        <div className="voice-actor-container">
-          <h1 className="text-capitalize">Voice actor</h1>
-          <div className="voice-actor-list">
-            {dataCharacterDetail.voice_actors.map((actor, index) => {
-              return (
-                <div
-                  className="actor-item"
-                  key={index}
-                  onClick={() => {
-                    history.push("/anime/person/" + actor.mal_id);
-                  }}
-                >
-                  <img
-                    src={actor.image_url}
-                    alt="person_image"
-                    width="100%"
-                    height="100%"
-                  ></img>
-                  <div className="actor-name">
-                    <h3 title="name">{actor.name}</h3>
-                    <div title="language">( {actor.language} )</div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      )}
     </div>
   );
 };

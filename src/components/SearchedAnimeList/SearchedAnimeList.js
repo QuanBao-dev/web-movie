@@ -1,11 +1,13 @@
 import "./SearchedAnimeList.css";
 
-import React from "react";
+import React, { Suspense } from "react";
 
-import SearchedAnime from "../SearchedAnime/SearchedAnime";
+const SearchedAnime = React.lazy(() =>
+  import("../SearchedAnime/SearchedAnime")
+);
 
 const SearchedAnimeList = ({ homeState }) => {
-  if(homeState.textSearch && homeState.dataFilter.length === 0){
+  if (homeState.textSearch && homeState.dataFilter.length === 0) {
     homeState.textSearch = "";
   }
   return (
@@ -30,12 +32,16 @@ const SearchedAnimeList = ({ homeState }) => {
         {homeState.dataFilter.length > 0 &&
           homeState.dataFilter.map((anime, index) => {
             return (
-              <SearchedAnime
+              <Suspense
                 key={index}
-                image_url={anime.image_url}
-                malId={anime.mal_id}
-                title={anime.title}
-              />
+                fallback={<i className="fas fa-spinner fa-9x fa-spin"></i>}
+              >
+                <SearchedAnime
+                  image_url={anime.image_url}
+                  malId={anime.mal_id}
+                  title={anime.title}
+                />
+              </Suspense>
             );
           })}
       </div>

@@ -1,8 +1,14 @@
-import React, { useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import "./TopAnimeList.css";
 
-import { fetchTopMovie$, stream, topMovieUpdatedScrolling$ } from '../../epics/home';
-import { updatePageTopMovieOnDestroy } from '../../store/home';
+import React, { Suspense, useEffect } from "react";
+
+import {
+  fetchTopMovie$,
+  stream,
+  topMovieUpdatedScrolling$,
+} from "../../epics/home";
+import { updatePageTopMovieOnDestroy } from "../../store/home";
+const TopAnimeItem = React.lazy(() => import("../TopAnimeItem/TopAnimeItem"));
 
 function TopAnimeList({ homeState }) {
   useEffect(() => {
@@ -39,18 +45,16 @@ function TopAnimeList({ homeState }) {
       <ul className="top-anime-list">
         {homeState.dataTopMovie &&
           homeState.dataTopMovie.map((movie, index) => (
-            <li key={index}>
-              <h2>Rank {movie.rank}</h2>
-              <div>
-                <div className="top-anime-list-info">
-                  <div className="top-movie-score__home">{movie.score}/10</div>
-                  <Link to={"/anime/" + movie.mal_id}>
-                    <img src={movie.image_url} alt="Preview" />
-                  </Link>
-                  <div className="title">{movie.title}</div>
+            <Suspense
+              key={index}
+              fallback={
+                <div>
+                  <i className="fas fa-spinner fa-9x fa-spin"></i>
                 </div>
-              </div>
-            </li>
+              }
+            >
+              <TopAnimeItem movie={movie} />
+            </Suspense>
           ))}
       </ul>
     </div>

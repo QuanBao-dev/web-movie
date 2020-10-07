@@ -28,6 +28,7 @@ import homeStore, {
   updateModeScrolling,
   updateOriginalData,
 } from "../store/home";
+import navBarStore from "../store/navbar";
 
 export const stream = homeStore;
 
@@ -92,9 +93,11 @@ export const fetchAnimeSeason$ = (
   score
 ) => {
   return timer(0).pipe(
+    tap(() => navBarStore.updateIsShowBlockPopUp(true)),
     switchMapTo(
       ajax(`https://api.jikan.moe/v3/season/${year}/${season}`).pipe(
         pluck("response", "anime"),
+        tap(() => navBarStore.updateIsShowBlockPopUp(false)),
         map((anime) => {
           updateOriginalData(anime);
           anime = anime.filter(

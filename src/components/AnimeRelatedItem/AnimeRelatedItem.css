@@ -1,0 +1,17 @@
+.anime-main-role{
+  border: 2px solid yellow;
+  animation: victoryEnlighten 2s forwards infinite;
+  border-radius: 10px;
+}
+
+@keyframes victoryEnlighten{
+  0%{
+    box-shadow: 0 0 1px 1px red;
+  }
+  50%{
+    box-shadow: 0 0 10px 1px red;
+  }
+  100%{
+    box-shadow: 0 0 1px 1px red;
+  }
+}

@@ -71,31 +71,6 @@
   line-height: 2rem;
 }
 
-.anime-theme-song-performance-role{
-  border: 2px solid red;
-  animation: victoryEnlighten 2s forwards infinite;
-  border-radius: 10px;
-}
-
-@keyframes victoryEnlighten{
-  0%{
-    box-shadow: 0 0 1px 1px red;
-  }
-  50%{
-    box-shadow: 0 0 10px 1px red;
-  }
-  100%{
-    box-shadow: 0 0 1px 1px red;
-  }
-}
-
-.person-voice-acting-container .all-anime-related{
-  background-color: rgb(30, 36, 85);
-  margin-left: 1rem;
-  box-shadow: 0 0 4px 1px black;
-  width: 100%;
-}
-
 .list-anime-voice-acting{
   display: flex;
   flex-direction: column;

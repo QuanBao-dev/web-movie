@@ -36,84 +36,6 @@
   box-shadow: 0 0 10px 10px black, 0 0 10px 6px white;
 }
 
-.top-anime-list-container{
-  color: aliceblue;
-  margin:50px auto 50px 0;
-  box-shadow: 0 0 10px 10px black, 0 0 10px 6px white;
-  border-radius: 10px;
-  background-color: rgb(49, 47, 71);
-  overflow-x: hidden;
-  overflow-y: auto;
-  max-height: 4124px;
-  text-align: center;
-}
-
-.top-anime-list{
-  padding: 0;
-  height: 100%;
-  width: 100%;
-  display: flex;
-  list-style-type: none;
-  flex-wrap: wrap;
-  align-items: flex-start;
-  justify-content: center;
-}
-
-.top-anime-list-container::-webkit-scrollbar {
-  width: 0;
-  display: hidden;
-  background-color: #F5F5F5;
-}
-
-.top-anime-list-container::-webkit-scrollbar-thumb {
-  display: hidden;
-}
-
-.top-anime-list li{
-  width: 100%;
-  max-width: 400px;
-  position: relative;
-  border-radius: 10px;
-  margin:1.5rem;
-}
-
-.top-anime-list-info{
-  color:white;
-  width: 100%;
-  position: relative;
-  text-align: center;
-  background-color: rgb(37, 39, 63);
-  white-space: normal;
-  box-shadow: 0 0 10px 2px black;
-  border: 10px double black;
-  border-radius: 10px;
-}
-
-.top-anime-list-info .title{
-  font-size: 140%;
-  padding: 10px;
-  box-shadow: 0 0px 1px 1px rgb(107, 106, 106);
-  border: 10px double black;
-}
-
-.top-anime-list li img{
-  width: 60%;
-  height: 100%;
-  min-height: 200px;
-  display: block;
-  cursor: pointer;
-  margin: 15px auto 10px auto;
-  box-shadow: 0 0 10px 5px rgb(75, 75, 49);
-  object-fit: cover;
-  border-radius: 10px;
-  object-position: center;
-  animation: none;
-}
-
-.top-anime-list li img:hover{
-  animation: rotate 1.5s linear infinite both;
-}
-
 .recently-updated-movie{
   color: white;
   background-color: #242847;
@@ -165,20 +87,11 @@
   .sub-nav-bar{
     flex-direction: column;
   }
-  .top-anime-list-container{
-    overflow-y: hidden;
-    max-height: 100%;
-  }
 }
 
 @media (min-width:1510px){
   .container-display-anime__home{
     display: flex;
-  }
-
-  .top-anime-list-container{
-    width: 30%;
-    height: 100%;
   }
 }
 

@@ -36,10 +36,7 @@
   transition: 0.2s;
   min-height: 40px;
   max-height: 140px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
+  text-align: center;
 }
 
 
@@ -119,10 +116,20 @@
   .anime-info-display_summary{
     font-size: 0.5rem;
   }
+  .anime-item-info{
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .anime-item-info div{
+    text-align: center;
+    width: 100%;
+  }
   .anime-item-info h3{
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
+    width: 100%;
   }
 }
 

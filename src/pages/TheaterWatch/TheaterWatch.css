@@ -102,6 +102,7 @@
 .wrapper-video-player video{
   width: 100%!important;
   height: 100%;
+  outline: none;
 }
 
 .container-message-dialog{

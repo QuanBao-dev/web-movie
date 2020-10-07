@@ -1,13 +1,13 @@
 import "./Reviews.css";
 
-import React, { useEffect, useState } from "react";
+import React, { Suspense, useEffect, useState } from "react";
 
 import {
   fetchReviewsData$,
   pageWatchStream,
   updatePageScrolling$,
 } from "../../epics/pageWatch";
-import { timeSince } from "../../epics/comment";
+const ReviewItem = React.lazy(() => import("../ReviewItem/ReviewItem"));
 
 const Reviews = ({ malId }) => {
   const [reviewState, setReviewState] = useState(pageWatchStream.initialState);
@@ -77,75 +77,9 @@ const Reviews = ({ malId }) => {
           <div className="reviews-list-container">
             {reviewState &&
               reviewState.reviewsData.map((review, index) => (
-                <div className="review-item" key={index}>
-                  <div className="user-info-review-container">
-                    <div className="user-info-review">
-                      <img
-                        src={review.reviewer.image_url}
-                        alt="Image_reviewer"
-                      />
-                      <div>
-                        <div className="username">
-                          {review.reviewer.username}
-                        </div>
-                        <div className="helpful-count">
-                          {review.helpful_count} people found this review
-                          helpful
-                        </div>
-                      </div>
-                    </div>
-                    <div>
-                      {review.reviewer.episodes_seen} episode
-                      {review.reviewer.episodes_seen > 1 ? "s" : ""} seen
-                    </div>
-                  </div>
-                  <div className="time-since-review">
-                    {timeSince(new Date(review.date).getTime()) === "Recently"
-                      ? `Recently`
-                      : `${timeSince(new Date(review.date).getTime())} ago`}
-                  </div>
-                  <div className="container-board-evaluate">
-                    <div>
-                      {Object.keys(review.reviewer.scores).map((key, index) => (
-                        <div className="section-evaluate" key={index}>
-                          <span>{key}</span>
-                        </div>
-                      ))}
-                    </div>
-                    <div>
-                      {Object.values(review.reviewer.scores).map(
-                        (value, index) => (
-                          <div key={index}>
-                            <span className="score-section">{value}</span>
-                          </div>
-                        )
-                      )}
-                    </div>
-                  </div>
-                  <pre>
-                    {review.content
-                      .replace(/\\n/g, "")
-                      .split(" ")
-                      .slice(0, 100)
-                      .join(" ")}
-                    {review.content.replace(/\\n/g, "").split(" ").length >=
-                    100 ? (
-                      <span
-                        className="show-more-text"
-                        onClick={(e) => {
-                          e.target.parentElement.innerHTML = review.content.replace(
-                            /\\n/g,
-                            ""
-                          );
-                        }}
-                      >
-                        ...Show more
-                      </span>
-                    ) : (
-                      ""
-                    )}
-                  </pre>
-                </div>
+                <Suspense key={index} fallback={<div>Loading...</div>}>
+                  <ReviewItem review={review} />
+                </Suspense>
               ))}
             {reviewState && !reviewState.isStopFetchingReviews && (
               <i className="fas fa-spinner fa-3x fa-spin loading-symbol"></i>

@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import "./Carousel.css";
 
-import React, { useEffect, useState } from "react";
+import React, { Suspense, useEffect, useState } from "react";
 import { ajax } from "rxjs/ajax";
 import { pluck } from "rxjs/operators";
 import { stream } from "../../epics/home";
@@ -11,6 +11,7 @@ import { useCookies } from "react-cookie";
 import navBarStore from "../../store/navbar";
 import { interval } from "rxjs";
 import { useHistory } from "react-router-dom";
+const CarouselItem = React.lazy(() => import("../CarouselItem/CarouselItem"));
 const Carousel = () => {
   const { dataCarousel } = stream.currentState();
   const user = userStream.currentState();
@@ -160,42 +161,42 @@ const Carousel = () => {
             }}
           >
             {dataCarousel && dataCarousel[dataCarousel.length - 1] && (
-              <div className="item">
-                <img
-                  src={dataCarousel[dataCarousel.length - 1].url}
-                  alt="NOT_FOUND"
+              <Suspense
+                fallback={
+                  <div>
+                    <i className="fas fa-spinner fa-9x fa-spin"></i>
+                  </div>
+                }
+              >
+                <CarouselItem
+                  data={dataCarousel[dataCarousel.length - 1]}
+                  history={history}
                 />
-                <div className="container-title">
-                  <h1>{dataCarousel[dataCarousel.length - 1].title}</h1>
-                </div>
-              </div>
+              </Suspense>
             )}
             {dataCarousel &&
               dataCarousel.map((data, index) => (
-                <div
-                  className="item"
+                <Suspense
                   key={index}
-                  onClick={() => {
-                    if (data.malId) {
-                      history.push("/anime/" + data.malId);
-                    } else {
-                      history.push(`/anime/search?key=${data.title}`);
-                    }
-                  }}
+                  fallback={
+                    <div>
+                      <i className="fas fa-spinner fa-9x fa-spin"></i>
+                    </div>
+                  }
                 >
-                  <img src={data.url} alt="NOT_FOUND" />
-                  <div className="container-title">
-                    <h1>{data.title}</h1>
-                  </div>
-                </div>
+                  <CarouselItem key={index} data={data} history={history} />
+                </Suspense>
               ))}
             {dataCarousel && dataCarousel[0] && (
-              <div className="item">
-                <img src={dataCarousel[0].url} alt="NOT_FOUND" />
-                <div className="container-title">
-                  <h1>{dataCarousel[0].title}</h1>
-                </div>
-              </div>
+              <Suspense
+                fallback={
+                  <div>
+                    <i className="fas fa-spinner fa-9x fa-spin"></i>
+                  </div>
+                }
+              >
+                <CarouselItem data={dataCarousel[0]} history={history} />
+              </Suspense>
             )}
           </div>
         </section>

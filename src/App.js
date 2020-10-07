@@ -1,28 +1,40 @@
-import './App.css';
+import "./App.css";
 
-import Axios from 'axios';
-import React, { useEffect, useRef, useState } from 'react';
-import { useCookies } from 'react-cookie';
-import { BrowserRouter as Router, NavLink as Link, Route, Switch } from 'react-router-dom';
-import { ReplaySubject } from 'rxjs';
+import Axios from "axios";
+import React, { Suspense, useEffect, useRef, useState } from "react";
+import { useCookies } from "react-cookie";
+import {
+  BrowserRouter as Router,
+  NavLink as Link,
+  Route,
+  Switch,
+} from "react-router-dom";
+import { ReplaySubject } from "rxjs";
 
-import { fetchingUser$, userStream } from './epics/user';
-import NotFound from './pages/404/NotFound';
-import AdminManager from './pages/AdminManager/AdminManager';
-import CharacterDetail from './pages/CharacterDetail/CharacterDetail';
-import EditUser from './pages/EditUser/EditUser';
-import EpisodePage from './pages/EpisodePage/EpisodePage';
-import FAQ from './pages/FAQ/FAQ';
-import GenreDetail from './pages/GenreDetail/GenreDetail';
-import Home from './pages/Home/Home';
-import Login from './pages/Login/Login';
-import Name from './pages/Name/Name';
-import PersonDetail from './pages/PersonDetail/PersonDetail';
-import Register from './pages/Register/Register';
-import SearchedList from './pages/Search/SearchedList';
-import Theater from './pages/Theater/Theater';
-import { allowShouldFetchAllUser } from './store/admin';
-import navBarStore from './store/navbar';
+import { fetchingUser$, userStream } from "./epics/user";
+import Login from "./pages/Login/Login";
+import Register from "./pages/Register/Register";
+import { allowShouldFetchAllUser } from "./store/admin";
+import navBarStore from "./store/navbar";
+
+const FAQ = React.lazy(() => import("./pages/FAQ/FAQ"));
+const EditUser = React.lazy(() => import("./pages/EditUser/EditUser"));
+const AdminManager = React.lazy(() =>
+  import("./pages/AdminManager/AdminManager")
+);
+const NotFound = React.lazy(() => import("./pages/404/NotFound"));
+const Home = React.lazy(() => import("./pages/Home/Home"));
+const Name = React.lazy(() => import("./pages/Name/Name"));
+const CharacterDetail = React.lazy(() =>
+  import("./pages/CharacterDetail/CharacterDetail")
+);
+const Theater = React.lazy(() => import("./pages/Theater/Theater"));
+const EpisodePage = React.lazy(() => import("./pages/EpisodePage/EpisodePage"));
+const SearchedList = React.lazy(() => import("./pages/Search/SearchedList"));
+const PersonDetail = React.lazy(() =>
+  import("./pages/PersonDetail/PersonDetail")
+);
+const GenreDetail = React.lazy(() => import("./pages/GenreDetail/GenreDetail"));
 
 const scrollSaveSubject = new ReplaySubject(3);
 window.addEventListener("resize", () => {
@@ -94,7 +106,7 @@ function App() {
         onClick={() => {
           window.scroll({
             top: 0,
-            behavior:"smooth"
+            behavior: "smooth",
           });
         }}
       >
@@ -264,30 +276,38 @@ function App() {
           </ul>
         </ul>
       </nav>
-      <Switch>
-        <Route path="/" component={Home} exact />
-        {user && user.role === "Admin" && (
-          <Route path="/admin" component={AdminManager} exact />
-        )}
-        <Route path="/faq" component={FAQ} />
-        <Route path="/anime/search" component={SearchedList} />
-        <Route
-          path="/anime/:malId/watch/:episode/:mode"
-          component={EpisodePage}
-        />
-        <Route path="/anime/person/:personId" component={PersonDetail} />
-        <Route
-          path="/anime/character/:characterId"
-          component={CharacterDetail}
-        />
-        <Route path="/anime/:name" component={Name} />
-        <Route path="/genre/:genreId" component={GenreDetail} />
-        {user && <Route path="/theater" component={Theater} />}
-        {user && <Route path="/edit" component={EditUser} />}
-        {!user && <Route path="/auth/login" component={Login} />}
-        {!user && <Route path="/auth/register" component={Register} />}
-        <Route path="/*" component={NotFound} />
-      </Switch>
+      <Suspense
+        fallback={
+          <div>
+            <i className="fas fa-spinner fa-9x fa-spin"></i>
+          </div>
+        }
+      >
+        <Switch>
+          <Route path="/" component={Home} exact />
+          {user && user.role === "Admin" && (
+            <Route path="/admin" component={AdminManager} exact />
+          )}
+          <Route path="/faq" component={FAQ} />
+          <Route path="/anime/search" component={SearchedList} />
+          <Route
+            path="/anime/:malId/watch/:episode/:mode"
+            component={EpisodePage}
+          />
+          <Route path="/anime/person/:personId" component={PersonDetail} />
+          <Route
+            path="/anime/character/:characterId"
+            component={CharacterDetail}
+          />
+          <Route path="/anime/:name" component={Name} />
+          <Route path="/genre/:genreId" component={GenreDetail} />
+          {user && <Route path="/theater" component={Theater} />}
+          {user && <Route path="/edit" component={EditUser} />}
+          {!user && <Route path="/auth/login" component={Login} />}
+          {!user && <Route path="/auth/register" component={Register} />}
+          <Route path="/*" component={NotFound} />
+        </Switch>
+      </Suspense>
     </Router>
   );
 }

@@ -11,7 +11,7 @@ import Input from '../../components/Input/Input';
 import Toggle from '../../components/Toggle/Toggle';
 import { fetchRoomsData$, theaterStream, validateForm$ } from '../../epics/theater';
 import TheaterWatch from '../../pages/TheaterWatch/TheaterWatch';
-import { updateAllowFetchCurrentRoomDetail, updateAllowFetchRooms, updateSignIn } from '../../store/theater';
+import { updateAllowFetchCurrentRoomDetail, updateAllowFetchRooms, updateAllowUserJoin, updateSignIn } from '../../store/theater';
 
 const socket = theaterStream.socket;
 const Theater = (props) => {
@@ -38,6 +38,7 @@ const Theater = (props) => {
       });
     return () => {
       theaterStream.socket.emit("disconnect-custom");
+      updateAllowUserJoin(false);
       subscription.unsubscribe();
     };
   }, []);

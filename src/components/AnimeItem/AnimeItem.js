@@ -5,7 +5,6 @@ import { useHistory } from "react-router-dom";
 
 const AnimeItem = ({ anime }) => {
   const history = useHistory();
-  // console.log(anime);
   return (
     <div
       className="anime-item"
@@ -16,6 +15,14 @@ const AnimeItem = ({ anime }) => {
           new Date(Date.now()).getTime() && (
           <div className="anime-info-display_summary top-left_summary color-green">
             Airing
+          </div>
+        )}
+
+      {anime.end_date &&
+        new Date(anime.end_date).getTime() <=
+          new Date(Date.now()).getTime() && (
+          <div className="anime-info-display_summary top-left_summary color-green">
+            Finished
           </div>
         )}
       <div className="anime-info-display_summary top-right_summary color-red">
@@ -54,7 +61,10 @@ const AnimeItem = ({ anime }) => {
       <div className="anime-item-info">
         <h3 style={{ margin: "5px" }}>
           {anime.title.split(" ").slice(0, 6).join(" ")}
-          {anime.title.split(" ").length > anime.title.split(" ").slice(0, 6).length ? "..." : ""}
+          {anime.title.split(" ").length >
+          anime.title.split(" ").slice(0, 6).length
+            ? "..."
+            : ""}
         </h3>
         {anime.airing_start && (
           <div>

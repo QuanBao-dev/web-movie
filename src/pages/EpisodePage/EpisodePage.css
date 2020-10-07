@@ -164,7 +164,69 @@
 .section-play-movie{
   background-color: #262c41;
   position: relative;
+  overflow: auto;
 }
+
+.padding-control{
+  padding-bottom: 58%;
+}
+
+.padding-none{
+  padding-bottom: 0;
+}
+
+@media(max-width:504px){
+  .padding-control{
+    padding-bottom: 60%;
+  }
+}
+
+@media(max-width:478px){
+  .padding-control{
+    padding-bottom: 65%;
+  }
+}
+
+@media(max-width:442px){
+  .padding-control{
+    padding-bottom: 70%;
+  }
+}
+
+@media(max-width:407px){
+  .padding-control{
+    padding-bottom: 75%;
+  }
+}
+
+@media(max-width:390px){
+  .padding-control{
+    padding-bottom: 80%;
+  }
+}
+
+@media(max-width:361px){
+  .padding-control{
+    padding-bottom: 85%;
+  }
+}
+
+@media(max-width:338px){
+  .padding-control{
+    padding-bottom: 105%;
+  }
+}
+
+
+.section-play-movie::-webkit-scrollbar{
+  width: 5px;
+  background-color: #1c2129;
+}
+
+.section-play-movie::-webkit-scrollbar-thumb{
+  background-color: grey;
+}
+
 
 .active-episode{
   transition: 0.3s;
@@ -173,6 +235,7 @@
 
 .embed-video-player{
   position: absolute;
+  border: none;
 }
 
 .video-player-container{

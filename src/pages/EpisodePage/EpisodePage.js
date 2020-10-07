@@ -67,11 +67,11 @@ const EpisodePage = (props) => {
         </div>
         <div className="video-player-container">
           <div
-            className="section-play-movie"
-            style={{
-              paddingBottom:
-                currentEpisode && !currentEpisode.typeVideo ? "70%" : "0",
-            }}
+            className={`section-play-movie${
+              currentEpisode && !currentEpisode.typeVideo
+                ? " padding-control"
+                : " padding-none"
+            }`}
           >
             {currentEpisode && !currentEpisode.typeVideo && (
               <iframe

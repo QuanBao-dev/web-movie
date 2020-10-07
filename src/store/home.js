@@ -39,7 +39,9 @@ const initialState = {
   pageOnDestroy: null,
   pageTopMovieOnDestroy: null,
   allowFetchIncreaseGenrePage: false,
+  allowFetchIncreasePageTopMovie:false,
   isStopScrollingUpdated: false,
+  IsStopFetchTopMovie:false,
   currentPageOnDestroy: null,
   currentYearOnDestroy: null,
   currentSeasonOnDestroy: null,
@@ -59,6 +61,20 @@ const homeStore = {
     state = {
       ...state,
       screenWidth: window.innerWidth,
+    };
+    subject.next(state);
+  },
+  updateIsStopFetchTopMovie:(bool) => {
+    state = {
+      ...state,
+      IsStopFetchTopMovie:bool
+    };
+    subject.next(state);
+  },
+  updateAllowIncreasePageTopMovie:(bool) => {
+    state = {
+      ...state,
+      allowFetchIncreasePageTopMovie:bool
     };
     subject.next(state);
   },

@@ -27,6 +27,7 @@ import homeStore, {
   updateMaxPage,
   updateModeScrolling,
   updateOriginalData,
+  updatePageTopMovieOnDestroy,
 } from "../store/home";
 import navBarStore from "../store/navbar";
 
@@ -227,8 +228,9 @@ export const changeSearchInput$ = (searchInputElement) => {
   );
 };
 
-export const fetchTopMovie$ = (subscription) => {
+export const fetchTopMovie$ = () => {
   return timer(0).pipe(
+    tap(() => stream.updateAllowIncreasePageTopMovie(false)),
     exhaustMap(() =>
       ajax({
         url: `https://api.jikan.moe/v3/top/anime/${
@@ -236,9 +238,14 @@ export const fetchTopMovie$ = (subscription) => {
         }`,
       }).pipe(
         pluck("response", "top"),
+        tap(() => {
+          stream.updateAllowIncreasePageTopMovie(true);
+          updatePageTopMovieOnDestroy(stream.currentState().pageTopMovie);
+        }),
         retry(5),
         catchError((err) => {
-          subscription && subscription.unsubscribe();
+          stream.updateIsStopFetchTopMovie(true);
+          stream.updateAllowIncreasePageTopMovie(false);
           return of(stream.currentState().dataTopMovie);
         })
       )

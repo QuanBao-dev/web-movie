@@ -2,17 +2,27 @@ import "./SearchedList.css";
 import React, { Suspense, useEffect, useState } from "react";
 import { ajax } from "rxjs/ajax";
 import { catchError, pluck, retry, switchMapTo, tap } from "rxjs/operators";
-import { of, timer } from "rxjs";
+import { fromEvent, of, timer } from "rxjs";
 import navBarStore from "../../store/navbar";
 const AnimeList = React.lazy(() =>
   import("../../components/AnimeList/AnimeList")
 );
-const numberOfProductSearch = 7;
+
 const SearchedList = (props) => {
   const key = props.location.search.replace("?key=", "");
   const [dataSearchedAnimeState, setDataSearchedAnimeState] = useState();
+  const [maxPageDisplay, setMaxPageDisplay] = useState(7);
   const [page, setPage] = useState(1);
   const [lastPage, setLastPage] = useState(1);
+  useEffect(() => {
+    checkWidth(setMaxPageDisplay);
+    const subscription = fromEvent(window, "resize").subscribe((e) => {
+      checkWidth(setMaxPageDisplay);
+    });
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
   useEffect(() => {
     const subscription = fetchDataApi$(key, 1).subscribe((data) => {
       setLastPage(data.last_page);
@@ -32,7 +42,7 @@ const SearchedList = (props) => {
   }, [key, page]);
   let dataSearchDisplay;
   if (dataSearchedAnimeState) dataSearchDisplay = dataSearchedAnimeState;
-  const pageList = narrowPageList(page, lastPage);
+  const pageList = narrowPageList(page, lastPage, maxPageDisplay);
   return (
     <div className="container-search-anime">
       <h1 style={{ color: "white" }}>Results searched for "{key}"</h1>
@@ -85,15 +95,27 @@ const SearchedList = (props) => {
   );
 };
 
-function narrowPageList(page, lastPage) {
-  return Array.from(Array(numberOfProductSearch).keys()).map((v) => {
-    if (page <= Math.floor(numberOfProductSearch / 2)) {
+function checkWidth(setMaxPageDisplay) {
+  if (window.innerWidth < 360) {
+    setMaxPageDisplay(3);
+  } else if (window.innerWidth < 386) {
+    setMaxPageDisplay(4);
+  } else if (window.innerWidth < 430) {
+    setMaxPageDisplay(5);
+  } else if (window.innerWidth < 557) {
+    setMaxPageDisplay(6);
+  }
+}
+
+function narrowPageList(page, lastPage, maxPageDisplay) {
+  return Array.from(Array(maxPageDisplay).keys()).map((v) => {
+    if (page <= Math.floor(maxPageDisplay / 2)) {
       return v + 1;
     }
-    if (page >= lastPage - Math.floor(numberOfProductSearch / 2)) {
-      return lastPage - numberOfProductSearch + (v + 1);
+    if (page >= lastPage - Math.floor(maxPageDisplay / 2)) {
+      return lastPage - maxPageDisplay + (v + 1);
     }
-    return page - Math.floor(numberOfProductSearch / 2) + v;
+    return page - Math.floor(maxPageDisplay / 2) + v;
   });
 }
 

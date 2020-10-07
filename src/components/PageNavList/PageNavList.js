@@ -4,7 +4,7 @@ import React from "react";
 import { allowScrollToSeeMore } from "../../store/home";
 
 const PageNavList = ({ numberOfPagesDisplay, stream, homeState }) => {
-  homeState.currentPage === 0 && (homeState.currentPage = 1)
+  homeState.currentPage === 0 && (homeState.currentPage = 1);
   const elementsLi = Array.from(Array(numberOfPagesDisplay).keys()).map((v) => {
     if (homeState.currentPage <= Math.floor(numberOfPagesDisplay / 2)) {
       return v + 1;
@@ -28,7 +28,8 @@ const PageNavList = ({ numberOfPagesDisplay, stream, homeState }) => {
             stream.updateCurrentPage(1);
           }}
         >
-          Min
+          <i className="fas fa-chevron-left"></i>
+          <i className="fas fa-chevron-left"></i>
         </li>
 
         {elementsLi.map((page, index) => {
@@ -56,7 +57,8 @@ const PageNavList = ({ numberOfPagesDisplay, stream, homeState }) => {
             stream.updateCurrentPage(homeState.maxPage);
           }}
         >
-          Max
+          <i className="fas fa-chevron-right"></i>
+          <i className="fas fa-chevron-right"></i>
         </li>
       </ul>
     )

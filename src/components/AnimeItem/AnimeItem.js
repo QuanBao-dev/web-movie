@@ -19,10 +19,19 @@ const AnimeItem = ({ anime }) => {
         )}
 
       {anime.end_date &&
+        anime.end_date.length > 8 &&
         new Date(anime.end_date).getTime() <=
           new Date(Date.now()).getTime() && (
           <div className="anime-info-display_summary top-left_summary color-green">
             Finished
+          </div>
+        )}
+      {anime.end_date &&
+        anime.end_date.length <= 8 &&
+        new Date(anime.end_date).getTime() <=
+          new Date(Date.now()).getTime() && (
+          <div className="anime-info-display_summary top-left_summary color-green">
+            This month
           </div>
         )}
       <div className="anime-info-display_summary top-right_summary color-red">

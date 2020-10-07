@@ -5,7 +5,7 @@
   margin: auto;
   padding: 1em;
   text-align: center;
-  word-break: break-all;
+  word-wrap: break-word;
 }
 
 .container-search-anime h1{
@@ -32,4 +32,10 @@
 .active-page-search{
   background-color: rgb(41, 62, 119);
   box-shadow: 0 0 2px 1px black;
+}
+
+@media(max-width:463px){
+  .container-search-anime{
+    width: 100%;
+  }
 }

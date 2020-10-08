@@ -24,8 +24,6 @@ const initialState = {
   dateSchedule: Array.from(Array(7).keys()).map(() => false),
   updatedMovie: [],
   boxMovie: [],
-  genreDetailData: [],
-  pageGenre: 1,
   shouldFetchLatestUpdatedMovie: true,
   shouldFetchBoxMovie: false,
   shouldScrollToSeeMore: false,
@@ -36,12 +34,10 @@ const initialState = {
   score: 0,
   modeScrolling: "interval",
   dataCarousel: [],
-  pageOnDestroy: null,
   pageTopMovieOnDestroy: null,
-  allowFetchIncreaseGenrePage: false,
-  allowFetchIncreasePageTopMovie:false,
+  allowFetchIncreasePageTopMovie: false,
   isStopScrollingUpdated: false,
-  IsStopFetchTopMovie:false,
+  IsStopFetchTopMovie: false,
   currentPageOnDestroy: null,
   currentYearOnDestroy: null,
   currentSeasonOnDestroy: null,
@@ -64,17 +60,17 @@ const homeStore = {
     };
     subject.next(state);
   },
-  updateIsStopFetchTopMovie:(bool) => {
+  updateIsStopFetchTopMovie: (bool) => {
     state = {
       ...state,
-      IsStopFetchTopMovie:bool
+      IsStopFetchTopMovie: bool,
     };
     subject.next(state);
   },
-  updateAllowIncreasePageTopMovie:(bool) => {
+  updateAllowIncreasePageTopMovie: (bool) => {
     state = {
       ...state,
-      allowFetchIncreasePageTopMovie:bool
+      allowFetchIncreasePageTopMovie: bool,
     };
     subject.next(state);
   },
@@ -85,38 +81,10 @@ const homeStore = {
     };
     subject.next(state);
   },
-  updateError: (bool) => {
-    state = {
-      ...state,
-      errorFetchGenre: bool,
-    };
-    subject.next(state);
-  },
-  updateAllowUpdatePageGenre: (bool) => {
-    state = {
-      ...state,
-      allowFetchIncreaseGenrePage: bool,
-    };
-    subject.next(state);
-  },
-  updatePageGenre: (page) => {
-    state = {
-      ...state,
-      pageGenre: page,
-    };
-    subject.next(state);
-  },
   updateDataCarousel: (data) => {
     state = {
       ...state,
       dataCarousel: [...data],
-    };
-    subject.next(state);
-  },
-  updateGenreDetailData: (genreDetail) => {
-    state = {
-      ...state,
-      genreDetailData: genreDetail,
     };
     subject.next(state);
   },
@@ -239,11 +207,6 @@ const homeStore = {
     };
     subject.next(state);
   },
-};
-
-export const resetGenreDetail = () => {
-  state.pageGenre = 1;
-  state.genreDetailData = [];
 };
 
 export const updateDataOnDestroy = (page, season, year) => {

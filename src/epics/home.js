@@ -121,7 +121,7 @@ export const fetchAnimeSeason$ = (
             stream.initialState.year === year &&
             stream.initialState.season === season
           ) {
-            page = Math.ceil(latestAiringIndex / numberOfProducts);
+            page = Math.ceil((latestAiringIndex+1) / numberOfProducts);
             stream.updateCurrentPage(page);
           }
           if (page === 0) page = 1;

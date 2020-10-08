@@ -15,10 +15,6 @@ const Characters = ({ malId }) => {
     characterStream.initialState
   );
   useEffect(() => {
-    window.scroll({
-      top: 0,
-      behavior: "smooth",
-    });
     const subscription = fetchDataCharacter$(malId).subscribe((data) => {
       setDataCharacterState(data);
     });

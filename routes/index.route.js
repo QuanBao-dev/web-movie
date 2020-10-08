@@ -4,6 +4,19 @@ router.get("/", function (req, res) {
   res.sendFile(path.join(__dirname, "../build", "index.html"));
 });
 
+router.get("/producer/:producerId",(req,res) => {
+  res.sendFile(path.join(__dirname, "../build", "index.html"));
+})
+
+router.get("/studio/:producerId",(req,res) => {
+  res.sendFile(path.join(__dirname, "../build", "index.html"));
+})
+
+router.get("/licensor/:producerId",(req,res) => {
+  res.sendFile(path.join(__dirname, "../build", "index.html"));
+})
+
+
 router.get("/genre/:genreId",(req,res) => {
   res.sendFile(path.join(__dirname, "../build", "index.html"));
 })

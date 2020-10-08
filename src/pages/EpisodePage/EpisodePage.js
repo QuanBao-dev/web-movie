@@ -1,15 +1,19 @@
 /* eslint-disable eqeqeq */
 import "./EpisodePage.css";
 
-import React, { useEffect, useState } from "react";
+import React, { Suspense, useEffect, useState } from "react";
 import { Link, useHistory } from "react-router-dom";
 
-import Chat from "../../components/Chat/Chat";
-import Comment from "../../components/Comment/Comment";
 import { fetchEpisodesOfMovie$, pageWatchStream } from "../../epics/pageWatch";
 import { theaterStream } from "../../epics/theater";
 import { userStream } from "../../epics/user";
 import { allowShouldFetchComment } from "../../store/comment";
+
+const Comment = React.lazy(() => import("../../components/Comment/Comment"));
+const Chat = React.lazy(() => import("../../components/Chat/Chat"));
+const VideoPlayerSection = React.lazy(() =>
+  import("../../components/VideoPlayerSection/VideoPlayerSection")
+);
 
 const EpisodePage = (props) => {
   const { malId, episode, mode } = props.match.params;
@@ -63,66 +67,19 @@ const EpisodePage = (props) => {
       <div className="wrapper-player-video">
         <div className="wrapper-discuss-section">
           <h1>CHAT</h1>
-          <Chat groupId={malId} user={user} />
+          <Suspense fallback={<h1>Loading...</h1>}>
+            <Chat groupId={malId} user={user} />
+          </Suspense>
         </div>
-        <div className="video-player-container">
-          <div
-            className={`section-play-movie${
-              currentEpisode && !currentEpisode.typeVideo
-                ? " padding-control"
-                : " padding-none"
-            }`}
-          >
-            {currentEpisode && !currentEpisode.typeVideo && (
-              <iframe
-                className="embed-video-player"
-                width="100%"
-                height="100%"
-                src={currentEpisode.embedUrl}
-                title={currentEpisode.episode}
-                allowFullScreen
-              />
-            )}
-            {currentEpisode && currentEpisode.typeVideo && (
-              <div className="video-container__episode">
-                {user && (
-                  <div className="container-copy">
-                    <button
-                      className="btn btn-primary"
-                      style={{ backgroundColor: "black" }}
-                      onClick={() => {
-                        document.querySelector(
-                          ".result-success"
-                        ).style.display = "inline-block";
-                        document.addEventListener("copy", (e) => {
-                          copyToClipboard(e, currentEpisode);
-                        });
-                        document.execCommand("copy");
-                      }}
-                    >
-                      Copy Video Url for theater
-                    </button>
-                    <div className="result-success">
-                      <img
-                        src="https://thumbs.gfycat.com/ShyCautiousAfricanpiedkingfisher-size_restricted.gif"
-                        alt="check_success"
-                      />
-                      <span>Ok</span>
-                    </div>
-                  </div>
-                )}
-                <video
-                  className="video-player"
-                  width="100%"
-                  height="100%"
-                  src={currentEpisode.embedUrl}
-                  controls={true}
-                  playsInline
-                ></video>
-              </div>
-            )}
-          </div>
-        </div>
+        <Suspense
+          fallback={
+            <div>
+              <i className="fas fa-spinner fa-5x fa-spin"></i>
+            </div>
+          }
+        >
+          <VideoPlayerSection currentEpisode={currentEpisode} user={user} />
+        </Suspense>
       </div>
       <div className="next-previous-episode-container">
         {episode - 1 > 0 && (
@@ -244,15 +201,18 @@ const EpisodePage = (props) => {
             </div>
           )}
       </div>
-      <Comment malId={malId} user={user} />
+      <Suspense
+        fallback={
+          <div>
+            <i className="fas fa-spinner fa-5x fa-spin"></i>
+          </div>
+        }
+      >
+        <Comment malId={malId} user={user} />
+      </Suspense>
     </div>
   );
 };
-const copyToClipboard = (event, currentEpisode) => {
-  event.clipboardData.setData("text", currentEpisode.embedUrl);
-  event.preventDefault();
-};
-export default EpisodePage;
 function ListEpisodeUrlDisplay({
   episodes,
   episode,
@@ -282,3 +242,5 @@ function ListEpisodeUrlDisplay({
     </div>
   );
 }
+
+export default EpisodePage;

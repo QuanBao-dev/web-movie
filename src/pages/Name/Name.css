@@ -81,6 +81,17 @@
   cursor: pointer;
 }
 
+.click-able-info{
+  cursor: pointer;
+  transition: 0.4s;
+  transform: translateX(0);
+}
+
+.click-able-info:hover{
+  border-left:2px double white;
+  transform: translateX(1rem);
+}
+
 @media (min-width:950px){
   .anime-name-info{
     margin: auto;
@@ -94,7 +105,7 @@
     display: flex;
     position: relative;
     top:10px;
-    box-shadow:0 0 5px 5px black;
+    box-shadow:0 0 5px 1px black;
     border-radius: 10px;
     flex-direction: row;
   }
@@ -180,7 +191,7 @@
   margin-left: 10px;
   border-radius: 10px;
   max-height: 100%;
-  box-shadow: 0 0 5px 5px black;
+  box-shadow: 0 0 1px 1px black;
 }
 
 .anime-name-info .box-content .title{
@@ -243,6 +254,7 @@
 }
 
 .title-synonym-list{
+  overflow: hidden;
   background-color: #202c41;
   border: 2px solid black;
   box-shadow: 0 0 5px 5px black, 0 0 1px 5px white;

@@ -1,7 +1,6 @@
 import "./Genres.css";
 import React from "react";
 import { Link } from "react-router-dom";
-import { resetGenreDetail } from "../../store/home";
 const genresData = [
   { genreId: "1", genre: "Action" },
   { genreId: "2", genre: "Adventure" },
@@ -60,7 +59,6 @@ const Genres = () => {
               window.scroll({
                 top: 0,
               });
-              resetGenreDetail();
             }}
           >
             {data.genre}

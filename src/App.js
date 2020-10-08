@@ -1,22 +1,20 @@
-import "./App.css";
+import './App.css';
 
-import Axios from "axios";
-import React, { Suspense, useEffect, useRef, useState } from "react";
-import { useCookies } from "react-cookie";
-import {
-  BrowserRouter as Router,
-  NavLink as Link,
-  Route,
-  Switch,
-} from "react-router-dom";
-import { ReplaySubject } from "rxjs";
+import Axios from 'axios';
+import React, { Suspense, useEffect, useRef, useState } from 'react';
+import { useCookies } from 'react-cookie';
+import { BrowserRouter as Router, NavLink as Link, Route, Switch } from 'react-router-dom';
+import { ReplaySubject } from 'rxjs';
 
-import { fetchingUser$, userStream } from "./epics/user";
-import Login from "./pages/Login/Login";
-import Register from "./pages/Register/Register";
-import { allowShouldFetchAllUser } from "./store/admin";
-import navBarStore from "./store/navbar";
+import { fetchingUser$, userStream } from './epics/user';
+import Login from './pages/Login/Login';
+import Register from './pages/Register/Register';
+import { allowShouldFetchAllUser } from './store/admin';
+import navBarStore from './store/navbar';
 
+const ProducerDetail = React.lazy(() =>
+  import("./pages/ProducerDetail/ProducerDetail")
+);
 const FAQ = React.lazy(() => import("./pages/FAQ/FAQ"));
 const EditUser = React.lazy(() => import("./pages/EditUser/EditUser"));
 const AdminManager = React.lazy(() =>
@@ -301,6 +299,9 @@ function App() {
           />
           <Route path="/anime/:name" component={Name} />
           <Route path="/genre/:genreId" component={GenreDetail} />
+          <Route path="/producer/:producerId" component={ProducerDetail} />
+          <Route path="/studio/:producerId" component={ProducerDetail} />
+          <Route path="/licensor/:producerId" component={ProducerDetail} />
           {user && <Route path="/theater" component={Theater} />}
           {user && <Route path="/edit" component={EditUser} />}
           {!user && <Route path="/auth/login" component={Login} />}

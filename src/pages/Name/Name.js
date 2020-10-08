@@ -4,7 +4,7 @@ import Axios from "axios";
 import { capitalize, orderBy, random } from "lodash";
 import React, { Suspense, useEffect, useRef, useState } from "react";
 import { useCookies } from "react-cookie";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import { from, fromEvent, of, timer } from "rxjs";
 import { ajax } from "rxjs/ajax";
 import {
@@ -15,17 +15,24 @@ import {
   filter,
   map,
   mergeMap,
+  mergeMapTo,
   pluck,
   retry,
   switchMap,
+  tap,
 } from "rxjs/operators";
 
-import Characters from "../../components/Characters/Characters";
 import Input from "../../components/Input/Input";
 import { userStream } from "../../epics/user";
 import { allowShouldFetchComment } from "../../store/comment";
 import navBarStore from "../../store/navbar";
 import { pageWatchStream } from "../../epics/pageWatch";
+const Characters = React.lazy(() =>
+  import("../../components/Characters/Characters")
+);
+const VideoPromotionList = React.lazy(() =>
+  import("../../components/VideoPromotionList/VideoPromotionList")
+);
 
 const RelatedAnime = React.lazy(() =>
   import("../../components/RelatedAnime/RelatedAnime")
@@ -35,6 +42,7 @@ const Reviews = React.lazy(() => import("../../components/Reviews/Reviews"));
 let episodeDataDisplay;
 const Name = (props) => {
   const { name } = props.match.params;
+  const history = useHistory();
   const user = userStream.currentState();
   const [cookies] = useCookies();
   const [reviewState, setReviewState] = useState(pageWatchStream.initialState);
@@ -47,7 +55,7 @@ const Name = (props) => {
   const [boxMovie, setBoxMovie] = useState();
   const [showThemeMusic, setShowThemeMusic] = useState(false);
   const [crawlAnimeMode, setCrawlAnimeMode] = useState("animehay");
-  const [toggleNavTitle, setToggleNavTitle] = useState(true);
+  const [toggleNavTitle, setToggleNavTitle] = useState(false);
   const [elementTitle, setElementTitle] = useState([]);
 
   const selectModeEngVideoRef = useRef();
@@ -67,6 +75,9 @@ const Name = (props) => {
   useEffect(() => {
     const subscription = pageWatchStream.subscribe(setReviewState);
     pageWatchStream.init();
+    window.scroll({
+      top: 0,
+    });
     setShowThemeMusic(false);
     return () => {
       subscription.unsubscribe();
@@ -99,6 +110,7 @@ const Name = (props) => {
               ? pictures[random(pictures.length - 1)].large
               : undefined,
           });
+          navBarStore.updateIsShowBlockPopUp(false);
         }
       });
     fetchEpisodeDataVideo(name)
@@ -204,6 +216,7 @@ const Name = (props) => {
     reviewState.reviewsData.length,
     promo.length,
   ]);
+  // console.log(data);
   return (
     findingAnime && (
       <div className="anime-name-info layout">
@@ -257,7 +270,7 @@ const Name = (props) => {
           )}
           {!toggleNavTitle && (
             <span
-              className="btn btn-yellow"
+              className="btn btn-dark"
               onClick={() => {
                 setToggleNavTitle(!toggleNavTitle);
               }}
@@ -286,7 +299,7 @@ const Name = (props) => {
             >
               About
             </h1>
-            <ListInformation arrKeys={arrKeys} />
+            <ListInformation arrKeys={arrKeys} history={history} />
             {!showThemeMusic && (
               <button
                 className="button-show-more-information"
@@ -375,11 +388,17 @@ const Name = (props) => {
             )}
           </div>
         </div>
-        <Characters malId={name} />
+        <Suspense fallback={<i className="fas fa-spinner fa-5x fa-spin"></i>}>
+          <Characters malId={name} />
+        </Suspense>
         <Suspense fallback={<div>Loading...</div>}>
           <RelatedAnime malId={name} />
         </Suspense>
-        {data.dataPromo && <VideoPromotionList data={data} />}
+        {data.dataPromo && (
+          <Suspense fallback={<i className="fas fa-spinner fa-5x fa-spin"></i>}>
+            <VideoPromotionList data={data} />
+          </Suspense>
+        )}
         <Suspense fallback={<div>Loading...</div>}>
           <Reviews malId={name} />
         </Suspense>
@@ -415,7 +434,7 @@ function MenuTable({ elementTitle, toggleNavTitle }) {
   );
 }
 
-function ListInformation({ arrKeys }) {
+function ListInformation({ arrKeys, history }) {
   return (
     <ul>
       {arrKeys &&
@@ -459,15 +478,43 @@ function ListInformation({ arrKeys }) {
                 }
               });
               if (!check) {
-                const array = findingAnime[v].map((anime) => anime.name);
+                const array = findingAnime[v];
                 return (
                   <li key={index}>
                     <ul className="title-synonym-list">
                       <span className="title-capitalize">
                         {capitalizeString(v)}
                       </span>
-                      {array.map((nameAnime, index) => {
-                        return <li key={index}>{nameAnime}</li>;
+                      {array.map((anime, index) => {
+                        return (
+                          <li
+                            className={
+                              v === "genres" ||
+                              v === "producers" ||
+                              v === "studios" ||
+                              v === "licensors"
+                                ? "click-able-info"
+                                : ""
+                            }
+                            key={index}
+                            onClick={() => {
+                              if (v === "genres") {
+                                history.push("/genre/" + anime.mal_id);
+                              }
+                              if (v === "producers") {
+                                history.push("/producer/" + anime.mal_id);
+                              }
+                              if (v === "studios") {
+                                history.push("/studio/" + anime.mal_id);
+                              }
+                              if (v === "licensors") {
+                                history.push("/licensor/" + anime.mal_id);
+                              }
+                            }}
+                          >
+                            {anime.name}
+                          </li>
+                        );
                       })}
                     </ul>
                   </li>
@@ -782,32 +829,15 @@ function ListVideoUrl({ episodeData, name, keyListEpisode }) {
   );
 }
 
-function VideoPromotionList({ data }) {
-  return (
-    <div className="video-promotion-list">
-      {data.dataPromo.promo &&
-        data.dataPromo.promo.map((video, index) => {
-          return (
-            <div className="video-promotion-item" key={index}>
-              <h1 className="title">{video.title}</h1>
-              <iframe
-                style={{ margin: "auto" }}
-                width="100%"
-                height="500px"
-                src={video.video_url.replace(/autoplay=1/g, "autoplay=0")}
-                title={video.title}
-              ></iframe>
-            </div>
-          );
-        })}
-    </div>
-  );
-}
-
 const fetchData$ = (name) => {
-  return ajax(`https://api.jikan.moe/v3/anime/${name}`).pipe(
-    retry(),
-    pluck("response")
+  return timer(0).pipe(
+    tap(() => navBarStore.updateIsShowBlockPopUp(true)),
+    mergeMapTo(
+      ajax(`https://api.jikan.moe/v3/anime/${name}`).pipe(
+        retry(),
+        pluck("response")
+      )
+    )
   );
 };
 

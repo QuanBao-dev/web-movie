@@ -14,7 +14,7 @@ const AnimeItem = ({ anime }) => {
         new Date(anime.airing_start).getTime() <=
           new Date(Date.now()).getTime() && (
           <div className="anime-info-display_summary top-left_summary color-green">
-            Airing
+            Aired
           </div>
         )}
 
@@ -22,7 +22,7 @@ const AnimeItem = ({ anime }) => {
         anime.end_date.length > 8 &&
         new Date(anime.end_date).getTime() <=
           new Date(Date.now()).getTime() && (
-          <div className="anime-info-display_summary top-left_summary color-green">
+          <div className="anime-info-display_summary top-left_summary color-yellow">
             Finished
           </div>
         )}

@@ -12,9 +12,9 @@ export function fetchDataGenreAnimeList$(genreId, page, url) {
       lazyLoadAnimeListStream.updateAllowUpdatePageGenre(false);
       if (
         document.querySelector(".loading-symbol") &&
-        document.querySelector(".loading-symbol").style.display !== "flex"
+        document.querySelector(".loading-symbol").style.display !== ""
       )
-        document.querySelector(".loading-symbol").style.display = "flex";
+        document.querySelector(".loading-symbol").style.display = "";
       else endFetching();
     }),
     mergeMap(() =>

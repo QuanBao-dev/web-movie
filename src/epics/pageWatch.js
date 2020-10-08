@@ -39,6 +39,6 @@ export function fetchReviewsData$(malId, page) {
 
 export function updatePageScrolling$() {
   return fromEvent(window, "scroll").pipe(
-    filter(() => document.body.scrollHeight - (window.scrollY + 2000) < 0)
+    filter(() => document.body.scrollHeight - (window.scrollY + 5000) < 0)
   );
 }

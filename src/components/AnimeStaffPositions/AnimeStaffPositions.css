@@ -22,9 +22,6 @@
 .container-staff-position > div:hover{
   transform: scale(1.1);
 }
-.container-staff-position > div:hover .pop-up-hover{
-  transform: scale(1);
-}
 
 .container-staff-position div img{
   border-radius: 10px;

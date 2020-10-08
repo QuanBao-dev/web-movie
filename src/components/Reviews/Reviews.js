@@ -47,7 +47,7 @@ const Reviews = ({ malId }) => {
     if (
       pageWatchStream.currentState().pageReviewsOnDestroy !==
         reviewState.pageReviewsData &&
-      pageWatchStream.currentState().shouldUpdatePageReviewData
+      pageWatchStream.currentState().isStopFetchingReviews === false
     )
       subscription = fetchReviewsData$(
         malId,
@@ -55,6 +55,12 @@ const Reviews = ({ malId }) => {
       ).subscribe((v) => {
         if (!v.error) {
           pageWatchStream.updateReviewsData(v);
+          if (
+            pageWatchStream.currentState().reviewsData.length / 20 + 1 !==
+            parseInt(pageWatchStream.currentState().reviewsData.length / 20 + 1)
+          ) {
+            pageWatchStream.updateIsStopFetching(true);
+          }
           pageWatchStream.updatePreviousMalId(malId);
           pageWatchStream.allowUpdatePageReviewsData(true);
         } else {

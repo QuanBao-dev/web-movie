@@ -24,6 +24,7 @@ const Carousel = () => {
     });
     return () => {
       subscription.unsubscribe();
+      navBarStore.updateIsShowBlockPopUp(false);
     };
   }, []);
   useEffect(() => {

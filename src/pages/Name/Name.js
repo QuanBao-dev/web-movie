@@ -81,6 +81,7 @@ const Name = (props) => {
     setShowThemeMusic(false);
     return () => {
       subscription.unsubscribe();
+      navBarStore.updateIsShowBlockPopUp(false);
     };
   }, []);
   useEffect(() => {

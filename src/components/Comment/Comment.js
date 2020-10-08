@@ -47,6 +47,11 @@ function Comment({ malId, user }) {
   const inputRefs = multipleCreateRefList(numberOfMessage);
   const inputAuthorRefs = multipleCreateRefList(numberOfMessage);
   const buttonSubmitRefs = multipleCreateRefList(numberOfMessage);
+  useEffect(() =>{
+    return () => {
+      navBarStore.updateIsShowBlockPopUp(false);
+    }
+  },[])
   useEffect(() => {
     if (user) updateCurrentName(user.username);
     // eslint-disable-next-line react-hooks/exhaustive-deps

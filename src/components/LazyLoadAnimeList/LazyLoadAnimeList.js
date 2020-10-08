@@ -73,6 +73,12 @@ const LazyLoadAnimeList = ({ genreId, url }) => {
           if (v.meta) {
             lazyLoadAnimeListStream.updateGenre(v.meta.name);
           }
+          if (
+            updatedAnime.length / 100 + 1 !==
+            parseInt(updatedAnime.length / 100 + 1)
+          ) {
+            lazyLoadAnimeListStream.updateIsStopScrollingUpdated(true);
+          }
           lazyLoadAnimeListStream.updateGenreDetailData(updatedAnime);
           lazyLoadAnimeListStream.updatePageOnDestroy(
             lazyLoadAnimeListStream.currentState().pageGenre
@@ -103,7 +109,7 @@ const LazyLoadAnimeList = ({ genreId, url }) => {
       <div
         className="loading-symbol"
         style={{
-          display: lazyLoadState.isStopScrollingUpdated ? "none" : "flex",
+          display: lazyLoadState.isStopScrollingUpdated ? "none" : "",
         }}
       >
         <i className="fas fa-spinner fa-3x fa-spin"></i>

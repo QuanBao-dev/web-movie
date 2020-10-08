@@ -46,20 +46,3 @@
       border-radius: 10px;
       width: 100%;
     }
-    .pop-up-hover{
-      transition: 0.5s;
-      transform: scale(0);
-      display: flex;
-      position: absolute;
-      width: 100%;
-      top:0;
-      left: 0;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      height: 100%;
-      background-color: #1f1f3d6b;
-      flex-direction: column;
-      text-shadow: 2px 2px black;
-    }
-

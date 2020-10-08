@@ -21,15 +21,20 @@ const SearchedList = (props) => {
     });
     return () => {
       subscription.unsubscribe();
+      navBarStore.updateIsShowBlockPopUp(false);
     };
   }, []);
   useEffect(() => {
     const subscription = fetchDataApi$(key, 1).subscribe((data) => {
+      if(data.last_page < maxPageDisplay){
+        setMaxPageDisplay(data.last_page);
+      }
       setLastPage(data.last_page);
     });
     return () => {
       subscription.unsubscribe();
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [key]);
   useEffect(() => {
     let subscription;

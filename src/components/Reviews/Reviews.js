@@ -82,7 +82,9 @@ const Reviews = ({ malId }) => {
                 </Suspense>
               ))}
             {reviewState && !reviewState.isStopFetchingReviews && (
-              <i className="fas fa-spinner fa-3x fa-spin loading-symbol"></i>
+              <div className="loading-symbol-review">
+                <i className="fas fa-spinner fa-3x fa-spin"></i>
+              </div>
             )}
             {reviewState && reviewState.isStopFetchingReviews && <h1>End</h1>}
           </div>

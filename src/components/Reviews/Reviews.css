@@ -7,6 +7,10 @@
   width: 100%;
 }
 
+.loading-symbol-review{
+  text-align: center;
+}
+
 @media (max-width: 376px){
   .container-reviews {
     padding: .5rem!important;

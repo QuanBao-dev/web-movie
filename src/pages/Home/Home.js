@@ -40,7 +40,7 @@ const TopAnimeList = React.lazy(() =>
 
 const Carousel = React.lazy(() => import("../../components/Carousel/Carousel"));
 
-const numberOfMovieShown = 18;
+const numberOfMovieShown = 12;
 window.addEventListener("resize", () => {
   stream.init();
 });

@@ -42,13 +42,11 @@ const LazyLoadAnimeList = ({ genreId, url }) => {
   }, [lazyLoadState.currentGenreId]);
   useEffect(() => {
     let subscription1;
-    if (lazyLoadState.allowFetchIncreaseGenrePage) {
-      subscription1 = updatePageScrollingWindow$().subscribe(() => {
-        lazyLoadAnimeListStream.updatePageGenre(
-          lazyLoadState.genreDetailData.length / 100 + 1
-        );
-      });
-    }
+    subscription1 = updatePageScrollingWindow$().subscribe(() => {
+      lazyLoadAnimeListStream.updatePageGenre(
+        lazyLoadState.genreDetailData.length / 100 + 1
+      );
+    });
     return () => {
       subscription1 && subscription1.unsubscribe();
     };
@@ -65,7 +63,7 @@ const LazyLoadAnimeList = ({ genreId, url }) => {
         lazyLoadState.pageGenre,
         url
       ).subscribe((v) => {
-        if (!v.error) { 
+        if (!v.error) {
           const updatedAnime = [...lazyLoadState.genreDetailData, ...v.anime];
           if (v.mal_url) {
             lazyLoadAnimeListStream.updateGenre(v.mal_url.name);
@@ -104,7 +102,13 @@ const LazyLoadAnimeList = ({ genreId, url }) => {
         )}
       </h1>
       <Suspense fallback={<div>Loading...</div>}>
-        <AnimeList data={lazyLoadState.genreDetailData} error={null} />
+        <AnimeList
+          data={lazyLoadState.genreDetailData.slice(
+            0,
+            lazyLoadState.pageSplit * 10
+          )}
+          error={null}
+        />
       </Suspense>
       <div
         className="loading-symbol"

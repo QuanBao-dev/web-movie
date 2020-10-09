@@ -8,7 +8,8 @@ const initialState = {
   currentPageOnDestroy: null,
   currentGenreId: null,
   genre: null,
-  pageGenre:1
+  pageGenre:1,
+  pageSplit:1
 };
 
 const subject = new BehaviorSubject(initialState);
@@ -19,9 +20,16 @@ const lazyLoadAnimeListStore = {
   currentState: () => {
     let ans;
     subject.subscribe((v) => (ans = v));
-    return ans;
+    return ans || initialState;
   },
   init: () => {
+    subject.next(state);
+  },
+  updatePageSplit:(page) => {
+    state = {
+      ...state,
+      pageSplit:page
+    };
     subject.next(state);
   },
   resetAllGenrePage: () => {
@@ -29,6 +37,7 @@ const lazyLoadAnimeListStore = {
       ...state,
       genreDetailData: [],
       pageGenre: 1,
+      pageSplit:1,
       genre:null
     };
     subject.next(state);

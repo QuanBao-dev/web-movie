@@ -52,7 +52,7 @@ const Reviews = ({ malId }) => {
       pageWatchStream.currentState().isStopFetchingReviews === false
     )
       subscription = fetchReviewsData$(
-        malId, 
+        malId,
         pageWatchStream.currentState().pageReviewsData
       ).subscribe((v) => {
         if (!v.error) {
@@ -74,7 +74,7 @@ const Reviews = ({ malId }) => {
     return () => {
       subscription && subscription.unsubscribe();
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [malId, reviewState.pageReviewsData]);
   return (
     reviewState &&
@@ -86,11 +86,13 @@ const Reviews = ({ malId }) => {
         {reviewState && reviewState.reviewsData.length > 0 && (
           <div className="reviews-list-container">
             {reviewState &&
-              reviewState.reviewsData.map((review, index) => (
-                <Suspense key={index} fallback={<div>Loading...</div>}>
-                  <ReviewItem review={review} />
-                </Suspense>
-              ))}
+              reviewState.reviewsData
+                .slice(0, reviewState.pageSplit * 2)
+                .map((review, index) => (
+                  <Suspense key={index} fallback={<div>Loading...</div>}>
+                    <ReviewItem review={review} />
+                  </Suspense>
+                ))}
             {reviewState && !reviewState.isStopFetchingReviews && (
               <div className="loading-symbol-review">
                 <i className="fas fa-spinner fa-3x fa-spin"></i>

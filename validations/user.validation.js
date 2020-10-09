@@ -28,7 +28,7 @@ const changeInfoAccountValidation = (data) => {
 
 const changeInfoAccountValidationMiddleWare = (data) => {
   const schema = Joi.object({
-    email: Joi.string().min(6).email().required(),
+    userId: Joi.string().min(6).required(),
     currentPassword: Joi.string().min(6).required(),
   });
   return schema.validate(data);

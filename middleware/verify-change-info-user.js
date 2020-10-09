@@ -4,15 +4,15 @@ const {
   changeInfoAccountValidationMiddleWare,
 } = require("../validations/user.validation");
 module.exports.verifyChangeInfoUser = async (req, res, next) => {
-  const { email, password } = req.body;
+  const { userId, password } = req.body;
   let data = {};
-  data.email = req.body.email;
+  data.userId = userId;
   data.currentPassword = req.body.password;
   const result = changeInfoAccountValidationMiddleWare(data);
   if (result.error) {
     return res.status(400).send({ error: result.error.details[0].message });
   }
-  const user = await User.findOne({ email });
+  const user = await User.findOne({ userId });
   if (!user) {
     return res.status(400).send({ error: "Invalid Email" });
   }

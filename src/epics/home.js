@@ -121,7 +121,7 @@ export const fetchAnimeSeason$ = (
             stream.initialState.year === year &&
             stream.initialState.season === season
           ) {
-            page = Math.ceil((latestAiringIndex+1) / numberOfProducts);
+            page = Math.ceil((latestAiringIndex + 1) / numberOfProducts);
             stream.updateCurrentPage(page);
           }
           if (page === 0) page = 1;
@@ -309,12 +309,19 @@ export const listenSearchInputPressEnter$ = (searchInputE) => {
   );
 };
 
-export const topMovieUpdatedScrolling$ = (topAnimeElement) => {
+export const topMovieUpdatedScrolling$ = (
+  topAnimeElement,
+  pageSplit,
+  setPageSplit
+) => {
   return fromEvent(
     stream.currentState().screenWidth > 697 ? topAnimeElement : window,
     "scroll"
   ).pipe(
     debounceTime(500),
+    tap(() => {
+      setPageSplit(pageSplit + 1);
+    }),
     filter(() =>
       stream.currentState().screenWidth > 697
         ? topAnimeElement.scrollTop - (topAnimeElement.scrollHeight - 5000) > 0

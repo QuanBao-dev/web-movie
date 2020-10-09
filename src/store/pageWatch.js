@@ -6,7 +6,8 @@ const initialState = {
   pageReviewsOnDestroy:null,
   isStopFetchingReviews:false,
   shouldUpdatePageReviewData: false,
-  previousMalId:null
+  previousMalId:null,
+  pageSplit:1
 };
 const behaviorSubject = new BehaviorSubject(initialState);
 let state = initialState;
@@ -22,6 +23,13 @@ const pageWatchStore = {
   init: () => {
     behaviorSubject.next(state);
   },
+  updatePageSplit:(page) => {
+    state = {
+      ...state,
+      pageSplit:page
+    };
+    behaviorSubject.next(state)
+  },
 
   updateReviewsData:(data) => {
     state={
@@ -36,6 +44,7 @@ const pageWatchStore = {
       ...state,
       reviewsData:[],
       pageReviewsData:1,
+      pageSplit:1,
       isStopFetchingReviews:false,
     };
     behaviorSubject.next(state)

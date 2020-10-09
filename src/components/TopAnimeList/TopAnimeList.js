@@ -1,6 +1,6 @@
 import "./TopAnimeList.css";
 
-import React, { Suspense, useEffect } from "react";
+import React, { Suspense, useEffect, useState } from "react";
 
 import {
   fetchTopMovie$,
@@ -12,6 +12,7 @@ import { updatePageTopMovieOnDestroy } from "../../store/home";
 const TopAnimeItem = React.lazy(() => import("../TopAnimeItem/TopAnimeItem"));
 
 function TopAnimeList({ homeState }) {
+  const [pageSplit, setPageSplit] = useState(1);
   useEffect(() => {
     if (stream.currentState().dataTopMovie.length === 0) {
       updatePageTopMovieOnDestroy(null);
@@ -25,17 +26,23 @@ function TopAnimeList({ homeState }) {
         ".top-anime-list-container"
       );
       if (topAnimeElement) {
-        subscription11 = topMovieUpdatedScrolling$(topAnimeElement).subscribe(
-          () => {
-            updateDataTopScrolling();
-          }
-        );
+        subscription11 = topMovieUpdatedScrolling$(
+          topAnimeElement,
+          pageSplit,
+          setPageSplit
+        ).subscribe(() => {
+          updateDataTopScrolling();
+        });
       }
     }
     return () => {
       subscription11 && subscription11.unsubscribe();
     };
-  }, [homeState.allowFetchIncreasePageTopMovie, homeState.pageTopMovie]);
+  }, [
+    homeState.allowFetchIncreasePageTopMovie,
+    homeState.pageTopMovie,
+    pageSplit,
+  ]);
   useEffect(() => {
     let subscription7;
     if (
@@ -55,18 +62,20 @@ function TopAnimeList({ homeState }) {
       <h1>Top Anime</h1>
       <ul className="top-anime-list">
         {homeState.dataTopMovie &&
-          homeState.dataTopMovie.map((movie, index) => (
-            <Suspense
-              key={index}
-              fallback={
-                <div>
-                  <i className="fas fa-spinner fa-9x fa-spin"></i>
-                </div>
-              }
-            >
-              <TopAnimeItem movie={movie} />
-            </Suspense>
-          ))}
+          homeState.dataTopMovie
+            .slice(0, pageSplit * 10)
+            .map((movie, index) => (
+              <Suspense
+                key={index}
+                fallback={
+                  <div>
+                    <i className="fas fa-spinner fa-9x fa-spin"></i>
+                  </div>
+                }
+              >
+                <TopAnimeItem movie={movie} />
+              </Suspense>
+            ))}
       </ul>
     </div>
   );

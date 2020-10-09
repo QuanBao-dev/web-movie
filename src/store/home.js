@@ -41,6 +41,7 @@ const initialState = {
   currentPageOnDestroy: null,
   currentYearOnDestroy: null,
   currentSeasonOnDestroy: null,
+  pageSplit:1
 };
 
 const subject = new BehaviorSubject(initialState);
@@ -51,7 +52,14 @@ const homeStore = {
   currentState: () => {
     let ans;
     subject.subscribe((v) => (ans = v));
-    return ans;
+    return ans || initialState;
+  },
+  updatePageSplit:(page) => {
+    state={
+      ...state,
+      pageSplit:page
+    };
+    subject.next(state);
   },
   init: () => {
     state = {

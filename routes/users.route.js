@@ -44,14 +44,14 @@ router.post("/login", verifyLogin, async (req, res) => {
   if (!checkPassword) {
     return res.status(400).send({ error: "Invalid password" });
   }
-  const userVm = ignoreProps(
-    ["_id", "__v", "password", "avatarImage","email"],
-    user.toJSON()
-  );
   try {
-    const token = jwt.sign(userVm, process.env.JWT_KEY, {
-      expiresIn: "12h",
-    });
+    const token = jwt.sign(
+      { userId: user.userId, role: user.role },
+      process.env.JWT_KEY,
+      {
+        expiresIn: "12h",
+      }
+    );
     let options = {
       expires: new Date(Date.now() + 43200000),
       path: "/",
@@ -62,8 +62,8 @@ router.post("/login", verifyLogin, async (req, res) => {
       options = {
         ...options,
         httpOnly: true,
-        secure:true,
-        sameSite:"lax"
+        secure: true,
+        sameSite: "lax",
       };
     }
     res.cookie("idCartoonUser", token, options);
@@ -106,8 +106,8 @@ router.delete("/logout", verifyRole("Admin", "User"), (req, res) => {
     options = {
       ...options,
       httpOnly: true,
-      sameSite:"lax",
-      secure:true
+      sameSite: "lax",
+      secure: true,
     };
   }
 
@@ -143,6 +143,7 @@ router.put(
       return res.status(400).send({ error: "Bad request" });
     }
     const result = changeInfoAccountValidation(data);
+    console.log(result);
     if (result.error) {
       return res.status(400).send({ error: result.error.details[0].message });
     }
@@ -161,15 +162,12 @@ router.put(
       const salt = await bcrypt.genSalt(10);
       user.password = await bcrypt.hash(req.body.newPassword, salt);
     }
-    ///change cookie
-    if (!user.userId) user.userId = nanoid();
     try {
       const userSaved = await user.save();
-      const userVm = ignoreProps(
-        ["_id", "__v", "password", "avatarImage"],
-        userSaved.toJSON()
+      const token = jwt.sign(
+        { userId: userSaved.userId, role: userSaved.role },
+        process.env.JWT_KEY
       );
-      const token = jwt.sign(userVm, process.env.JWT_KEY);
       let options = {
         expires: new Date(Date.now() + 43200000),
         path: "/",
@@ -180,8 +178,8 @@ router.put(
         options = {
           ...options,
           httpOnly: true,
-          secure:true,
-          sameSite:"lax"
+          secure: true,
+          sameSite: "lax",
         };
       }
       res.cookie("idCartoonUser", token, options);

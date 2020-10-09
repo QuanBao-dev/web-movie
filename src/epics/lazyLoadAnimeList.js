@@ -1,13 +1,20 @@
-import { fromEvent, of, timer } from 'rxjs';
-import { ajax } from 'rxjs/ajax';
-import { catchError, filter, mergeMap, pluck, retry, tap } from 'rxjs/operators';
+import { fromEvent, of, timer } from "rxjs";
+import { ajax } from "rxjs/ajax";
+import {
+  catchError,
+  filter,
+  mergeMap,
+  pluck,
+  retry,
+  tap,
+} from "rxjs/operators";
 
-import lazyLoadAnimeListStore from '../store/lazyLoadAnimeList';
+import lazyLoadAnimeListStore from "../store/lazyLoadAnimeList";
 
 export const lazyLoadAnimeListStream = lazyLoadAnimeListStore;
 
 export function fetchDataGenreAnimeList$(genreId, page, url) {
-  return timer(0).pipe( 
+  return timer(0).pipe(
     tap(() => {
       lazyLoadAnimeListStream.updateAllowUpdatePageGenre(false);
       if (
@@ -18,7 +25,7 @@ export function fetchDataGenreAnimeList$(genreId, page, url) {
       else endFetching();
     }),
     mergeMap(() =>
-      ajax(url.replace("{genreId}",genreId).replace("{page}",page)).pipe(
+      ajax(url.replace("{genreId}", genreId).replace("{page}", page)).pipe(
         retry(),
         pluck("response"),
         tap(
@@ -43,6 +50,11 @@ function endFetching() {
 
 export function updatePageScrollingWindow$() {
   return fromEvent(window, "scroll").pipe(
-    filter(() => document.body.scrollHeight - (window.scrollY + 2000) < 0)
+    filter(() => document.body.scrollHeight - (window.scrollY + 1000) < 0),
+    tap(() =>
+      lazyLoadAnimeListStream.updatePageSplit(
+        lazyLoadAnimeListStream.currentState().pageSplit + 1
+      )
+    )
   );
 }

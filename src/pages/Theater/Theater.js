@@ -35,6 +35,7 @@ const Theater = (props) => {
   const buttonSubmitRef = useRef();
   const inputSearchRoom = useRef();
   useEffect(() => {
+    if (!socket.connected) theaterStream.socket.connect();
     const subscription = fromEvent(inputSearchRoom.current, "input")
       .pipe(
         throttleTime(400, asyncScheduler, {

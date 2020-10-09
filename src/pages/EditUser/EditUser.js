@@ -150,7 +150,7 @@ function createDataSubmit(
   inputNewPasswordElement
 ) {
   let data = {
-    email: userStream.currentState().email,
+    userId: userStream.currentState().userId,
     password: inputCurrentPasswordElement.value,
   };
   if (inputNewUsernameElement.value) {

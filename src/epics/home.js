@@ -199,10 +199,7 @@ export const changeSeasonYear$ = (
 export const changeSearchInput$ = (searchInputElement) => {
   const searchedInput$ = fromEvent(searchInputElement, "input");
   return searchedInput$.pipe(
-    throttleTime(300, asyncScheduler, {
-      leading: false,
-      trailing: true,
-    }),
+    debounceTime(300),
     pluck("target", "value"),
     tap((text) => savingTextSearch(text)),
     retry(20),

@@ -70,9 +70,8 @@
 
 .wrapper-discuss-section h1{
   position: absolute;
-  bottom:91%;
+  bottom:93%;
   left:36%;
-  z-index: 2;
   padding: 10px;
   background-color: #00000093;
   border-radius: 10px;

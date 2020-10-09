@@ -1,17 +1,26 @@
-import './Theater.css';
+import "./Theater.css";
 
-import Axios from 'axios';
-import React, { useEffect, useRef, useState } from 'react';
-import { useCookies } from 'react-cookie';
-import { Link, Route, Switch } from 'react-router-dom';
-import { asyncScheduler, fromEvent } from 'rxjs';
-import { throttleTime } from 'rxjs/operators';
+import Axios from "axios";
+import React, { useEffect, useRef, useState } from "react";
+import { useCookies } from "react-cookie";
+import { Link, Route, Switch } from "react-router-dom";
+import { asyncScheduler, fromEvent } from "rxjs";
+import { throttleTime } from "rxjs/operators";
 
-import Input from '../../components/Input/Input';
-import Toggle from '../../components/Toggle/Toggle';
-import { fetchRoomsData$, theaterStream, validateForm$ } from '../../epics/theater';
-import TheaterWatch from '../../pages/TheaterWatch/TheaterWatch';
-import { updateAllowFetchCurrentRoomDetail, updateAllowFetchRooms, updateAllowUserJoin, updateSignIn } from '../../store/theater';
+import Input from "../../components/Input/Input";
+import Toggle from "../../components/Toggle/Toggle";
+import {
+  fetchRoomsData$,
+  theaterStream,
+  validateForm$,
+} from "../../epics/theater";
+import TheaterWatch from "../../pages/TheaterWatch/TheaterWatch";
+import {
+  updateAllowFetchCurrentRoomDetail,
+  updateAllowFetchRooms,
+  updateAllowUserJoin,
+  updateSignIn,
+} from "../../store/theater";
 
 const socket = theaterStream.socket;
 const Theater = (props) => {
@@ -38,6 +47,7 @@ const Theater = (props) => {
       });
     return () => {
       theaterStream.socket.emit("disconnect-custom");
+      if (socket.connected) theaterStream.socket.close();
       updateAllowUserJoin(false);
       subscription.unsubscribe();
     };
@@ -63,7 +73,7 @@ const Theater = (props) => {
       buttonSubmitRef.current,
       inputRoomNameRef.current,
       inputPasswordRef.current
-    ).subscribe();
+    ).subscribe(); 
     ///TODO create new room
     return () => {
       subscription.unsubscribe();
@@ -175,18 +185,26 @@ function InputCreateRoom({
             });
             socket.emit("create-new-room");
             updateAllowFetchRooms(true);
+            inputRoomNameRef.current.value = "";
+            inputPasswordRef.current.value = ""
             theaterStream.addRoomTheater(res.data.message);
           } catch (error) {
             if (error.response.data.error.toLowerCase().includes("roomname")) {
               setRoomNameError(error.response.data.error);
+              inputRoomNameRef.current.value = "";
             } else {
               setRoomNameError(null);
+              inputRoomNameRef.current.value = "";
+              inputPasswordRef.current.value = ""
             }
             if (error.response.data.error.toLowerCase().includes("password")) {
               setPasswordError(error.response.data.error);
+              inputPasswordRef.current.value = ""
             } else {
+              inputRoomNameRef.current.value = "";
+              inputPasswordRef.current.value = "";
               setPasswordError(null);
-            }
+            };
           }
         }}
         ref={buttonSubmitRef}

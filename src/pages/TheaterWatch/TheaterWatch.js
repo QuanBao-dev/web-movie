@@ -196,6 +196,7 @@ const TheaterWatch = (props) => {
                 <video
                   poster="https://videopromotion.club/assets/images/default-video-thumbnail.jpg"
                   ref={videoWatchRef}
+                  onContextMenu={(e) => e.preventDefault()}
                   playsInline
                 ></video>
                 <div className="container-message-dialog">
@@ -370,27 +371,26 @@ async function newUserJoinHandleVideo(audioCallE) {
         myPeer = new Peer(id, options);
         const myAudio = document.createElement(elementCall);
         myAudio.muted = true;
-        //TODO
-        myPeer.on("open", async (id) => {
+        const buttonGetRemoteElement = document.getElementById(
+          "button-get-remote"
+        );
+        socket.emit(
+          "new-user",
+          user.avatarImage,
+          user.username,
+          groupId,
+          id,
+          user.userId,
+          buttonGetRemoteElement ? buttonGetRemoteElement.disabled:false
+        );
+        addAudioStream(myAudio, stream, audioCallE);
+        myPeer.on("open", (id) => {
           myAudio.id = id;
-          const buttonGetRemoteElement = document.getElementById(
-            "button-get-remote"
-          );
-          socket.emit(
-            "new-user",
-            user.avatarImage,
-            user.username,
-            groupId,
-            id,
-            user.userId,
-            buttonGetRemoteElement ? buttonGetRemoteElement.disabled:false
-          );
-          addAudioStream(myAudio, stream, audioCallE);
           appendNewMessageNotification(
             "Your " + elementCall + " is connected",
             notificationE,
             "audio-connected"
-          );
+          );  
           myPeer.on("call", (call) => {
             call.answer(stream);
             const audio = document.createElement(elementCall);

@@ -7,7 +7,7 @@ import lazyLoadAnimeListStore from '../store/lazyLoadAnimeList';
 export const lazyLoadAnimeListStream = lazyLoadAnimeListStore;
 
 export function fetchDataGenreAnimeList$(genreId, page, url) {
-  return timer(0).pipe(
+  return timer(0).pipe( 
     tap(() => {
       lazyLoadAnimeListStream.updateAllowUpdatePageGenre(false);
       if (
@@ -19,7 +19,7 @@ export function fetchDataGenreAnimeList$(genreId, page, url) {
     }),
     mergeMap(() =>
       ajax(url.replace("{genreId}",genreId).replace("{page}",page)).pipe(
-        retry(5),
+        retry(),
         pluck("response"),
         tap(
           () =>

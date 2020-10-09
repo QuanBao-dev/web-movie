@@ -4,6 +4,7 @@ import { ajax } from "rxjs/ajax";
 import { catchError, pluck, retry, switchMapTo, tap } from "rxjs/operators";
 import { fromEvent, of, timer } from "rxjs";
 import navBarStore from "../../store/navbar";
+import searchedListStore from "../../store/searchedList";
 const AnimeList = React.lazy(() =>
   import("../../components/AnimeList/AnimeList")
 );
@@ -12,21 +13,32 @@ const SearchedList = (props) => {
   const key = props.location.search.replace("?key=", "");
   const [dataSearchedAnimeState, setDataSearchedAnimeState] = useState();
   const [maxPageDisplay, setMaxPageDisplay] = useState(7);
-  const [page, setPage] = useState(1);
+  const [searchedListState, setSearchedListState] = useState(
+    searchedListStore.initialState
+  );
   const [lastPage, setLastPage] = useState(1);
   useEffect(() => {
+    const subscriptionInit = searchedListStore.subscribe(setSearchedListState);
+    searchedListStore.init()
     checkWidth(setMaxPageDisplay);
     const subscription = fromEvent(window, "resize").subscribe((e) => {
       checkWidth(setMaxPageDisplay);
     });
     return () => {
+      subscriptionInit.unsubscribe();
       subscription.unsubscribe();
       navBarStore.updateIsShowBlockPopUp(false);
     };
   }, []);
   useEffect(() => {
+    if(searchedListStore.currentState().previousKey !== key){
+      searchedListStore.updatePage(1)
+    }
+  },[key])
+  useEffect(() => {
     const subscription = fetchDataApi$(key, 1).subscribe((data) => {
-      if(data.last_page < maxPageDisplay){
+      searchedListStore.updatePreviousKey(key);
+      if (data.last_page < maxPageDisplay) {
         setMaxPageDisplay(data.last_page);
       }
       setLastPage(data.last_page);
@@ -34,20 +46,20 @@ const SearchedList = (props) => {
     return () => {
       subscription.unsubscribe();
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [key]);
   useEffect(() => {
     let subscription;
-    subscription = fetchDataApi$(key, page).subscribe((data) => {
+    subscription = fetchDataApi$(key, searchedListState.page).subscribe((data) => {
       setDataSearchedAnimeState(data.results);
     });
     return () => {
       subscription && subscription.unsubscribe();
     };
-  }, [key, page]);
+  }, [key, searchedListState.page]);
   let dataSearchDisplay;
   if (dataSearchedAnimeState) dataSearchDisplay = dataSearchedAnimeState;
-  const pageList = narrowPageList(page, lastPage, maxPageDisplay);
+  const pageList = narrowPageList(searchedListState.page, lastPage, maxPageDisplay);
   return (
     <div className="container-search-anime">
       <h1 style={{ color: "white" }}>Results searched for "{key}"</h1>
@@ -66,7 +78,7 @@ const SearchedList = (props) => {
         <div
           className="page-item-search"
           onClick={() => {
-            setPage(1);
+            searchedListStore.updatePage(1);
           }}
         >
           <i className="fas fa-chevron-left"></i>
@@ -77,10 +89,10 @@ const SearchedList = (props) => {
             <div
               key={index}
               className={`page-item-search${
-                pageData === page ? " active-page-search" : ""
+                pageData === searchedListState.page ? " active-page-search" : ""
               }`}
               onClick={() => {
-                setPage(pageData);
+                searchedListStore.updatePage(pageData);
               }}
             >
               {pageData}
@@ -89,7 +101,7 @@ const SearchedList = (props) => {
         <div
           className="page-item-search"
           onClick={() => {
-            setPage(lastPage);
+            searchedListStore.updatePage(lastPage);
           }}
         >
           <i className="fas fa-chevron-right"></i>

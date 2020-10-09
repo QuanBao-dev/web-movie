@@ -11,6 +11,7 @@ const boxMovieSchema = new mongoose.Schema({
   imageUrl: { type: String, required: true },
   episodes: { type: String, required: true },
   score: { type: String, required: true },
+  synopsis: { type: String, required: true },
   airing: { type: Boolean, required: true },
   dateAdded: { type: Date, default: Date.now },
 });

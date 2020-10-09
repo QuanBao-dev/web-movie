@@ -5,14 +5,14 @@ const VideoPromotionItem = React.lazy(() =>
 function VideoPromotionList({ data }) {
   return (
     <div className="video-promotion-list">
-      {data.dataPromo.promo &&
-        data.dataPromo.promo.map((video, index) => {
+      {data &&
+        data.map((video, index) => {
           return (
             <Suspense
               key={index}
               fallback={<i className="fas fa-spinner fa-5x fa-spin"></i>}
             >
-              <VideoPromotionItem video={video} />;
+              <VideoPromotionItem video={video} />
             </Suspense>
           );
         })}

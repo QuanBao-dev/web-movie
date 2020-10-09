@@ -33,15 +33,17 @@ const Reviews = ({ malId }) => {
     }
   }, [malId, reviewState.previousMalId]);
   useEffect(() => {
-    const subscription = updatePageScrolling$().subscribe(() => {
-      pageWatchStream.updatePageReview(
-        pageWatchStream.currentState().reviewsData.length / 20 + 1
-      );
-    });
+    let subscription;
+    if (reviewState.shouldUpdatePageReviewData)
+      subscription = updatePageScrolling$().subscribe(() => {
+        pageWatchStream.updatePageReview(
+          pageWatchStream.currentState().reviewsData.length / 20 + 1
+        );
+      });
     return () => {
-      subscription.unsubscribe();
+      subscription && subscription.unsubscribe();
     };
-  }, [reviewState.pageReviewsData]);
+  }, [reviewState.pageReviewsData, reviewState.shouldUpdatePageReviewData]);
   useEffect(() => {
     let subscription;
     if (
@@ -50,11 +52,12 @@ const Reviews = ({ malId }) => {
       pageWatchStream.currentState().isStopFetchingReviews === false
     )
       subscription = fetchReviewsData$(
-        malId,
+        malId, 
         pageWatchStream.currentState().pageReviewsData
       ).subscribe((v) => {
         if (!v.error) {
-          pageWatchStream.updateReviewsData(v);
+          const updatedAnime = [...reviewState.reviewsData, ...v];
+          pageWatchStream.updateReviewsData(updatedAnime);
           if (
             pageWatchStream.currentState().reviewsData.length / 20 + 1 !==
             parseInt(pageWatchStream.currentState().reviewsData.length / 20 + 1)
@@ -71,6 +74,7 @@ const Reviews = ({ malId }) => {
     return () => {
       subscription && subscription.unsubscribe();
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [malId, reviewState.pageReviewsData]);
   return (
     reviewState &&

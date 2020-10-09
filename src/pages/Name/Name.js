@@ -1,32 +1,30 @@
 import "./Name.css";
 
 import Axios from "axios";
-import { capitalize, orderBy, random } from "lodash";
+import { orderBy, random } from "lodash";
 import React, { Suspense, useEffect, useRef, useState } from "react";
 import { useCookies } from "react-cookie";
 import { Link, useHistory } from "react-router-dom";
-import { from, fromEvent, of, timer } from "rxjs";
+import { of } from "rxjs";
 import { ajax } from "rxjs/ajax";
-import {
-  catchError,
-  combineAll,
-  debounceTime,
-  exhaustMap,
-  filter,
-  map,
-  mergeMap,
-  mergeMapTo,
-  pluck,
-  retry,
-  switchMap,
-  tap,
-} from "rxjs/operators";
+import { catchError, map, pluck, retry } from "rxjs/operators";
 
 import Input from "../../components/Input/Input";
+import {
+  capitalizeString,
+  fetchBoxMovieOneMovie$,
+  fetchData$,
+  fetchDataVideo$,
+  fetchEpisodeDataVideo$,
+  handleAddBoxMovie,
+  handleDeleteBoxMovie,
+  nameStream,
+} from "../../epics/name";
+import { pageWatchStream } from "../../epics/pageWatch";
 import { userStream } from "../../epics/user";
 import { allowShouldFetchComment } from "../../store/comment";
 import navBarStore from "../../store/navbar";
-import { pageWatchStream } from "../../epics/pageWatch";
+
 const Characters = React.lazy(() =>
   import("../../components/Characters/Characters")
 );
@@ -45,21 +43,14 @@ const Name = (props) => {
   const history = useHistory();
   const user = userStream.currentState();
   const [cookies] = useCookies();
+  const [nameState, setNameState] = useState(nameStream.initialState);
   const [reviewState, setReviewState] = useState(pageWatchStream.initialState);
-  const [data, setData] = useState({});
-  const [episodeData, setEpisodeData] = useState({
-    episodes: [],
-    episodesEng: [],
-    episodesEngDub: [],
-  });
-  const [boxMovie, setBoxMovie] = useState();
   const [showThemeMusic, setShowThemeMusic] = useState(false);
   const [crawlAnimeMode, setCrawlAnimeMode] = useState("animehay");
   const [toggleNavTitle, setToggleNavTitle] = useState(false);
   const [elementTitle, setElementTitle] = useState([]);
 
   const selectModeEngVideoRef = useRef();
-  const controlBoxMovieRef = useRef();
   const deleteMovieRef = useRef();
   const addMovieRef = useRef();
   const inputVideoUrlRef = useRef();
@@ -74,139 +65,122 @@ const Name = (props) => {
   const selectCrawlServerVideo = useRef();
   useEffect(() => {
     const subscription = pageWatchStream.subscribe(setReviewState);
+    const subscription2 = nameStream.subscribe(setNameState);
     pageWatchStream.init();
+    nameStream.init();
     window.scroll({
       top: 0,
     });
     setShowThemeMusic(false);
     return () => {
       subscription.unsubscribe();
+      subscription2.unsubscribe();
       navBarStore.updateIsShowBlockPopUp(false);
     };
   }, []);
   useEffect(() => {
-    let subscription;
-    let fetchSub;
-    fetchSub = fetchData$(name)
-      .pipe(
-        mergeMap((anime) =>
-          from([
-            fetchDataVideo$(name).pipe(map((api) => ({ anime, api }))),
-            ajax(`https://api.jikan.moe/v3/anime/${name}/pictures`).pipe(
-              retry(10),
-              pluck("response", "pictures"),
-              map((pictures) => ({ pictures })),
-              catchError(() => of([]))
-            ),
-          ])
-        ),
-        combineAll()
-      )
-      .subscribe(([{ anime, api }, { pictures }]) => {
-        if (anime && api) {
-          setData({
-            ...anime,
-            dataPromo: api,
-            image_url: pictures[random(pictures.length - 1)]
-              ? pictures[random(pictures.length - 1)].large
-              : undefined,
-          });
-          navBarStore.updateIsShowBlockPopUp(false);
-        }
-      });
-    fetchEpisodeDataVideo(name)
-      .then((api) => {
+    const fetchDataSub = fetchData$(name).subscribe((v) => {
+      nameStream.updateDataInfoAnime(v);
+      navBarStore.updateIsShowBlockPopUp(false);
+    });
+    const fetchDataVideoSub = fetchDataVideo$(name).subscribe(({ promo }) => {
+      nameStream.updateDataVideoPromo(promo);
+    });
+    const fetchLargePictureSub = fetchLargePicture$(name).subscribe(
+      ({ pictures }) => {
+        const imageUrl = pictures[random(pictures.length - 1)]
+          ? pictures[random(pictures.length - 1)].large
+          : undefined;
+        nameStream.updateDataLargePicture(imageUrl);
+      }
+    );
+    const fetchEpisodesSub = fetchEpisodeDataVideo$(name).subscribe((api) => {
+      if (!api.error) {
         if (linkWatchingInputRef.current)
           linkWatchingInputRef.current.value = api.message.source;
-        setEpisodeData(api.message);
-      })
-      .catch(() => {
-        console.log("Don't have episode");
-      });
-    fetchBoxMovieOneMovie(name, cookies.idCartoonUser)
-      .then(async (api) => {
-        controlBoxMovieRef.current.style.display = "inline";
-        setBoxMovie(api.message);
+        nameStream.updateDataEpisodesAnime(api.message);
+      } else {
+        nameStream.updateDataEpisodesAnime({});
+      }
+    });
+    return () => {
+      fetchEpisodesSub.unsubscribe();
+      fetchLargePictureSub.unsubscribe();
+      fetchDataVideoSub.unsubscribe();
+      fetchDataSub.unsubscribe();
+    };
+  }, [name]);
+  // console.log(nameStream.currentState().boxMovie);
+  useEffect(() => {
+    let subscription;
+    fetchBoxMovieOneMovie$(name, cookies.idCartoonUser).subscribe((api) => {
+      if (!api.error) {
+        nameStream.updateBoxMovie(api.message);
         subscription = handleDeleteBoxMovie(
           addMovieRef,
           deleteMovieRef,
           cookies.idCartoonUser,
-          setBoxMovie,
           name
         );
-      })
-      .catch(() => {
-        if (controlBoxMovieRef.current)
-          controlBoxMovieRef.current.style.display = "inline";
+      } else {
+        nameStream.updateBoxMovie(null);
         subscription = handleAddBoxMovie(
           addMovieRef,
           deleteMovieRef,
           cookies.idCartoonUser,
-          setBoxMovie,
           name
         );
-      });
+      }
+    });
     return () => {
       subscription && subscription.unsubscribe();
-      fetchSub && fetchSub.unsubscribe();
       // eslint-disable-next-line react-hooks/exhaustive-deps
       linkWatchingInputRef.current && (linkWatchingInputRef.current.value = "");
-      setData({});
-      setEpisodeData([]);
+      // setData({});
+      // setEpisodeData([]);
     };
   }, [cookies.idCartoonUser, name]);
-
-  if (data) {
-    findingAnime = data;
-  }
-  let arrKeys;
-  // console.log(findingAnime);
-  if (findingAnime) {
-    arrKeys = Object.keys(findingAnime).filter((v) => {
-      let arrayExclude = [
-        "title",
-        "image_url",
-        "url",
-        "synopsis",
-        "trailer_url",
-        "request_hash",
-        "request_cached",
-        "request_cache_expiry",
-        "mal_id",
-      ];
-      if (!showThemeMusic) {
-        arrayExclude = [...arrayExclude, "opening_themes", "ending_themes"];
-      }
+  const arrKeys = Object.keys(nameState.dataInformationAnime).filter((v) => {
+    let arrayExclude = [
+      "title",
+      "image_url",
+      "url",
+      "synopsis",
+      "trailer_url",
+      "request_hash",
+      "request_cached",
+      "request_cache_expiry",
+      "mal_id",
+    ];
+    if (!showThemeMusic) {
+      arrayExclude = [...arrayExclude, "opening_themes", "ending_themes"];
+    }
+    if (nameState.dataInformationAnime)
       if (
-        findingAnime.opening_themes.length === 0 &&
-        findingAnime.ending_themes.length === 0
+        nameState.dataInformationAnime.opening_themes.length === 0 &&
+        nameState.dataInformationAnime.ending_themes.length === 0
       ) {
         document.querySelector(".button-show-more-information").style.display =
           "none";
       }
-      return arrayExclude.indexOf(v) === -1 ? true : false;
-    });
-  }
-  if (episodeData) {
-    episodeDataDisplay = Object.entries(episodeData).reduce(
-      (ans, [key, episodeList]) => {
-        if (key !== "source" && key !== "sourceFilmList")
-          if (episodeList.length > ans.episodeList.length) {
-            ans = { key, episodeList: [...episodeList] };
-          }
-        return ans;
-      },
-      { key: "", episodeList: [] }
-    );
-  }
+    return arrayExclude.indexOf(v) === -1 ? true : false;
+  });
+  episodeDataDisplay = Object.entries(nameState.dataEpisodesAnime).reduce(
+    (ans, [key, episodeList]) => {
+      if (key !== "source" && key !== "sourceFilmList")
+        if (episodeList.length > ans.episodeList.length) {
+          ans = { key, episodeList: [...episodeList] };
+        }
+      return ans;
+    },
+    { key: "", episodeList: [] }
+  );
   let sourceFilmList;
-  if (episodeData && episodeData.sourceFilmList)
-    sourceFilmList = Object.entries(episodeData.sourceFilmList);
+  if (nameState.dataEpisodesAnime && nameState.dataEpisodesAnime.sourceFilmList)
+    sourceFilmList = Object.entries(nameState.dataEpisodesAnime.sourceFilmList);
   const arrayTagTitle =
     document.querySelectorAll(".anime-name-info.layout .title") || [];
   const a = [...arrayTagTitle];
-  let promo = [];
-  if (data && data.dataPromo) promo = data.dataPromo.promo;
   useEffect(() => {
     setElementTitle(a);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -215,17 +189,16 @@ const Name = (props) => {
     name,
     elementTitle.length,
     reviewState.reviewsData.length,
-    promo.length,
+    nameState.dataVideoPromo.length,
   ]);
-  // console.log(data);
   return (
-    findingAnime && (
+    nameState.dataInformationAnime && (
       <div className="anime-name-info layout">
-        <h1 className="title">{findingAnime.title}</h1>
+        <h1 className="title">{nameState.dataInformationAnime.title}</h1>
         <div className="image">
           <img
             src={
-              findingAnime.image_url ||
+              nameState.dataLargePicture ||
               "https://reactnativecode.com/wp-content/uploads/2018/02/Default_Image_Thumbnail.png"
             }
             alt="image_anime"
@@ -256,39 +229,27 @@ const Name = (props) => {
             </Link>
           )}
           {user && (
-            <span style={{ display: "none" }} ref={controlBoxMovieRef}>
-              {!boxMovie && (
+            <span style={{ display: "inline" }}>
+              {!nameState.boxMovie && (
                 <span className="btn btn-primary" ref={addMovieRef}>
                   Add to Box
                 </span>
               )}
-              {boxMovie && (
+              {nameState.boxMovie && (
                 <span ref={deleteMovieRef} className="btn btn-danger">
                   Delete from Box
                 </span>
               )}
             </span>
           )}
-          {!toggleNavTitle && (
-            <span
-              className="btn btn-dark"
-              onClick={() => {
-                setToggleNavTitle(!toggleNavTitle);
-              }}
-            >
-              Shortcut
-            </span>
-          )}
-          {toggleNavTitle && (
-            <span
-              className="btn btn-dark"
-              onClick={() => {
-                setToggleNavTitle(!toggleNavTitle);
-              }}
-            >
-              Hide Shortcut
-            </span>
-          )}
+          <span
+            className="btn btn-dark"
+            onClick={() => {
+              setToggleNavTitle(!toggleNavTitle);
+            }}
+          >
+            Shortcut
+          </span>
         </div>
         <div className="box">
           <div className="box-info">
@@ -316,7 +277,9 @@ const Name = (props) => {
             <h1 style={{ margin: "0" }} className="title">
               Summary
             </h1>
-            <div className="content">{findingAnime.synopsis}</div>
+            <div className="content">
+              {nameState.dataInformationAnime.synopsis}
+            </div>
             {episodeDataDisplay && episodeDataDisplay.episodeList.length > 0 && (
               <div>
                 <h1 className="title">Latest Episodes</h1>
@@ -335,8 +298,7 @@ const Name = (props) => {
                   inputVideoUrlRef={inputVideoUrlRef}
                   cookies={cookies}
                   name={name}
-                  episodeData={episodeData}
-                  setEpisodeData={setEpisodeData}
+                  episodeData={nameState.dataEpisodesAnime}
                   typeVideoSelectRef={typeVideoSelectRef}
                 />
                 <h1 className="title">Crawl episode</h1>
@@ -355,7 +317,6 @@ const Name = (props) => {
                   linkWatchingInputRef={linkWatchingInputRef}
                   selectCrawlInputRef={selectCrawlInputRef}
                   name={name}
-                  setEpisodeData={setEpisodeData}
                   cookies={cookies}
                   selectCrawlServerVideo={selectCrawlServerVideo}
                   crawlAnimeMode={crawlAnimeMode}
@@ -375,7 +336,7 @@ const Name = (props) => {
                         },
                       });
                       navBarStore.updateIsShowBlockPopUp(false);
-                      setEpisodeData({ episodes: [] });
+                      nameStream.updateDataEpisodesAnime({});
                       buttonDeleteCrawlInputRef.current.disabled = false;
                     } catch (error) {
                       navBarStore.updateIsShowBlockPopUp(false);
@@ -395,9 +356,9 @@ const Name = (props) => {
         <Suspense fallback={<div>Loading...</div>}>
           <RelatedAnime malId={name} />
         </Suspense>
-        {data.dataPromo && (
+        {nameState.dataVideoPromo && (
           <Suspense fallback={<i className="fas fa-spinner fa-5x fa-spin"></i>}>
-            <VideoPromotionList data={data} />
+            <VideoPromotionList data={nameState.dataVideoPromo} />
           </Suspense>
         )}
         <Suspense fallback={<div>Loading...</div>}>
@@ -407,6 +368,15 @@ const Name = (props) => {
     )
   );
 };
+
+function fetchLargePicture$(name) {
+  return ajax(`https://api.jikan.moe/v3/anime/${name}/pictures`).pipe(
+    retry(10),
+    pluck("response", "pictures"),
+    map((pictures) => ({ pictures })),
+    catchError(() => of([]))
+  );
+}
 
 function MenuTable({ elementTitle, toggleNavTitle }) {
   return (
@@ -440,7 +410,10 @@ function ListInformation({ arrKeys, history }) {
     <ul>
       {arrKeys &&
         arrKeys.map((v, index) => {
-          if (typeof findingAnime[v] !== "object") {
+          if (
+            typeof nameStream.currentState().dataInformationAnime[v] !==
+            "object"
+          ) {
             if (v !== "rank")
               return (
                 <li key={index}>
@@ -451,7 +424,7 @@ function ListInformation({ arrKeys, history }) {
                   >
                     {capitalizeString(v)}:
                   </span>{" "}
-                  {`${findingAnime[v]}`}
+                  {`${nameStream.currentState().dataInformationAnime[v]}`}
                 </li>
               );
             else
@@ -460,26 +433,33 @@ function ListInformation({ arrKeys, history }) {
                   key={index}
                   style={{
                     color:
-                      findingAnime[v] <= 1000
+                      nameStream.currentState().dataInformationAnime[v] <= 1000
                         ? "Yellow"
-                        : findingAnime[v] <= 2000
+                        : nameStream.currentState().dataInformationAnime[v] <=
+                          2000
                         ? "#8b8bff"
                         : "inherit",
                   }}
                 >
-                  <span>{capitalizeString(v)}:</span> {`${findingAnime[v]}`}
+                  <span>{capitalizeString(v)}:</span>{" "}
+                  {`${nameStream.currentState().dataInformationAnime[v]}`}
                 </li>
               );
           } else {
-            if (findingAnime[v] && findingAnime[v].length) {
+            if (
+              nameStream.currentState().dataInformationAnime[v] &&
+              nameStream.currentState().dataInformationAnime[v].length
+            ) {
               let check = true;
-              findingAnime[v].forEach((anime) => {
-                if (typeof anime === "object") {
-                  check = false;
-                }
-              });
+              nameStream
+                .currentState()
+                .dataInformationAnime[v].forEach((anime) => {
+                  if (typeof anime === "object") {
+                    check = false;
+                  }
+                });
               if (!check) {
-                const array = findingAnime[v];
+                const array = nameStream.currentState().dataInformationAnime[v];
                 return (
                   <li key={index}>
                     <ul className="title-synonym-list">
@@ -528,9 +508,11 @@ function ListInformation({ arrKeys, history }) {
                       <span className="title-capitalize">
                         {capitalizeString(v)}
                       </span>
-                      {findingAnime[v].map((nameAnime, index) => {
-                        return <li key={index}>{nameAnime}</li>;
-                      })}
+                      {nameStream
+                        .currentState()
+                        .dataInformationAnime[v].map((nameAnime, index) => {
+                          return <li key={index}>{nameAnime}</li>;
+                        })}
                     </ul>
                   )}
 
@@ -548,9 +530,11 @@ function ListInformation({ arrKeys, history }) {
                       >
                         {v}
                       </div>
-                      {findingAnime[v].map((anime, key) => {
-                        return <div key={key}>{anime}</div>;
-                      })}
+                      {nameStream
+                        .currentState()
+                        .dataInformationAnime[v].map((anime, key) => {
+                          return <div key={key}>{anime}</div>;
+                        })}
                     </div>
                   )}
                 </li>
@@ -570,7 +554,6 @@ function FormSubmitCrawl({
   buttonSubmitCrawlInputRef,
   selectCrawlInputRef,
   name,
-  setEpisodeData,
   cookies,
   selectCrawlServerVideo,
   crawlAnimeMode,
@@ -676,7 +659,7 @@ function FormSubmitCrawl({
                 },
               }
             );
-            setEpisodeData(updateMovie.data.message);
+            nameStream.updateDataEpisodesAnime(updateMovie.data.message);
             startEpisodeInputRef.current.value = "";
             endEpisodeInputRef.current.value = "";
             navBarStore.updateIsShowBlockPopUp(false);
@@ -705,7 +688,6 @@ function FormSubmit({
   cookies,
   name,
   episodeData,
-  setEpisodeData,
   typeVideoSelectRef,
 }) {
   return (
@@ -773,13 +755,22 @@ function FormSubmit({
             );
             const data = episodeData;
             if (language === "vi") {
-              setEpisodeData({ ...data, episodes: res.data });
+              nameStream.updateDataEpisodesAnime({
+                ...data,
+                episodes: res.data,
+              });
             }
             if (language === "eng") {
               if (isDub) {
-                setEpisodeData({ ...data, episodesEngDub: res.data });
+                nameStream.updateDataEpisodesAnime({
+                  ...data,
+                  episodesEngDub: res.data,
+                });
               } else {
-                setEpisodeData({ ...data, episodesEng: res.data });
+                nameStream.updateDataEpisodesAnime({
+                  ...data,
+                  episodesEng: res.data,
+                });
               }
             }
             inputEpisodeRef.current.value = "";
@@ -828,145 +819,6 @@ function ListVideoUrl({ episodeData, name, keyListEpisode }) {
           })}
     </div>
   );
-}
-
-const fetchData$ = (name) => {
-  return timer(0).pipe(
-    tap(() => navBarStore.updateIsShowBlockPopUp(true)),
-    mergeMapTo(
-      ajax(`https://api.jikan.moe/v3/anime/${name}`).pipe(
-        retry(),
-        pluck("response")
-      )
-    )
-  );
-};
-
-const fetchDataVideo$ = (malId) => {
-  return ajax(`https://api.jikan.moe/v3/anime/${malId}/videos`).pipe(
-    retry(),
-    pluck("response")
-  );
-};
-
-const fetchEpisodeDataVideo = async (malId) => {
-  let data = await fetch(`/api/movies/${malId}/episodes`);
-  data = await data.json();
-  return data;
-};
-
-const fetchBoxMovieOneMovie = async (malId, idCartoonUser) => {
-  let data = await Axios.get(`/api/movies/box/${malId}`, {
-    headers: {
-      authorization: `Bearer ${idCartoonUser}`,
-    },
-  });
-  data = data.data;
-  return data;
-};
-
-let findingAnime;
-
-function capitalizeString(string) {
-  string = string.replace("_", " ");
-  return capitalize(string);
-}
-
-function handleAddBoxMovie(
-  addMovieRef,
-  deleteMovieRef,
-  idCartoonUser,
-  setBoxMovie,
-  malId
-) {
-  return timer(0)
-    .pipe(
-      filter(() => addMovieRef.current),
-      debounceTime(500),
-      map(() => addMovieRef.current),
-      switchMap((target) => {
-        return fromEvent(target, "click").pipe(
-          filter(() => findingAnime),
-          exhaustMap(() =>
-            ajax({
-              method: "POST",
-              url: "/api/movies/box",
-              headers: {
-                authorization: `Bearer ${idCartoonUser}`,
-              },
-              body: {
-                malId: findingAnime.mal_id,
-                title: findingAnime.title,
-                imageUrl: findingAnime.image_url,
-                episodes: findingAnime.episodes || "??",
-                score: findingAnime.score,
-                airing: findingAnime.airing,
-              },
-            }).pipe(
-              pluck("response", "message"),
-              catchError((err) => {
-                return from([]);
-              })
-            )
-          )
-        );
-      })
-    )
-    .subscribe((v) => {
-      // console.log(v);
-      setBoxMovie(v);
-      handleDeleteBoxMovie(
-        addMovieRef,
-        deleteMovieRef,
-        idCartoonUser,
-        setBoxMovie,
-        malId
-      );
-    });
-}
-
-function handleDeleteBoxMovie(
-  addMovieRef,
-  deleteMovieRef,
-  idCartoonUser,
-  setBoxMovie,
-  malId
-) {
-  return timer(0)
-    .pipe(
-      filter(() => deleteMovieRef.current),
-      debounceTime(500),
-      map(() => deleteMovieRef.current),
-      switchMap((target) => {
-        return fromEvent(target, "click").pipe(
-          filter(() => findingAnime),
-          exhaustMap(() =>
-            ajax({
-              method: "DELETE",
-              url: `/api/movies/box/${malId}`,
-              headers: {
-                authorization: `Bearer ${idCartoonUser}`,
-              },
-            }).pipe(
-              pluck("response", "message"),
-              catchError((err) => {
-                return from([]);
-              })
-            )
-          )
-        );
-      })
-    )
-    .subscribe((v) => {
-      setBoxMovie(null);
-      handleAddBoxMovie(
-        addMovieRef,
-        deleteMovieRef,
-        idCartoonUser,
-        setBoxMovie,
-        malId
-      );
-    });
 }
 
 export default Name;

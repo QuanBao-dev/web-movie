@@ -29,6 +29,7 @@ const Chat = ({ groupId, user, withoutName = false, isZoom = false }) => {
     user && !withoutName && (inputNameDialogRef.current.value = user.username);
   }, [user, withoutName, isZoom]);
   useEffect(() => {
+    if (!socket.connected) socket.connect();
     messageInputStream.init();
     const subscription = fromEvent(containerMessageChatBotRef.current, "scroll")
       .pipe(
@@ -54,6 +55,7 @@ const Chat = ({ groupId, user, withoutName = false, isZoom = false }) => {
     return () => {
       subscription.unsubscribe();
       subscription2.unsubscribe();
+      socket.close()
     };
   }, []);
   useEffect(() => {

@@ -1,5 +1,4 @@
 import { BehaviorSubject } from "rxjs";
-const behaviorSubject = new BehaviorSubject();
 const initialState = {
   episodes:[],
   reviewsData:[],
@@ -9,6 +8,7 @@ const initialState = {
   shouldUpdatePageReviewData: false,
   previousMalId:null
 };
+const behaviorSubject = new BehaviorSubject(initialState);
 let state = initialState;
 
 const pageWatchStore = {
@@ -16,7 +16,7 @@ const pageWatchStore = {
   currentState: () => {
     let current;
     behaviorSubject.subscribe((v) => (current = v));
-    return current;
+    return current || initialState;
   },
   subscribe: (setState) => behaviorSubject.subscribe((v) => setState(v)),
   init: () => {
@@ -26,7 +26,7 @@ const pageWatchStore = {
   updateReviewsData:(data) => {
     state={
       ...state,
-      reviewsData:[...state.reviewsData,...data]
+      reviewsData:data
     };
     behaviorSubject.next(state);
   },

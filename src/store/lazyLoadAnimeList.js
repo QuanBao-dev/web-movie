@@ -70,7 +70,7 @@ const lazyLoadAnimeListStore = {
   },
   updateGenreDetailData: (genreDetail) => {
     state = {
-      ...state,
+      ...state, 
       genreDetailData: genreDetail,
     };
     subject.next(state);

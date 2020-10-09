@@ -52,6 +52,7 @@ router.post("/", verifyRole("Admin", "User"), async (req, res) => {
       episodes: req.body.episodes,
       score: req.body.score,
       airing: req.body.airing,
+      synopsis:req.body.synopsis
     },{
       upsert:true,
       new:true

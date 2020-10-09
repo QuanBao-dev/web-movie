@@ -16,11 +16,6 @@ router.get("/licensor/:producerId",(req,res) => {
   res.sendFile(path.join(__dirname, "../build", "index.html"));
 })
 
-
-router.get("/genre/:genreId",(req,res) => {
-  res.sendFile(path.join(__dirname, "../build", "index.html"));
-})
-
 router.get("/anime/search", (req, res) => {
   res.sendFile(path.join(__dirname, "../build", "index.html"));
 });
@@ -36,9 +31,14 @@ router.get("/anime/person/:personId", (req, res) => {
 router.get("/anime/:malId/watch/:episode/:mode", (req, res) => {
   res.sendFile(path.join(__dirname, "../build", "index.html"));
 });
-router.get("/anime/:name", (req, res) => {
+router.get("/anime/:id", (req, res) => {
   res.sendFile(path.join(__dirname, "../build", "index.html"));
 });
+
+router.get("/genre/:genreId",(req,res) => {
+  res.sendFile(path.join(__dirname, "../build", "index.html"));
+})
+
 router.get("/edit", (req, res) => {
   res.sendFile(path.join(__dirname, "../build", "index.html"));
 });

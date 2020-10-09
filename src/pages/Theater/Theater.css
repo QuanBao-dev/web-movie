@@ -21,6 +21,7 @@
 .container-watch-interface{
   flex-grow: 3;
   padding-left:0.5em;
+  border-left: 1px solid rgba(255, 255, 255, 0.425);
   padding-bottom: 3rem;
   min-height: 70vh;
 }
@@ -39,6 +40,7 @@
   overflow-y: auto;
   overflow-x:hidden;
   min-height: 50rem;
+  max-height: 1411px;
   min-width: 300px;
 }
 

@@ -35,7 +35,7 @@ const LazyLoadAnimeList = ({ genreId, url }) => {
       window.scroll({
         top: 0,
       });
-      lazyLoadAnimeListStream.updatePageOnDestroy(null);
+      lazyLoadAnimeListStream.updateAllowUpdatePageGenre(false);
       lazyLoadAnimeListStream.resetAllGenrePage();
       lazyLoadAnimeListStream.updateIsStopScrollingUpdated(false);
     }
@@ -43,9 +43,10 @@ const LazyLoadAnimeList = ({ genreId, url }) => {
   useEffect(() => {
     let subscription1;
     subscription1 = updatePageScrollingWindow$().subscribe(() => {
-      lazyLoadAnimeListStream.updatePageGenre(
-        lazyLoadState.genreDetailData.length / 100 + 1
-      );
+      if (lazyLoadState.allowFetchIncreaseGenrePage)
+        lazyLoadAnimeListStream.updatePageGenre(
+          lazyLoadState.genreDetailData.length / 100 + 1
+        );
     });
     return () => {
       subscription1 && subscription1.unsubscribe();
@@ -105,7 +106,7 @@ const LazyLoadAnimeList = ({ genreId, url }) => {
         <AnimeList
           data={lazyLoadState.genreDetailData.slice(
             0,
-            lazyLoadState.pageSplit * 10
+            10 + (lazyLoadState.pageSplit - 1) * 5
           )}
           error={null}
         />

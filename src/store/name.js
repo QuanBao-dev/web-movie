@@ -6,6 +6,7 @@ const initialState = {
   dataEpisodesAnime: {},
   dataLargePicture: "",
   boxMovie: null,
+  pageVideo:1
 };
 const behaviorSubject = new BehaviorSubject(initialState);
 let state = initialState;
@@ -22,6 +23,13 @@ const nameStore = {
     state = {
       ...state,
       boxMovie: data === null ? null:{ ...data },
+    };
+    behaviorSubject.next(state);
+  },
+  updatePageVideo:(page) => {
+    state={
+      ...state,
+      pageVideo:page
     };
     behaviorSubject.next(state);
   },

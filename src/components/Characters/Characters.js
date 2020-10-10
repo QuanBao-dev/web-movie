@@ -73,19 +73,15 @@ const Characters = ({ malId }) => {
                   />
                 </Suspense>
               ))}
-            <button
+            <div
               className="see-more-character"
-              onClick={(e) => {
+              onClick={() => {
                 const page = characterStream.currentState().page;
                 characterStream.updatePage(page + 1);
-                e.target.scrollIntoView({
-                  block: "end",
-                  inline: "nearest",
-                });
               }}
             >
               See more
-            </button>
+            </div>
           </div>
         )}
       </div>

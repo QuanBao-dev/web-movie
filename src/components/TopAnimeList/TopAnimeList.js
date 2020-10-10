@@ -1,6 +1,6 @@
 import "./TopAnimeList.css";
 
-import React, { Suspense, useEffect, useState } from "react";
+import React, { Suspense, useEffect } from "react";
 
 import {
   fetchTopMovie$,
@@ -11,29 +11,36 @@ import { updatePageTopMovieOnDestroy } from "../../store/home";
 
 const TopAnimeItem = React.lazy(() => import("../TopAnimeItem/TopAnimeItem"));
 
-function TopAnimeList({ homeState }) {
-  const [pageSplit, setPageSplit] = useState(1);
+function TopAnimeList({ homeState = stream.initialState }) {
   useEffect(() => {
+    if (stream.currentState().screenWidth > 697) {
+      console.log(stream.currentState().positionScrollTop);
+      document.querySelector(".top-anime-list-container").scroll({
+        top: stream.currentState().positionScrollTop,
+      });
+    }
     if (stream.currentState().dataTopMovie.length === 0) {
       updatePageTopMovieOnDestroy(null);
       stream.updateIsStopFetchTopMovie(false);
     }
+    return () => {
+      if (stream.currentState().screenWidth > 697) {
+        stream.updatePositionScrollTop(
+          document.querySelector(".top-anime-list-container").scrollTop
+        );
+      }
+    };
   }, []);
   useEffect(() => {
     let subscription11;
-    if (homeState.allowFetchIncreasePageTopMovie) {
-      const topAnimeElement = document.querySelector(
-        ".top-anime-list-container"
+    const topAnimeElement = document.querySelector(".top-anime-list-container");
+    if (topAnimeElement) {
+      subscription11 = topMovieUpdatedScrolling$(topAnimeElement).subscribe(
+        () => {
+          if (homeState.allowFetchIncreasePageTopMovie)
+            updateDataTopScrolling();
+        }
       );
-      if (topAnimeElement) {
-        subscription11 = topMovieUpdatedScrolling$(
-          topAnimeElement,
-          pageSplit,
-          setPageSplit
-        ).subscribe(() => {
-          updateDataTopScrolling();
-        });
-      }
     }
     return () => {
       subscription11 && subscription11.unsubscribe();
@@ -41,7 +48,7 @@ function TopAnimeList({ homeState }) {
   }, [
     homeState.allowFetchIncreasePageTopMovie,
     homeState.pageTopMovie,
-    pageSplit,
+    homeState.screenWidth,
   ]);
   useEffect(() => {
     let subscription7;
@@ -51,7 +58,18 @@ function TopAnimeList({ homeState }) {
     )
       subscription7 = fetchTopMovie$().subscribe((topMovieList) => {
         // console.log("fetch top movie");
-        stream.updateTopMovie(topMovieList);
+        const updatedAnime = [
+          ...stream.currentState().dataTopMovie,
+          ...topMovieList,
+        ];
+        if (
+          updatedAnime.length / 50 + 1 !==
+          parseInt(updatedAnime.length / 50 + 1)
+        ) {
+          stream.updateIsStopFetchTopMovie(true);
+        }
+
+        stream.updateTopMovie(updatedAnime);
       });
     return () => {
       subscription7 && subscription7.unsubscribe();
@@ -63,7 +81,7 @@ function TopAnimeList({ homeState }) {
       <ul className="top-anime-list">
         {homeState.dataTopMovie &&
           homeState.dataTopMovie
-            .slice(0, pageSplit * 10)
+            .slice(0, 8 + (homeState.pageSplitTopMovie - 1) * 2)
             .map((movie, index) => (
               <Suspense
                 key={index}
@@ -82,8 +100,7 @@ function TopAnimeList({ homeState }) {
 }
 
 function updateDataTopScrolling() {
-  let page = stream.currentState().pageTopMovie;
-  stream.updatePageTopMovie(page + 1);
+  stream.updatePageTopMovie(stream.currentState().dataTopMovie.length / 50 + 1);
 }
 
 export default TopAnimeList;

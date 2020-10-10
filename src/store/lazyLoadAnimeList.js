@@ -38,7 +38,8 @@ const lazyLoadAnimeListStore = {
       genreDetailData: [],
       pageGenre: 1,
       pageSplit:1,
-      genre:null
+      genre:null,
+      pageOnDestroy:null
     };
     subject.next(state);
   },

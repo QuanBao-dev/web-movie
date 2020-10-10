@@ -245,13 +245,6 @@ function Home() {
           />
         </Suspense>
         <div
-          style={{
-            backgroundColor: "black",
-            display: "flex",
-            justifyContent: "center",
-            padding: "1rem",
-            cursor: "pointer",
-          }}
           id="button-see-more__home"
           onClick={() => showMoreAnime()}
         >

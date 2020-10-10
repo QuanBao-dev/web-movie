@@ -1,7 +1,7 @@
-import './TopAnimeItem.css';
+import "./TopAnimeItem.css";
 
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React from "react";
+import { Link } from "react-router-dom";
 
 function TopAnimeItem({ movie }) {
   return (
@@ -11,7 +11,10 @@ function TopAnimeItem({ movie }) {
         <div className="top-anime-list-info">
           <div className="top-movie-score__home">{movie.score}/10</div>
           <Link to={"/anime/" + movie.mal_id}>
-            <img src={movie.image_url} alt="Preview" />
+            <img
+              src={movie.image_url}
+              alt="Preview"
+            />
           </Link>
           <div className="title">{movie.title}</div>
         </div>

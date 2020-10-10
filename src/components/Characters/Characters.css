@@ -16,6 +16,21 @@
   background-color: grey;
 }
 
+.see-more-character{
+  width: 100%;
+  padding: 1rem;
+  background-color: black;
+  color: white;
+  outline: none;
+  border:none;
+  text-transform: uppercase;
+  text-align: center;
+  font-weight: bolder;
+  font-size: larger;
+  cursor: pointer;
+}
+
+
 @media (max-width:950px){
   .character-list{
     overflow-y:hidden;

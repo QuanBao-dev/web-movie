@@ -36,12 +36,13 @@ const initialState = {
   dataCarousel: [],
   pageTopMovieOnDestroy: null,
   allowFetchIncreasePageTopMovie: false,
-  isStopScrollingUpdated: false,
-  IsStopFetchTopMovie: false,
+  isStopFetchTopMovie: false,
   currentPageOnDestroy: null,
   currentYearOnDestroy: null,
   currentSeasonOnDestroy: null,
-  pageSplit:1
+  pageSplit:1,
+  pageSplitTopMovie:1,
+  positionScrollTop:0
 };
 
 const subject = new BehaviorSubject(initialState);
@@ -53,6 +54,20 @@ const homeStore = {
     let ans;
     subject.subscribe((v) => (ans = v));
     return ans || initialState;
+  },
+  updatePositionScrollTop:(pos) => {
+    state = {
+      ...state,
+      positionScrollTop:pos
+    };
+    subject.next(state);
+  },
+  updatePageSplitTopMovie:(page)=>{
+    state = {
+      ...state,
+      pageSplitTopMovie:page
+    };
+    subject.next(state);
   },
   updatePageSplit:(page) => {
     state={
@@ -71,7 +86,7 @@ const homeStore = {
   updateIsStopFetchTopMovie: (bool) => {
     state = {
       ...state,
-      IsStopFetchTopMovie: bool,
+      isStopFetchTopMovie: bool,
     };
     subject.next(state);
   },
@@ -79,13 +94,6 @@ const homeStore = {
     state = {
       ...state,
       allowFetchIncreasePageTopMovie: bool,
-    };
-    subject.next(state);
-  },
-  updateIsStopScrollingUpdated: (bool) => {
-    state = {
-      ...state,
-      isStopScrollingUpdated: bool,
     };
     subject.next(state);
   },
@@ -188,7 +196,7 @@ const homeStore = {
   updateTopMovie: (data) => {
     state = {
       ...state,
-      dataTopMovie: [...state.dataTopMovie, ...data],
+      dataTopMovie: data,
     };
     subject.next(state);
   },

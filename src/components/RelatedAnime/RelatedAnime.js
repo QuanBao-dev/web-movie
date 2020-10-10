@@ -36,20 +36,16 @@ const RelatedAnime = ({ malId }) => {
           data={recommendationState.slice(0, 10 * pageDisplayRelatedAnime)}
           error={null}
         />
-        <button
+        <div
           className="see-more-movie"
           ref={buttonRef}
-          onClick={(e) => {
-            e.target.scrollIntoView({
-              block: "end",
-              inline: "nearest",
-            })
+          onClick={() => {
             const current = pageDisplayRelatedAnime;
             setPageDisplayRelatedAnime(current + 1);
           }}
         >
           See more
-        </button>
+        </div>
       </div>
     )
   );

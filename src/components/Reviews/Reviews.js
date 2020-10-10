@@ -34,12 +34,12 @@ const Reviews = ({ malId }) => {
   }, [malId, reviewState.previousMalId]);
   useEffect(() => {
     let subscription;
-    if (reviewState.shouldUpdatePageReviewData)
-      subscription = updatePageScrolling$().subscribe(() => {
+    subscription = updatePageScrolling$().subscribe(() => {
+      if (reviewState.shouldUpdatePageReviewData)
         pageWatchStream.updatePageReview(
           pageWatchStream.currentState().reviewsData.length / 20 + 1
         );
-      });
+    });
     return () => {
       subscription && subscription.unsubscribe();
     };
@@ -87,7 +87,7 @@ const Reviews = ({ malId }) => {
           <div className="reviews-list-container">
             {reviewState &&
               reviewState.reviewsData
-                .slice(0, reviewState.pageSplit * 2)
+                .slice(0, reviewState.pageSplit)
                 .map((review, index) => (
                   <Suspense key={index} fallback={<div>Loading...</div>}>
                     <ReviewItem review={review} />

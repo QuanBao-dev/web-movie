@@ -1,12 +1,18 @@
+import "./VideoPromotionList.css";
+
 import React, { Suspense } from "react";
+
+import { nameStream } from "../../epics/name";
+
 const VideoPromotionItem = React.lazy(() =>
   import("../VideoPromotionItem/VideoPromotionItem")
 );
 function VideoPromotionList({ data }) {
+  const nameState = nameStream.currentState();
   return (
     <div className="video-promotion-list">
       {data &&
-        data.map((video, index) => {
+        data.slice(0, nameState.pageVideo).map((video, index) => {
           return (
             <Suspense
               key={index}
@@ -16,6 +22,16 @@ function VideoPromotionList({ data }) {
             </Suspense>
           );
         })}
+      {nameState.pageVideo < data.length && (
+        <div
+          className="see-more-video"
+          onClick={() => {
+            nameStream.updatePageVideo(nameStream.currentState().pageVideo + 1);
+          }}
+        >
+          See more
+        </div>
+      )}
     </div>
   );
 }

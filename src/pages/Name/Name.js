@@ -84,6 +84,7 @@ const Name = (props) => {
       navBarStore.updateIsShowBlockPopUp(false);
     });
     const fetchDataVideoSub = fetchDataVideo$(name).subscribe(({ promo }) => {
+      nameStream.updatePageVideo(1);
       nameStream.updateDataVideoPromo(promo);
     });
     const fetchLargePictureSub = fetchLargePicture$(name).subscribe(
@@ -136,8 +137,6 @@ const Name = (props) => {
       subscription && subscription.unsubscribe();
       // eslint-disable-next-line react-hooks/exhaustive-deps
       linkWatchingInputRef.current && (linkWatchingInputRef.current.value = "");
-      // setData({});
-      // setEpisodeData([]);
     };
   }, [cookies.idCartoonUser, name]);
   const arrKeys = Object.keys(nameState.dataInformationAnime).filter((v) => {

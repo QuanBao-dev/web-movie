@@ -309,24 +309,21 @@ export const listenSearchInputPressEnter$ = (searchInputE) => {
   );
 };
 
-export const topMovieUpdatedScrolling$ = (
-  topAnimeElement,
-  pageSplit,
-  setPageSplit
-) => {
+export const topMovieUpdatedScrolling$ = (topAnimeElement) => {
   return fromEvent(
     stream.currentState().screenWidth > 697 ? topAnimeElement : window,
     "scroll"
   ).pipe(
-    debounceTime(500),
-    tap(() => {
-      setPageSplit(pageSplit + 1);
-    }),
     filter(() =>
       stream.currentState().screenWidth > 697
         ? topAnimeElement.scrollTop - (topAnimeElement.scrollHeight - 5000) > 0
         : document.body.scrollHeight - (window.scrollY + 2000) < 0
-    )
+    ),
+    tap(() => {
+      stream.updatePageSplitTopMovie(
+        stream.currentState().pageSplitTopMovie + 1
+      );
+    })
   );
 };
 

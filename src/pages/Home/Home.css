@@ -76,6 +76,20 @@
   border-radius: 10px;
 }
 
+#button-see-more__home{
+  background-color: black;
+  display: flex;
+  justify-content: center;
+  padding: 1rem;
+  cursor: pointer;
+  text-transform:uppercase;
+  font-weight:bolder
+}
+
+#button-see-more__home:active{
+  background-color: rgb(33, 73, 133);
+}
+
 .wrapper-search-anime-list label{
   font-family: 'Times New Roman', Times, serif;
   color:yellow;

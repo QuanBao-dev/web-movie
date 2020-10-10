@@ -20,7 +20,7 @@ const messageInputStore = {
   currentState: () => {
     let ans;
     behaviorSubject.subscribe((v) => (ans = v));
-    return ans;
+    return ans || initialState;
   },
   updateImgsMessage: (newImage) => {
     state = {

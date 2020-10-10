@@ -14,7 +14,6 @@ const TopAnimeItem = React.lazy(() => import("../TopAnimeItem/TopAnimeItem"));
 function TopAnimeList({ homeState = stream.initialState }) {
   useEffect(() => {
     if (stream.currentState().screenWidth > 697) {
-      console.log(stream.currentState().positionScrollTop);
       document.querySelector(".top-anime-list-container").scroll({
         top: stream.currentState().positionScrollTop,
       });

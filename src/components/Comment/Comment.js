@@ -47,11 +47,11 @@ function Comment({ malId, user }) {
   const inputRefs = multipleCreateRefList(numberOfMessage);
   const inputAuthorRefs = multipleCreateRefList(numberOfMessage);
   const buttonSubmitRefs = multipleCreateRefList(numberOfMessage);
-  useEffect(() =>{
+  useEffect(() => {
     return () => {
       navBarStore.updateIsShowBlockPopUp(false);
-    }
-  },[])
+    };
+  }, []);
   useEffect(() => {
     if (user) updateCurrentName(user.username);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -225,13 +225,9 @@ function Comment({ malId, user }) {
             </div>
           );
         })}
-      <button
+      <div
         className="comment-button-see"
-        onClick={(e) => {
-          e.target.scrollIntoView({
-            block: "end",
-            inline: "nearest",
-          });
+        onClick={() => {
           const nextPage = chatState.currentPage;
           if (
             chatState.messages.length <
@@ -243,7 +239,7 @@ function Comment({ malId, user }) {
         }}
       >
         See more
-      </button>
+      </div>
     </div>
   );
 }
@@ -294,7 +290,7 @@ function CommentDetail({
         />
       </div>
       <div>
-        <div>
+        <div className="time-since-comment">
           {timeSince(new Date(v.createdAt).getTime()) === "Recently"
             ? `Recently`
             : `${timeSince(new Date(v.createdAt).getTime())} ago`}
@@ -340,7 +336,7 @@ function FormReply({
         <div
           className="textarea-comment"
           onKeyDown={(e) => {
-            createCaretPlacer(e.target,false);
+            createCaretPlacer(e.target, false);
           }}
           onPaste={(e) => {
             e.preventDefault();

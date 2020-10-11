@@ -56,7 +56,15 @@ const Reviews = ({ malId }) => {
         pageWatchStream.currentState().pageReviewsData
       ).subscribe((v) => {
         if (!v.error) {
-          const updatedAnime = [...reviewState.reviewsData, ...v];
+          let updatedAnime;
+          if (
+            pageWatchStream.currentState().reviewsData.length === 0 ||
+            pageWatchStream.currentState().previousMalId !== malId
+          ) {
+            updatedAnime = [...v];
+          } else {
+            updatedAnime = [...reviewState.reviewsData, ...v];
+          }
           pageWatchStream.updateReviewsData(updatedAnime);
           if (
             pageWatchStream.currentState().reviewsData.length / 20 + 1 !==

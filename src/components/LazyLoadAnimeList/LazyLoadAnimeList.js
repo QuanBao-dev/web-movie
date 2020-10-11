@@ -65,7 +65,16 @@ const LazyLoadAnimeList = ({ genreId, url }) => {
         url
       ).subscribe((v) => {
         if (!v.error) {
-          const updatedAnime = [...lazyLoadState.genreDetailData, ...v.anime];
+          let updatedAnime;
+          if (
+            lazyLoadAnimeListStream.currentState().genreDetailData.length ===
+              0 ||
+            lazyLoadAnimeListStream.currentState().currentGenreId !== genreId
+          ) {
+            updatedAnime = [...v.anime];
+          } else {
+            updatedAnime = [...lazyLoadState.genreDetailData, ...v.anime];
+          }
           if (v.mal_url) {
             lazyLoadAnimeListStream.updateGenre(v.mal_url.name);
           }

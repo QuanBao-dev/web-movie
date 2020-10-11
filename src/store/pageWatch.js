@@ -34,7 +34,7 @@ const pageWatchStore = {
   updateReviewsData:(data) => {
     state={
       ...state,
-      reviewsData:data
+      reviewsData:[...data]
     };
     behaviorSubject.next(state);
   },

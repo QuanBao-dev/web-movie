@@ -8,10 +8,9 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background-color: #2f3535;
-  background: url(https://scontent.fsgn3-1.fna.fbcdn.net/v/t1.15752-9/120124610_742264309838772_5338479055684884723_n.png?_nc_cat=111&_nc_sid=b96e70&_nc_ohc=4qKcWuhZKp0AX9pm5SH&_nc_oc=AQnem3joBFmuPKiFbyNxyR_Rg5yOM2Jzq5s_x9W1r4wBgj7fagomZrhxSkvKRue1dfvT4N08LBMbbE0AhQkSRblh&_nc_ht=scontent.fsgn3-1.fna&oh=32153f460cad9694a5c4077bdafa1195&oe=5F90DF07);
   background-attachment: fixed;
-  background-position-x: center;
   background-size: cover;
+  background-position: right;
 }
 
 pre{

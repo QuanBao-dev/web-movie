@@ -79,8 +79,9 @@ function TopAnimeList({ homeState = stream.initialState }) {
       <h1>Top Anime</h1>
       <ul className="top-anime-list">
         {homeState.dataTopMovie &&
+          stream.currentState().pageSplitTopMovie === 1 &&
           homeState.dataTopMovie
-            .slice(0, 8 + (homeState.pageSplitTopMovie - 1) * 2)
+            .slice(0, 9 + (stream.currentState().pageSplitTopMovie - 1) * 5)
             .map((movie, index) => (
               <Suspense
                 key={index}
@@ -90,7 +91,23 @@ function TopAnimeList({ homeState = stream.initialState }) {
                   </div>
                 }
               >
-                <TopAnimeItem movie={movie} />
+                <TopAnimeItem movie={movie} lazy={true} />
+              </Suspense>
+            ))}
+        {homeState.dataTopMovie &&
+          stream.currentState().pageSplitTopMovie !== 1 &&
+          homeState.dataTopMovie
+            .slice(0, 9 + (stream.currentState().pageSplitTopMovie - 1) * 5)
+            .map((movie, index) => (
+              <Suspense
+                key={index}
+                fallback={
+                  <div>
+                    <i className="fas fa-spinner fa-9x fa-spin"></i>
+                  </div>
+                }
+              >
+                <TopAnimeItem movie={movie} lazy={false} />
               </Suspense>
             ))}
       </ul>

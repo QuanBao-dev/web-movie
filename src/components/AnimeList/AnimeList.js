@@ -4,7 +4,7 @@ import React, { Suspense } from "react";
 
 const AnimeItem = React.lazy(() => import("../AnimeItem/AnimeItem"));
 
-const AnimeList = ({ data, error, isWrap = true }) => {
+const AnimeList = ({ data, error, isWrap = true, lazy = false }) => {
   return (
     <div className={isWrap ? "list-anime" : "list-anime-nowrap"}>
       {data &&
@@ -21,7 +21,7 @@ const AnimeList = ({ data, error, isWrap = true }) => {
                 </div>
               }
             >
-              <AnimeItem key={index} anime={anime} />
+              <AnimeItem key={index} anime={anime} lazy={lazy}/>
             </Suspense>
           );
         })}

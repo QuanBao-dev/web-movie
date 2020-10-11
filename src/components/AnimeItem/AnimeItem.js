@@ -1,10 +1,10 @@
 import "./AnimeItem.css";
 
 import React from "react";
-import { LazyLoadImage } from "react-lazy-load-image-component";
 import { useHistory } from "react-router-dom";
- 
-const AnimeItem = ({ anime }) => {
+import { LazyLoadImage } from "react-lazy-load-image-component";
+
+const AnimeItem = ({ anime, lazy = false }) => {
   const history = useHistory();
   return (
     <div
@@ -30,16 +30,30 @@ const AnimeItem = ({ anime }) => {
       <div className="anime-info-display_summary top-right_summary color-red">
         {!anime.score || anime.score === "null" ? "?" : anime.score}/10
       </div>
-      <LazyLoadImage
-        style={{
-          objectFit: "contain",
-          position: "absolute",
-          top: 0,
-          left: 0,
-        }}
-        src={anime.imageUrl || anime.image_url}
-        alt="NOT_FOUND"
-      />
+      {lazy === true && (
+        <LazyLoadImage
+          style={{
+            objectFit: "contain",
+            position: "absolute",
+            top: 0,
+            left: 0,
+          }}
+          src={anime.imageUrl || anime.image_url}
+          alt="NOT_FOUND"
+        />
+      )}
+      {lazy === false && (
+        <img
+          style={{
+            objectFit: "contain",
+            position: "absolute",
+            top: 0,
+            left: 0,
+          }}
+          src={anime.imageUrl || anime.image_url}
+          alt="NOT_FOUND"
+        />
+      )}
       {anime.synopsis && (
         <div className="anime-item-synopsis">
           <p className="text-synopsis">

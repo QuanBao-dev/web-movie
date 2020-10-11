@@ -11,7 +11,7 @@ const initialState = {
   dataDetail: [],
   dataDetailOriginal: [],
   currentPage: 1,
-  numberOfProduct: 45,
+  numberOfProduct: 36,
   year: new Date(Date.now()).getFullYear(),
   season: currentSeason,
   maxPage: 1,
@@ -54,6 +54,13 @@ const homeStore = {
     let ans;
     subject.subscribe((v) => (ans = v));
     return ans || initialState;
+  },
+  updateNumberOfProduct:(number) => {
+    state={
+      ...state,
+      numberOfProduct:number
+    };
+    subject.next(state);
   },
   updatePositionScrollTop:(pos) => {
     state = {

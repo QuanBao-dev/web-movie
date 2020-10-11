@@ -1,7 +1,6 @@
 import './AnimeStaffPositionItem.css';
 
 import React from 'react';
-import { LazyLoadImage } from "react-lazy-load-image-component";
 
 function AnimeStaffPositionItem({ updateStaffPosition, keyData, history }) {
   return (
@@ -17,7 +16,7 @@ function AnimeStaffPositionItem({ updateStaffPosition, keyData, history }) {
         history.push("/anime/" + updateStaffPosition[keyData].mal_id)
       }
     >
-      <LazyLoadImage src={updateStaffPosition[keyData].image_url} alt="image_anime" />
+      <img src={updateStaffPosition[keyData].image_url} alt="image_anime" />
       <div className="pop-up-hover">
         <h3 title="name">{updateStaffPosition[keyData].name}</h3>
         {updateStaffPosition[keyData].positions.map((theme, index) => (

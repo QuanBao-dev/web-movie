@@ -1,6 +1,7 @@
 .container-theater-watch{
   display: flex;
   color:white;
+  align-items: flex-start;
   background-color: #1f1e2c;
   height: 100%;
   box-shadow: 10px 10px 30px black;
@@ -39,7 +40,7 @@
   flex-direction: column;
   overflow-y: auto;
   overflow-x:hidden;
-  min-height: 50rem;
+  min-height: 60rem;
   max-height: 1411px;
   min-width: 300px;
 }

@@ -12,6 +12,7 @@ const io = require("socket.io")(server, {
   pingTimeout: 12000,
   pingInterval: 3000,
 });
+const compression = require("compression");
 cloudinary.config({
   cloud_name: "storagecloud",
   api_key: process.env.API_KEY,
@@ -261,8 +262,9 @@ Movie.watch().on("change", async () => {
 });
 
 app.use(sslRedirect());
-app.use(express.json({ limit: "50mb" }));
-app.use(express.urlencoded({ limit: "50mb", extended: true }));
+app.use(compression());
+app.use(express.json({ limit: "100mb" }));
+app.use(express.urlencoded({ limit: "100mb", extended: true }));
 app.use(cookieParser(process.env.SESSION_SECRET));
 
 app.use(express.static(path.join(__dirname, "build")));

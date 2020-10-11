@@ -74,7 +74,10 @@ const AnimeSchedule = () => {
                 ref={movieRefs[index]}
               >
                 {homeState.dataScheduleMovie[date] && (
-                  <AnimeList data={homeState.dataScheduleMovie[date]} />
+                  <AnimeList
+                    data={homeState.dataScheduleMovie[date]}
+                    lazy={true}
+                  />
                 )}
               </div>
             </li>

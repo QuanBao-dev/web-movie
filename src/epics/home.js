@@ -311,11 +311,12 @@ export const listenSearchInputPressEnter$ = (searchInputE) => {
 
 export const topMovieUpdatedScrolling$ = (topAnimeElement) => {
   return fromEvent(
-    stream.currentState().screenWidth > 697 ? topAnimeElement : window,
+    stream.currentState().screenWidth > 1465 ? topAnimeElement : window,
     "scroll"
   ).pipe(
+    tap(() => document.body.scrollHeight - (window.scrollY + 2000) < 0),
     filter(() =>
-      stream.currentState().screenWidth > 697
+      stream.currentState().screenWidth > 1465
         ? topAnimeElement.scrollTop - (topAnimeElement.scrollHeight - 5000) > 0
         : document.body.scrollHeight - (window.scrollY + 2000) < 0
     ),

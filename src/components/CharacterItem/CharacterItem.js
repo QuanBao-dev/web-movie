@@ -3,7 +3,6 @@ import './CharacterItem.css';
 import React from 'react';
 
 import { characterStream } from '../../epics/character';
-import { LazyLoadImage } from "react-lazy-load-image-component";
 
 function CharacterItem({characterData, history}) {
   return (
@@ -16,7 +15,7 @@ function CharacterItem({characterData, history}) {
         history.push(`/anime/character/${characterData.mal_id}`);
       }}
     >
-      <LazyLoadImage
+      <img
         className="character-image"
         src={characterData.image_url}
         alt="image_character"

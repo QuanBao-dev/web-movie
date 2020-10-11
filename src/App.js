@@ -1,16 +1,21 @@
-import './App.css';
+import "./App.css";
 
-import Axios from 'axios';
-import React, { Suspense, useEffect, useRef, useState } from 'react';
-import { useCookies } from 'react-cookie';
-import { BrowserRouter as Router, NavLink as Link, Route, Switch } from 'react-router-dom';
-import { ReplaySubject } from 'rxjs';
+import Axios from "axios";
+import React, { Suspense, useEffect, useRef, useState } from "react";
+import { useCookies } from "react-cookie";
+import {
+  BrowserRouter as Router,
+  NavLink as Link,
+  Route,
+  Switch,
+} from "react-router-dom";
+import { ReplaySubject } from "rxjs";
 
-import { fetchingUser$, userStream } from './epics/user';
-import Login from './pages/Login/Login';
-import Register from './pages/Register/Register';
-import { allowShouldFetchAllUser } from './store/admin';
-import navBarStore from './store/navbar';
+import { fetchingUser$, userStream } from "./epics/user";
+import Login from "./pages/Login/Login";
+import Register from "./pages/Register/Register";
+import { allowShouldFetchAllUser } from "./store/admin";
+import navBarStore from "./store/navbar";
 
 const ProducerDetail = React.lazy(() =>
   import("./pages/ProducerDetail/ProducerDetail")
@@ -42,6 +47,12 @@ window.addEventListener("resize", () => {
   } else {
     e.style.display = "none";
   }
+  if (window.innerWidth >= 450) {
+    document.querySelector("body").style.backgroundImage =
+      "url(https://scontent.fsgn3-1.fna.fbcdn.net/v/t1.15752-9/120124610_742264309838772_5338479055684884723_n.png?_nc_cat=111&_nc_sid=b96e70&_nc_ohc=4qKcWuhZKp0AX9pm5SH&_nc_oc=AQnem3joBFmuPKiFbyNxyR_Rg5yOM2Jzq5s_x9W1r4wBgj7fagomZrhxSkvKRue1dfvT4N08LBMbbE0AhQkSRblh&_nc_ht=scontent.fsgn3-1.fna&oh=32153f460cad9694a5c4077bdafa1195&oe=5F90DF07)";
+  } else {
+    document.querySelector("body").style.backgroundImage = "none";
+  }
 });
 
 window.addEventListener("scroll", () => {
@@ -62,6 +73,10 @@ window.addEventListener("scroll", () => {
       }
   });
 });
+if (window.innerWidth >= 450) {
+  document.querySelector("body").style.backgroundImage =
+    "url(https://scontent.fsgn3-1.fna.fbcdn.net/v/t1.15752-9/120124610_742264309838772_5338479055684884723_n.png?_nc_cat=111&_nc_sid=b96e70&_nc_ohc=4qKcWuhZKp0AX9pm5SH&_nc_oc=AQnem3joBFmuPKiFbyNxyR_Rg5yOM2Jzq5s_x9W1r4wBgj7fagomZrhxSkvKRue1dfvT4N08LBMbbE0AhQkSRblh&_nc_ht=scontent.fsgn3-1.fna&oh=32153f460cad9694a5c4077bdafa1195&oe=5F90DF07)";
+}
 
 function App() {
   const navLoginRef = useRef();
@@ -125,7 +140,7 @@ function App() {
               }
             }}
           >
-            <i className="fas fa-bars fa-2x"></i>
+            <i className="fas fa-bars fa-3x"></i>
           </div>
           <ul className="child-nav-bar__app">
             <li className="nav-bar__item">

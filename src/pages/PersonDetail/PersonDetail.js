@@ -5,7 +5,6 @@ import { useHistory } from "react-router-dom";
 import { fromEvent, of } from "rxjs";
 import { ajax } from "rxjs/ajax";
 import { catchError, debounceTime, filter, pluck, retry } from "rxjs/operators";
-import { LazyLoadImage } from "react-lazy-load-image-component";
 
 const AnimeStaffPositions = React.lazy(() =>
   import("../../components/AnimeStaffPositions/AnimeStaffPositions")
@@ -158,7 +157,7 @@ const PersonDetail = (props) => {
                           );
                         }}
                       >
-                        <LazyLoadImage
+                        <img
                           src={updateVoiceActingRoles[key].image_url}
                           alt="image_character"
                         />

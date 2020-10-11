@@ -8,9 +8,9 @@ const NotFound = () => {
     };
   }, []);
   return (
-    <div className="container-error-404">
+    <section className="container-error-404">
       <h1>404 Page Not Found</h1>
-    </div>
+    </section>
   );
 };
 

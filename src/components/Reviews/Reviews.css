@@ -12,7 +12,8 @@
 }
 
 @media (max-width: 376px){
-  .container-reviews {
-    padding: .5rem!important;
+  .container-reviews{
+    padding: 0!important;
   }
+
 }

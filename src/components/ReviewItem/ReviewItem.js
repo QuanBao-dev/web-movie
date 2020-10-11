@@ -1,12 +1,14 @@
 import "./ReviewItem.css";
 import React from "react";
 import { timeSince } from "../../epics/comment";
+import { LazyLoadImage } from "react-lazy-load-image-component";
+
 function ReviewItem({ review }) {
   return (
     <div className="review-item">
       <div className="user-info-review-container">
         <div className="user-info-review">
-          <img src={review.reviewer.image_url} alt="Image_reviewer" />
+          <LazyLoadImage src={review.reviewer.image_url} alt="Image_reviewer" />
           <div>
             <div className="username">{review.reviewer.username}</div>
             <div className="helpful-count">

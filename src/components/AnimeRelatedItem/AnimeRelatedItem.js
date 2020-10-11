@@ -1,6 +1,7 @@
 import './AnimeRelatedItem.css';
 
 import React from 'react';
+import { LazyLoadImage } from "react-lazy-load-image-component";
 
 function AnimeRelatedItem({anime, history}) {
   return (
@@ -8,7 +9,7 @@ function AnimeRelatedItem({anime, history}) {
       className={anime.role === "Main" ? "anime-main-role" : ""}
       onClick={() => history.push("/anime/" + anime.mal_id)}
     >
-      <img src={anime.image_url} alt="image_anime" />
+      <LazyLoadImage src={anime.image_url} alt="image_anime" />
       <div className="pop-up-hover">
         <h3>{anime.name}</h3>
         <div title="role">({anime.role} )</div>

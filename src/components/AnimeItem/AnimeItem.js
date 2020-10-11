@@ -1,8 +1,9 @@
 import "./AnimeItem.css";
 
 import React from "react";
+import { LazyLoadImage } from "react-lazy-load-image-component";
 import { useHistory } from "react-router-dom";
-
+ 
 const AnimeItem = ({ anime }) => {
   const history = useHistory();
   return (
@@ -29,7 +30,7 @@ const AnimeItem = ({ anime }) => {
       <div className="anime-info-display_summary top-right_summary color-red">
         {!anime.score || anime.score === "null" ? "?" : anime.score}/10
       </div>
-      <img
+      <LazyLoadImage
         style={{
           objectFit: "contain",
           position: "absolute",

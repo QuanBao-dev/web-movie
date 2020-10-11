@@ -1,6 +1,6 @@
 import "./UpcomingAnimeList.css";
 
-import React, { Suspense, useEffect } from "react";
+import React, { useEffect } from "react";
 
 import {
   scrollAnimeInterval$,
@@ -8,7 +8,7 @@ import {
   upcomingAnimeListUpdated$,
 } from "../../epics/home";
 import { updateModeScrolling } from "../../store/home";
-const AnimeList = React.lazy(() => import("../AnimeList/AnimeList"));
+import AnimeList  from "../AnimeList/AnimeList";
 
 let forward = 1;
 const UpcomingAnimeList = () => {
@@ -70,14 +70,12 @@ const UpcomingAnimeList = () => {
       }}
     >
       <h1 className="title-upcoming-anime">Upcoming anime</h1>
-      <Suspense>
-        <AnimeList
-          data={stream.currentState().upcomingAnimeList}
-          isWrap={false}
-          lazy={true}
-          error={stream.currentState().error}
-        />
-      </Suspense>
+      <AnimeList
+        data={stream.currentState().upcomingAnimeList}
+        isWrap={false}
+        lazy={true}
+        error={stream.currentState().error}
+      />
     </section>
   );
 };

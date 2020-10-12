@@ -261,10 +261,10 @@ Movie.watch().on("change", async () => {
   io.emit("comment-change");
 });
 
-app.use(compression());
 app.use(sslRedirect());
-app.use(express.json({ limit: "100mb" }));
-app.use(express.urlencoded({ limit: "100mb", extended: true }));
+app.use(compression());
+app.use(express.json({ limit: "50mb" }));
+app.use(express.urlencoded({ limit: "50mb", extended: true }));
 app.use(cookieParser(process.env.SESSION_SECRET));
 
 app.use(express.static(path.join(__dirname, "build")));

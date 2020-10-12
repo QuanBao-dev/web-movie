@@ -3,7 +3,6 @@ import React, { Suspense, useEffect, useState } from "react";
 import { useCookies } from "react-cookie";
 import { fetchBoxMovie$, fetchUpdatedMovie$, stream } from "../../epics/home";
 import { userStream } from "../../epics/user";
-import { allowScrollToSeeMore } from "../../store/home";
 const AnimeList = React.lazy(() => import("../AnimeList/AnimeList"));
 const numberOfMovieShown = 12;
 const UpdatedAnime = () => {
@@ -95,7 +94,7 @@ const UpdatedAnime = () => {
   );
   function showMoreAnime() {
     const temp = limitShowRecentlyUpdated;
-    allowScrollToSeeMore(false);
+    stream.allowScrollToSeeMore(false);
     if (subNavToggle === 0) {
       if (temp + numberOfMovieShown <= homeState.updatedMovie.length) {
         setLimitShowRecentlyUpdated(temp + numberOfMovieShown);

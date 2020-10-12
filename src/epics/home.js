@@ -94,11 +94,9 @@ export const fetchAnimeSeason$ = (
   score
 ) => {
   return timer(0).pipe(
-    tap(() => navBarStore.updateIsShowBlockPopUp(true)),
     switchMapTo(
       ajax(`https://api.jikan.moe/v3/season/${year}/${season}`).pipe(
         pluck("response", "anime"),
-        tap(() => navBarStore.updateIsShowBlockPopUp(false)),
         map((anime) => {
           updateOriginalData(anime);
           anime = anime.filter(
@@ -158,11 +156,11 @@ export const changeCurrentPage$ = () => {
     map((keyCode) => {
       switch (keyCode) {
         case 39:
-          allowScrollToSeeMore(true);
+          stream.allowScrollToSeeMore(true);
           stream.increaseCurrentPage();
           return;
         case 37:
-          allowScrollToSeeMore(true);
+          stream.allowScrollToSeeMore(true);
           stream.decreaseCurrentPage();
           return;
         default:

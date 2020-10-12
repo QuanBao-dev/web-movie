@@ -8,7 +8,7 @@ import {
   upcomingAnimeListUpdated$,
 } from "../../epics/home";
 import { updateModeScrolling } from "../../store/home";
-import AnimeList  from "../AnimeList/AnimeList";
+import AnimeList from "../AnimeList/AnimeList";
 
 let forward = 1;
 const UpcomingAnimeList = () => {
@@ -26,19 +26,14 @@ const UpcomingAnimeList = () => {
             elementScroll.scrollLeft +
             elementScroll.clientWidth -
             elementScroll.scrollWidth;
-          if (
-            stream.currentState().upcomingAnimeList.length <
-            stream.currentState().pageSplit * 8
-          ) {
-            if (Math.abs(distance) < 0.5) {
-              setTimeout(() => {
-                forward = -1;
-              }, 3000);
-            } else if (elementScroll.scrollLeft === 0) {
-              setTimeout(() => {
-                forward = 1;
-              }, 3000);
-            }
+          if (Math.abs(distance) < 1) {
+            setTimeout(() => {
+              forward = -1;
+            }, 3000);
+          } else if (elementScroll.scrollLeft === 0) {
+            setTimeout(() => {
+              forward = 1;
+            }, 3000);
           }
 
           elementScroll.scroll({

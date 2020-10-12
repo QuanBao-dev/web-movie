@@ -204,8 +204,8 @@ router.put("/current/avatar", verifyRole("Admin", "User"), async (req, res) => {
       user.userId = nanoid();
     }
     result = await cloudinary.v2.uploader.upload(avatarImage, {
-      width: 50,
-      height: 50,
+      width: 500,
+      height: 500,
       overwrite: true,
       folder: "my-web-movie/avatar_user",
       public_id: user.userId,

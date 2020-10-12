@@ -15,17 +15,19 @@ const AnimeList = ({ data, error, isWrap = true, lazy = false }) => {
               key={index}
               fallback={
                 <div>
-                  <i>
-                    <i className="fas fa-spinner fa-2x fa-spin"></i>
-                  </i>
+                  <i className="fas fa-spinner fa-2x fa-spin"></i>
                 </div>
               }
             >
-              <AnimeItem key={index} anime={anime} lazy={lazy}/>
+              <AnimeItem key={index} anime={anime} lazy={lazy} />
             </Suspense>
           );
         })}
-      {data.length === 0 && <h1 className="empty"> </h1>}
+      {data.length === 0 && (
+        <div className="empty">
+          <i className="fas fa-spinner fa-2x fa-spin"></i>
+        </div>
+      )}
       {error && (
         <div
           style={{

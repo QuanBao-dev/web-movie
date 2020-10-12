@@ -6,13 +6,11 @@ import Input from "../../components/Input/Input";
 import { validateFormSubmitLogin$ } from "../../epics/home";
 import Axios from "axios";
 import { useCookies } from "react-cookie";
-import { useHistory } from "react-router-dom";
 const Login = () => {
   // eslint-disable-next-line no-unused-vars
   const [cookies, setCookie, removeCookie] = useCookies(["idCartoonUser"]);
   const [emailError, setEmailError] = useState(null);
   const [passwordError, setPasswordError] = useState(null);
-  const history = useHistory();
   const emailRef = useRef();
   const passwordRef = useRef();
   const submitRef = useRef();
@@ -28,7 +26,14 @@ const Login = () => {
   }, []);
 
   return (
-    <div className="container-background-form">
+    <div style={{
+      position: "fixed",
+      height: "100%",
+      width: "100%",
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center"
+    }}>
       <div className="form-login">
         <h1 style={{ color: "white", textAlign: "center" }}>Login</h1>
         <Input label="Email" input={emailRef} error={emailError} />
@@ -46,7 +51,6 @@ const Login = () => {
             submitForm(
               emailRef.current,
               passwordRef.current,
-              history,
               setCookie,
               setEmailError,
               setPasswordError
@@ -63,7 +67,6 @@ const Login = () => {
 async function submitForm(
   email,
   password,
-  history,
   setCookie,
   setEmailError,
   setPasswordError

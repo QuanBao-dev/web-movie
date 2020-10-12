@@ -1,5 +1,3 @@
-import "./Chat.css";
-
 import React, { useEffect, useRef, useState } from "react";
 import { fromEvent } from "rxjs";
 import { debounceTime, filter } from "rxjs/operators";

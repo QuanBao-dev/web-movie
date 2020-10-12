@@ -1,7 +1,6 @@
-import "./PageNavList.css";
+import './PageNavList.css';
 
-import React from "react";
-import { allowScrollToSeeMore } from "../../store/home";
+import React from 'react';
 
 const PageNavList = ({ numberOfPagesDisplay, stream, homeState }) => {
   homeState.currentPage === 0 && (homeState.currentPage = 1);
@@ -24,7 +23,7 @@ const PageNavList = ({ numberOfPagesDisplay, stream, homeState }) => {
         <li
           className={`page-nav-item`}
           onClick={() => {
-            allowScrollToSeeMore(true);
+            stream.allowScrollToSeeMore(true);
             stream.updateCurrentPage(1);
           }}
         >
@@ -38,7 +37,7 @@ const PageNavList = ({ numberOfPagesDisplay, stream, homeState }) => {
               key={index}
               onClick={(e) => {
                 if (homeState.currentPage !== parseInt(e.target.innerHTML)) {
-                  allowScrollToSeeMore(true);
+                  stream.allowScrollToSeeMore(true);
                   stream.updateCurrentPage(parseInt(e.target.innerHTML));
                 }
               }}
@@ -53,7 +52,7 @@ const PageNavList = ({ numberOfPagesDisplay, stream, homeState }) => {
         <li
           className={`page-nav-item`}
           onClick={() => {
-            allowScrollToSeeMore(true);
+            stream.allowScrollToSeeMore(true);
             stream.updateCurrentPage(homeState.maxPage);
           }}
         >

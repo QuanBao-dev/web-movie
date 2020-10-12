@@ -230,6 +230,13 @@ const homeStore = {
     };
     subject.next(state);
   },
+  allowScrollToSeeMore : (bool) => {
+    state = {
+      ...state,
+      shouldScrollToSeeMore: bool
+    }
+    subject.next(state);
+  }
 };
 
 export const updateDataOnDestroy = (page, season, year) => {
@@ -279,10 +286,6 @@ export const updateOriginalData = (data) => {
 
 export const savingTextSearch = (text) => {
   state.textSearch = text;
-};
-
-export const allowScrollToSeeMore = (bool) => {
-  state.shouldScrollToSeeMore = bool;
 };
 
 export const updateModeScrolling = (mode) => {

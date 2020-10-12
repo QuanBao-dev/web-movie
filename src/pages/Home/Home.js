@@ -1,39 +1,64 @@
 import "./Home.css";
 
+import loadable from "@loadable/component";
 import { capitalize } from "lodash";
-import React, { Suspense, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import { stream } from "../../epics/home";
 
-const SearchInput = React.lazy(() =>
-  import("../../components/SearchInput/SearchInput")
+const SearchInput = loadable(
+  () => import("../../components/SearchInput/SearchInput"),
+  {
+    fallback: <i className="fas fa-spinner fa-9x fa-spin"></i>,
+  }
 );
 
-const AnimeListSeason = React.lazy(() =>
-  import("../../components/AnimeListSeason/AnimeListSeason")
+const AnimeListSeason = loadable(
+  () => import("../../components/AnimeListSeason/AnimeListSeason"),
+  {
+    fallback: <i className="fas fa-spinner fa-9x fa-spin"></i>,
+  }
 );
-const UpdatedAnime = React.lazy(() =>
-  import("../../components/UpdatedAnime/UpdatedAnime")
+const UpdatedAnime = loadable(
+  () =>
+    /* webpackPrefetch: true */ import(
+      "../../components/UpdatedAnime/UpdatedAnime"
+    ),
+  {
+    fallback: <i className="fas fa-spinner fa-9x fa-spin"></i>,
+  }
 );
 
-const AnimeSchedule = React.lazy(() =>
-  import("../../components/AnimeSchedule/AnimeSchedule")
+const AnimeSchedule = loadable(() =>
+  /* webpackPrefetch: true */ import(
+    "../../components/AnimeSchedule/AnimeSchedule"
+  )
 );
 
-const Genres = React.lazy(() => import("../../components/Genres/Genres"));
+const Genres = loadable(() => import("../../components/Genres/Genres"));
 
-const SearchedAnimeList = React.lazy(() =>
+const SearchedAnimeList = loadable(() =>
   import("../../components/SearchedAnimeList/SearchedAnimeList")
 );
-const UpcomingAnimeList = React.lazy(() =>
-  import("../../components/UpcomingAnimeList/UpcomingAnimeList")
+const UpcomingAnimeList = loadable(() =>
+  /* webpackPrefetch: true */ import(
+    "../../components/UpcomingAnimeList/UpcomingAnimeList"
+  )
 );
 
-const TopAnimeList = React.lazy(() =>
-  import("../../components/TopAnimeList/TopAnimeList")
+const TopAnimeList = loadable(() =>
+  /* webpackPrefetch: true */ import(
+    "../../components/TopAnimeList/TopAnimeList"
+  )
 );
 
-const Carousel = React.lazy(() => import("../../components/Carousel/Carousel"));
+const Carousel = loadable(
+  () =>
+    /* webpackPrefetch: true */ import("../../components/Carousel/Carousel"),
+  {
+    fallback: <i className="fas fa-spinner fa-9x fa-spin"></i>,
+  }
+);
 
 window.addEventListener("resize", () => {
   stream.init();
@@ -54,37 +79,17 @@ function Home() {
   return (
     <div className="home-page">
       {stream.currentState().screenWidth &&
-        stream.currentState().screenWidth >= 450 && (
-          <Suspense fallback={<div>Loading...</div>}>
-            <Carousel />
-          </Suspense>
-        )}
+        stream.currentState().screenWidth >= 450 && <Carousel />}
       <div className="recently-updated-movie">
         <div className="wrapper-search-anime-list">
-          <Suspense
-            fallback={
-              <div>
-                <i className="fas fa-spinner fa-9x fa-spin"></i>
-              </div>
-            }
-          >
-            <SearchInput />
-            <SearchedAnimeList homeState={homeState} />
-          </Suspense>
+          <SearchInput />
+          <SearchedAnimeList homeState={homeState} />
         </div>
-        <Suspense fallback={<div>Loading....</div>}>
-          <UpcomingAnimeList />
-        </Suspense>
-        <Suspense fallback={<div>Loading...</div>}>
-          <UpdatedAnime />
-        </Suspense>
+        <UpcomingAnimeList />
+        <UpdatedAnime />
       </div>
-      <Suspense fallback={<div>Loading...</div>}>
-        <Genres />
-      </Suspense>
-      <Suspense fallback={<div>Loading...</div>}>
-        <AnimeSchedule />
-      </Suspense>
+      <Genres />
+      <AnimeSchedule />
       <div className="container-anime-list">
         <div className="container-display-anime__home">
           <div className="anime-pagination">
@@ -95,13 +100,9 @@ function Home() {
                 : ""}{" "}
               in {capitalize(homeState.season)}, {homeState.year}
             </h1>
-            <Suspense fallback={<div>Loading...</div>}>
-              <AnimeListSeason />
-            </Suspense>
+            <AnimeListSeason />
           </div>
-          <Suspense fallback={<div>Loading...</div>}>
-            <TopAnimeList homeState={homeState} />
-          </Suspense>
+          <TopAnimeList homeState={homeState} />
         </div>
       </div>
     </div>

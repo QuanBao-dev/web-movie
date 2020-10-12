@@ -1,14 +1,19 @@
-import { orderBy } from 'lodash';
-import React, { Suspense, useEffect, useRef, useState } from 'react';
+import { orderBy } from "lodash";
+import React, { useEffect, useRef, useState } from "react";
 
-import { changeCurrentPage$, changeSeasonYear$, fetchAnimeSeason$, stream } from '../../epics/home';
-import { updateDataOnDestroy, updateMaxPage } from '../../store/home';
-import AnimeList from '../AnimeList/AnimeList';
-import PageNavList from '../PageNavList/PageNavList';
+import {
+  changeCurrentPage$,
+  changeSeasonYear$,
+  fetchAnimeSeason$,
+  stream,
+} from "../../epics/home";
+import { updateDataOnDestroy, updateMaxPage } from "../../store/home";
+import AnimeList from "../AnimeList/AnimeList";
+import PageNavList from "../PageNavList/PageNavList";
 
 const AnimeListSeason = () => {
   const [homeState, setHomeState] = useState(
-    stream.currentState() ? stream.currentState() : stream.initialState
+    stream.currentState() || stream.initialState
   );
   const selectYear = useRef(null);
   const selectSeason = useRef(null);
@@ -56,7 +61,7 @@ const AnimeListSeason = () => {
     stream.updateAnimeData(sortedArray);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [homeState.currentPage, homeState.score]);
-  
+
   useEffect(() => {
     if (homeState.shouldScrollToSeeMore) {
       stream.allowScrollToSeeMore(false);
@@ -70,13 +75,8 @@ const AnimeListSeason = () => {
       selectSeason.current.value = homeState.season;
       selectYear.current.value = homeState.year;
     }
-    if (
-      document
-        .querySelector(".wrapper-search-anime-list input")
-        .value.trim() === ""
-    )
-      document.querySelector(".wrapper-search-anime-list input").value =
-        homeState.textSearch;
+    const input = document.querySelector(".wrapper-search-anime-list input");
+    if (input && input.value.trim() === "") input.value = homeState.textSearch;
 
     const subscription3 = changeCurrentPage$().subscribe();
     let subscription4;
@@ -138,13 +138,16 @@ const AnimeListSeason = () => {
         stream={stream}
         homeState={homeState}
       />
-      <Suspense fallback={<div>Loading...</div>}>
-        <AnimeList
-          lazy={true}
-          data={homeState.dataDetail}
-          error={homeState.error || null}
-        />
-      </Suspense>
+      <AnimeList
+        lazy={
+          homeState.currentPage !== homeState.currentPageOnDestroy ||
+          homeState.season !== homeState.currentSeasonOnDestroy ||
+          homeState.year !== homeState.currentYearOnDestroy
+        }
+        data={homeState.dataDetail}
+        error={homeState.error || null}
+        empty={false}
+      />
       <PageNavList
         numberOfPagesDisplay={numberOfPagesDisplay}
         stream={stream}

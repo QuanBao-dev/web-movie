@@ -1,12 +1,16 @@
 import "./CharacterDetail.css";
 
-import React, { Suspense, useEffect, useState } from "react";
+import loadable from "@loadable/component";
+import React, { useEffect, useState } from "react";
+import { useHistory } from "react-router-dom";
 import { of } from "rxjs";
 import { ajax } from "rxjs/ajax";
 import { catchError, pluck, retry } from "rxjs/operators";
-import { useHistory } from "react-router-dom";
+
 import { characterStream } from "../../epics/character";
-const AllAnimeRelated = React.lazy(() =>
+import { LazyLoadImage } from "react-lazy-load-image-component";
+
+const AllAnimeRelated = loadable(() =>
   import("../../components/AllAnimeRelated/AllAnimeRelated")
 );
 
@@ -86,12 +90,11 @@ const CharacterDetail = (props) => {
         dataCharacterDetail.animeography.length !== 0 && (
           <div className="character-appear-container">
             <h1 className="text-capitalize">Character appears in...</h1>
-            <Suspense fallback={<div>Loading...</div>}>
-              <AllAnimeRelated
-                animeList={dataCharacterDetail.animeography}
-                history={history}
-              />
-            </Suspense>
+            <AllAnimeRelated
+              animeList={dataCharacterDetail.animeography}
+              history={history}
+              lazy={true}
+            />
           </div>
         )}
       {dataCharacterDetail.voice_actors &&
@@ -108,12 +111,12 @@ const CharacterDetail = (props) => {
                       history.push("/anime/person/" + actor.mal_id);
                     }}
                   >
-                    <img
+                    <LazyLoadImage
                       src={actor.image_url}
                       alt="person_image"
                       width="100%"
                       height="100%"
-                    ></img>
+                    />
                     <div className="actor-name">
                       <h3 title="name">{actor.name}</h3>
                       <div title="language">( {actor.language} )</div>

@@ -1,14 +1,16 @@
 import "./Characters.css";
-import React, { Suspense, useEffect, useState } from "react";
+
+import loadable from "@loadable/component";
+import React, { useEffect, useState } from "react";
+import { useHistory } from "react-router-dom";
+import { of } from "rxjs";
 import { ajax } from "rxjs/ajax";
 import { catchError, pluck, retry } from "rxjs/operators";
-import { of } from "rxjs";
-import { useHistory } from "react-router-dom";
+
 import { characterStream } from "../../epics/character";
-const CharacterItem = React.lazy(() =>
-  import("../CharacterItem/CharacterItem")
-);
-const Characters = ({ malId }) => {
+
+const CharacterItem = loadable(() => import("../CharacterItem/CharacterItem"));
+const Characters = ({ malId, lazy = false }) => {
   const history = useHistory();
   const [dataCharacterState, setDataCharacterState] = useState([]);
   const [charactersState, setCharactersState] = useState(
@@ -58,20 +60,12 @@ const Characters = ({ malId }) => {
                   characterStream.currentState().numberDisplay
               )
               .map((characterData, index) => (
-                <Suspense
+                <CharacterItem
                   key={index}
-                  fallback={
-                    <div>
-                      <i className="fas fa-spinner fa-2x fa-spin"></i>
-                    </div>
-                  }
-                >
-                  <CharacterItem
-                    key={index}
-                    characterData={characterData}
-                    history={history}
-                  />
-                </Suspense>
+                  lazy={lazy}
+                  characterData={characterData}
+                  history={history}
+                />
               ))}
             <div
               className="see-more-character"

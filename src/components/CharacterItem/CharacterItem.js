@@ -1,10 +1,11 @@
-import './CharacterItem.css';
+import "./CharacterItem.css";
 
-import React from 'react';
+import React from "react";
 
-import { characterStream } from '../../epics/character';
+import { characterStream } from "../../epics/character";
+import { LazyLoadImage } from "react-lazy-load-image-component";
 
-function CharacterItem({characterData, history}) {
+function CharacterItem({ characterData, history, lazy }) {
   return (
     <div
       className={`character-item${
@@ -15,13 +16,22 @@ function CharacterItem({characterData, history}) {
         history.push(`/anime/character/${characterData.mal_id}`);
       }}
     >
-      <img
-        className="character-image"
-        src={characterData.image_url}
-        alt="image_character"
-      />
+      {!lazy && (
+        <img
+          className="character-image"
+          src={characterData.image_url}
+          alt="image_character"
+        />
+      )}
+      {lazy && (
+        <LazyLoadImage
+          className="character-image"
+          src={characterData.image_url}
+          alt="image_character"
+        />
+      )}
       <div className="name-character">{characterData.name}</div>
     </div>
   );
 }
-export default CharacterItem
+export default CharacterItem;

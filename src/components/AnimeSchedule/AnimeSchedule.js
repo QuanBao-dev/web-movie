@@ -75,6 +75,7 @@ const AnimeSchedule = () => {
               >
                 {homeState.dataScheduleMovie[date] && (
                   <AnimeList
+                    empty={true}
                     data={homeState.dataScheduleMovie[date]}
                     lazy={true}
                   />

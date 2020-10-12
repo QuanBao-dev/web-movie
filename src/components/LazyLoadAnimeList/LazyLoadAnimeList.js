@@ -1,15 +1,16 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import "./LazyLoadAnimeList.css";
 
-import React, { Suspense, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import {
   fetchDataGenreAnimeList$,
   lazyLoadAnimeListStream,
   updatePageScrollingWindow$,
 } from "../../epics/lazyLoadAnimeList";
+import loadable from "@loadable/component";
 
-const AnimeList = React.lazy(() =>
+const AnimeList = loadable(() =>
   import("../../components/AnimeList/AnimeList")
 );
 
@@ -111,15 +112,14 @@ const LazyLoadAnimeList = ({ genreId, url }) => {
           lazyLoadState.genre
         )}
       </h1>
-      <Suspense fallback={<div>Loading...</div>}>
-        <AnimeList
-          data={lazyLoadState.genreDetailData.slice(
-            0,
-            10 + (lazyLoadState.pageSplit - 1) * 5
-          )}
-          error={null}
-        />
-      </Suspense>
+      <AnimeList
+        empty={true}
+        data={lazyLoadState.genreDetailData.slice(
+          0,
+          10 + (lazyLoadState.pageSplit - 1) * 5
+        )}
+        error={null}
+      />
       <div
         className="loading-symbol"
         style={{

@@ -1,12 +1,15 @@
 import "./SearchedList.css";
-import React, { Suspense, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ajax } from "rxjs/ajax";
 import { catchError, pluck, retry, switchMapTo, tap } from "rxjs/operators";
 import { fromEvent, of, timer } from "rxjs";
 import navBarStore from "../../store/navbar";
 import searchedListStore from "../../store/searchedList";
-const AnimeList = React.lazy(() =>
-  import("../../components/AnimeList/AnimeList")
+import loadable from "@loadable/component";
+const AnimeList = loadable(() =>
+  import("../../components/AnimeList/AnimeList"),{
+    fallback:<i class="fas fa-spinner fa-2x"></i>
+  }
 );
 
 const SearchedList = (props) => {
@@ -19,7 +22,7 @@ const SearchedList = (props) => {
   const [lastPage, setLastPage] = useState(1);
   useEffect(() => {
     const subscriptionInit = searchedListStore.subscribe(setSearchedListState);
-    searchedListStore.init()
+    searchedListStore.init();
     checkWidth(setMaxPageDisplay);
     const subscription = fromEvent(window, "resize").subscribe((e) => {
       checkWidth(setMaxPageDisplay);
@@ -31,10 +34,10 @@ const SearchedList = (props) => {
     };
   }, []);
   useEffect(() => {
-    if(searchedListStore.currentState().previousKey !== key){
-      searchedListStore.updatePage(1)
+    if (searchedListStore.currentState().previousKey !== key) {
+      searchedListStore.updatePage(1);
     }
-  },[key])
+  }, [key]);
   useEffect(() => {
     const subscription = fetchDataApi$(key, 1).subscribe((data) => {
       searchedListStore.updatePreviousKey(key);
@@ -50,24 +53,26 @@ const SearchedList = (props) => {
   }, [key]);
   useEffect(() => {
     let subscription;
-    subscription = fetchDataApi$(key, searchedListState.page).subscribe((data) => {
-      setDataSearchedAnimeState(data.results);
-    });
+    subscription = fetchDataApi$(key, searchedListState.page).subscribe(
+      (data) => {
+        setDataSearchedAnimeState(data.results);
+      }
+    );
     return () => {
       subscription && subscription.unsubscribe();
     };
   }, [key, searchedListState.page]);
   let dataSearchDisplay;
   if (dataSearchedAnimeState) dataSearchDisplay = dataSearchedAnimeState;
-  const pageList = narrowPageList(searchedListState.page, lastPage, maxPageDisplay);
+  const pageList = narrowPageList(
+    searchedListState.page,
+    lastPage,
+    maxPageDisplay
+  );
   return (
     <div className="container-search-anime">
       <h1 style={{ color: "white" }}>Results searched for "{key}"</h1>
-      {dataSearchDisplay && (
-        <Suspense fallback={<div>Loading...</div>}>
-          <AnimeList data={dataSearchDisplay} error={null} />
-        </Suspense>
-      )}
+      {dataSearchDisplay && <AnimeList data={dataSearchDisplay} error={null} />}
       {dataSearchDisplay && dataSearchDisplay.length === 0 && (
         <h4 style={{ color: "white" }}>
           Not found any anime. Make sure your key search at least has 3

@@ -1,10 +1,9 @@
 import "./SearchedAnimeList.css";
 
-import React, { Suspense } from "react";
+import loadable from "@loadable/component";
+import React from "react";
 
-const SearchedAnime = React.lazy(() =>
-  import("../SearchedAnime/SearchedAnime")
-);
+const SearchedAnime = loadable(() => import("../SearchedAnime/SearchedAnime"));
 
 const SearchedAnimeList = ({ homeState }) => {
   if (homeState.textSearch && homeState.dataFilter.length === 0) {
@@ -32,16 +31,12 @@ const SearchedAnimeList = ({ homeState }) => {
         {homeState.dataFilter.length > 0 &&
           homeState.dataFilter.map((anime, index) => {
             return (
-              <Suspense
+              <SearchedAnime
                 key={index}
-                fallback={<i className="fas fa-spinner fa-9x fa-spin"></i>}
-              >
-                <SearchedAnime
-                  image_url={anime.image_url}
-                  malId={anime.mal_id}
-                  title={anime.title}
-                />
-              </Suspense>
+                image_url={anime.image_url}
+                malId={anime.mal_id}
+                title={anime.title}
+              />
             );
           })}
       </div>

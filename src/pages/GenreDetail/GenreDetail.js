@@ -1,17 +1,16 @@
-import React, { Suspense } from "react";
-const LazyLoadAnimeList = React.lazy(() =>
+import loadable from "@loadable/component";
+import React from "react";
+const LazyLoadAnimeList = loadable(() =>
   import("../../components/LazyLoadAnimeList/LazyLoadAnimeList")
 );
 
 const GenreDetail = (props) => {
   const { genreId } = props.match.params;
   return (
-    <Suspense fallback={<div>Loading...</div>}>
-      <LazyLoadAnimeList
-        genreId={genreId}
-        url={"https://api.jikan.moe/v3/genre/anime/{genreId}/{page}"}
-      />
-    </Suspense>
+    <LazyLoadAnimeList
+      genreId={genreId}
+      url={"https://api.jikan.moe/v3/genre/anime/{genreId}/{page}"}
+    />
   );
 };
 

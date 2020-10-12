@@ -1,45 +1,116 @@
 import "./PersonDetail.css";
 
-import React, { Suspense, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
-import { fromEvent, of } from "rxjs";
+import { BehaviorSubject, fromEvent, of } from "rxjs";
 import { ajax } from "rxjs/ajax";
 import { catchError, debounceTime, filter, pluck, retry } from "rxjs/operators";
+import loadable from "@loadable/component";
 
-const AnimeStaffPositions = React.lazy(() =>
-  import("../../components/AnimeStaffPositions/AnimeStaffPositions")
+const AnimeStaffPositions = loadable(
+  () => import("../../components/AnimeStaffPositions/AnimeStaffPositions"),
+  {
+    fallback: <i class="fas fa-spinner"></i>,
+  }
 );
 
-const AllAnimeRelated = React.lazy(() =>
-  import("../../components/AllAnimeRelated/AllAnimeRelated")
+const AllAnimeRelated = loadable(
+  () => import("../../components/AllAnimeRelated/AllAnimeRelated"),
+  {
+    fallback: <i class="fas fa-spinner"></i>,
+  }
 );
 let updateStaffPosition;
 let updateVoiceActingRoles;
-let numberDisplay = 10;
+let numberDisplay = 1;
+const initialState = {
+  pageSplit: 1,
+  dataPersonDetail: {},
+  malId: null,
+};
+let state = initialState;
+const behaviorSubject = new BehaviorSubject();
+const personDetailStore = {
+  initialState: initialState,
+  subscribe: (setState) => behaviorSubject.subscribe(setState),
+  init: () => {
+    behaviorSubject.next(state);
+  },
+  updatePageSplit: (page) => {
+    state = {
+      ...state,
+      pageSplit: page,
+    };
+    behaviorSubject.next(state);
+  },
+  updateDataPersonDetail: (data) => {
+    state = {
+      ...state,
+      dataPersonDetail: data,
+    };
+    behaviorSubject.next(state);
+  },
+  updateMalId: (malId) => {
+    state = {
+      ...state,
+      malId,
+    };
+    behaviorSubject.next(state);
+  },
+  currentState: () => {
+    let ans;
+    behaviorSubject.subscribe((v) => (ans = v));
+    return ans || initialState;
+  },
+  resetData: () => {
+    state = {
+      ...state,
+      pageSplit: 1,
+      malId: null,
+      dataPersonDetail: {},
+    };
+    behaviorSubject.next(state);
+  },
+};
 const PersonDetail = (props) => {
   const { personId } = props.match.params;
   const history = useHistory();
-  const [personDetail, setPersonDetail] = useState({});
-  const [pageLoad, setPageLoad] = useState(1);
+  // const [personDetail, setPersonDetail] = useState({});
+  const [personDetailState, setPersonDetailState] = useState(
+    personDetailStore.currentState() || personDetailStore.initialState
+  );
   useEffect(() => {
-    const subscription = fetchDataPerson(personId).subscribe((v) => {
-      setPersonDetail(v);
-    });
-    window.scroll({
-      top: 0,
-    });
+    const subscription = personDetailStore.subscribe(setPersonDetailState);
+    personDetailStore.init();
     return () => {
       subscription.unsubscribe();
     };
-  }, [personId]);
+  }, []);
+  useEffect(() => {
+    let subscription;
+    if (personDetailState.malId !== personId) {
+      personDetailStore.resetData();
+      subscription = fetchDataPerson(personId).subscribe((v) => {
+        personDetailStore.updateDataPersonDetail(v);
+        personDetailStore.updateMalId(personId);
+        window.scroll({
+          top: 0,
+        });
+      });
+    }
+    return () => {
+      subscription && subscription.unsubscribe();
+    };
+  }, [personId, personDetailState.malId]);
   useEffect(() => {
     const subscription = updatePageLazyLoad$().subscribe((v) => {
-      const currentPage = pageLoad;
-      setPageLoad(currentPage + 1);
+      personDetailStore.updatePageSplit(
+        personDetailStore.currentState().pageSplit + 1
+      );
     });
     if (updateVoiceActingRoles)
       if (
-        pageLoad * numberDisplay >
+        personDetailState.pageSplit * numberDisplay >
         Object.keys(updateVoiceActingRoles).length
       ) {
         subscription.unsubscribe();
@@ -47,27 +118,33 @@ const PersonDetail = (props) => {
     return () => {
       subscription.unsubscribe();
     };
-  }, [pageLoad]);
-  const keyPersonInformation = ignoreKeys(Object.keys(personDetail), [
-    "request_hash",
-    "request_cached",
-    "request_cache_expiry",
-    "mal_id",
-    "published_manga",
-    "voice_acting_roles",
-    "anime_staff_positions",
-    "alternate_names",
-    "about",
-    "image_url",
-    "url",
-    "website_url",
-  ]);
+  }, [personDetailState.pageSplit]);
+  const keyPersonInformation = ignoreKeys(
+    Object.keys(personDetailState.dataPersonDetail),
+    [
+      "request_hash",
+      "request_cached",
+      "request_cache_expiry",
+      "mal_id",
+      "published_manga",
+      "voice_acting_roles",
+      "anime_staff_positions",
+      "alternate_names",
+      "about",
+      "image_url",
+      "url",
+      "website_url",
+    ]
+  );
   // console.log(personDetail);
-  if (personDetail.anime_staff_positions) {
-    updateStaffPosition = validateDataStaff(updateStaffPosition, personDetail);
+  if (personDetailState.dataPersonDetail.anime_staff_positions) {
+    updateStaffPosition = validateDataStaff(
+      updateStaffPosition,
+      personDetailState.dataPersonDetail
+    );
   }
-  if (personDetail.voice_acting_roles) {
-    updateVoiceActingRoles = personDetail.voice_acting_roles.reduce(
+  if (personDetailState.dataPersonDetail.voice_acting_roles) {
+    updateVoiceActingRoles = personDetailState.dataPersonDetail.voice_acting_roles.reduce(
       (ans, dataVoiceActor) => {
         if (!ans[dataVoiceActor.character.mal_id])
           ans[dataVoiceActor.character.mal_id] = {};
@@ -86,14 +163,14 @@ const PersonDetail = (props) => {
       {}
     );
   }
-  if (!personDetail.error)
+  if (!personDetailState.dataPersonDetail.error)
     return (
       <div className="person-detail-container">
         <div className="person-information-wrapper">
           <img
             className="image-person"
             src={
-              personDetail.image_url ||
+              personDetailState.dataPersonDetail.image_url ||
               "https://us.123rf.com/450wm/pikepicture/pikepicture1612/pikepicture161200526/68824651-stock-vector-male-default-placeholder-avatar-profile-gray-picture-isolated-on-white-background-for-your-design-ve.jpg?ver=6"
             }
             alt="image_person"
@@ -105,17 +182,21 @@ const PersonDetail = (props) => {
                   <span className="text-capitalize">
                     {key.replace("_", " ")}
                   </span>
-                  {key !== "birthday" && <span>{personDetail[key]}</span>}
+                  {key !== "birthday" && (
+                    <span>{personDetailState.dataPersonDetail[key]}</span>
+                  )}
                   {key === "birthday" && (
                     <span>
-                      {new Date(personDetail[key]).toUTCString().slice(0, 12)}
+                      {new Date(personDetailState.dataPersonDetail[key])
+                        .toUTCString()
+                        .slice(0, 12)}
                     </span>
                   )}
                 </div>
               ))}
           </div>
         </div>
-        {personDetail.about && (
+        {personDetailState.dataPersonDetail.about && (
           <div
             className="wrapper-text"
             style={{
@@ -124,19 +205,18 @@ const PersonDetail = (props) => {
           >
             <span className="text-capitalize">about</span>
             <pre className="text-about-person">
-              {personDetail.about.replace(/\\n/g, "")}
+              {personDetailState.dataPersonDetail.about.replace(/\\n/g, "")}
             </pre>
           </div>
         )}
         {updateStaffPosition && Object.keys(updateStaffPosition).length !== 0 && (
           <div>
             <h1 className="text-capitalize">Anime Staff Positions</h1>
-            <Suspense fallback={<div>Loading...</div>}>
-              <AnimeStaffPositions
-                history={history}
-                updateStaffPosition={updateStaffPosition}
-              />
-            </Suspense>
+            <AnimeStaffPositions
+              history={history}
+              lazy={true}
+              updateStaffPosition={updateStaffPosition}
+            />
           </div>
         )}
         {updateVoiceActingRoles &&
@@ -145,7 +225,10 @@ const PersonDetail = (props) => {
               <h1 className="text-capitalize">Voice Acting Roles</h1>
               <div className="list-anime-voice-acting">
                 {Object.keys(updateVoiceActingRoles)
-                  .slice(0, numberDisplay * pageLoad)
+                  .slice(
+                    0,
+                    numberDisplay * (personDetailState.pageSplit - 1) + 1
+                  )
                   .map((key, index) => (
                     <div key={index} className="person-voice-item">
                       <div
@@ -165,12 +248,10 @@ const PersonDetail = (props) => {
                           <h3>{updateVoiceActingRoles[key].name}</h3>
                         </div>
                       </div>
-                      <Suspense fallback={<div>Loading...</div>}>
-                        <AllAnimeRelated
-                          animeList={updateVoiceActingRoles[key].animeList}
-                          history={history}
-                        />
-                      </Suspense>
+                      <AllAnimeRelated
+                        animeList={updateVoiceActingRoles[key].animeList}
+                        history={history}
+                      />
                     </div>
                   ))}
               </div>
@@ -231,7 +312,7 @@ function ignoreKeys(keys, ignoreList) {
 
 function updatePageLazyLoad$() {
   return fromEvent(window, "scroll").pipe(
-    debounceTime(500),
+    debounceTime(100),
     filter(() => document.body.scrollHeight - (window.scrollY + 2000) < 0)
   );
 }

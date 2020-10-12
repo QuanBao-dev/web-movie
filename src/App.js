@@ -1,39 +1,41 @@
-import './App.css';
+import "./App.css";
 
-import Axios from 'axios';
-import React, { Suspense, useEffect, useRef, useState } from 'react';
-import { useCookies } from 'react-cookie';
-import { BrowserRouter as Router, NavLink as Link, Route, Switch } from 'react-router-dom';
-import { ReplaySubject } from 'rxjs';
+import React, { useEffect, useRef, useState } from "react";
+import { useCookies } from "react-cookie";
+import {
+  BrowserRouter as Router,
+  NavLink as Link,
+  Route,
+  Switch,
+} from "react-router-dom";
+import { ReplaySubject } from "rxjs";
 
-import { fetchingUser$, userStream } from './epics/user';
-import { allowShouldFetchAllUser } from './store/admin';
-import navBarStore from './store/navbar';
+import { fetchingUser$, userStream } from "./epics/user";
+import { allowShouldFetchAllUser } from "./store/admin";
+import navBarStore from "./store/navbar";
+import Login from "./pages/Login/Login";
+import Axios from "axios";
+import { lazy } from "@loadable/component";
+import { Suspense } from "react";
+const Register = lazy(() => import("./pages/Register/Register"));
 
-const Login = React.lazy(() => import("./pages/Login/Login"));
-const Register = React.lazy(() => import("./pages/Register/Register"));
-
-const ProducerDetail = React.lazy(() =>
+const ProducerDetail = lazy(() =>
   import("./pages/ProducerDetail/ProducerDetail")
 );
-const FAQ = React.lazy(() => import("./pages/FAQ/FAQ"));
-const EditUser = React.lazy(() => import("./pages/EditUser/EditUser"));
-const AdminManager = React.lazy(() =>
-  import("./pages/AdminManager/AdminManager")
-);
-const NotFound = React.lazy(() => import("./pages/404/NotFound"));
-const Home = React.lazy(() => import("./pages/Home/Home"));
-const Name = React.lazy(() => import("./pages/Name/Name"));
-const CharacterDetail = React.lazy(() =>
+const FAQ = lazy(() => import("./pages/FAQ/FAQ"));
+const EditUser = lazy(() => import("./pages/EditUser/EditUser"));
+const AdminManager = lazy(() => import("./pages/AdminManager/AdminManager"));
+const NotFound = lazy(() => import("./pages/404/NotFound"));
+const Home = lazy(() => import("./pages/Home/Home"));
+const Name = lazy(() => import("./pages/Name/Name"));
+const CharacterDetail = lazy(() =>
   import("./pages/CharacterDetail/CharacterDetail")
 );
-const Theater = React.lazy(() => import("./pages/Theater/Theater"));
-const EpisodePage = React.lazy(() => import("./pages/EpisodePage/EpisodePage"));
-const SearchedList = React.lazy(() => import("./pages/Search/SearchedList"));
-const PersonDetail = React.lazy(() =>
-  import("./pages/PersonDetail/PersonDetail")
-);
-const GenreDetail = React.lazy(() => import("./pages/GenreDetail/GenreDetail"));
+const Theater = lazy(() => import("./pages/Theater/Theater"));
+const EpisodePage = lazy(() => import("./pages/EpisodePage/EpisodePage"));
+const SearchedList = lazy(() => import("./pages/Search/SearchedList"));
+const PersonDetail = lazy(() => import("./pages/PersonDetail/PersonDetail"));
+const GenreDetail = lazy(() => import("./pages/GenreDetail/GenreDetail"));
 
 const scrollSaveSubject = new ReplaySubject(3);
 window.addEventListener("resize", () => {
@@ -57,7 +59,7 @@ window.addEventListener("scroll", () => {
     const navBarE = document.querySelector(".nav-bar__app");
     const buttonScrollTopE = document.querySelector(".button-scroll-top");
     if (navBarE)
-      if (window.scrollY === 0) {
+      if (window.scrollY < 70) {
         navBarE.style.transform = "translateY(0)";
         buttonScrollTopE.style.transform = "translateY(500px)";
       } else if (v - window.scrollY < -1) {

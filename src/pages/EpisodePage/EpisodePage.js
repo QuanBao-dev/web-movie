@@ -1,7 +1,8 @@
 /* eslint-disable eqeqeq */
 import "./EpisodePage.css";
 
-import React, { Suspense, useEffect, useState } from "react";
+import loadable from "@loadable/component";
+import React, { useEffect, useState } from "react";
 import { Link, useHistory } from "react-router-dom";
 
 import { fetchEpisodesOfMovie$, pageWatchStream } from "../../epics/pageWatch";
@@ -9,10 +10,15 @@ import { theaterStream } from "../../epics/theater";
 import { userStream } from "../../epics/user";
 import { allowShouldFetchComment } from "../../store/comment";
 
-const Comment = React.lazy(() => import("../../components/Comment/Comment"));
-const Chat = React.lazy(() => import("../../components/Chat/Chat"));
-const VideoPlayerSection = React.lazy(() =>
-  import("../../components/VideoPlayerSection/VideoPlayerSection")
+const Comment = loadable(() => import("../../components/Comment/Comment"));
+const Chat = loadable(() => import("../../components/Chat/Chat"), {
+  fallback: <i className="fas fa-spinner fa-9x fa-spin"></i>,
+});
+const VideoPlayerSection = loadable(
+  () => import("../../components/VideoPlayerSection/VideoPlayerSection"),
+  {
+    fallback: <i className="fas fa-spinner fa-9x fa-spin"></i>,
+  }
 );
 
 const EpisodePage = (props) => {
@@ -54,6 +60,9 @@ const EpisodePage = (props) => {
       }
       return ep.episode == episode;
     });
+  let episodeIndex = 0;
+  if (episodes)
+    episodeIndex = episodes.findIndex((data) => data.episode == episode);
   return (
     <div className="container-episode-movie">
       <div
@@ -67,22 +76,12 @@ const EpisodePage = (props) => {
       <div className="wrapper-player-video">
         <div className="wrapper-discuss-section">
           <h1>CHAT</h1>
-          <Suspense fallback={<h1>Loading...</h1>}>
-            <Chat groupId={malId} user={user} />
-          </Suspense>
+          <Chat groupId={malId} user={user} />
         </div>
-        <Suspense
-          fallback={
-            <div>
-              <i className="fas fa-spinner fa-5x fa-spin"></i>
-            </div>
-          }
-        >
-          <VideoPlayerSection currentEpisode={currentEpisode} user={user} />
-        </Suspense>
+        <VideoPlayerSection currentEpisode={currentEpisode} user={user} />
       </div>
       <div className="next-previous-episode-container">
-        {episode - 1 > 0 && (
+        {episodeIndex - 1 > -1 && (
           <div
             className="previous-episode"
             onClick={() => {
@@ -96,8 +95,7 @@ const EpisodePage = (props) => {
         {mode === "Eng" &&
           pageWatchState.episodes &&
           pageWatchState.episodes.episodesEng &&
-          parseInt(episode) + 1 <=
-            pageWatchState.episodes.episodesEng.length && (
+          episodeIndex + 1 < pageWatchState.episodes.episodesEng.length && (
             <div
               className="next-episode"
               onClick={() => {
@@ -114,7 +112,7 @@ const EpisodePage = (props) => {
         {mode === "vie" &&
           pageWatchState.episodes &&
           pageWatchState.episodes.episodes &&
-          parseInt(episode) + 1 <= pageWatchState.episodes.episodes.length && (
+          episodeIndex + 1 < pageWatchState.episodes.episodes.length && (
             <div
               className="next-episode"
               onClick={() => {
@@ -131,8 +129,7 @@ const EpisodePage = (props) => {
         {mode === "EngDub" &&
           pageWatchState.episodes &&
           pageWatchState.episodes.episodesEngDub &&
-          parseInt(episode) + 1 <=
-            pageWatchState.episodes.episodesEngDub.length && (
+          episodeIndex + 1 < pageWatchState.episodes.episodesEngDub.length && (
             <div
               className="next-episode"
               onClick={() => {
@@ -201,15 +198,7 @@ const EpisodePage = (props) => {
             </div>
           )}
       </div>
-      <Suspense
-        fallback={
-          <div>
-            <i className="fas fa-spinner fa-5x fa-spin"></i>
-          </div>
-        }
-      >
-        <Comment malId={malId} user={user} />
-      </Suspense>
+      <Comment malId={malId} user={user} />
     </div>
   );
 };

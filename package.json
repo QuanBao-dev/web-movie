@@ -5,6 +5,7 @@
   "proxy": "http://localhost:5000",
   "dependencies": {
     "@hapi/joi": "^17.1.1",
+    "@loadable/component": "^5.13.2",
     "@scaleleap/config": "^2.0.3",
     "@scaleleap/puppeteer": "^1.1.25",
     "axios": "^0.19.2",

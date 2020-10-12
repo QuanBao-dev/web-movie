@@ -6,7 +6,8 @@ const initialState = {
   dataEpisodesAnime: {},
   dataLargePicture: "",
   boxMovie: null,
-  pageVideo:1
+  pageVideo: 1,
+  malId: null,
 };
 const behaviorSubject = new BehaviorSubject(initialState);
 let state = initialState;
@@ -14,6 +15,16 @@ const nameStore = {
   initialState,
   subscribe: (setState) => behaviorSubject.subscribe(setState),
   init: () => {
+    behaviorSubject.next(state);
+  },
+  updateMalId: (malId) => {
+    state = {
+      ...state,
+      malId,
+    };
+    behaviorSubject.next(state);
+  },
+  resetState: () => {
     state = {
       ...initialState,
     };
@@ -22,14 +33,14 @@ const nameStore = {
   updateBoxMovie: (data) => {
     state = {
       ...state,
-      boxMovie: data === null ? null:{ ...data },
+      boxMovie: data === null ? null : { ...data },
     };
     behaviorSubject.next(state);
   },
-  updatePageVideo:(page) => {
-    state={
+  updatePageVideo: (page) => {
+    state = {
       ...state,
-      pageVideo:page
+      pageVideo: page,
     };
     behaviorSubject.next(state);
   },

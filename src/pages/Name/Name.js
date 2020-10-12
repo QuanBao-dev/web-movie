@@ -1,13 +1,14 @@
 import "./Name.css";
 
+import loadable from "@loadable/component";
 import Axios from "axios";
 import { orderBy, random } from "lodash";
-import React, { Suspense, useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useCookies } from "react-cookie";
 import { Link, useHistory } from "react-router-dom";
-import { of } from "rxjs";
+import { from, of } from "rxjs";
 import { ajax } from "rxjs/ajax";
-import { catchError, map, pluck, retry } from "rxjs/operators";
+import { catchError, combineAll, map, pluck, retry, tap } from "rxjs/operators";
 
 import Input from "../../components/Input/Input";
 import {
@@ -25,17 +26,17 @@ import { userStream } from "../../epics/user";
 import { allowShouldFetchComment } from "../../store/comment";
 import navBarStore from "../../store/navbar";
 
-const Characters = React.lazy(() =>
+const Characters = loadable(() =>
   import("../../components/Characters/Characters")
 );
-const VideoPromotionList = React.lazy(() =>
+const VideoPromotionList = loadable(() =>
   import("../../components/VideoPromotionList/VideoPromotionList")
 );
 
-const RelatedAnime = React.lazy(() =>
+const RelatedAnime = loadable(() =>
   import("../../components/RelatedAnime/RelatedAnime")
 );
-const Reviews = React.lazy(() => import("../../components/Reviews/Reviews"));
+const Reviews = loadable(() => import("../../components/Reviews/Reviews"));
 
 let episodeDataDisplay;
 const Name = (props) => {
@@ -43,8 +44,12 @@ const Name = (props) => {
   const history = useHistory();
   const user = userStream.currentState();
   const [cookies] = useCookies();
-  const [nameState, setNameState] = useState(nameStream.initialState);
-  const [reviewState, setReviewState] = useState(pageWatchStream.initialState);
+  const [nameState, setNameState] = useState(
+    nameStream.currentState() || nameStream.initialState
+  );
+  const [reviewState, setReviewState] = useState(
+    pageWatchStream.currentState() || pageWatchStream.initialState
+  );
   const [showThemeMusic, setShowThemeMusic] = useState(false);
   const [crawlAnimeMode, setCrawlAnimeMode] = useState("animehay");
   const [toggleNavTitle, setToggleNavTitle] = useState(false);
@@ -68,9 +73,6 @@ const Name = (props) => {
     const subscription2 = nameStream.subscribe(setNameState);
     pageWatchStream.init();
     nameStream.init();
-    window.scroll({
-      top: 0,
-    });
     setShowThemeMusic(false);
     return () => {
       subscription.unsubscribe();
@@ -79,36 +81,57 @@ const Name = (props) => {
     };
   }, []);
   useEffect(() => {
-    const fetchDataSub = fetchData$(name).subscribe((v) => {
-      nameStream.updateDataInfoAnime(v);
-      navBarStore.updateIsShowBlockPopUp(false);
-    });
-    const fetchDataVideoSub = fetchDataVideo$(name).subscribe(({ promo }) => {
-      nameStream.updatePageVideo(1);
-      nameStream.updateDataVideoPromo(promo);
-    });
-    const fetchLargePictureSub = fetchLargePicture$(name).subscribe(
-      ({ pictures }) => {
+    const fetchDataInfo$ = fetchData$(name).pipe(
+      tap((v) => {
+        nameStream.updateDataInfoAnime(v);
+        navBarStore.updateIsShowBlockPopUp(false);
+      })
+    );
+    const fetchDataVideoPromo$ = fetchDataVideo$(name).pipe(
+      tap(({ promo }) => {
+        nameStream.updatePageVideo(1);
+        nameStream.updateDataVideoPromo(promo);
+      })
+    );
+    const fetchLargePictureUrl$ = fetchLargePicture$(name).pipe(
+      tap(({ pictures }) => {
         const imageUrl = pictures[random(pictures.length - 1)]
           ? pictures[random(pictures.length - 1)].large
           : undefined;
         nameStream.updateDataLargePicture(imageUrl);
-      }
+      })
     );
-    const fetchEpisodesSub = fetchEpisodeDataVideo$(name).subscribe((api) => {
-      if (!api.error) {
-        if (linkWatchingInputRef.current)
-          linkWatchingInputRef.current.value = api.message.source;
-        nameStream.updateDataEpisodesAnime(api.message);
-      } else {
-        nameStream.updateDataEpisodesAnime({});
-      }
-    });
+    const fetchEpisodesUrl$ = fetchEpisodeDataVideo$(name).pipe(
+      tap((api) => {
+        if (!api.error) {
+          if (linkWatchingInputRef.current)
+            linkWatchingInputRef.current.value = api.message.source;
+          nameStream.updateDataEpisodesAnime(api.message);
+        } else {
+          nameStream.updateDataEpisodesAnime({});
+        }
+      })
+    );
+    let subscription;
+    if (nameStream.currentState().malId !== name) {
+      nameStream.resetState();
+      subscription = from([
+        fetchDataInfo$,
+        fetchDataVideoPromo$,
+        fetchLargePictureUrl$,
+        fetchEpisodesUrl$,
+      ])
+        .pipe(combineAll())
+        .subscribe(() => {
+          window.scroll({
+            top: 0,
+          });
+          nameStream.updateMalId(name);
+          console.log(nameStream.currentState());
+        });
+    }
     return () => {
-      fetchEpisodesSub.unsubscribe();
-      fetchLargePictureSub.unsubscribe();
-      fetchDataVideoSub.unsubscribe();
-      fetchDataSub.unsubscribe();
+      subscription && subscription.unsubscribe();
     };
   }, [name]);
   // console.log(nameStream.currentState().boxMovie);
@@ -156,6 +179,7 @@ const Name = (props) => {
     }
     if (nameState.dataInformationAnime)
       if (
+        document.querySelector(".button-show-more-information") &&
         nameState.dataInformationAnime.opening_themes.length === 0 &&
         nameState.dataInformationAnime.ending_themes.length === 0
       ) {
@@ -349,20 +373,15 @@ const Name = (props) => {
             )}
           </div>
         </div>
-        <Suspense fallback={<i className="fas fa-spinner fa-5x fa-spin"></i>}>
-          <Characters malId={name} />
-        </Suspense>
-        <Suspense fallback={<div>Loading...</div>}>
-          <RelatedAnime malId={name} />
-        </Suspense>
+        <Characters
+          malId={name}
+          lazy={nameStream.currentState().malId !== name}
+        />
+        <RelatedAnime malId={name} />
         {nameState.dataVideoPromo && (
-          <Suspense fallback={<i className="fas fa-spinner fa-5x fa-spin"></i>}>
-            <VideoPromotionList data={nameState.dataVideoPromo} />
-          </Suspense>
+          <VideoPromotionList data={nameState.dataVideoPromo} />
         )}
-        <Suspense fallback={<div>Loading...</div>}>
-          <Reviews malId={name} />
-        </Suspense>
+        <Reviews malId={name} />
       </div>
     )
   );

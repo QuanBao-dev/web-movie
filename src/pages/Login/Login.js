@@ -1,11 +1,12 @@
-import "./Login.css";
+import './Login.css';
 
-import React, { useEffect, useRef, useState } from "react";
-
-import Input from "../../components/Input/Input";
-import { validateFormSubmitLogin$ } from "../../epics/home";
+import React, { useEffect, useRef, useState } from 'react';
+import { useCookies } from 'react-cookie';
 import Axios from "axios";
-import { useCookies } from "react-cookie";
+
+import Input from '../../components/Input/Input';
+import { validateFormSubmitLogin$ } from '../../epics/home';
+
 const Login = () => {
   // eslint-disable-next-line no-unused-vars
   const [cookies, setCookie, removeCookie] = useCookies(["idCartoonUser"]);
@@ -26,14 +27,16 @@ const Login = () => {
   }, []);
 
   return (
-    <div style={{
-      position: "fixed",
-      height: "100%",
-      width: "100%",
-      display: "flex",
-      justifyContent: "center",
-      alignItems: "center"
-    }}>
+    <div
+      style={{
+        position: "fixed",
+        height: "100%",
+        width: "100%",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+      }}
+    >
       <div className="form-login">
         <h1 style={{ color: "white", textAlign: "center" }}>Login</h1>
         <Input label="Email" input={emailRef} error={emailError} />

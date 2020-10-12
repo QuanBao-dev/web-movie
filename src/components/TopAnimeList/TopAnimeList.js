@@ -1,6 +1,6 @@
 import "./TopAnimeList.css";
 
-import React, { Suspense, useEffect } from "react";
+import React, { useEffect } from "react";
 
 import {
   fetchTopMovie$,
@@ -8,8 +8,9 @@ import {
   topMovieUpdatedScrolling$,
 } from "../../epics/home";
 import { updatePageTopMovieOnDestroy } from "../../store/home";
+import loadable from "@loadable/component";
 
-const TopAnimeItem = React.lazy(() => import("../TopAnimeItem/TopAnimeItem"));
+const TopAnimeItem = loadable(() => import("../TopAnimeItem/TopAnimeItem"));
 
 function TopAnimeList({ homeState = stream.initialState }) {
   useEffect(() => {
@@ -78,38 +79,17 @@ function TopAnimeList({ homeState = stream.initialState }) {
     <div className="top-anime-list-container">
       <h1>Top Anime</h1>
       <ul className="top-anime-list">
-        {homeState.dataTopMovie &&
-          stream.currentState().pageSplitTopMovie === 1 &&
-          homeState.dataTopMovie
-            .slice(0, 9 + (stream.currentState().pageSplitTopMovie - 1) * 5)
-            .map((movie, index) => (
-              <Suspense
-                key={index}
-                fallback={
-                  <div>
-                    <i className="fas fa-spinner fa-9x fa-spin"></i>
-                  </div>
-                }
-              >
-                <TopAnimeItem movie={movie} lazy={true} />
-              </Suspense>
-            ))}
-        {homeState.dataTopMovie &&
-          stream.currentState().pageSplitTopMovie !== 1 &&
-          homeState.dataTopMovie
-            .slice(0, 9 + (stream.currentState().pageSplitTopMovie - 1) * 5)
-            .map((movie, index) => (
-              <Suspense
-                key={index}
-                fallback={
-                  <div>
-                    <i className="fas fa-spinner fa-9x fa-spin"></i>
-                  </div>
-                }
-              >
-                <TopAnimeItem movie={movie} lazy={false} />
-              </Suspense>
-            ))}
+        {homeState.dataTopMovie
+          .slice(0, 9 + (stream.currentState().pageSplitTopMovie - 1) * 5)
+          .map((movie, index) => (
+            <TopAnimeItem
+              movie={movie}
+              lazy={
+                stream.currentState().pageSplitTopMovie === 1
+              }
+              key={index}
+            />
+          ))}
       </ul>
     </div>
   );

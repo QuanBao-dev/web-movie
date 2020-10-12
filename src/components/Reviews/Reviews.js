@@ -1,13 +1,15 @@
 import "./Reviews.css";
 
-import React, { Suspense, useEffect, useState } from "react";
+import loadable from "@loadable/component";
+import React, { useEffect, useState } from "react";
 
 import {
   fetchReviewsData$,
   pageWatchStream,
   updatePageScrolling$,
 } from "../../epics/pageWatch";
-const ReviewItem = React.lazy(() => import("../ReviewItem/ReviewItem"));
+
+const ReviewItem = loadable(() => import("../ReviewItem/ReviewItem"));
 
 const Reviews = ({ malId }) => {
   const [reviewState, setReviewState] = useState(pageWatchStream.initialState);
@@ -23,10 +25,6 @@ const Reviews = ({ malId }) => {
       pageWatchStream.currentState().reviewsData.length === 0 ||
       pageWatchStream.currentState().previousMalId !== malId
     ) {
-      window.scroll({
-        top: 0,
-        behavior: "smooth",
-      });
       pageWatchStream.allowUpdatePageReviewsData(true);
       pageWatchStream.resetReviewsData();
       pageWatchStream.updatePageReviewsOnDestroy(null);
@@ -97,9 +95,7 @@ const Reviews = ({ malId }) => {
               reviewState.reviewsData
                 .slice(0, reviewState.pageSplit)
                 .map((review, index) => (
-                  <Suspense key={index} fallback={<div>Loading...</div>}>
-                    <ReviewItem review={review} />
-                  </Suspense>
+                  <ReviewItem key={index} review={review} />
                 ))}
             {reviewState && !reviewState.isStopFetchingReviews && (
               <div className="loading-symbol-review">

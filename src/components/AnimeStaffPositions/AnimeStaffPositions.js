@@ -1,23 +1,24 @@
 import "./AnimeStaffPositions.css";
 
-import React, { Suspense } from "react";
-const AnimeStaffPositionItem = React.lazy(() =>
+import React from "react";
+import loadable from "@loadable/component";
+const AnimeStaffPositionItem = loadable(() =>
   import("../AnimeStaffPostionItem/AnimeStaffPositionItem")
 );
 
-function AnimeStaffPositions({ history, updateStaffPosition }) {
+function AnimeStaffPositions({ history, updateStaffPosition, lazy = false }) {
   return (
     <div className="container-staff-position">
       {updateStaffPosition &&
         Object.keys(updateStaffPosition) &&
         Object.keys(updateStaffPosition).map((keyData, index) => (
-          <Suspense key={index} fallback={<div>Loading...</div>}>
-            <AnimeStaffPositionItem
-              updateStaffPosition={updateStaffPosition}
-              keyData={keyData}
-              history={history}
-            />
-          </Suspense>
+          <AnimeStaffPositionItem
+            lazy={lazy}
+            key={index}
+            updateStaffPosition={updateStaffPosition}
+            keyData={keyData}
+            history={history}
+          />
         ))}
     </div>
   );

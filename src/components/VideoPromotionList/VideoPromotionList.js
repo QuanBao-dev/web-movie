@@ -1,11 +1,15 @@
 import "./VideoPromotionList.css";
 
-import React, { Suspense } from "react";
+import React from "react";
 
 import { nameStream } from "../../epics/name";
+import loadable from "@loadable/component";
 
-const VideoPromotionItem = React.lazy(() =>
-  import("../VideoPromotionItem/VideoPromotionItem")
+const VideoPromotionItem = loadable(
+  () => import("../VideoPromotionItem/VideoPromotionItem"),
+  {
+    fallback: <i className="fas fa-spinner fa-9x fa-spin"></i>,
+  }
 );
 function VideoPromotionList({ data }) {
   const nameState = nameStream.currentState();
@@ -13,14 +17,7 @@ function VideoPromotionList({ data }) {
     <div className="video-promotion-list">
       {data &&
         data.slice(0, nameState.pageVideo).map((video, index) => {
-          return (
-            <Suspense
-              key={index}
-              fallback={<i className="fas fa-spinner fa-5x fa-spin"></i>}
-            >
-              <VideoPromotionItem video={video} />
-            </Suspense>
-          );
+          return <VideoPromotionItem video={video} key={index} />;
         })}
       {nameState.pageVideo < data.length && (
         <div

@@ -1,16 +1,22 @@
 import "./AllAnimeRelated.css";
-import React, { Suspense } from "react";
-const AnimeRelatedItem = React.lazy(() =>
+
+import loadable from "@loadable/component";
+import React from "react";
+
+const AnimeRelatedItem = loadable(() =>
   import("../AnimeRelatedItem/AnimeRelatedItem")
 );
-function AllAnimeRelated({ animeList, history }) {
+function AllAnimeRelated({ animeList, history, lazy = false }) {
   return (
     <div className="all-anime-related">
       {animeList &&
         animeList.map((anime, index) => (
-          <Suspense key={index} fallback={<div>Loading...</div>}>
-            <AnimeRelatedItem anime={anime} key={index} history={history} />
-          </Suspense>
+          <AnimeRelatedItem
+            anime={anime}
+            key={index}
+            history={history}
+            lazy={lazy}
+          />
         ))}
     </div>
   );

@@ -1,9 +1,12 @@
+import loadable from "@loadable/component";
 import { orderBy } from "lodash";
-import React, { Suspense, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useCookies } from "react-cookie";
+
 import { fetchBoxMovie$, fetchUpdatedMovie$, stream } from "../../epics/home";
 import { userStream } from "../../epics/user";
-const AnimeList = React.lazy(() => import("../AnimeList/AnimeList"));
+
+const AnimeList = loadable(() => import("../AnimeList/AnimeList"));
 const numberOfMovieShown = 12;
 const UpdatedAnime = () => {
   const [homeState, setHomeState] = useState(
@@ -64,29 +67,28 @@ const UpdatedAnime = () => {
         setSubNavToggle={setSubNavToggle}
         user={user}
       />
-      <Suspense fallback={<div>Loading...</div>}>
-        <AnimeList
-          lazy={true}
-          data={
-            subNavToggle === 0
-              ? orderBy(homeState.updatedMovie, ["updatedAt"], ["desc"]).slice(
-                  0,
-                  limitShowRecentlyUpdated > homeState.updatedMovie.length
-                    ? homeState.updatedMovie.length
-                    : limitShowRecentlyUpdated
-                )
-              : subNavToggle === 1 && user
-              ? orderBy(homeState.boxMovie, ["dateAdded"], ["desc"]).slice(
-                  0,
-                  limitShowRecentlyUpdated > homeState.boxMovie.length
-                    ? homeState.boxMovie.length
-                    : limitShowRecentlyUpdated
-                )
-              : []
-          }
-          error={homeState.error || null}
-        />
-      </Suspense>
+      <AnimeList
+        empty={true}
+        lazy={true}
+        data={
+          subNavToggle === 0
+            ? orderBy(homeState.updatedMovie, ["updatedAt"], ["desc"]).slice(
+                0,
+                limitShowRecentlyUpdated > homeState.updatedMovie.length
+                  ? homeState.updatedMovie.length
+                  : limitShowRecentlyUpdated
+              )
+            : subNavToggle === 1 && user
+            ? orderBy(homeState.boxMovie, ["dateAdded"], ["desc"]).slice(
+                0,
+                limitShowRecentlyUpdated > homeState.boxMovie.length
+                  ? homeState.boxMovie.length
+                  : limitShowRecentlyUpdated
+              )
+            : []
+        }
+        error={homeState.error || null}
+      />
       <div id="button-see-more__home" onClick={() => showMoreAnime()}>
         <div>See more</div>
       </div>

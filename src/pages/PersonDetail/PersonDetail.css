@@ -81,6 +81,7 @@
   background-color: #3c3c66;
   border-radius: 20px;
   margin-bottom: 1rem;
+  min-height: 410px;
   overflow: hidden;
   box-shadow: 0 0 4px 1px black;
   width: 100%;

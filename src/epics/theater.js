@@ -76,7 +76,6 @@ export const submitFormPasswordRoom$ = (
         },
       }).pipe(
         catchError((error) => {
-          console.log(error.response.error);
           if (error) {
             setErrorPassword(error.response.error);
           } else {

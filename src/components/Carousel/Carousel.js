@@ -1,17 +1,20 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import "./Carousel.css";
+import './Carousel.css';
 
-import React, { Suspense, useEffect, useState } from "react";
-import { ajax } from "rxjs/ajax";
-import { pluck } from "rxjs/operators";
-import { stream } from "../../epics/home";
-import { userStream } from "../../epics/user";
-import Axios from "axios";
-import { useCookies } from "react-cookie";
-import navBarStore from "../../store/navbar";
-import { interval } from "rxjs";
-import { useHistory } from "react-router-dom";
-const CarouselItem = React.lazy(() => import("../CarouselItem/CarouselItem"));
+import loadable from '@loadable/component';
+import Axios from 'axios';
+import React, { useEffect, useState } from 'react';
+import { useCookies } from 'react-cookie';
+import { useHistory } from 'react-router-dom';
+import { interval } from 'rxjs';
+import { ajax } from 'rxjs/ajax';
+import { pluck } from 'rxjs/operators';
+
+import { stream } from '../../epics/home';
+import { userStream } from '../../epics/user';
+import navBarStore from '../../store/navbar';
+
+const CarouselItem = loadable(() => import("../CarouselItem/CarouselItem"));
 const Carousel = () => {
   const { dataCarousel } = stream.currentState();
   const user = userStream.currentState();
@@ -162,42 +165,17 @@ const Carousel = () => {
             }}
           >
             {dataCarousel && dataCarousel[dataCarousel.length - 1] && (
-              <Suspense
-                fallback={
-                  <div>
-                    <i className="fas fa-spinner fa-9x fa-spin"></i>
-                  </div>
-                }
-              >
-                <CarouselItem
-                  data={dataCarousel[dataCarousel.length - 1]}
-                  history={history}
-                />
-              </Suspense>
+              <CarouselItem
+                data={dataCarousel[dataCarousel.length - 1]}
+                history={history}
+              />
             )}
             {dataCarousel &&
               dataCarousel.map((data, index) => (
-                <Suspense
-                  key={index}
-                  fallback={
-                    <div>
-                      <i className="fas fa-spinner fa-9x fa-spin"></i>
-                    </div>
-                  }
-                >
-                  <CarouselItem key={index} data={data} history={history} />
-                </Suspense>
+                <CarouselItem key={index} data={data} history={history} />
               ))}
             {dataCarousel && dataCarousel[0] && (
-              <Suspense
-                fallback={
-                  <div>
-                    <i className="fas fa-spinner fa-9x fa-spin"></i>
-                  </div>
-                }
-              >
-                <CarouselItem data={dataCarousel[0]} history={history} />
-              </Suspense>
+              <CarouselItem data={dataCarousel[0]} history={history} />
             )}
           </div>
         </section>

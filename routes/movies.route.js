@@ -419,13 +419,14 @@ function updateSourceFilmList(movie, serverWeb, isDub, url) {
       episodesEng: "",
       episodesEngDub: "",
     };
-  const keySourceFilm = serverWeb === "animehay" || serverWeb === "animevsub"
-    ? "episodes"
-    : serverWeb === "gogostream" && isDub
+  const keySourceFilm =
+    serverWeb === "animehay" || serverWeb === "animevsub"
+      ? "episodes"
+      : serverWeb === "gogostream" && isDub
       ? "episodesEngDub"
       : serverWeb === "gogostream" && !isDub
-        ? "episodesEng"
-        : "";
+      ? "episodesEng"
+      : "";
   movie.sourceFilmList[keySourceFilm] = url;
 }
 
@@ -531,27 +532,24 @@ async function addMovieUpdated(malId) {
   try {
     const api = await Axios.get(`https://api.jikan.moe/v3/anime/${malId}`);
     dataApi = api.data;
-    const movie = await UpdatedMovie.findOne({ malId });
-    if (movie) {
-      return await movie.save();
-    }
+    const movie = await UpdatedMovie.findOneAndUpdate(
+      { malId },
+      {
+        title: dataApi.title,
+        imageUrl: dataApi.image_url,
+        numEpisodes: dataApi.episodes,
+        score: dataApi.score,
+        synopsis: dataApi.synopsis,
+      },
+      {
+        new: true,
+        upsert: true,
+      }
+    ).lean();
+    return movie;
   } catch (error) {
     console.log("Can't add updated movie");
     return;
-  }
-  const newUpdatedMovie = new UpdatedMovie({
-    malId,
-    title: dataApi.title,
-    imageUrl: dataApi.image_url,
-    numEpisodes: dataApi.episodes,
-    score: dataApi.score,
-    synopsis: dataApi.synopsis,
-  });
-
-  try {
-    await newUpdatedMovie.save();
-  } catch (error) {
-    console.log("Can't add updated movie");
   }
 }
 

@@ -74,7 +74,9 @@ const SearchedList = (props) => {
   return (
     <div className="container-search-anime">
       <h1 style={{ color: "white" }}>Results searched for "{key}"</h1>
-      {dataSearchDisplay && <AnimeList data={dataSearchDisplay} error={null} />}
+      {dataSearchDisplay && (
+        <AnimeList lazy={true} data={dataSearchDisplay} error={null} />
+      )}
       {dataSearchDisplay && dataSearchDisplay.length === 0 && (
         <h4 style={{ color: "white" }}>
           Not found any anime. Make sure your key search at least has 3

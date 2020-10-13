@@ -19,16 +19,16 @@ import navBarStore from "./store/navbar";
 
 const Login = loadable(() => import("./pages/Login/Login"), {
   fallback: (
-    <div>
+    <section style={{ position: "fixed", width: "100%", zIndex: "2000" }}>
       <LinearProgress color="secondary" />
-    </div>
+    </section>
   ),
 });
 const Register = loadable(() => import("./pages/Register/Register"), {
   fallback: (
-    <div>
+    <section style={{ position: "fixed", width: "100%", zIndex: "2000" }}>
       <LinearProgress color="secondary" />
-    </div>
+    </section>
   ),
 });
 
@@ -36,103 +36,103 @@ const ProducerDetail = loadable(
   () => import("./pages/ProducerDetail/ProducerDetail"),
   {
     fallback: (
-      <div>
+      <section style={{ position: "fixed", width: "100%", zIndex: "2000" }}>
         <LinearProgress color="secondary" />
-      </div>
+      </section>
     ),
   }
 );
 const FAQ = loadable(() => import("./pages/FAQ/FAQ"), {
   fallback: (
-    <div>
+    <section style={{ position: "fixed", width: "100%", zIndex: "2000" }}>
       <LinearProgress color="secondary" />
-    </div>
+    </section>
   ),
 });
 const EditUser = loadable(() => import("./pages/EditUser/EditUser"), {
   fallback: (
-    <div>
+    <section style={{ position: "fixed", width: "100%", zIndex: "2000" }}>
       <LinearProgress color="secondary" />
-    </div>
+    </section>
   ),
 });
 const AdminManager = loadable(
   () => import("./pages/AdminManager/AdminManager"),
   {
     fallback: (
-      <div>
+      <section style={{ position: "fixed", width: "100%", zIndex: "2000" }}>
         <LinearProgress color="secondary" />
-      </div>
+      </section>
     ),
   }
 );
 const NotFound = loadable(() => import("./pages/404/NotFound"), {
   fallback: (
-    <div>
+    <section style={{ position: "fixed", width: "100%", zIndex: "2000" }}>
       <LinearProgress color="secondary" />
-    </div>
+    </section>
   ),
 });
 const Home = loadable(() => import("./pages/Home/Home"), {
   fallback: (
-    <div>
+    <section style={{ position: "fixed", width: "100%", zIndex: "2000" }}>
       <LinearProgress color="secondary" />
-    </div>
+    </section>
   ),
 });
 const Name = loadable(() => import("./pages/Name/Name"), {
   fallback: (
-    <div>
+    <section style={{ position: "fixed", width: "100%", zIndex: "2000" }}>
       <LinearProgress color="secondary" />
-    </div>
+    </section>
   ),
 });
 const CharacterDetail = loadable(
   () => import("./pages/CharacterDetail/CharacterDetail"),
   {
     fallback: (
-      <div>
+      <section style={{ position: "fixed", width: "100%", zIndex: "2000" }}>
         <LinearProgress color="secondary" />
-      </div>
+      </section>
     ),
   }
 );
 const Theater = loadable(() => import("./pages/Theater/Theater"), {
   fallback: (
-    <div>
+    <section style={{ position: "fixed", width: "100%", zIndex: "2000" }}>
       <LinearProgress color="secondary" />
-    </div>
+    </section>
   ),
 });
 const EpisodePage = loadable(() => import("./pages/EpisodePage/EpisodePage"), {
   fallback: (
-    <div>
+    <section style={{ position: "fixed", width: "100%", zIndex: "2000" }}>
       <LinearProgress color="secondary" />
-    </div>
+    </section>
   ),
 });
 const SearchedList = loadable(() => import("./pages/Search/SearchedList"), {
   fallback: (
-    <div>
+    <section style={{ position: "fixed", width: "100%", zIndex: "2000" }}>
       <LinearProgress color="secondary" />
-    </div>
+    </section>
   ),
 });
 const PersonDetail = loadable(
   () => import("./pages/PersonDetail/PersonDetail"),
   {
     fallback: (
-      <div>
+      <section style={{ position: "fixed", width: "100%", zIndex: "2000" }}>
         <LinearProgress color="secondary" />
-      </div>
+      </section>
     ),
   }
 );
 const GenreDetail = loadable(() => import("./pages/GenreDetail/GenreDetail"), {
   fallback: (
-    <div>
+    <section style={{ position: "fixed", width: "100%", zIndex: "2000" }}>
       <LinearProgress color="secondary" />
-    </div>
+    </section>
   ),
 });
 
@@ -143,12 +143,6 @@ window.addEventListener("resize", () => {
     e.style.display = "flex";
   } else {
     e.style.display = "none";
-  }
-  if (window.innerWidth >= 450) {
-    document.querySelector("body").style.backgroundImage =
-      "url(https://scontent.fsgn3-1.fna.fbcdn.net/v/t1.15752-9/120124610_742264309838772_5338479055684884723_n.png?_nc_cat=111&_nc_sid=b96e70&_nc_ohc=4qKcWuhZKp0AX9pm5SH&_nc_oc=AQnem3joBFmuPKiFbyNxyR_Rg5yOM2Jzq5s_x9W1r4wBgj7fagomZrhxSkvKRue1dfvT4N08LBMbbE0AhQkSRblh&_nc_ht=scontent.fsgn3-1.fna&oh=32153f460cad9694a5c4077bdafa1195&oe=5F90DF07)";
-  } else {
-    document.querySelector("body").style.backgroundImage = "none";
   }
 });
 
@@ -170,10 +164,6 @@ window.addEventListener("scroll", () => {
       }
   });
 });
-if (window.innerWidth >= 450) {
-  document.querySelector("body").style.backgroundImage =
-    "url(https://scontent.fsgn3-1.fna.fbcdn.net/v/t1.15752-9/120124610_742264309838772_5338479055684884723_n.png?_nc_cat=111&_nc_sid=b96e70&_nc_ohc=4qKcWuhZKp0AX9pm5SH&_nc_oc=AQnem3joBFmuPKiFbyNxyR_Rg5yOM2Jzq5s_x9W1r4wBgj7fagomZrhxSkvKRue1dfvT4N08LBMbbE0AhQkSRblh&_nc_ht=scontent.fsgn3-1.fna&oh=32153f460cad9694a5c4077bdafa1195&oe=5F90DF07)";
-}
 
 function App() {
   const navLoginRef = useRef();
@@ -207,7 +197,12 @@ function App() {
         <div className="block-pop-up">
           <div className="loading-block">
             <CircularProgress color="secondary" size="7rem" />
-            <h1 className="loading-message">Waiting...</h1>
+            <h1
+              className="loading-message"
+              style={{ color: "red", fontWeight: "bolder" }}
+            >
+              Loading...
+            </h1>
           </div>
         </div>
       )}
@@ -237,7 +232,7 @@ function App() {
               }
             }}
           >
-            <i className="fas fa-bars fa-2x"></i>
+            <i className="fas fa-bars fa-3x"></i>
           </div>
           <ul className="child-nav-bar__app">
             <li className="nav-bar__item">

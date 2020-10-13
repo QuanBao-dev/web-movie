@@ -12,12 +12,24 @@ import { userStream } from "../../epics/user";
 import { allowShouldFetchComment } from "../../store/comment";
 const Comment = loadable(() => import("../../components/Comment/Comment"));
 const Chat = loadable(() => import("../../components/Chat/Chat"), {
-  fallback: <CircularProgress color="inherit" size="7rem" />,
+  fallback: (
+    <CircularProgress
+      color="secondary"
+      size="7rem"
+      style={{ margin: "1rem" }}
+    />
+  ),
 });
 const VideoPlayerSection = loadable(
   () => import("../../components/VideoPlayerSection/VideoPlayerSection"),
   {
-    fallback: <CircularProgress color="inherit" size="7rem" />,
+    fallback: (
+      <CircularProgress
+        color="inherit"
+        size="7rem"
+        style={{ margin: "1rem" }}
+      />
+    ),
   }
 );
 

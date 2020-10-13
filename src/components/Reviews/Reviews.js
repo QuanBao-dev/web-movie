@@ -31,8 +31,7 @@ const Reviews = ({ malId }) => {
     }
   }, [malId, reviewState.previousMalId]);
   useEffect(() => {
-    let subscription;
-    subscription = updatePageScrolling$().subscribe(() => {
+    const subscription = updatePageScrolling$().subscribe(() => {
       if (
         reviewState.shouldUpdatePageReviewData &&
         pageWatchStream.currentState().pageSplit >
@@ -42,6 +41,9 @@ const Reviews = ({ malId }) => {
           pageWatchStream.currentState().reviewsData.length / 20 + 1
         );
     });
+    if (pageWatchStream.currentState().isStopFetchingReviews) {
+      subscription && subscription.unsubscribe();
+    }
     return () => {
       subscription && subscription.unsubscribe();
     };

@@ -9,6 +9,7 @@ import {
 } from "../../epics/home";
 import { updatePageTopMovieOnDestroy } from "../../store/home";
 import loadable from "@loadable/component";
+import CircularProgress from "@material-ui/core/CircularProgress";
 
 const TopAnimeItem = loadable(() => import("../TopAnimeItem/TopAnimeItem"));
 
@@ -42,6 +43,9 @@ function TopAnimeList({ homeState = stream.initialState }) {
           updateDataTopScrolling();
         }
       );
+      if (stream.currentState().isStopFetchTopMovie) {
+        subscription11 && subscription11.unsubscribe();
+      }
     }
     return () => {
       subscription11 && subscription11.unsubscribe();
@@ -83,6 +87,14 @@ function TopAnimeList({ homeState = stream.initialState }) {
         {homeState.dataTopMovie.map((movie, index) => (
           <TopAnimeItem movie={movie} lazy={true} key={index} />
         ))}
+        <div
+          style={{
+            display: homeState.isStopFetchTopMovie ? "none" : "",
+          }}
+        >
+          <CircularProgress color="secondary" />
+        </div>
+        {homeState.isStopFetchTopMovie && <h1>End</h1>}
       </ul>
     </div>
   );

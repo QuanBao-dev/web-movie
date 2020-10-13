@@ -128,7 +128,6 @@ const Name = (props) => {
             top: 0,
           });
           nameStream.updateMalId(name);
-          console.log(nameStream.currentState());
         });
     }
     return () => {

@@ -47,10 +47,14 @@ export function fetchReviewsData$(malId, page) {
 export function updatePageScrolling$() {
   return fromEvent(window, "scroll").pipe(
     filter(() => document.body.scrollHeight - (window.scrollY + 2000) < 0),
-    tap(() =>
-      pageWatchStream.updatePageSplit(
-        pageWatchStream.currentState().pageSplit + 1
+    tap(() => {
+      if (
+        pageWatchStream.currentState().pageSplit <=
+        pageWatchStream.currentState().reviewsData.length
       )
-    )
+        pageWatchStream.updatePageSplit(
+          pageWatchStream.currentState().pageSplit + 1
+        );
+    })
   );
 }

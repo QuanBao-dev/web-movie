@@ -42,7 +42,8 @@ const initialState = {
   currentSeasonOnDestroy: null,
   pageSplit:1,
   pageSplitTopMovie:1,
-  positionScrollTop:0
+  positionScrollTop:0,
+  isFirstLaunch:true
 };
 
 const subject = new BehaviorSubject(initialState);
@@ -54,6 +55,13 @@ const homeStore = {
     let ans;
     subject.subscribe((v) => (ans = v));
     return ans || initialState;
+  },
+  updateIsFirstLaunch:(bool) => {
+    state={
+      ...state,
+      isFirstLaunch:bool
+    };
+    subject.next(state);
   },
   updateNumberOfProduct:(number) => {
     state={

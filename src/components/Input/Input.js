@@ -1,3 +1,4 @@
+import "./Input.css"
 import React from 'react';
 
 const Input = ({ label, input, type, error = null, defaultValue = "" }) => {

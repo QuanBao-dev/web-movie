@@ -1,13 +1,23 @@
-import { capitalize } from 'lodash';
-import { fromEvent, of, timer } from 'rxjs';
-import { ajax } from 'rxjs/ajax';
-import { catchError, debounceTime, exhaustMap, filter, map, mergeMapTo, pluck, retry, switchMap, tap } from 'rxjs/operators';
+import capitalize from "lodash/capitalize";
+import { fromEvent, of, timer } from "rxjs";
+import { ajax } from "rxjs/ajax";
+import {
+  catchError,
+  debounceTime,
+  exhaustMap,
+  filter,
+  map,
+  mergeMapTo,
+  pluck,
+  retry,
+  switchMap,
+  tap,
+} from "rxjs/operators";
 
-import nameStore from '../store/name';
-import navBarStore from '../store/navbar';
+import nameStore from "../store/name";
+import navBarStore from "../store/navbar";
 
 export const nameStream = nameStore;
-
 
 export const fetchData$ = (name) => {
   return timer(0).pipe(
@@ -55,7 +65,12 @@ export function capitalizeString(string) {
   return capitalize(string);
 }
 
-export function handleAddBoxMovie(addMovieRef, deleteMovieRef, idCartoonUser, malId) {
+export function handleAddBoxMovie(
+  addMovieRef,
+  deleteMovieRef,
+  idCartoonUser,
+  malId
+) {
   return timer(0)
     .pipe(
       filter(() => addMovieRef.current),

@@ -1,3 +1,4 @@
+import "../Input/Input.css";
 import "./Chat.css";
 import React, { useEffect, useRef, useState } from "react";
 import { fromEvent } from "rxjs";

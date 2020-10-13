@@ -1,12 +1,14 @@
 import loadable from "@loadable/component";
-import { orderBy } from "lodash";
+import orderBy  from "lodash/orderBy";
 import React, { useEffect, useState } from "react";
 import { useCookies } from "react-cookie";
 
 import { fetchBoxMovie$, fetchUpdatedMovie$, stream } from "../../epics/home";
 import { userStream } from "../../epics/user";
 
-const AnimeList = loadable(() => import("../AnimeList/AnimeList"));
+const AnimeList = loadable(() => import("../AnimeList/AnimeList"), {
+  fallback: <div>Loading...</div>,
+});
 const numberOfMovieShown = 12;
 const UpdatedAnime = () => {
   const [homeState, setHomeState] = useState(
@@ -69,7 +71,7 @@ const UpdatedAnime = () => {
       />
       <AnimeList
         empty={true}
-        lazy={true}
+        lazy={stream.currentState().isFirstLaunch}
         data={
           subNavToggle === 0
             ? orderBy(homeState.updatedMovie, ["updatedAt"], ["desc"]).slice(

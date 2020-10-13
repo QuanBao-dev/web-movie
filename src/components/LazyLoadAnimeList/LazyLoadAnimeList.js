@@ -44,7 +44,11 @@ const LazyLoadAnimeList = ({ genreId, url }) => {
   useEffect(() => {
     let subscription1;
     subscription1 = updatePageScrollingWindow$().subscribe(() => {
-      if (lazyLoadState.allowFetchIncreaseGenrePage)
+      if (
+        lazyLoadState.allowFetchIncreaseGenrePage &&
+        lazyLoadAnimeListStream.currentState().pageSplit * 10 >
+          lazyLoadState.genreDetailData.length
+      )
         lazyLoadAnimeListStream.updatePageGenre(
           lazyLoadState.genreDetailData.length / 100 + 1
         );
@@ -114,10 +118,7 @@ const LazyLoadAnimeList = ({ genreId, url }) => {
       </h1>
       <AnimeList
         empty={true}
-        data={lazyLoadState.genreDetailData.slice(
-          0,
-          10 + (lazyLoadState.pageSplit - 1) * 5
-        )}
+        data={lazyLoadState.genreDetailData.slice(0,lazyLoadState.pageSplit*10)}
         error={null}
       />
       <div

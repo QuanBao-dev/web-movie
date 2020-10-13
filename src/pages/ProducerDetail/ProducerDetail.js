@@ -3,7 +3,7 @@ import React from "react";
 const LazyLoadAnimeList = loadable(
   () => import("../../components/LazyLoadAnimeList/LazyLoadAnimeList"),
   {
-    fallback: <i class="fas fa-spinner"></i>,
+    fallback: <i className="fas fa-spinner"></i>,
   }
 );
 

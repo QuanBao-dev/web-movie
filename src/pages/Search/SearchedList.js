@@ -8,7 +8,7 @@ import searchedListStore from "../../store/searchedList";
 import loadable from "@loadable/component";
 const AnimeList = loadable(() =>
   import("../../components/AnimeList/AnimeList"),{
-    fallback:<i class="fas fa-spinner fa-2x"></i>
+    fallback:<i className="fas fa-spinner fa-2x"></i>
   }
 );
 

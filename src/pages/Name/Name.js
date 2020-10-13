@@ -2,7 +2,8 @@ import "./Name.css";
 
 import loadable from "@loadable/component";
 import Axios from "axios";
-import { orderBy, random } from "lodash";
+import orderBy from "lodash/orderBy";
+import random from "lodash/random";
 import React, { useEffect, useRef, useState } from "react";
 import { useCookies } from "react-cookie";
 import { Link, useHistory } from "react-router-dom";

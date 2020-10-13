@@ -1,7 +1,7 @@
 import "./Home.css";
 
 import loadable from "@loadable/component";
-import { capitalize } from "lodash";
+import capitalize from "lodash/capitalize";
 import React, { useEffect, useState } from "react";
 
 import { stream } from "../../epics/home";

@@ -33,7 +33,11 @@ const Reviews = ({ malId }) => {
   useEffect(() => {
     let subscription;
     subscription = updatePageScrolling$().subscribe(() => {
-      if (reviewState.shouldUpdatePageReviewData)
+      if (
+        reviewState.shouldUpdatePageReviewData &&
+        pageWatchStream.currentState().pageSplit >
+          pageWatchStream.currentState().reviewsData.length
+      )
         pageWatchStream.updatePageReview(
           pageWatchStream.currentState().reviewsData.length / 20 + 1
         );

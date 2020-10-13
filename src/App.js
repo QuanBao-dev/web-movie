@@ -1,22 +1,18 @@
-import "./App.css";
+import './App.css';
 
-import React, { useEffect, useRef, useState } from "react";
-import { useCookies } from "react-cookie";
-import {
-  BrowserRouter as Router,
-  NavLink as Link,
-  Route,
-  Switch,
-} from "react-router-dom";
-import { ReplaySubject } from "rxjs";
+import { lazy } from '@loadable/component';
+import Axios from 'axios';
+import React, { useEffect, useRef, useState } from 'react';
+import { Suspense } from 'react';
+import { useCookies } from 'react-cookie';
+import { BrowserRouter as Router, NavLink as Link, Route, Switch } from 'react-router-dom';
+import { ReplaySubject } from 'rxjs';
 
-import { fetchingUser$, userStream } from "./epics/user";
-import { allowShouldFetchAllUser } from "./store/admin";
-import navBarStore from "./store/navbar";
-import Login from "./pages/Login/Login";
-import Axios from "axios";
-import { lazy } from "@loadable/component";
-import { Suspense } from "react";
+import { fetchingUser$, userStream } from './epics/user';
+import { allowShouldFetchAllUser } from './store/admin';
+import navBarStore from './store/navbar';
+
+const Login = lazy(() => import("./pages/Login/Login"));
 const Register = lazy(() => import("./pages/Register/Register"));
 
 const ProducerDetail = lazy(() =>

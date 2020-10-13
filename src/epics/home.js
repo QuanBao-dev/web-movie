@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-useless-escape */
-import { orderBy } from "lodash";
-import { asyncScheduler, from, fromEvent, interval, of, timer } from "rxjs";
+import orderBy from "lodash/orderBy";
+import { from, fromEvent, interval, of, timer } from "rxjs";
 import { ajax } from "rxjs/ajax";
 import {
   catchError,
@@ -319,9 +319,13 @@ export const topMovieUpdatedScrolling$ = (topAnimeElement) => {
         : document.body.scrollHeight - (window.scrollY + 2000) < 0
     ),
     tap(() => {
-      stream.updatePageSplitTopMovie(
-        stream.currentState().pageSplitTopMovie + 1
-      );
+      if (
+        9 + (stream.currentState().pageSplitTopMovie - 1) * 2 <=
+        stream.currentState().dataTopMovie.length
+      )
+        stream.updatePageSplitTopMovie(
+          stream.currentState().pageSplitTopMovie + 1
+        );
     })
   );
 };

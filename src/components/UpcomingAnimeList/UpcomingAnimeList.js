@@ -45,6 +45,7 @@ const UpcomingAnimeList = () => {
     return () => {
       subscription2 && subscription2.unsubscribe();
       subscription && subscription.unsubscribe();
+      stream.updateIsFirstLaunch(false);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -68,7 +69,7 @@ const UpcomingAnimeList = () => {
       <AnimeList
         data={stream.currentState().upcomingAnimeList}
         isWrap={false}
-        lazy={true}
+        lazy={stream.currentState().isFirstLaunch}
         error={stream.currentState().error}
       />
     </section>

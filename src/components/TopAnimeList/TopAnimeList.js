@@ -37,7 +37,11 @@ function TopAnimeList({ homeState = stream.initialState }) {
     if (topAnimeElement) {
       subscription11 = topMovieUpdatedScrolling$(topAnimeElement).subscribe(
         () => {
-          if (homeState.allowFetchIncreasePageTopMovie)
+          if (
+            homeState.allowFetchIncreasePageTopMovie &&
+            9 + (stream.currentState().pageSplitTopMovie - 1) * 2 >
+              stream.currentState().dataTopMovie.length
+          )
             updateDataTopScrolling();
         }
       );
@@ -80,13 +84,11 @@ function TopAnimeList({ homeState = stream.initialState }) {
       <h1>Top Anime</h1>
       <ul className="top-anime-list">
         {homeState.dataTopMovie
-          .slice(0, 9 + (stream.currentState().pageSplitTopMovie - 1) * 5)
+          .slice(0, 9 + (homeState.pageSplitTopMovie - 1) * 2)
           .map((movie, index) => (
             <TopAnimeItem
               movie={movie}
-              lazy={
-                stream.currentState().pageSplitTopMovie === 1
-              }
+              lazy={stream.currentState().pageSplitTopMovie === 1}
               key={index}
             />
           ))}

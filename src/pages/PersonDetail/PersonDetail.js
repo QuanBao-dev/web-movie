@@ -10,14 +10,14 @@ import loadable from "@loadable/component";
 const AnimeStaffPositions = loadable(
   () => import("../../components/AnimeStaffPositions/AnimeStaffPositions"),
   {
-    fallback: <i class="fas fa-spinner"></i>,
+    fallback: <i className="fas fa-spinner"></i>,
   }
 );
 
 const AllAnimeRelated = loadable(
   () => import("../../components/AllAnimeRelated/AllAnimeRelated"),
   {
-    fallback: <i class="fas fa-spinner"></i>,
+    fallback: <i className="fas fa-spinner"></i>,
   }
 );
 let updateStaffPosition;

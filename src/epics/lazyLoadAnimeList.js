@@ -51,10 +51,14 @@ function endFetching() {
 export function updatePageScrollingWindow$() {
   return fromEvent(window, "scroll").pipe(
     filter(() => document.body.scrollHeight - (window.scrollY + 1000) < 0),
-    tap(() =>
-      lazyLoadAnimeListStream.updatePageSplit(
-        lazyLoadAnimeListStream.currentState().pageSplit + 1
+    tap(() => {
+      if (
+        lazyLoadAnimeListStream.currentState().pageSplit * 10 <=
+        lazyLoadAnimeListStream.currentState().genreDetailData.length
       )
-    )
+        lazyLoadAnimeListStream.updatePageSplit(
+          lazyLoadAnimeListStream.currentState().pageSplit + 1
+        );
+    })
   );
 }

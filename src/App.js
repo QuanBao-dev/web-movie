@@ -237,7 +237,7 @@ function App() {
               }
             }}
           >
-            <i className="fas fa-bars fa-3x"></i>
+            <i className="fas fa-bars fa-2x"></i>
           </div>
           <ul className="child-nav-bar__app">
             <li className="nav-bar__item">

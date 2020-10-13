@@ -9,14 +9,22 @@ import { stream } from "../../epics/home";
 const SearchInput = loadable(
   () => import("../../components/SearchInput/SearchInput"),
   {
-    fallback: <i className="fas fa-spinner fa-9x fa-spin"></i>,
+    fallback: (
+      <div style={{ textAlign: "center" }}>
+        <i className="fas fa-spinner fa-9x fa-spin"></i>
+      </div>
+    ),
   }
 );
 
 const AnimeListSeason = loadable(
   () => import("../../components/AnimeListSeason/AnimeListSeason"),
   {
-    fallback: <i className="fas fa-spinner fa-9x fa-spin"></i>,
+    fallback: (
+      <div style={{ textAlign: "center" }}>
+        <i className="fas fa-spinner fa-9x fa-spin"></i>
+      </div>
+    ),
   }
 );
 const UpdatedAnime = loadable(
@@ -25,7 +33,11 @@ const UpdatedAnime = loadable(
       "../../components/UpdatedAnime/UpdatedAnime"
     ),
   {
-    fallback: <i className="fas fa-spinner fa-9x fa-spin"></i>,
+    fallback: (
+      <div style={{ textAlign: "center" }}>
+        <i className="fas fa-spinner fa-9x fa-spin"></i>
+      </div>
+    ),
   }
 );
 

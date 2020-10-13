@@ -1,11 +1,17 @@
 import "./AnimeList.css";
-
+import CircularProgress from "@material-ui/core/CircularProgress";
 import React from "react";
 import loadable from "@loadable/component";
 
 const AnimeItem = loadable(() => import("../AnimeItem/AnimeItem"));
 
-const AnimeList = ({ data, error, isWrap = true, lazy = false, empty= false }) => {
+const AnimeList = ({
+  data,
+  error,
+  isWrap = true,
+  lazy = false,
+  empty = false,
+}) => {
   return (
     <div className={isWrap ? "list-anime" : "list-anime-nowrap"}>
       {data &&
@@ -15,7 +21,7 @@ const AnimeList = ({ data, error, isWrap = true, lazy = false, empty= false }) =
         })}
       {data.length === 0 && empty && (
         <div className="empty">
-          <i className="fas fa-spinner fa-5x fa-spin"></i>
+          <CircularProgress color="secondary" size="2rem" />
         </div>
       )}
       {error && (

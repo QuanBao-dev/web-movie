@@ -1,4 +1,5 @@
 import "./SearchedList.css";
+import CircularProgress from "@material-ui/core/CircularProgress";
 import React, { useEffect, useState } from "react";
 import { ajax } from "rxjs/ajax";
 import { catchError, pluck, retry, switchMapTo, tap } from "rxjs/operators";
@@ -6,9 +7,10 @@ import { fromEvent, of, timer } from "rxjs";
 import navBarStore from "../../store/navbar";
 import searchedListStore from "../../store/searchedList";
 import loadable from "@loadable/component";
-const AnimeList = loadable(() =>
-  import("../../components/AnimeList/AnimeList"),{
-    fallback:<i className="fas fa-spinner fa-2x"></i>
+const AnimeList = loadable(
+  () => import("../../components/AnimeList/AnimeList"),
+  {
+    fallback: <CircularProgress color="primary" size="7rem" />,
   }
 );
 

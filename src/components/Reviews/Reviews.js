@@ -2,7 +2,7 @@ import "./Reviews.css";
 
 import loadable from "@loadable/component";
 import React, { useEffect, useState } from "react";
-
+import CircularProgress from "@material-ui/core/CircularProgress";
 import {
   fetchReviewsData$,
   pageWatchStream,
@@ -103,7 +103,7 @@ const Reviews = ({ malId }) => {
                 ))}
             {reviewState && !reviewState.isStopFetchingReviews && (
               <div className="loading-symbol-review">
-                <i className="fas fa-spinner fa-3x fa-spin"></i>
+                <CircularProgress color="secondary" size="3rem" />
               </div>
             )}
             {reviewState && reviewState.isStopFetchingReviews && <h1>End</h1>}

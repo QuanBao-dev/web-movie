@@ -10,6 +10,7 @@ import { catchError, pluck, retry } from "rxjs/operators";
 
 import { characterStream } from "../../epics/character";
 import { LazyLoadImage } from "react-lazy-load-image-component";
+import navBarStore from "../../store/navbar";
 
 const AllAnimeRelated = loadable(() =>
   import("../../components/AllAnimeRelated/AllAnimeRelated")
@@ -25,6 +26,7 @@ const CharacterDetail = (props) => {
     });
     const subscription = fetchCharacterDetailData$(characterId).subscribe(
       (data) => {
+        navBarStore.updateIsShowBlockPopUp(false);
         setDataCharacterDetail(data);
       }
     );
@@ -134,6 +136,7 @@ const CharacterDetail = (props) => {
 };
 
 function fetchCharacterDetailData$(characterId) {
+  navBarStore.updateIsShowBlockPopUp(true)
   return ajax(`https://api.jikan.moe/v3/character/${characterId}`).pipe(
     retry(20),
     pluck("response"),

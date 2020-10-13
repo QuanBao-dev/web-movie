@@ -3,14 +3,14 @@ import "./VideoPromotionList.css";
 import React from "react";
 
 import loadable from "@loadable/component";
-
+import CircularProgress from "@material-ui/core/CircularProgress";
 const VideoPromotionItem = loadable(
   () => import("../VideoPromotionItem/VideoPromotionItem"),
   {
-    fallback: <i className="fas fa-spinner fa-9x fa-spin"></i>,
+    fallback: <CircularProgress color="inherit" size="7rem" />,
   }
 );
-function VideoPromotionList({ data, lazy=false }) {
+function VideoPromotionList({ data, lazy = false }) {
   return (
     <div className="video-promotion-list">
       {data &&

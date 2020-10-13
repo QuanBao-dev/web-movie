@@ -1,5 +1,6 @@
 import "./App.css";
-
+import LinearProgress from "@material-ui/core/LinearProgress";
+import CircularProgress from "@material-ui/core/CircularProgress";
 import loadable from "@loadable/component";
 import Axios from "axios";
 import React, { useEffect, useRef, useState } from "react";
@@ -19,14 +20,14 @@ import navBarStore from "./store/navbar";
 const Login = loadable(() => import("./pages/Login/Login"), {
   fallback: (
     <div>
-      <i className="fas fa-spinner fa-9x fa-spin"></i>
+      <LinearProgress color="secondary" />
     </div>
   ),
 });
 const Register = loadable(() => import("./pages/Register/Register"), {
   fallback: (
     <div>
-      <i className="fas fa-spinner fa-9x fa-spin"></i>
+      <LinearProgress color="secondary" />
     </div>
   ),
 });
@@ -36,7 +37,7 @@ const ProducerDetail = loadable(
   {
     fallback: (
       <div>
-        <i className="fas fa-spinner fa-9x fa-spin"></i>
+        <LinearProgress color="secondary" />
       </div>
     ),
   }
@@ -44,14 +45,14 @@ const ProducerDetail = loadable(
 const FAQ = loadable(() => import("./pages/FAQ/FAQ"), {
   fallback: (
     <div>
-      <i className="fas fa-spinner fa-9x fa-spin"></i>
+      <LinearProgress color="secondary" />
     </div>
   ),
 });
 const EditUser = loadable(() => import("./pages/EditUser/EditUser"), {
   fallback: (
     <div>
-      <i className="fas fa-spinner fa-9x fa-spin"></i>
+      <LinearProgress color="secondary" />
     </div>
   ),
 });
@@ -60,7 +61,7 @@ const AdminManager = loadable(
   {
     fallback: (
       <div>
-        <i className="fas fa-spinner fa-9x fa-spin"></i>
+        <LinearProgress color="secondary" />
       </div>
     ),
   }
@@ -68,21 +69,21 @@ const AdminManager = loadable(
 const NotFound = loadable(() => import("./pages/404/NotFound"), {
   fallback: (
     <div>
-      <i className="fas fa-spinner fa-9x fa-spin"></i>
+      <LinearProgress color="secondary" />
     </div>
   ),
 });
 const Home = loadable(() => import("./pages/Home/Home"), {
   fallback: (
     <div>
-      <i className="fas fa-spinner fa-9x fa-spin"></i>
+      <LinearProgress color="secondary" />
     </div>
   ),
 });
 const Name = loadable(() => import("./pages/Name/Name"), {
   fallback: (
     <div>
-      <i className="fas fa-spinner fa-9x fa-spin"></i>
+      <LinearProgress color="secondary" />
     </div>
   ),
 });
@@ -91,7 +92,7 @@ const CharacterDetail = loadable(
   {
     fallback: (
       <div>
-        <i className="fas fa-spinner fa-9x fa-spin"></i>
+        <LinearProgress color="secondary" />
       </div>
     ),
   }
@@ -99,21 +100,21 @@ const CharacterDetail = loadable(
 const Theater = loadable(() => import("./pages/Theater/Theater"), {
   fallback: (
     <div>
-      <i className="fas fa-spinner fa-9x fa-spin"></i>
+      <LinearProgress color="secondary" />
     </div>
   ),
 });
 const EpisodePage = loadable(() => import("./pages/EpisodePage/EpisodePage"), {
   fallback: (
     <div>
-      <i className="fas fa-spinner fa-9x fa-spin"></i>
+      <LinearProgress color="secondary" />
     </div>
   ),
 });
 const SearchedList = loadable(() => import("./pages/Search/SearchedList"), {
   fallback: (
     <div>
-      <i className="fas fa-spinner fa-9x fa-spin"></i>
+      <LinearProgress color="secondary" />
     </div>
   ),
 });
@@ -122,7 +123,7 @@ const PersonDetail = loadable(
   {
     fallback: (
       <div>
-        <i className="fas fa-spinner fa-9x fa-spin"></i>
+        <LinearProgress color="secondary" />
       </div>
     ),
   }
@@ -130,7 +131,7 @@ const PersonDetail = loadable(
 const GenreDetail = loadable(() => import("./pages/GenreDetail/GenreDetail"), {
   fallback: (
     <div>
-      <i className="fas fa-spinner fa-9x fa-spin"></i>
+      <LinearProgress color="secondary" />
     </div>
   ),
 });
@@ -205,7 +206,7 @@ function App() {
       {toggleNavBarState.isShowBlockPopUp && (
         <div className="block-pop-up">
           <div className="loading-block">
-            <i className="fas fa-spinner fa-9x fa-spin"></i>
+            <CircularProgress color="secondary" size="7rem" />
             <h1 className="loading-message">Waiting...</h1>
           </div>
         </div>

@@ -1,23 +1,25 @@
 import "./PersonDetail.css";
 
+import CircularProgress from "@material-ui/core/CircularProgress";
 import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { BehaviorSubject, fromEvent, of } from "rxjs";
 import { ajax } from "rxjs/ajax";
 import { catchError, debounceTime, filter, pluck, retry } from "rxjs/operators";
 import loadable from "@loadable/component";
+import navBarStore from "../../store/navbar";
 
 const AnimeStaffPositions = loadable(
   () => import("../../components/AnimeStaffPositions/AnimeStaffPositions"),
   {
-    fallback: <i className="fas fa-spinner"></i>,
+    fallback: <CircularProgress color="primary" size="7rem" />,
   }
 );
 
 const AllAnimeRelated = loadable(
   () => import("../../components/AllAnimeRelated/AllAnimeRelated"),
   {
-    fallback: <i className="fas fa-spinner"></i>,
+    fallback: <CircularProgress color="primary" size="7rem" />,
   }
 );
 let updateStaffPosition;
@@ -91,6 +93,7 @@ const PersonDetail = (props) => {
     if (personDetailState.malId !== personId) {
       personDetailStore.resetData();
       subscription = fetchDataPerson(personId).subscribe((v) => {
+        navBarStore.updateIsShowBlockPopUp(false);
         personDetailStore.updateDataPersonDetail(v);
         personDetailStore.updateMalId(personId);
         window.scroll({
@@ -249,6 +252,7 @@ const PersonDetail = (props) => {
                         </div>
                       </div>
                       <AllAnimeRelated
+                        lazy={true}
                         animeList={updateVoiceActingRoles[key].animeList}
                         history={history}
                       />
@@ -292,6 +296,7 @@ function validateDataStaff(updateStaffPosition, personDetail) {
 }
 
 function fetchDataPerson(personId) {
+  navBarStore.updateIsShowBlockPopUp(true);
   return ajax("https://api.jikan.moe/v3/person/" + personId).pipe(
     retry(5),
     pluck("response"),

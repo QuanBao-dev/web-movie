@@ -67,6 +67,7 @@ const UpcomingAnimeList = () => {
     >
       <h1 className="title-upcoming-anime">Upcoming anime</h1>
       <AnimeList
+        empty={true}
         data={stream.currentState().upcomingAnimeList}
         isWrap={false}
         lazy={true}

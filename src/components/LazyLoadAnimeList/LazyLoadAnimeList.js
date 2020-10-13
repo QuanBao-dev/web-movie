@@ -1,6 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import "./LazyLoadAnimeList.css";
 
+import CircularProgress from "@material-ui/core/CircularProgress";
 import React, { useEffect, useState } from "react";
 
 import {
@@ -111,14 +112,17 @@ const LazyLoadAnimeList = ({ genreId, url }) => {
     <div className="container-genre-detail">
       <h1>
         {!lazyLoadState.genre ? (
-          <i className="fas fa-spinner fa-2x fa-spin"></i>
+          <CircularProgress color="secondary" size="5rem" />
         ) : (
           lazyLoadState.genre
         )}
       </h1>
       <AnimeList
         empty={true}
-        data={lazyLoadState.genreDetailData.slice(0,lazyLoadState.pageSplit*10)}
+        data={lazyLoadState.genreDetailData.slice(
+          0,
+          lazyLoadState.pageSplit * 10
+        )}
         error={null}
       />
       <div
@@ -127,7 +131,7 @@ const LazyLoadAnimeList = ({ genreId, url }) => {
           display: lazyLoadState.isStopScrollingUpdated ? "none" : "",
         }}
       >
-        <i className="fas fa-spinner fa-3x fa-spin"></i>
+        <CircularProgress color="secondary" />
       </div>
       {lazyLoadState.isStopScrollingUpdated && <h1>End</h1>}
     </div>

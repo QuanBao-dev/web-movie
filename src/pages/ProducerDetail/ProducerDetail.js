@@ -1,9 +1,10 @@
 import loadable from "@loadable/component";
 import React from "react";
+import CircularProgress from "@material-ui/core/CircularProgress";
 const LazyLoadAnimeList = loadable(
   () => import("../../components/LazyLoadAnimeList/LazyLoadAnimeList"),
   {
-    fallback: <i className="fas fa-spinner"></i>,
+    fallback: <CircularProgress color="primary" size="7rem" />,
   }
 );
 

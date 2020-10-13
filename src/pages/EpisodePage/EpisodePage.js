@@ -2,6 +2,7 @@
 import "./EpisodePage.css";
 
 import loadable from "@loadable/component";
+import CircularProgress from "@material-ui/core/CircularProgress";
 import React, { useEffect, useState } from "react";
 import { Link, useHistory } from "react-router-dom";
 
@@ -9,15 +10,14 @@ import { fetchEpisodesOfMovie$, pageWatchStream } from "../../epics/pageWatch";
 import { theaterStream } from "../../epics/theater";
 import { userStream } from "../../epics/user";
 import { allowShouldFetchComment } from "../../store/comment";
-
 const Comment = loadable(() => import("../../components/Comment/Comment"));
 const Chat = loadable(() => import("../../components/Chat/Chat"), {
-  fallback: <i className="fas fa-spinner fa-9x fa-spin"></i>,
+  fallback: <CircularProgress color="inherit" size="7rem" />,
 });
 const VideoPlayerSection = loadable(
   () => import("../../components/VideoPlayerSection/VideoPlayerSection"),
   {
-    fallback: <i className="fas fa-spinner fa-9x fa-spin"></i>,
+    fallback: <CircularProgress color="inherit" size="7rem" />,
   }
 );
 

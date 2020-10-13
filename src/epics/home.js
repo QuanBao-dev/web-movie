@@ -318,15 +318,6 @@ export const topMovieUpdatedScrolling$ = (topAnimeElement) => {
         ? topAnimeElement.scrollTop - (topAnimeElement.scrollHeight - 5000) > 0
         : document.body.scrollHeight - (window.scrollY + 2000) < 0
     ),
-    tap(() => {
-      if (
-        9 + (stream.currentState().pageSplitTopMovie - 1) * 2 <=
-        stream.currentState().dataTopMovie.length
-      )
-        stream.updatePageSplitTopMovie(
-          stream.currentState().pageSplitTopMovie + 1
-        );
-    })
   );
 };
 

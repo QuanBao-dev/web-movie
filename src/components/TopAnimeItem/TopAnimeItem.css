@@ -38,6 +38,8 @@
   border-radius: 10px;
   object-position: center;
   animation: none;
+  transition: 0.4s;
+  opacity: 1;
 }
 
 .top-anime-list li img:hover{

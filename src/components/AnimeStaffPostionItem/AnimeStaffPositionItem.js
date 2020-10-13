@@ -1,4 +1,5 @@
 import "./AnimeStaffPositionItem.css";
+import 'react-lazy-load-image-component/src/effects/opacity.css';
 
 import React from "react";
 import { LazyLoadImage } from "react-lazy-load-image-component";
@@ -29,6 +30,7 @@ function AnimeStaffPositionItem({
         <LazyLoadImage
           src={updateStaffPosition[keyData].image_url}
           alt="image_anime"
+          effect="opacity"
         />
       )}
       <div className="pop-up-hover">

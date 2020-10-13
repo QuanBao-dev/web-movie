@@ -46,7 +46,7 @@ export function fetchReviewsData$(malId, page) {
 
 export function updatePageScrolling$() {
   return fromEvent(window, "scroll").pipe(
-    filter(() => document.body.scrollHeight - (window.scrollY + 2000) < 0),
+    filter(() => document.body.scrollHeight - (window.scrollY + 1000) < 0),
     tap(() => {
       if (
         pageWatchStream.currentState().pageSplit <=

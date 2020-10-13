@@ -1,4 +1,5 @@
 import "./CharacterDetail.css";
+import 'react-lazy-load-image-component/src/effects/opacity.css';
 
 import loadable from "@loadable/component";
 import React, { useEffect, useState } from "react";
@@ -115,6 +116,7 @@ const CharacterDetail = (props) => {
                       src={actor.image_url}
                       alt="person_image"
                       width="100%"
+                      effect="opacity"
                       height="100%"
                     />
                     <div className="actor-name">

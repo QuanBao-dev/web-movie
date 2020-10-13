@@ -1,18 +1,18 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import './Carousel.css';
+import "./Carousel.css";
 
-import loadable from '@loadable/component';
-import Axios from 'axios';
-import React, { useEffect, useState } from 'react';
-import { useCookies } from 'react-cookie';
-import { useHistory } from 'react-router-dom';
-import { interval } from 'rxjs';
-import { ajax } from 'rxjs/ajax';
-import { pluck } from 'rxjs/operators';
+import loadable from "@loadable/component";
+import Axios from "axios";
+import React, { useEffect, useState } from "react";
+import { useCookies } from "react-cookie";
+import { useHistory } from "react-router-dom";
+import { interval } from "rxjs";
+import { ajax } from "rxjs/ajax";
+import { pluck } from "rxjs/operators";
 
-import { stream } from '../../epics/home';
-import { userStream } from '../../epics/user';
-import navBarStore from '../../store/navbar';
+import { stream } from "../../epics/home";
+import { userStream } from "../../epics/user";
+import navBarStore from "../../store/navbar";
 
 const CarouselItem = loadable(() => import("../CarouselItem/CarouselItem"));
 const Carousel = () => {
@@ -185,7 +185,11 @@ const Carousel = () => {
           dataCarousel.map((data, key) => (
             <div
               key={key}
-              onClick={() => setPageCarousel(key)}
+              onClick={() => {
+                document.querySelector(".section-carousel-container").style.transition =
+                "0.4s";        
+                setPageCarousel(key);
+              }}
               className={`dot-item${pageDisplay === key ? " active-dot" : ""}`}
             ></div>
           ))}

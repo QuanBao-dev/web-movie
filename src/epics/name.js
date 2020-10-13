@@ -1,21 +1,10 @@
-import capitalize from "lodash/capitalize";
-import { fromEvent, of, timer } from "rxjs";
-import { ajax } from "rxjs/ajax";
-import {
-  catchError,
-  debounceTime,
-  exhaustMap,
-  filter,
-  map,
-  mergeMapTo,
-  pluck,
-  retry,
-  switchMap,
-  tap,
-} from "rxjs/operators";
+import capitalize from 'lodash/capitalize';
+import { fromEvent, of, timer } from 'rxjs';
+import { ajax } from 'rxjs/ajax';
+import { catchError, debounceTime, exhaustMap, filter, map, mergeMapTo, pluck, retry, switchMap, tap } from 'rxjs/operators';
 
-import nameStore from "../store/name";
-import navBarStore from "../store/navbar";
+import nameStore from '../store/name';
+import navBarStore from '../store/navbar';
 
 export const nameStream = nameStore;
 
@@ -63,6 +52,24 @@ export const fetchBoxMovieOneMovie$ = (malId, idCartoonUser) => {
 export function capitalizeString(string) {
   string = string.replace("_", " ");
   return capitalize(string);
+}
+
+export function fetchAnimeRecommendation$(malId) {
+  return ajax({
+    url: `https://api.jikan.moe/v3/anime/${malId}/recommendations`,
+  }).pipe(
+    retry(10),
+    pluck("response", "recommendations"),
+    catchError(() => of([]))
+  );
+}
+
+export function fetchDataCharacter$(malId) {
+  return ajax(`https://api.jikan.moe/v3/anime/${malId}/characters_staff`).pipe(
+    retry(20),
+    pluck("response", "characters"),
+    catchError(() => of([]))
+  );
 }
 
 export function handleAddBoxMovie(

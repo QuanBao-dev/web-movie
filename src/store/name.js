@@ -8,6 +8,8 @@ const initialState = {
   boxMovie: null,
   pageVideo: 1,
   malId: null,
+  dataRelatedAnime:[],
+  pageRelated:1
 };
 const behaviorSubject = new BehaviorSubject(initialState);
 let state = initialState;
@@ -16,6 +18,20 @@ const nameStore = {
   subscribe: (setState) => behaviorSubject.subscribe(setState),
   init: () => {
     behaviorSubject.next(state);
+  },
+  updateDataRelatedAnime:(data) => {
+    state={
+      ...state,
+      dataRelatedAnime:data
+    };
+    behaviorSubject.next(state);
+  },
+  updatePageRelated:(page) => {
+    state={
+      ...state,
+      pageRelated:page
+    };
+    behaviorSubject.next(state)
   },
   updateMalId: (malId) => {
     state = {

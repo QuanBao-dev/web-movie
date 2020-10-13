@@ -1,47 +1,58 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import "./RelatedAnime.css";
-import React, { useEffect, useRef, useState } from "react";
-import { of } from "rxjs";
-import { ajax } from "rxjs/ajax";
-import { catchError, pluck, retry } from "rxjs/operators";
-import AnimeList from "../AnimeList/AnimeList";
+import './RelatedAnime.css';
+import 'react-lazy-load-image-component/src/effects/opacity.css';
+
+import React, { useEffect, useRef, useState } from 'react';
+
+import { nameStream } from '../../epics/name';
+import AnimeList from '../AnimeList/AnimeList';
 
 const RelatedAnime = ({ malId }) => {
-  const [recommendationState, setRecommendationState] = useState([]);
-  const [pageDisplayRelatedAnime, setPageDisplayRelatedAnime] = useState(1);
+  const [recommendationState, setRecommendationState] = useState(
+    nameStream.currentState() || nameStream.initialState
+  );
   const buttonRef = useRef();
   useEffect(() => {
-    const subscription = fetchAnimeRecommendation$(malId).subscribe((data) => {
-      setRecommendationState(data);
-    });
+    const subscription = nameStream.subscribe(setRecommendationState);
+    nameStream.init();
     return () => {
       subscription.unsubscribe();
-      setRecommendationState([]);
     };
-  }, [malId]);
+  }, []);
   useEffect(() => {
     if (buttonRef.current) {
-      if(recommendationState.length > 10 * pageDisplayRelatedAnime){
+      if (
+        recommendationState.dataRelatedAnime.length >
+        10 * recommendationState.pageRelated
+      ) {
         buttonRef.current.style.display = "block";
       } else {
         buttonRef.current.style.display = "none";
       }
     }
-  }, [pageDisplayRelatedAnime,recommendationState.length]);
+  }, [
+    recommendationState.pageRelated,
+    recommendationState.dataRelatedAnime.length,
+  ]);
   return (
-    recommendationState.length > 0 && (
+    recommendationState.dataRelatedAnime.length > 0 && (
       <div>
         <h1 className="title">You might like...</h1>
         <AnimeList
-          data={recommendationState.slice(0, 10 * pageDisplayRelatedAnime)}
+          data={recommendationState.dataRelatedAnime.slice(
+            0,
+            8 * recommendationState.pageRelated
+          )}
           error={null}
+          lazy={true}
         />
         <div
           className="see-more-movie"
           ref={buttonRef}
           onClick={() => {
-            const current = pageDisplayRelatedAnime;
-            setPageDisplayRelatedAnime(current + 1);
+            nameStream.updatePageRelated(
+              nameStream.currentState().pageRelated + 1
+            );
           }}
         >
           See more
@@ -51,14 +62,5 @@ const RelatedAnime = ({ malId }) => {
   );
 };
 
-function fetchAnimeRecommendation$(malId) {
-  return ajax({
-    url: `https://api.jikan.moe/v3/anime/${malId}/recommendations`,
-  }).pipe(
-    retry(10),
-    pluck("response", "recommendations"),
-    catchError(() => of([]))
-  );
-}
 
 export default RelatedAnime;

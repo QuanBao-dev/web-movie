@@ -28,6 +28,7 @@ function CharacterItem({ characterData, history, lazy }) {
           className="character-image"
           src={characterData.image_url}
           alt="image_character"
+          effect="opacity"
         />
       )}
       <div className="name-character">{characterData.name}</div>

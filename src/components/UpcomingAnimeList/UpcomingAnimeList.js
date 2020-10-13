@@ -69,7 +69,7 @@ const UpcomingAnimeList = () => {
       <AnimeList
         data={stream.currentState().upcomingAnimeList}
         isWrap={false}
-        lazy={stream.currentState().isFirstLaunch}
+        lazy={true}
         error={stream.currentState().error}
       />
     </section>

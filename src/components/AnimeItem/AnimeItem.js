@@ -1,8 +1,9 @@
 import "./AnimeItem.css";
+import "react-lazy-load-image-component/src/effects/opacity.css";
 
 import React from "react";
-import { useHistory } from "react-router-dom";
 import { LazyLoadImage } from "react-lazy-load-image-component";
+import { useHistory } from "react-router-dom";
 
 const AnimeItem = ({ anime, lazy = false }) => {
   const history = useHistory();
@@ -14,22 +15,42 @@ const AnimeItem = ({ anime, lazy = false }) => {
       {anime.airing_start &&
         new Date(anime.airing_start).getTime() <=
           new Date(Date.now()).getTime() && (
-          <div className="anime-info-display_summary top-left_summary color-green">
+          <div
+            title="Already_Aired"
+            className="anime-info-display_summary top-left_summary color-green"
+          >
             Aired
           </div>
         )}
-
       {anime.end_date &&
         anime.end_date.length > 8 &&
         new Date(anime.end_date).getTime() <=
           new Date(Date.now()).getTime() && (
-          <div className="anime-info-display_summary top-left_summary color-yellow">
+          <div
+            title={"End_Airing"}
+            className="anime-info-display_summary top-left_summary color-yellow"
+          >
             Finished
           </div>
         )}
-      <div className="anime-info-display_summary top-right_summary color-red">
-        {!anime.score || anime.score === "null" ? "?" : anime.score}/10
-      </div>
+      {!anime.recommendation_count && (
+        <div
+          title="Score"
+          className="anime-info-display_summary top-right_summary color-red"
+        >
+          {!anime.score || anime.score === "null"
+            ? "??/10"
+            : `${anime.score}/10`}
+        </div>
+      )}
+      {anime.recommendation_count && (
+        <div
+          title={"recommendation count"}
+          className="anime-info-display_summary top-right_summary color-red"
+        >
+          {anime.recommendation_count}
+        </div>
+      )}
       {lazy === true && (
         <LazyLoadImage
           style={{
@@ -38,6 +59,7 @@ const AnimeItem = ({ anime, lazy = false }) => {
             top: 0,
             left: 0,
           }}
+          effect="opacity"
           src={anime.imageUrl || anime.image_url}
           alt="NOT_FOUND"
         />

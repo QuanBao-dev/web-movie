@@ -1,30 +1,17 @@
-import "./Characters.css";
+import './Characters.css';
 
-import loadable from "@loadable/component";
-import React, { useEffect, useState } from "react";
-import { useHistory } from "react-router-dom";
-import { of } from "rxjs";
-import { ajax } from "rxjs/ajax";
-import { catchError, pluck, retry } from "rxjs/operators";
+import loadable from '@loadable/component';
+import React, { useEffect, useState } from 'react';
+import { useHistory } from 'react-router-dom';
 
-import { characterStream } from "../../epics/character";
+import { characterStream } from '../../epics/character';
 
 const CharacterItem = loadable(() => import("../CharacterItem/CharacterItem"));
 const Characters = ({ malId, lazy = false }) => {
   const history = useHistory();
-  const [dataCharacterState, setDataCharacterState] = useState([]);
   const [charactersState, setCharactersState] = useState(
     characterStream.initialState
   );
-  useEffect(() => {
-    const subscription = fetchDataCharacter$(malId).subscribe((data) => {
-      setDataCharacterState(data);
-    });
-    characterStream.updatePage(1);
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, [malId]);
   useEffect(() => {
     const initSub = characterStream.subscribe(setCharactersState);
     characterStream.init();
@@ -39,21 +26,21 @@ const Characters = ({ malId, lazy = false }) => {
       if (
         characterStream.currentState().page *
           characterStream.currentState().numberDisplay >=
-        dataCharacterState.length
+        charactersState.dataCharacter.length
       )
         buttonSeemore.style.display = "none";
       else {
         buttonSeemore.style.display = "block";
       }
     }
-  }, [dataCharacterState.length, charactersState.page]);
+  }, [charactersState.dataCharacter.length, charactersState.page]);
   return (
-    dataCharacterState.length > 0 && (
+    charactersState.dataCharacter.length > 0 && (
       <div>
         <h1 className="title">Characters</h1>
         {characterStream.currentState() && (
           <div className="character-list">
-            {dataCharacterState
+            {charactersState.dataCharacter
               .slice(
                 0,
                 characterStream.currentState().page *
@@ -82,13 +69,5 @@ const Characters = ({ malId, lazy = false }) => {
     )
   );
 };
-
-function fetchDataCharacter$(malId) {
-  return ajax(`https://api.jikan.moe/v3/anime/${malId}/characters_staff`).pipe(
-    retry(20),
-    pluck("response", "characters"),
-    catchError(() => of([]))
-  );
-}
 
 export default Characters;

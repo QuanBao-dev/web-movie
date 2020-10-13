@@ -1,31 +1,34 @@
-import "./Name.css";
+import './Name.css';
 
-import loadable from "@loadable/component";
-import Axios from "axios";
-import orderBy from "lodash/orderBy";
-import random from "lodash/random";
-import React, { useEffect, useRef, useState } from "react";
-import { useCookies } from "react-cookie";
-import { Link, useHistory } from "react-router-dom";
-import { from, of } from "rxjs";
-import { ajax } from "rxjs/ajax";
-import { catchError, combineAll, map, pluck, retry, tap } from "rxjs/operators";
+import loadable from '@loadable/component';
+import Axios from 'axios';
+import orderBy from 'lodash/orderBy';
+import random from 'lodash/random';
+import React, { useEffect, useRef, useState } from 'react';
+import { useCookies } from 'react-cookie';
+import { Link, useHistory } from 'react-router-dom';
+import { from, of } from 'rxjs';
+import { ajax } from 'rxjs/ajax';
+import { catchError, combineAll, map, pluck, retry, tap } from 'rxjs/operators';
 
-import Input from "../../components/Input/Input";
+import Input from '../../components/Input/Input';
+import { characterStream } from '../../epics/character';
 import {
   capitalizeString,
+  fetchAnimeRecommendation$,
   fetchBoxMovieOneMovie$,
   fetchData$,
+  fetchDataCharacter$,
   fetchDataVideo$,
   fetchEpisodeDataVideo$,
   handleAddBoxMovie,
   handleDeleteBoxMovie,
   nameStream,
-} from "../../epics/name";
-import { pageWatchStream } from "../../epics/pageWatch";
-import { userStream } from "../../epics/user";
-import { allowShouldFetchComment } from "../../store/comment";
-import navBarStore from "../../store/navbar";
+} from '../../epics/name';
+import { pageWatchStream } from '../../epics/pageWatch';
+import { userStream } from '../../epics/user';
+import { allowShouldFetchComment } from '../../store/comment';
+import navBarStore from '../../store/navbar';
 
 const Characters = loadable(() =>
   import("../../components/Characters/Characters")
@@ -113,20 +116,31 @@ const Name = (props) => {
         }
       })
     );
+    const fetchAnimeAppears$ = fetchAnimeRecommendation$(name).pipe(
+      tap((data) => nameStream.updateDataRelatedAnime(data))
+    );
+    const fetchCharacters$ = fetchDataCharacter$(name).pipe(
+      tap((data) => {
+        characterStream.updateDataCharacter(data);
+      })
+    );
     let subscription;
     if (nameStream.currentState().malId !== name) {
+      window.scroll({
+        top: 0,
+      });
       nameStream.resetState();
       subscription = from([
         fetchDataInfo$,
         fetchDataVideoPromo$,
         fetchLargePictureUrl$,
         fetchEpisodesUrl$,
+        fetchAnimeAppears$,
+        fetchCharacters$,
       ])
         .pipe(combineAll())
         .subscribe(() => {
-          window.scroll({
-            top: 0,
-          });
+          characterStream.updatePage(1);
           nameStream.updateMalId(name);
         });
     }
@@ -373,13 +387,10 @@ const Name = (props) => {
             )}
           </div>
         </div>
-        <Characters
-          malId={name}
-          lazy={nameStream.currentState().malId !== name}
-        />
+        <Characters malId={name} lazy={true} />
         <RelatedAnime malId={name} />
         {nameState.dataVideoPromo && (
-          <VideoPromotionList data={nameState.dataVideoPromo} />
+          <VideoPromotionList data={nameState.dataVideoPromo} lazy={true} />
         )}
         <Reviews malId={name} />
       </div>

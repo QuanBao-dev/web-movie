@@ -5,10 +5,18 @@ const initialState = {
   role: null,
   page: 1,
   numberDisplay: 12,
+  dataCharacter:[],
 };
 let state = initialState;
 const characterStore = {
   initialState,
+  updateDataCharacter:(data)=>{
+    state = {
+      ...state,
+      dataCharacter:data
+    };
+    behaviorSubject.next(state);
+  },
   init: () => {
     behaviorSubject.next(state);
   },

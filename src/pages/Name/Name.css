@@ -15,6 +15,7 @@
 .anime-name-info .title{
   text-align: center;
   background-color: #444547;
+  color: white;
   padding: 15px;
   border-top: 3px solid #a31212;
 }
@@ -222,10 +223,6 @@
   outline: none;
   font-size: larger;
   height: 3rem;
-}
-
-.video-promotion-item{
-  margin:3rem 0;
 }
 
 .list-video-url{

@@ -1,37 +1,139 @@
-import './App.css';
+import "./App.css";
 
-import { lazy } from '@loadable/component';
-import Axios from 'axios';
-import React, { useEffect, useRef, useState } from 'react';
-import { Suspense } from 'react';
-import { useCookies } from 'react-cookie';
-import { BrowserRouter as Router, NavLink as Link, Route, Switch } from 'react-router-dom';
-import { ReplaySubject } from 'rxjs';
+import loadable from "@loadable/component";
+import Axios from "axios";
+import React, { useEffect, useRef, useState } from "react";
+import { useCookies } from "react-cookie";
+import {
+  BrowserRouter as Router,
+  NavLink as Link,
+  Route,
+  Switch,
+} from "react-router-dom";
+import { ReplaySubject } from "rxjs";
 
-import { fetchingUser$, userStream } from './epics/user';
-import { allowShouldFetchAllUser } from './store/admin';
-import navBarStore from './store/navbar';
+import { fetchingUser$, userStream } from "./epics/user";
+import { allowShouldFetchAllUser } from "./store/admin";
+import navBarStore from "./store/navbar";
 
-const Login = lazy(() => import("./pages/Login/Login"));
-const Register = lazy(() => import("./pages/Register/Register"));
+const Login = loadable(() => import("./pages/Login/Login"), {
+  fallback: (
+    <div>
+      <i className="fas fa-spinner fa-9x fa-spin"></i>
+    </div>
+  ),
+});
+const Register = loadable(() => import("./pages/Register/Register"), {
+  fallback: (
+    <div>
+      <i className="fas fa-spinner fa-9x fa-spin"></i>
+    </div>
+  ),
+});
 
-const ProducerDetail = lazy(() =>
-  import("./pages/ProducerDetail/ProducerDetail")
+const ProducerDetail = loadable(
+  () => import("./pages/ProducerDetail/ProducerDetail"),
+  {
+    fallback: (
+      <div>
+        <i className="fas fa-spinner fa-9x fa-spin"></i>
+      </div>
+    ),
+  }
 );
-const FAQ = lazy(() => import("./pages/FAQ/FAQ"));
-const EditUser = lazy(() => import("./pages/EditUser/EditUser"));
-const AdminManager = lazy(() => import("./pages/AdminManager/AdminManager"));
-const NotFound = lazy(() => import("./pages/404/NotFound"));
-const Home = lazy(() => import("./pages/Home/Home"));
-const Name = lazy(() => import("./pages/Name/Name"));
-const CharacterDetail = lazy(() =>
-  import("./pages/CharacterDetail/CharacterDetail")
+const FAQ = loadable(() => import("./pages/FAQ/FAQ"), {
+  fallback: (
+    <div>
+      <i className="fas fa-spinner fa-9x fa-spin"></i>
+    </div>
+  ),
+});
+const EditUser = loadable(() => import("./pages/EditUser/EditUser"), {
+  fallback: (
+    <div>
+      <i className="fas fa-spinner fa-9x fa-spin"></i>
+    </div>
+  ),
+});
+const AdminManager = loadable(
+  () => import("./pages/AdminManager/AdminManager"),
+  {
+    fallback: (
+      <div>
+        <i className="fas fa-spinner fa-9x fa-spin"></i>
+      </div>
+    ),
+  }
 );
-const Theater = lazy(() => import("./pages/Theater/Theater"));
-const EpisodePage = lazy(() => import("./pages/EpisodePage/EpisodePage"));
-const SearchedList = lazy(() => import("./pages/Search/SearchedList"));
-const PersonDetail = lazy(() => import("./pages/PersonDetail/PersonDetail"));
-const GenreDetail = lazy(() => import("./pages/GenreDetail/GenreDetail"));
+const NotFound = loadable(() => import("./pages/404/NotFound"), {
+  fallback: (
+    <div>
+      <i className="fas fa-spinner fa-9x fa-spin"></i>
+    </div>
+  ),
+});
+const Home = loadable(() => import("./pages/Home/Home"), {
+  fallback: (
+    <div>
+      <i className="fas fa-spinner fa-9x fa-spin"></i>
+    </div>
+  ),
+});
+const Name = loadable(() => import("./pages/Name/Name"), {
+  fallback: (
+    <div>
+      <i className="fas fa-spinner fa-9x fa-spin"></i>
+    </div>
+  ),
+});
+const CharacterDetail = loadable(
+  () => import("./pages/CharacterDetail/CharacterDetail"),
+  {
+    fallback: (
+      <div>
+        <i className="fas fa-spinner fa-9x fa-spin"></i>
+      </div>
+    ),
+  }
+);
+const Theater = loadable(() => import("./pages/Theater/Theater"), {
+  fallback: (
+    <div>
+      <i className="fas fa-spinner fa-9x fa-spin"></i>
+    </div>
+  ),
+});
+const EpisodePage = loadable(() => import("./pages/EpisodePage/EpisodePage"), {
+  fallback: (
+    <div>
+      <i className="fas fa-spinner fa-9x fa-spin"></i>
+    </div>
+  ),
+});
+const SearchedList = loadable(() => import("./pages/Search/SearchedList"), {
+  fallback: (
+    <div>
+      <i className="fas fa-spinner fa-9x fa-spin"></i>
+    </div>
+  ),
+});
+const PersonDetail = loadable(
+  () => import("./pages/PersonDetail/PersonDetail"),
+  {
+    fallback: (
+      <div>
+        <i className="fas fa-spinner fa-9x fa-spin"></i>
+      </div>
+    ),
+  }
+);
+const GenreDetail = loadable(() => import("./pages/GenreDetail/GenreDetail"), {
+  fallback: (
+    <div>
+      <i className="fas fa-spinner fa-9x fa-spin"></i>
+    </div>
+  ),
+});
 
 const scrollSaveSubject = new ReplaySubject(3);
 window.addEventListener("resize", () => {
@@ -138,16 +240,7 @@ function App() {
           </div>
           <ul className="child-nav-bar__app">
             <li className="nav-bar__item">
-              <Link
-                to="/"
-                activeClassName="active"
-                onClick={() => {
-                  window.scroll({
-                    top: 0,
-                  });
-                }}
-                exact
-              >
+              <Link to="/" activeClassName="active" exact>
                 Home
               </Link>
             </li>
@@ -283,41 +376,33 @@ function App() {
           </ul>
         </ul>
       </nav>
-      <Suspense
-        fallback={
-          <div>
-            <i className="fas fa-spinner fa-9x fa-spin"></i>
-          </div>
-        }
-      >
-        <Switch>
-          <Route path="/" component={Home} exact />
-          {user && user.role === "Admin" && (
-            <Route path="/admin" component={AdminManager} exact />
-          )}
-          <Route path="/faq" component={FAQ} />
-          <Route path="/anime/search" component={SearchedList} />
-          <Route
-            path="/anime/:malId/watch/:episode/:mode"
-            component={EpisodePage}
-          />
-          <Route path="/anime/person/:personId" component={PersonDetail} />
-          <Route
-            path="/anime/character/:characterId"
-            component={CharacterDetail}
-          />
-          <Route path="/anime/:name" component={Name} />
-          <Route path="/genre/:genreId" component={GenreDetail} />
-          <Route path="/producer/:producerId" component={ProducerDetail} />
-          <Route path="/studio/:producerId" component={ProducerDetail} />
-          <Route path="/licensor/:producerId" component={ProducerDetail} />
-          {user && <Route path="/theater" component={Theater} />}
-          {user && <Route path="/edit" component={EditUser} />}
-          {!user && <Route path="/auth/login" component={Login} />}
-          {!user && <Route path="/auth/register" component={Register} />}
-          <Route path="/*" component={NotFound} />
-        </Switch>
-      </Suspense>
+      <Switch>
+        <Route path="/" component={Home} exact />
+        {user && user.role === "Admin" && (
+          <Route path="/admin" component={AdminManager} exact />
+        )}
+        <Route path="/faq" component={FAQ} />
+        <Route path="/anime/search" component={SearchedList} />
+        <Route
+          path="/anime/:malId/watch/:episode/:mode"
+          component={EpisodePage}
+        />
+        <Route path="/anime/person/:personId" component={PersonDetail} />
+        <Route
+          path="/anime/character/:characterId"
+          component={CharacterDetail}
+        />
+        <Route path="/anime/:name" component={Name} />
+        <Route path="/genre/:genreId" component={GenreDetail} />
+        <Route path="/producer/:producerId" component={ProducerDetail} />
+        <Route path="/studio/:producerId" component={ProducerDetail} />
+        <Route path="/licensor/:producerId" component={ProducerDetail} />
+        {user && <Route path="/theater" component={Theater} />}
+        {user && <Route path="/edit" component={EditUser} />}
+        {!user && <Route path="/auth/login" component={Login} />}
+        {!user && <Route path="/auth/register" component={Register} />}
+        <Route path="/*" component={NotFound} />
+      </Switch>
     </Router>
   );
 }

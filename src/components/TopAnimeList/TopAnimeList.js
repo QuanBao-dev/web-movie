@@ -15,9 +15,11 @@ const TopAnimeItem = loadable(() => import("../TopAnimeItem/TopAnimeItem"));
 function TopAnimeList({ homeState = stream.initialState }) {
   useEffect(() => {
     if (stream.currentState().screenWidth > 697) {
-      document.querySelector(".top-anime-list-container").scroll({
-        top: stream.currentState().positionScrollTop,
-      });
+      setTimeout(() => {
+        document.querySelector(".top-anime-list-container").scroll({
+          top: stream.currentState().positionScrollTop,
+        });
+      }, 400);
     }
     if (stream.currentState().dataTopMovie.length === 0) {
       updatePageTopMovieOnDestroy(null);
@@ -37,12 +39,7 @@ function TopAnimeList({ homeState = stream.initialState }) {
     if (topAnimeElement) {
       subscription11 = topMovieUpdatedScrolling$(topAnimeElement).subscribe(
         () => {
-          if (
-            homeState.allowFetchIncreasePageTopMovie &&
-            9 + (stream.currentState().pageSplitTopMovie - 1) * 2 >
-              stream.currentState().dataTopMovie.length
-          )
-            updateDataTopScrolling();
+          updateDataTopScrolling();
         }
       );
     }
@@ -83,15 +80,9 @@ function TopAnimeList({ homeState = stream.initialState }) {
     <div className="top-anime-list-container">
       <h1>Top Anime</h1>
       <ul className="top-anime-list">
-        {homeState.dataTopMovie
-          .slice(0, 9 + (homeState.pageSplitTopMovie - 1) * 2)
-          .map((movie, index) => (
-            <TopAnimeItem
-              movie={movie}
-              lazy={stream.currentState().pageSplitTopMovie === 1}
-              key={index}
-            />
-          ))}
+        {homeState.dataTopMovie.map((movie, index) => (
+          <TopAnimeItem movie={movie} lazy={true} key={index} />
+        ))}
       </ul>
     </div>
   );

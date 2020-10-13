@@ -71,7 +71,7 @@ const UpdatedAnime = () => {
       />
       <AnimeList
         empty={true}
-        lazy={stream.currentState().isFirstLaunch}
+        lazy={true}
         data={
           subNavToggle === 0
             ? orderBy(homeState.updatedMovie, ["updatedAt"], ["desc"]).slice(

@@ -199,7 +199,6 @@ function App() {
             <CircularProgress color="secondary" size="7rem" />
             <h1
               className="loading-message"
-              style={{ color: "red", fontWeight: "bolder" }}
             >
               Loading...
             </h1>

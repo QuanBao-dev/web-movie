@@ -126,14 +126,11 @@ const LazyLoadAnimeList = ({ genreId, url }) => {
         )}
         error={null}
       />
-      <div
-        className="loading-symbol"
-        style={{
-          display: lazyLoadState.isStopScrollingUpdated ? "none" : "",
-        }}
-      >
-        <CircularProgress color="secondary" />
-      </div>
+      {!lazyLoadState.isStopScrollingUpdated && (
+        <div className="loading-symbol">
+          <CircularProgress color="secondary" size="3rem" />
+        </div>
+      )}
       {lazyLoadState.isStopScrollingUpdated && <h1>End</h1>}
     </div>
   );

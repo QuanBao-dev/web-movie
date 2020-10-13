@@ -22,11 +22,6 @@ export function fetchDataGenreAnimeList$(genreId, page, url) {
       ajax(url.replace("{genreId}", genreId).replace("{page}", page)).pipe(
         retry(),
         pluck("response"),
-        tap(
-          () =>
-            document.querySelector(".loading-symbol") &&
-            (document.querySelector(".loading-symbol").style.display = "none")
-        ),
         catchError(() => {
           return of({ error: true });
         })

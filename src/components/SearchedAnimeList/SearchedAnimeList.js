@@ -2,13 +2,19 @@ import "./SearchedAnimeList.css";
 
 import loadable from "@loadable/component";
 import React from "react";
+import { useEffect } from "react";
+import { useRef } from "react";
 
 const SearchedAnime = loadable(() => import("../SearchedAnime/SearchedAnime"));
 
 const SearchedAnimeList = ({ homeState }) => {
+  const searchListAnimeRef = useRef();
   if (homeState.textSearch && homeState.dataFilter.length === 0) {
     homeState.textSearch = "";
   }
+  useEffect(() => {
+    searchListAnimeRef.current.scroll(0,0);
+  },[homeState.textSearch]);
   return (
     <>
       {homeState.dataFilter && homeState.dataFilter.length !== 0 && (
@@ -21,6 +27,7 @@ const SearchedAnimeList = ({ homeState }) => {
       )}
       <div
         className="search-list-anime"
+        ref={searchListAnimeRef}
         style={{
           display:
             homeState.dataFilter && homeState.dataFilter.length > 0

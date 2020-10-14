@@ -319,7 +319,8 @@ const Name = (props) => {
               Summary
             </h1>
             <div className="content">
-              {nameState.dataInformationAnime.synopsis}
+              {nameState.dataInformationAnime.synopsis ||
+                "(No summary added yet)"}
             </div>
             {episodeDataDisplay && episodeDataDisplay.episodeList.length > 0 && (
               <div>

@@ -10,8 +10,9 @@
   .all-anime-related > div{
     cursor: pointer;
     margin: 1rem;
+    width: 200px;
+    height: 300px;
     max-width: 410px;
-    height: fit-content;
     display: flex;
     align-items: center;
     box-shadow: 0 0 10px 1px black;
@@ -22,6 +23,7 @@
   @media (max-width:655px){
     .all-anime-related > div{
       width: 100px;
+      height: 150px;  
     }
 
     .pop-up-hover h3{

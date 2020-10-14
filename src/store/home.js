@@ -43,6 +43,7 @@ const initialState = {
   pageSplit:1,
   pageSplitTopMovie:1,
   positionScrollTop:0,
+  modeFilter:"filter",
   isFirstLaunch:true
 };
 
@@ -55,6 +56,13 @@ const homeStore = {
     let ans;
     subject.subscribe((v) => (ans = v));
     return ans || initialState;
+  },
+  updateModeFilter:(mode) => {
+    state={
+      ...state,
+      modeFilter:mode
+    };
+    subject.next(state);
   },
   updateIsFirstLaunch:(bool) => {
     state={

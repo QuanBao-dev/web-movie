@@ -106,7 +106,7 @@ function Home() {
         <div className="container-display-anime__home">
           <div className="anime-pagination">
             <h1 style={{ textAlign: "center" }}>
-              All Anime
+              {homeState.modeFilter === "filter" ? "":"All "} Anime
               {homeState.score !== 0
                 ? " with score greater than " + homeState.score
                 : ""}{" "}

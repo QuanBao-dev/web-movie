@@ -16,6 +16,8 @@
   box-shadow: 0 0 10px 1px black;
   position: relative;
   transition: 0.1s;
+  width: 200px;
+  height: 300px;
 }
 
 .container-staff-position > div:hover{

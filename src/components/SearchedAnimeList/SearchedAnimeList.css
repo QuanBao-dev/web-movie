@@ -16,7 +16,8 @@
 }
 
 .search-list-anime::-webkit-scrollbar-thumb{
-    background-color:grey;
+  background-color:grey;
+  border-radius: 10px;
 }
 
 .search-list-anime::-webkit-scrollbar-thumb:hover{

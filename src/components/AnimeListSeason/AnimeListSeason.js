@@ -18,6 +18,7 @@ const AnimeListSeason = () => {
   const selectYear = useRef(null);
   const selectSeason = useRef(null);
   const selectScore = useRef(null);
+  const selectFilterMode = useRef(null);
   const targetScroll = useRef(null);
 
   const startYear = 1963;
@@ -33,6 +34,7 @@ const AnimeListSeason = () => {
   }
   useEffect(() => {
     const subscription = stream.subscribe(setHomeState);
+    window.scroll({ top: 0 });
     return () => {
       subscription.unsubscribe();
     };
@@ -40,6 +42,12 @@ const AnimeListSeason = () => {
 
   useEffect(() => {
     const filterAnime = homeState.dataDetailOriginal.filter((movie) => {
+      if (homeState.modeFilter === "all") {
+        return (
+          movie.airing_start &&
+          (movie.score > homeState.score || homeState.score === 0)
+        );
+      }
       return (
         movie.airing_start &&
         limitAdultGenre(movie.genres) &&
@@ -60,7 +68,7 @@ const AnimeListSeason = () => {
     );
     stream.updateAnimeData(sortedArray);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [homeState.currentPage, homeState.score]);
+  }, [homeState.currentPage, homeState.score, homeState.modeFilter]);
 
   useEffect(() => {
     if (homeState.shouldScrollToSeeMore) {
@@ -130,6 +138,7 @@ const AnimeListSeason = () => {
         selectSeason={selectSeason}
         selectYear={selectYear}
         selectScore={selectScore}
+        selectFilterMode={selectFilterMode}
         numberOfYears={numberOfYears}
       />
 
@@ -163,6 +172,7 @@ function SelectFilterAnime({
   selectSeason,
   selectYear,
   selectScore,
+  selectFilterMode,
   numberOfYears,
 }) {
   const elementOptions = Array.from(Array(numberOfYears).keys()).map(
@@ -211,6 +221,17 @@ function SelectFilterAnime({
             {score !== 0 ? score : "All"}
           </option>
         ))}
+      </select>
+      <select
+        className="select-filter"
+        ref={selectFilterMode}
+        defaultValue={stream.currentState().modeFilter}
+        onChange={(e) => {
+          stream.updateModeFilter(e.target.value);
+        }}
+      >
+        <option value={`all`}>All</option>
+        <option value={`filter`}>Filter</option>
       </select>
     </div>
   );

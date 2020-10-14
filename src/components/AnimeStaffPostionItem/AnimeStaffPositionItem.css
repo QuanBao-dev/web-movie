@@ -24,9 +24,10 @@
   transform: scale(1);
 }
 
-@media (max-width:950px){
+@media (max-width:655px){
   .container-staff-position > div{
     width: 100px;
+    height: 150px;  
   }
 }
 

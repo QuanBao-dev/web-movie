@@ -4,9 +4,11 @@ import "react-lazy-load-image-component/src/effects/opacity.css";
 import React from "react";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import { useHistory } from "react-router-dom";
+import { limitAdultGenre } from "../../epics/home";
 
 const AnimeItem = ({ anime, lazy = false }) => {
   const history = useHistory();
+  // {!limitAdultGenre(anime.genres) ? "/18+" : ""}
   return (
     <div
       className="anime-item"
@@ -22,6 +24,15 @@ const AnimeItem = ({ anime, lazy = false }) => {
             Aired
           </div>
         )}
+
+      {anime.genres && !limitAdultGenre(anime.genres) && (
+        <div
+          title="age limit"
+          className="anime-info-display_summary top-center_summary color-red"
+        >
+          18+
+        </div>
+      )}
       {anime.end_date &&
         anime.end_date.length > 8 &&
         new Date(anime.end_date).getTime() <=

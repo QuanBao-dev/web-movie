@@ -70,7 +70,7 @@
 }
 
 .nav-bar + div{
-  transform: translateY(5rem);
+  margin-top: 5rem;
 }
 
 .nav-bar__app .nav-bar__item{

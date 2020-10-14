@@ -9,7 +9,7 @@
 
 .list-anime-nowrap{
   display: block;
-  overflow-x: auto;
+  overflow-x: scroll;
   width: 100%;
   white-space: nowrap;
   overflow-y: hidden;

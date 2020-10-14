@@ -1,18 +1,18 @@
-import './Name.css';
+import "./Name.css";
 
-import loadable from '@loadable/component';
-import Axios from 'axios';
-import orderBy from 'lodash/orderBy';
-import random from 'lodash/random';
-import React, { useEffect, useRef, useState } from 'react';
-import { useCookies } from 'react-cookie';
-import { Link, useHistory } from 'react-router-dom';
-import { from, of } from 'rxjs';
-import { ajax } from 'rxjs/ajax';
-import { catchError, combineAll, map, pluck, retry, tap } from 'rxjs/operators';
+import loadable from "@loadable/component";
+import Axios from "axios";
+import orderBy from "lodash/orderBy";
+import random from "lodash/random";
+import React, { useEffect, useRef, useState } from "react";
+import { useCookies } from "react-cookie";
+import { Link, useHistory } from "react-router-dom";
+import { from, of } from "rxjs";
+import { ajax } from "rxjs/ajax";
+import { catchError, combineAll, map, pluck, retry, tap } from "rxjs/operators";
 
-import Input from '../../components/Input/Input';
-import { characterStream } from '../../epics/character';
+import Input from "../../components/Input/Input";
+import { characterStream } from "../../epics/character";
 import {
   capitalizeString,
   fetchAnimeRecommendation$,
@@ -24,11 +24,11 @@ import {
   handleAddBoxMovie,
   handleDeleteBoxMovie,
   nameStream,
-} from '../../epics/name';
-import { pageWatchStream } from '../../epics/pageWatch';
-import { userStream } from '../../epics/user';
-import { allowShouldFetchComment } from '../../store/comment';
-import navBarStore from '../../store/navbar';
+} from "../../epics/name";
+import { pageWatchStream } from "../../epics/pageWatch";
+import { userStream } from "../../epics/user";
+import { allowShouldFetchComment } from "../../store/comment";
+import navBarStore from "../../store/navbar";
 
 const Characters = loadable(() =>
   import("../../components/Characters/Characters")
@@ -42,7 +42,6 @@ const RelatedAnime = loadable(() =>
 );
 const Reviews = loadable(() => import("../../components/Reviews/Reviews"));
 
-let episodeDataDisplay;
 const Name = (props) => {
   const { name } = props.match.params;
   const history = useHistory();
@@ -99,10 +98,16 @@ const Name = (props) => {
     );
     const fetchLargePictureUrl$ = fetchLargePicture$(name).pipe(
       tap(({ pictures }) => {
-        const imageUrl = pictures[random(pictures.length - 1)]
-          ? pictures[random(pictures.length - 1)].large
-          : undefined;
-        nameStream.updateDataLargePicture(imageUrl);
+        try {
+          if (pictures) {
+            const imageUrl = pictures[random(pictures.length - 1)]
+              ? pictures[random(pictures.length - 1)].large
+              : undefined;
+            nameStream.updateDataLargePicture(imageUrl);
+          }
+        } catch (error) {
+          console.log(error);
+        }
       })
     );
     const fetchEpisodesUrl$ = fetchEpisodeDataVideo$(name).pipe(
@@ -176,6 +181,20 @@ const Name = (props) => {
       linkWatchingInputRef.current && (linkWatchingInputRef.current.value = "");
     };
   }, [cookies.idCartoonUser, name]);
+  const arrayTagTitle =
+    document.querySelectorAll(".anime-name-info.layout .title") || [];
+  const a = [...arrayTagTitle];
+  useEffect(() => {
+    setElementTitle(a);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    a.length,
+    name,
+    elementTitle.length,
+    reviewState.reviewsData.length,
+    nameState.dataVideoPromo.length,
+  ]);
+
   const arrKeys = Object.keys(nameState.dataInformationAnime).filter((v) => {
     let arrayExclude = [
       "title",
@@ -202,7 +221,7 @@ const Name = (props) => {
       }
     return arrayExclude.indexOf(v) === -1 ? true : false;
   });
-  episodeDataDisplay = Object.entries(nameState.dataEpisodesAnime).reduce(
+  const episodeDataDisplay = Object.entries(nameState.dataEpisodesAnime).reduce(
     (ans, [key, episodeList]) => {
       if (key !== "source" && key !== "sourceFilmList")
         if (episodeList.length > ans.episodeList.length) {
@@ -215,19 +234,6 @@ const Name = (props) => {
   let sourceFilmList;
   if (nameState.dataEpisodesAnime && nameState.dataEpisodesAnime.sourceFilmList)
     sourceFilmList = Object.entries(nameState.dataEpisodesAnime.sourceFilmList);
-  const arrayTagTitle =
-    document.querySelectorAll(".anime-name-info.layout .title") || [];
-  const a = [...arrayTagTitle];
-  useEffect(() => {
-    setElementTitle(a);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    a.length,
-    name,
-    elementTitle.length,
-    reviewState.reviewsData.length,
-    nameState.dataVideoPromo.length,
-  ]);
   return (
     nameState.dataInformationAnime && (
       <div className="anime-name-info layout">

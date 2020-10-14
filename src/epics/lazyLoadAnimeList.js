@@ -20,7 +20,7 @@ export function fetchDataGenreAnimeList$(genreId, page, url) {
     }),
     mergeMap(() =>
       ajax(url.replace("{genreId}", genreId).replace("{page}", page)).pipe(
-        retry(),
+        retry(5),
         pluck("response"),
         catchError(() => {
           return of({ error: true });
@@ -32,7 +32,7 @@ export function fetchDataGenreAnimeList$(genreId, page, url) {
 
 export function updatePageScrollingWindow$() {
   return fromEvent(window, "scroll").pipe(
-    filter(() => document.body.scrollHeight - (window.scrollY + 1000) < 0),
+    filter(() => document.body.scrollHeight - (window.scrollY + 1500) < 0),
     tap(() => {
       if (
         lazyLoadAnimeListStream.currentState().pageSplit * 10 <=

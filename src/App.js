@@ -196,12 +196,7 @@ function App() {
       {toggleNavBarState.isShowBlockPopUp && (
         <div className="block-pop-up">
           <div className="loading-block">
-            <CircularProgress color="secondary" size="7rem" />
-            <h1
-              className="loading-message"
-            >
-              Loading...
-            </h1>
+            <CircularProgress color="secondary" size="10rem" />
           </div>
         </div>
       )}

@@ -19,7 +19,7 @@
     border-radius: 10px;
     transition: 0.1s;
   }
-  @media (max-width:855px){
+  @media (max-width:655px){
     .all-anime-related > div{
       width: 100px;
     }

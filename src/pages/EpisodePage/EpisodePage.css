@@ -79,7 +79,7 @@
 
 @media(min-width:950px){
   .container-episode-movie{
-    margin: 100px auto 10px auto;
+    margin: 0 auto;
     width: 98%;
   }
 }

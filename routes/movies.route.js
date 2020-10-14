@@ -144,11 +144,6 @@ router.put(
     const index = movie.messages.findIndex(
       (message) => message.commentId === commentId
     );
-    if (index) {
-      if (movie.messages[index].userId !== req.user.userId) {
-        return res.status(400).send({ error: "You don't own this comment" });
-      }
-    }
     if (index === -1) {
       return res.status(404).send({
         error: {
@@ -158,6 +153,11 @@ router.put(
           }),
         },
       });
+    }
+    if (index) {
+      if (movie.messages[index].userId !== req.user.userId) {
+        return res.status(400).send({ error: "You don't own this comment" });
+      }
     }
     if (!movie) {
       return res.status(400).send({ error: "movie not found" });
@@ -384,11 +384,6 @@ router.put("/:malId", verifyRole("Admin", "User"), async (req, res) => {
     index = movie.messages.findIndex(
       (message) => message.commentId === commentId
     );
-    if (index) {
-      if (movie.messages[index].userId !== req.user.userId) {
-        return res.status(400).send({ error: "You don't own this comment" });
-      }
-    }
     if (index === -1) {
       return res.status(404).send({
         error: {

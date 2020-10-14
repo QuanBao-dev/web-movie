@@ -257,9 +257,9 @@ TheaterRoomMember.watch().on("change", async () => {
   io.emit("mongo-change-watch");
 });
 
-Movie.watch().on("change", async () => {
-  io.emit("comment-change");
-});
+// Movie.watch().on("change", async () => {
+//   io.emit("comment-change");
+// });
 
 app.use(sslRedirect());
 app.use(compression());

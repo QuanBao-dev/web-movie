@@ -34,9 +34,9 @@ function ReviewItem({ review }) {
           ))}
         </div>
         <div>
-          {Object.values(review.reviewer.scores).map((value, index) => (
+          {Object.keys(review.reviewer.scores).map((key, index) => (
             <div key={index}>
-              <span className="score-section">{value}</span>
+              <span className="score-section">{review.reviewer.scores[key]}</span>
             </div>
           ))}
         </div>

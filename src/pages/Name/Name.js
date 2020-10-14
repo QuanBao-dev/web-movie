@@ -194,7 +194,6 @@ const Name = (props) => {
     reviewState.reviewsData.length,
     nameState.dataVideoPromo.length,
   ]);
-
   const arrKeys = Object.keys(nameState.dataInformationAnime).filter((v) => {
     let arrayExclude = [
       "title",
@@ -221,19 +220,18 @@ const Name = (props) => {
       }
     return arrayExclude.indexOf(v) === -1 ? true : false;
   });
-  const episodeDataDisplay = Object.entries(nameState.dataEpisodesAnime).reduce(
-    (ans, [key, episodeList]) => {
-      if (key !== "source" && key !== "sourceFilmList")
-        if (episodeList.length > ans.episodeList.length) {
-          ans = { key, episodeList: [...episodeList] };
-        }
-      return ans;
-    },
-    { key: "", episodeList: [] }
-  );
+  let episodeDataDisplay = { key: "", episodeList: [] };
+  Object.keys(nameState.dataEpisodesAnime).forEach((key) => {
+    const episodeList = nameState.dataEpisodesAnime[key];
+    if (key !== "source" && key !== "sourceFilmList") {
+      if (episodeList.length > episodeDataDisplay.episodeList.length) {
+        episodeDataDisplay = { key, episodeList: [...episodeList] };
+      }
+    }
+  });
   let sourceFilmList;
   if (nameState.dataEpisodesAnime && nameState.dataEpisodesAnime.sourceFilmList)
-    sourceFilmList = Object.entries(nameState.dataEpisodesAnime.sourceFilmList);
+    sourceFilmList = Object.keys(nameState.dataEpisodesAnime.sourceFilmList);
   return (
     nameState.dataInformationAnime && (
       <div className="anime-name-info layout">
@@ -347,9 +345,14 @@ const Name = (props) => {
                 <h1 className="title">Crawl episode</h1>
                 <ul>
                   {sourceFilmList &&
-                    sourceFilmList.map((sourceFilm, index) => (
+                    sourceFilmList.map((sourceFilmKey, index) => (
                       <li key={index}>
-                        {sourceFilm[0]}: {sourceFilm[1]}
+                        {sourceFilmKey}:{" "}
+                        {
+                          nameState.dataEpisodesAnime.sourceFilmList[
+                            sourceFilmKey
+                          ]
+                        }
                       </li>
                     ))}
                 </ul>

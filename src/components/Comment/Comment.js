@@ -17,22 +17,22 @@ import {
 } from "../../store/comment";
 import navBarStore from "../../store/navbar";
 import { nanoid } from "nanoid";
-import theaterStore from "../../store/theater";
+// import theaterStore from "../../store/theater";
 import { createCaretPlacer } from "../../epics/message-input";
-const socket = theaterStore.socket;
+// const socket = theaterStore.socket;
 let idCartoonUser;
 let userGlobal;
-let malIdGlobal;
-socket.on("comment-change", () => {
-  fetchPageMessage$(malIdGlobal).subscribe((responseMessage) => {
-    chatStream.updateMessages(responseMessage);
-    chatStream.updateCurrentPage(chatStream.currentState().currentPage);
-    allowShouldFetchComment(false);
-  });
-});
+// let malIdGlobal;
+// socket.on("comment-change", () => {
+//   fetchPageMessage$(malIdGlobal).subscribe((responseMessage) => {
+//     chatStream.updateMessages(responseMessage);
+//     chatStream.updateCurrentPage(chatStream.currentState().currentPage);
+//     allowShouldFetchComment(false);
+//   });
+// });
 function Comment({ malId, user }) {
   userGlobal = user;
-  malIdGlobal = malId;
+  // malIdGlobal = malId;
   chatStream.initialState.malId = malId;
   let [chatState, setChatState] = useState(chatStream.initialState);
   const [cookies] = useCookies(["idCartoonUser"]);

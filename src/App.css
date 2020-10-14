@@ -75,6 +75,10 @@
 
 .nav-bar__app .nav-bar__item{
   padding: 10px;
+  min-width: fit-content;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
   font-size: 1.3rem;
 }
 

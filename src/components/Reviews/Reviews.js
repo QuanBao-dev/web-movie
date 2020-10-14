@@ -69,14 +69,17 @@ const Reviews = ({ malId }) => {
           } else {
             updatedAnime = [...reviewState.reviewsData, ...v];
           }
-          pageWatchStream.updateReviewsData(updatedAnime);
           if (
             pageWatchStream.currentState().reviewsData.length / 20 + 1 !==
             parseInt(pageWatchStream.currentState().reviewsData.length / 20 + 1)
           ) {
             pageWatchStream.updateIsStopFetching(true);
           }
+          pageWatchStream.updateReviewsData(updatedAnime);
           pageWatchStream.updatePreviousMalId(malId);
+          pageWatchStream.updatePageReviewsOnDestroy(
+            pageWatchStream.currentState().pageReviewsData
+          );
           pageWatchStream.allowUpdatePageReviewsData(true);
         } else {
           pageWatchStream.updateIsStopFetching(true);

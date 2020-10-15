@@ -3,12 +3,16 @@ import "react-lazy-load-image-component/src/effects/opacity.css";
 
 import React from "react";
 import { LazyLoadImage } from "react-lazy-load-image-component";
+import { nameStream } from "../../epics/name";
 
 function AnimeRelatedItem({ anime, history, lazy = false }) {
   return (
     <div
       className={anime.role === "Main" ? "anime-main-role" : ""}
-      onClick={() => history.push("/anime/" + anime.mal_id)}
+      onClick={() => {
+        nameStream.resetState();
+        history.push("/anime/" + anime.mal_id);
+      }}
     >
       {lazy && (
         <LazyLoadImage

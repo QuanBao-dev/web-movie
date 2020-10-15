@@ -244,6 +244,7 @@ const PersonDetail = (props) => {
                         }}
                       >
                         <img
+                          className="person__image-character"
                           src={updateVoiceActingRoles[key].image_url}
                           alt="image_character"
                         />

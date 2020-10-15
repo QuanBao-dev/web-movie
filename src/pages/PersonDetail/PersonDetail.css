@@ -81,7 +81,6 @@
   background-color: #3c3c66;
   border-radius: 20px;
   margin-bottom: 1rem;
-  min-height: 410px;
   overflow: hidden;
   box-shadow: 0 0 4px 1px black;
   width: 100%;
@@ -96,12 +95,19 @@
   margin:auto 5px;
 }
 
-.character-item-voice img{
-  height: 100%;
-  width: 100%;
+.person__image-character{
+  height: 300px;
+  width: 200px;
   min-width: 100px;
   display: block;
   object-fit: contain;
+}
+
+@media(max-width:600px){
+  .person__image-character{
+    height: 200px;
+    width: 100px;
+  }
 }
 
 .character-item-voice:hover .pop-up-hover-character{

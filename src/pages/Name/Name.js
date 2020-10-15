@@ -599,6 +599,7 @@ function FormSubmitCrawl({
   setCrawlAnimeMode,
   selectModeEngVideoRef,
 }) {
+  const [error, setError] = useState(null);
   return (
     <div className="form-submit">
       <select
@@ -628,7 +629,12 @@ function FormSubmitCrawl({
         </select>
       )}
       <div className="form-limit-episode">
-        <Input label="start" type="number" input={startEpisodeInputRef} />
+        <Input
+          label="start"
+          type="number"
+          input={startEpisodeInputRef}
+          error={error}
+        />
         <Input label="end" type="number" input={endEpisodeInputRef} />
       </div>
       <Input label="Watch Url" input={linkWatchingInputRef} />
@@ -699,6 +705,7 @@ function FormSubmitCrawl({
               }
             );
             nameStream.updateDataEpisodesAnime(updateMovie.data.message);
+            setError(null);
             startEpisodeInputRef.current.value = "";
             endEpisodeInputRef.current.value = "";
             navBarStore.updateIsShowBlockPopUp(false);
@@ -707,6 +714,9 @@ function FormSubmitCrawl({
               (linkWatchingInputRef.current.value =
                 updateMovie.data.message.source || "");
           } catch (error) {
+            if (error && error.response.data && error.response.data.error) {
+              setError(error.response.data.error);
+            }
             startEpisodeInputRef.current.value = "";
             endEpisodeInputRef.current.value = "";
             navBarStore.updateIsShowBlockPopUp(false);

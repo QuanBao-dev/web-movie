@@ -5,6 +5,7 @@ import React from "react";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import { useHistory } from "react-router-dom";
 import { limitAdultGenre } from "../../epics/home";
+import { nameStream } from "../../epics/name";
 
 const AnimeItem = ({ anime, lazy = false }) => {
   const history = useHistory();
@@ -12,7 +13,10 @@ const AnimeItem = ({ anime, lazy = false }) => {
   return (
     <div
       className="anime-item"
-      onClick={() => history.push(`/anime/${anime.malId || anime.mal_id}`)}
+      onClick={() => {
+        nameStream.resetState();
+        history.push(`/anime/${anime.malId || anime.mal_id}`);
+      }}
     >
       {anime.airing_start &&
         new Date(anime.airing_start).getTime() <=

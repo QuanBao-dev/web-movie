@@ -4,6 +4,7 @@ import "react-lazy-load-image-component/src/effects/opacity.css";
 import React from "react";
 import { Link } from "react-router-dom";
 import { LazyLoadImage } from "react-lazy-load-image-component";
+import { nameStream } from "../../epics/name";
 function TopAnimeItem({ movie, lazy = false }) {
   return (
     <li>
@@ -11,7 +12,12 @@ function TopAnimeItem({ movie, lazy = false }) {
       <div>
         <div className="top-anime-list-info">
           <div className="top-movie-score__home">{movie.score}/10</div>
-          <Link to={"/anime/" + movie.mal_id}>
+          <Link
+            to={"/anime/" + movie.mal_id}
+            onClick={() => {
+              nameStream.resetState();
+            }}
+          >
             {lazy && (
               <LazyLoadImage
                 src={movie.image_url}

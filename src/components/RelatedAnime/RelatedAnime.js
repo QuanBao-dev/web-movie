@@ -7,7 +7,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { nameStream } from '../../epics/name';
 import AnimeList from '../AnimeList/AnimeList';
 
-const RelatedAnime = ({ malId }) => {
+const RelatedAnime = () => {
   const [recommendationState, setRecommendationState] = useState(
     nameStream.currentState() || nameStream.initialState
   );

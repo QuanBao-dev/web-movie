@@ -28,7 +28,6 @@ const renderRoute = require("./routes/index.route");
 const theaterRoute = require("./routes/theaterRoom.route");
 const faqRoute = require("./routes/faq.route");
 const TheaterRoomMember = require("./models/theaterRoomMember.model");
-const Movie = require("./models/movie.model");
 
 const peerServer = ExpressPeerServer(server, {
   path: "/",

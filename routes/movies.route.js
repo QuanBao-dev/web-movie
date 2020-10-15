@@ -217,6 +217,9 @@ router.put("/:malId/episodes/crawl", verifyRole("Admin"), async (req, res) => {
       serverWeb,
       serverVideo
     );
+    if (dataCrawl.error) {
+      return res.status(400).send({ error: dataCrawl.error });
+    }
     if (!dataCrawl) {
       return res.status(404).send({ error: "crawling web fail" });
     }
@@ -283,7 +286,7 @@ router.put("/:malId/episodes/crawl", verifyRole("Admin"), async (req, res) => {
       },
     });
   } catch (error) {
-    console.error(error);
+    // console.error(error);
     res.status(404).send({ error: "Something went wrong" });
   }
 });
@@ -724,6 +727,10 @@ async function crawl(start, end, url, serverWeb, serverVideo) {
         break;
     }
     let listSrc = [];
+    if (!listLinkWatchEpisode[listLinkWatchEpisode.length - 1]) {
+      browser.close();
+      return { error: "invalid start episode" };
+    }
     const lastEpisode = parseInt(
       listLinkWatchEpisode[listLinkWatchEpisode.length - 1].textContent
     );
@@ -751,7 +758,6 @@ async function crawl(start, end, url, serverWeb, serverVideo) {
     browser.close();
     return listSrc;
   } catch (error) {
-    console.log(error);
     if (browser) {
       browser.close();
     }

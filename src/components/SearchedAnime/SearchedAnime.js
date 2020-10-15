@@ -5,6 +5,7 @@ import React from "react";
 
 import { useHistory } from "react-router-dom";
 import { LazyLoadImage } from "react-lazy-load-image-component";
+import { nameStream } from "../../epics/name";
 
 const SearchedAnime = ({ image_url, malId, title }) => {
   const history = useHistory();
@@ -13,6 +14,7 @@ const SearchedAnime = ({ image_url, malId, title }) => {
       className="search-item-anime"
       onClick={() => {
         history.push("/anime/" + malId);
+        nameStream.resetState();
       }}
     >
       <LazyLoadImage src={image_url} alt="Preview" effect="opacity" />

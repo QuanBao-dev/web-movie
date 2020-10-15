@@ -1,5 +1,5 @@
 import "./CharacterDetail.css";
-import 'react-lazy-load-image-component/src/effects/opacity.css';
+import "react-lazy-load-image-component/src/effects/opacity.css";
 
 import loadable from "@loadable/component";
 import React, { useEffect, useState } from "react";
@@ -21,11 +21,11 @@ const CharacterDetail = (props) => {
   const history = useHistory();
   const [dataCharacterDetail, setDataCharacterDetail] = useState({});
   useEffect(() => {
-    window.scroll({
-      top: 0,
-    });
     const subscription = fetchCharacterDetailData$(characterId).subscribe(
       (data) => {
+        window.scroll({
+          top: 0,
+        });    
         navBarStore.updateIsShowBlockPopUp(false);
         setDataCharacterDetail(data);
       }
@@ -136,7 +136,7 @@ const CharacterDetail = (props) => {
 };
 
 function fetchCharacterDetailData$(characterId) {
-  navBarStore.updateIsShowBlockPopUp(true)
+  navBarStore.updateIsShowBlockPopUp(true);
   return ajax(`https://api.jikan.moe/v3/character/${characterId}`).pipe(
     retry(20),
     pluck("response"),

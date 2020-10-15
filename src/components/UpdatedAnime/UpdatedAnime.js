@@ -9,7 +9,7 @@ import { userStream } from "../../epics/user";
 const AnimeList = loadable(() => import("../AnimeList/AnimeList"), {
   fallback: <div>Loading...</div>,
 });
-const numberOfMovieShown = 12;
+const numberOfMovieShown = 18;
 const UpdatedAnime = () => {
   const [homeState, setHomeState] = useState(
     stream.currentState() || stream.initialState

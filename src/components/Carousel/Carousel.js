@@ -160,7 +160,7 @@ const Carousel = () => {
                   ? -document.querySelector(".item").offsetWidth *
                       pageCarousel -
                     document.querySelector(".item").offsetWidth
-                  : 0
+                  : -document.body.scrollWidth
               }px)`,
             }}
           >

@@ -20,8 +20,13 @@
   cursor: pointer;
 }
 
+.image-video-promotion img{
+  max-height: 605px;
+}
+
 .image-video-promotion span{
   font-size: 5rem;
+  max-height: 600px;
   margin: auto;
   color: white!important;
   transition: 0.4s;

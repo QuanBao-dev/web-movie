@@ -44,7 +44,8 @@ function VideoPromotionItem({ video, lazy }) {
       )}
       {toggle && (
         <iframe
-          style={{ margin: "auto" }}
+          allow="autoplay"
+          style={{ margin: "auto",outline:"none",border:"none" }}
           width="100%"
           height="600px"
           src={video.video_url.replace(/autoplay=0/g, "autoplay=1")}

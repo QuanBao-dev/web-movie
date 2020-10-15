@@ -1,11 +1,11 @@
-import "./AnimeItem.css";
-import "react-lazy-load-image-component/src/effects/opacity.css";
+import './AnimeItem.css';
+import 'react-lazy-load-image-component/src/effects/opacity.css';
 
-import React from "react";
-import { LazyLoadImage } from "react-lazy-load-image-component";
-import { useHistory } from "react-router-dom";
-import { limitAdultGenre } from "../../epics/home";
-import { nameStream } from "../../epics/name";
+import React from 'react';
+import { LazyLoadImage } from 'react-lazy-load-image-component';
+import { useHistory } from 'react-router-dom';
+
+import { limitAdultGenre } from '../../epics/home';
 
 const AnimeItem = ({ anime, lazy = false }) => {
   const history = useHistory();
@@ -14,7 +14,6 @@ const AnimeItem = ({ anime, lazy = false }) => {
     <div
       className="anime-item"
       onClick={() => {
-        nameStream.resetState();
         history.push(`/anime/${anime.malId || anime.mal_id}`);
       }}
     >

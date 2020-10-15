@@ -76,6 +76,7 @@ const Name = (props) => {
     const subscription2 = nameStream.subscribe(setNameState);
     pageWatchStream.init();
     nameStream.init();
+    window.scroll({ top: 0 });
     setShowThemeMusic(false);
     return () => {
       subscription.unsubscribe();
@@ -110,7 +111,7 @@ const Name = (props) => {
         }
       })
     );
-    const fetchEpisodesUrl$ = fetchEpisodeDataVideo$(name).pipe(
+    const fetchEpisodesUrlSub = fetchEpisodeDataVideo$(name).pipe(
       tap((api) => {
         if (!api.error) {
           if (linkWatchingInputRef.current)
@@ -120,7 +121,7 @@ const Name = (props) => {
           nameStream.updateDataEpisodesAnime({});
         }
       })
-    );
+    ).subscribe();
     const fetchAnimeAppears$ = fetchAnimeRecommendation$(name).pipe(
       tap((data) => nameStream.updateDataRelatedAnime(data))
     );
@@ -139,7 +140,6 @@ const Name = (props) => {
         fetchDataInfo$,
         fetchDataVideoPromo$,
         fetchLargePictureUrl$,
-        fetchEpisodesUrl$,
         fetchAnimeAppears$,
         fetchCharacters$,
       ])
@@ -150,16 +150,19 @@ const Name = (props) => {
         });
     }
     return () => {
+      fetchEpisodesUrlSub.unsubscribe();
       subscription && subscription.unsubscribe();
     };
   }, [name]);
   // console.log(nameStream.currentState().boxMovie);
   useEffect(() => {
-    let subscription;
-    fetchBoxMovieOneMovie$(name, cookies.idCartoonUser).subscribe((api) => {
+    const subscription = fetchBoxMovieOneMovie$(
+      name,
+      cookies.idCartoonUser
+    ).subscribe((api) => {
       if (!api.error) {
         nameStream.updateBoxMovie(api.message);
-        subscription = handleDeleteBoxMovie(
+        handleDeleteBoxMovie(
           addMovieRef,
           deleteMovieRef,
           cookies.idCartoonUser,
@@ -167,7 +170,7 @@ const Name = (props) => {
         );
       } else {
         nameStream.updateBoxMovie(null);
-        subscription = handleAddBoxMovie(
+        handleAddBoxMovie(
           addMovieRef,
           deleteMovieRef,
           cookies.idCartoonUser,

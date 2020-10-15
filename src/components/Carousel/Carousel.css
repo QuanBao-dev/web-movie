@@ -1,5 +1,5 @@
 .layout-section{
-  width: 80%;
+  width: 100%;
   margin: auto;
   overflow: hidden;
   background-color: black;
@@ -31,15 +31,17 @@
 }
 
 .hover-button{
-  padding: 1rem;
+  padding: 1.4rem;
 }
 
 .button-left{
   cursor: pointer;
+  z-index: 2;
 }
 
 .button-right{
   cursor: pointer;
+  z-index: 2;
 }
 
 

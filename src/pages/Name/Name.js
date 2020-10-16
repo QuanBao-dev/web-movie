@@ -77,8 +77,12 @@ const Name = (props) => {
     pageWatchStream.init();
     nameStream.init();
     window.scroll({ top: 0 });
+    document.title = `Watch ${
+      nameStream.currentState().dataInformationAnime.title
+    }`;
     setShowThemeMusic(false);
     return () => {
+      document.title = `My Anime Fun - Watch latest anime in high quality`;
       subscription.unsubscribe();
       subscription2.unsubscribe();
       navBarStore.updateIsShowBlockPopUp(false);
@@ -87,6 +91,7 @@ const Name = (props) => {
   useEffect(() => {
     const fetchDataInfo$ = fetchData$(name).pipe(
       tap((v) => {
+        document.title = `Watch ${v.title}`;
         nameStream.updateDataInfoAnime(v);
         navBarStore.updateIsShowBlockPopUp(false);
       })
@@ -111,17 +116,19 @@ const Name = (props) => {
         }
       })
     );
-    const fetchEpisodesUrlSub = fetchEpisodeDataVideo$(name).pipe(
-      tap((api) => {
-        if (!api.error) {
-          if (linkWatchingInputRef.current)
-            linkWatchingInputRef.current.value = api.message.source;
-          nameStream.updateDataEpisodesAnime(api.message);
-        } else {
-          nameStream.updateDataEpisodesAnime({});
-        }
-      })
-    ).subscribe();
+    const fetchEpisodesUrlSub = fetchEpisodeDataVideo$(name)
+      .pipe(
+        tap((api) => {
+          if (!api.error) {
+            if (linkWatchingInputRef.current)
+              linkWatchingInputRef.current.value = api.message.source;
+            nameStream.updateDataEpisodesAnime(api.message);
+          } else {
+            nameStream.updateDataEpisodesAnime({});
+          }
+        })
+      )
+      .subscribe();
     const fetchAnimeAppears$ = fetchAnimeRecommendation$(name).pipe(
       tap((data) => nameStream.updateDataRelatedAnime(data))
     );
@@ -152,6 +159,7 @@ const Name = (props) => {
     return () => {
       fetchEpisodesUrlSub.unsubscribe();
       subscription && subscription.unsubscribe();
+      setShowThemeMusic(false);
     };
   }, [name]);
   // console.log(nameStream.currentState().boxMovie);
@@ -226,7 +234,7 @@ const Name = (props) => {
   let episodeDataDisplay = { key: "", episodeList: [] };
   Object.keys(nameState.dataEpisodesAnime).forEach((key) => {
     const episodeList = nameState.dataEpisodesAnime[key];
-    if (key !== "source" && key !== "sourceFilmList") {
+    if (["episodes","episodesEng","episodesEngDub"].includes(key)) {
       if (episodeList.length > episodeDataDisplay.episodeList.length) {
         episodeDataDisplay = { key, episodeList: [...episodeList] };
       }

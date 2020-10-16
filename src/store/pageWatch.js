@@ -1,13 +1,14 @@
 import { BehaviorSubject } from "rxjs";
 const initialState = {
-  episodes:[],
+  episodes:{},
   reviewsData:[],
   pageReviewsData:1,
   pageReviewsOnDestroy:null,
   isStopFetchingReviews:false,
   shouldUpdatePageReviewData: false,
   previousMalId:null,
-  pageSplit:1
+  pageSplit:1,
+  title:null
 };
 const behaviorSubject = new BehaviorSubject(initialState);
 let state = initialState;
@@ -21,6 +22,13 @@ const pageWatchStore = {
   },
   subscribe: (setState) => behaviorSubject.subscribe((v) => setState(v)),
   init: () => {
+    behaviorSubject.next(state);
+  },
+  updateTitle:(title) => {
+    state={
+      ...state,
+      title
+    };
     behaviorSubject.next(state);
   },
   updatePageSplit:(page) => {

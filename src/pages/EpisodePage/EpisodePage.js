@@ -10,6 +10,9 @@ import { fetchEpisodesOfMovie$, pageWatchStream } from "../../epics/pageWatch";
 import { theaterStream } from "../../epics/theater";
 import { userStream } from "../../epics/user";
 import { allowShouldFetchComment } from "../../store/comment";
+import { ajax } from "rxjs/ajax";
+import { catchError, pluck, retry } from "rxjs/operators";
+import { of } from "rxjs";
 const Comment = loadable(() => import("../../components/Comment/Comment"));
 const Chat = loadable(() => import("../../components/Chat/Chat"), {
   fallback: (
@@ -41,15 +44,35 @@ const EpisodePage = (props) => {
   );
   const user = userStream.currentState();
   useEffect(() => {
+    if (
+      pageWatchState.title &&
+      ["Eng", "vie", "EngDub"].includes(mode) &&
+      episode
+    )
+      document.title = `Watch ${pageWatchState.title} Episode ${episode} ${
+        mode === "Eng"
+          ? "Eng Subbed"
+          : mode === "vie"
+          ? "Vie Subbed"
+          : "Eng Dubbed"
+      } on MyAnimeFun`;
+    return () => {
+      document.title = `My Anime Fun - Watch latest anime in high quality`;
+    };
+  }, [episode, malId, pageWatchState.title, mode]);
+  useEffect(() => {
     const subscription = pageWatchStream.subscribe(setPageWatchState);
     pageWatchStream.init();
-    let fetchEpisodesSub;
     if (user)
       theaterStream.socket.emit("user-join-watch", malId, user.username);
-    fetchEpisodesSub = fetchEpisodesOfMovie$(malId).subscribe((v) => {
+    const fetchEpisodesSub = fetchEpisodesOfMovie$(malId).subscribe((v) => {
       pageWatchStream.updateEpisodes(v);
     });
+    const fetchTitleAnimeSub = fetchTitle$(malId).subscribe((v) => {
+      pageWatchStream.updateTitle(v);
+    });
     return () => {
+      fetchTitleAnimeSub.unsubscribe();
       subscription.unsubscribe();
       fetchEpisodesSub && fetchEpisodesSub.unsubscribe();
       pageWatchStream.updateEpisodes([]);
@@ -85,6 +108,18 @@ const EpisodePage = (props) => {
       >
         <i className="fas fa-arrow-left"></i>
       </div>
+      {pageWatchState.title &&
+        ["Eng", "vie", "EngDub"].includes(mode) &&
+        episode && (
+          <h1 className="episode-page__title">
+            Watch {pageWatchState.title} Episode {episode}{" "}
+            {mode === "Eng"
+              ? "Eng Subbed"
+              : mode === "vie"
+              ? "Vie Subbed"
+              : "Eng Dubbed"}
+          </h1>
+        )}
       <div className="wrapper-player-video">
         <div className="wrapper-discuss-section">
           <h1>CHAT</h1>
@@ -244,4 +279,11 @@ function ListEpisodeUrlDisplay({
   );
 }
 
+function fetchTitle$(malId) {
+  return ajax("https://api.jikan.moe/v3/anime/" + malId).pipe(
+    retry(10),
+    pluck("response", "title"),
+    catchError((error) => of({ error }))
+  );
+}
 export default EpisodePage;

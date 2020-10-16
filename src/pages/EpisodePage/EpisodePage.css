@@ -273,5 +273,17 @@
   flex-wrap: wrap;
   width: 100%;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
+}
+
+.wrapper-player-video .wrapper-discuss-section{
+  margin-top: 0;
+}
+
+.episode-page__title{
+  margin: auto;
+  margin-bottom: 3.2rem;
+  width: 80%;
+  text-align: center;
+  color: rgba(255, 255, 0, 0.767);
 }

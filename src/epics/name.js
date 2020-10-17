@@ -1,10 +1,21 @@
-import capitalize from 'lodash/capitalize';
-import { fromEvent, of, timer } from 'rxjs';
-import { ajax } from 'rxjs/ajax';
-import { catchError, debounceTime, exhaustMap, filter, map, mergeMapTo, pluck, retry, switchMap, tap } from 'rxjs/operators';
+import capitalize from "lodash/capitalize";
+import { fromEvent, of, timer } from "rxjs";
+import { ajax } from "rxjs/ajax";
+import {
+  catchError,
+  debounceTime,
+  exhaustMap,
+  filter,
+  map,
+  mergeMapTo,
+  pluck,
+  retry,
+  switchMap,
+  tap,
+} from "rxjs/operators";
 
-import nameStore from '../store/name';
-import navBarStore from '../store/navbar';
+import nameStore from "../store/name";
+import navBarStore from "../store/navbar";
 
 export const nameStream = nameStore;
 
@@ -22,8 +33,9 @@ export const fetchData$ = (name) => {
 
 export const fetchDataVideo$ = (malId) => {
   return ajax(`https://api.jikan.moe/v3/anime/${malId}/videos`).pipe(
-    retry(),
-    pluck("response")
+    retry(5),
+    pluck("response"),
+    catchError((error) => of({ error }))
   );
 };
 

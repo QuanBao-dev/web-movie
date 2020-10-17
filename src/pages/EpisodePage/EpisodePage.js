@@ -112,12 +112,12 @@ const EpisodePage = (props) => {
         ["Eng", "vie", "EngDub"].includes(mode) &&
         episode && (
           <h1 className="episode-page__title">
-            Watch {pageWatchState.title} Episode {episode}{" "}
+            Watch "{pageWatchState.title}" Episode {episode}{" "}
             {mode === "Eng"
-              ? "Eng Subbed"
+              ? "English Subbed"
               : mode === "vie"
-              ? "Vie Subbed"
-              : "Eng Dubbed"}
+              ? "Vietnamese Subbed"
+              : "English Dubbed"}
           </h1>
         )}
       <div className="wrapper-player-video">

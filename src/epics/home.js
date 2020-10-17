@@ -312,12 +312,21 @@ export const topMovieUpdatedScrolling$ = (topAnimeElement) => {
     stream.currentState().screenWidth > 1465 ? topAnimeElement : window,
     "scroll"
   ).pipe(
-    tap(() => document.body.scrollHeight - (window.scrollY + 2000) < 0),
+    debounceTime(500),
     filter(() =>
       stream.currentState().screenWidth > 1465
         ? topAnimeElement.scrollTop - (topAnimeElement.scrollHeight - 5000) > 0
         : document.body.scrollHeight - (window.scrollY + 2000) < 0
     ),
+    tap(() => {
+      if (
+        8 + (stream.currentState().pageSplitTopMovie - 1) * 5 <=
+        stream.currentState().dataTopMovie.length
+      )
+        stream.updatePageSplitTopMovie(
+          stream.currentState().pageSplitTopMovie + 1
+        );
+    })
   );
 };
 

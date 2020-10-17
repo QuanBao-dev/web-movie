@@ -4,6 +4,13 @@
   border-radius: 10px;
 }
 
+.all-anime-related span{
+  height: 100%;
+  width: 100%;
+  display: flex!important;
+  align-items: center;
+}
+
 .pop-up-hover{
   transition: 0.2s;
   transform: scale(0);

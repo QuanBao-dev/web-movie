@@ -1,15 +1,8 @@
-import { fromEvent, of, timer } from "rxjs";
-import { ajax } from "rxjs/ajax";
-import {
-  catchError,
-  filter,
-  mergeMap,
-  pluck,
-  retry,
-  tap,
-} from "rxjs/operators";
+import { fromEvent, of, timer } from 'rxjs';
+import { ajax } from 'rxjs/ajax';
+import { catchError, debounceTime, filter, mergeMap, pluck, retry, tap } from 'rxjs/operators';
 
-import lazyLoadAnimeListStore from "../store/lazyLoadAnimeList";
+import lazyLoadAnimeListStore from '../store/lazyLoadAnimeList';
 
 export const lazyLoadAnimeListStream = lazyLoadAnimeListStore;
 
@@ -32,6 +25,7 @@ export function fetchDataGenreAnimeList$(genreId, page, url) {
 
 export function updatePageScrollingWindow$() {
   return fromEvent(window, "scroll").pipe(
+    debounceTime(500),
     filter(() => document.body.scrollHeight - (window.scrollY + 1500) < 0),
     tap(() => {
       if (

@@ -77,7 +77,7 @@ const AnimeSchedule = () => {
                   <AnimeList
                     empty={true}
                     data={homeState.dataScheduleMovie[date]}
-                    lazy={true}
+                    lazy={stream.currentState().isFirstLaunch}
                   />
                 )}
               </div>

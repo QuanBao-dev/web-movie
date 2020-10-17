@@ -546,8 +546,7 @@ async function addMovieUpdated(malId) {
     ).lean();
     return movie;
   } catch (error) {
-    console.log("Can't add updated movie");
-    return;
+    throw Error("Can't add updated movie");
   }
 }
 

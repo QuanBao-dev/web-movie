@@ -2,7 +2,6 @@ import "./AnimeList.css";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import React from "react";
 import loadable from "@loadable/component";
-
 const AnimeItem = loadable(() => import("../AnimeItem/AnimeItem"));
 
 const AnimeList = ({

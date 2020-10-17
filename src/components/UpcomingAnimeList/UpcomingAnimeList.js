@@ -40,6 +40,7 @@ const UpcomingAnimeList = () => {
       );
     }
     return () => {
+      updateModeScrolling("interval");
       subscription2 && subscription2.unsubscribe();
       subscription && subscription.unsubscribe();
       stream.updateIsFirstLaunch(false);
@@ -67,7 +68,7 @@ const UpcomingAnimeList = () => {
         empty={true}
         data={stream.currentState().upcomingAnimeList}
         isWrap={false}
-        lazy={true}
+        lazy={stream.currentState().isFirstLaunch}
         error={stream.currentState().error}
       />
     </section>

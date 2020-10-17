@@ -174,23 +174,29 @@ function App() {
   const [toggleNavBarState, setToggleNavBarState] = useState(
     navBarStore.initialState
   );
+  useEffect(() => {
+    const subscription = userStream.subscribe(setUser);
+    const subscriptionLock = navBarStore.subscribe(setToggleNavBarState);
+    return () => {
+      subscription.unsubscribe();
+      subscriptionLock.unsubscribe();
+    }
+  },[])
 
   useEffect(() => {
-    const subscriptionLock = navBarStore.subscribe(setToggleNavBarState);
     navBarStore.init();
     if (toggleNavBarState.isShowBlockPopUp) {
       document.getElementsByTagName("body").item(0).className = "hidden-scroll";
     } else {
       document.getElementsByTagName("body").item(0).className = "";
     }
-    const subscription = userStream.subscribe(setUser);
+  }, [toggleNavBarState.isShowBlockPopUp]);
+  useEffect(() => {
     const fetchingUserSub = fetchingUser$(cookies.idCartoonUser).subscribe();
     return () => {
       fetchingUserSub.unsubscribe();
-      subscription.unsubscribe();
-      subscriptionLock.unsubscribe();
-    };
-  }, [cookies.idCartoonUser, toggleNavBarState.isShowBlockPopUp]);
+    }
+  },[cookies.idCartoonUser])
   return (
     <Router>
       {toggleNavBarState.isShowBlockPopUp && (

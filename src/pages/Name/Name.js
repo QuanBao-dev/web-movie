@@ -93,13 +93,14 @@ const Name = (props) => {
       tap((v) => {
         document.title = `Watch ${v.title}`;
         nameStream.updateDataInfoAnime(v);
-        navBarStore.updateIsShowBlockPopUp(false);
       })
     );
     const fetchDataVideoPromo$ = fetchDataVideo$(name).pipe(
       tap(({ promo }) => {
-        nameStream.updatePageVideo(1);
-        nameStream.updateDataVideoPromo(promo);
+        if (promo) {
+          nameStream.updatePageVideo(1);
+          nameStream.updateDataVideoPromo(promo);
+        }
       })
     );
     const fetchLargePictureUrl$ = fetchLargePicture$(name).pipe(
@@ -153,6 +154,7 @@ const Name = (props) => {
         .pipe(combineAll())
         .subscribe(() => {
           characterStream.updatePage(1);
+          navBarStore.updateIsShowBlockPopUp(false);
           nameStream.updateMalId(name);
         });
     }
@@ -234,7 +236,7 @@ const Name = (props) => {
   let episodeDataDisplay = { key: "", episodeList: [] };
   Object.keys(nameState.dataEpisodesAnime).forEach((key) => {
     const episodeList = nameState.dataEpisodesAnime[key];
-    if (["episodes","episodesEng","episodesEngDub"].includes(key)) {
+    if (["episodes", "episodesEng", "episodesEngDub"].includes(key)) {
       if (episodeList.length > episodeDataDisplay.episodeList.length) {
         episodeDataDisplay = { key, episodeList: [...episodeList] };
       }

@@ -1,15 +1,8 @@
-import { fromEvent, of, timer } from "rxjs";
-import { ajax } from "rxjs/ajax";
-import {
-  catchError,
-  filter,
-  pluck,
-  retry,
-  switchMapTo,
-  tap,
-} from "rxjs/operators";
+import { fromEvent, of, timer } from 'rxjs';
+import { ajax } from 'rxjs/ajax';
+import { catchError, debounceTime, filter, pluck, retry, switchMapTo, tap } from 'rxjs/operators';
 
-import pageWatchStore from "../store/pageWatch";
+import pageWatchStore from '../store/pageWatch';
 
 export const pageWatchStream = pageWatchStore;
 
@@ -46,6 +39,7 @@ export function fetchReviewsData$(malId, page) {
 
 export function updatePageScrolling$() {
   return fromEvent(window, "scroll").pipe(
+    debounceTime(500),
     filter(() => document.body.scrollHeight - (window.scrollY + 1500) < 0),
     tap(() => {
       if (

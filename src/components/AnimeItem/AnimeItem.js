@@ -27,12 +27,38 @@ const AnimeItem = ({ anime, lazy = false }) => {
             Aired
           </div>
         )}
+      {anime.airing_start &&
+        new Date(anime.airing_start).getTime() >
+          new Date(Date.now()).getTime() && (
+          <div
+            title="Already_Aired"
+            className="anime-info-display_summary top-left_summary color-have-not-aired"
+          >
+            {anime.airing_start && (
+              <div>
+                {new Date(anime.airing_start).getMonth() + 1}-
+                {new Date(anime.airing_start).getDate()}-
+                {new Date(anime.airing_start).getFullYear()}
+              </div>
+            )}
+          </div>
+        )}
+      {anime.airing_start &&
+        new Date(anime.airing_start).getTime() <=
+          new Date(Date.now()).getTime() && (
+          <div
+            title="Already_Aired"
+            className="anime-info-display_summary top-left_summary color-green"
+          >
+            Aired
+          </div>
+        )}
       {!anime.end_date && anime.start_date && (
         <div
           title="Already_Aired"
           className="anime-info-display_summary top-left_summary color-green"
         >
-          {new Date(anime.start_date).toUTCString().slice(8,16)}
+          {anime.start_date.slice(0, 10)}
         </div>
       )}
       {anime.genres && !limitAdultGenre(anime.genres) && (
@@ -126,13 +152,6 @@ const AnimeItem = ({ anime, lazy = false }) => {
             ? "..."
             : ""}
         </h3>
-        {anime.airing_start && (
-          <div>
-            {new Date(anime.airing_start).getMonth() + 1}-
-            {new Date(anime.airing_start).getDate()}-
-            {new Date(anime.airing_start).getFullYear()}
-          </div>
-        )}
       </div>
     </div>
   );

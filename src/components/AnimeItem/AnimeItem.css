@@ -101,6 +101,10 @@
   color: yellow;
 }
 
+.color-have-not-aired{
+  color:rgb(243, 226, 190)
+}
+
 .top-left_summary{
   top:0;
   left: 0;

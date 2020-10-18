@@ -22,7 +22,7 @@ const AnimeListSeason = () => {
   const targetScroll = useRef(null);
 
   const startYear = 1963;
-  const endYear = new Date(Date.now()).getFullYear();
+  const endYear = new Date(Date.now()).getFullYear() + 1;
   const numberOfYears = endYear - startYear + 1;
   let numberOfPagesDisplay;
   if (stream.currentState().screenWidth > 354) {
@@ -147,6 +147,9 @@ const AnimeListSeason = () => {
         stream={stream}
         homeState={homeState}
       />
+      {homeState.dataDetail.length === 0 && (
+        <h1 style={{ textAlign: "center" }}>Not updated yet...</h1>
+      )}
       <AnimeList
         lazy={
           homeState.currentPage !== homeState.currentPageOnDestroy ||
@@ -176,7 +179,7 @@ function SelectFilterAnime({
   numberOfYears,
 }) {
   const elementOptions = Array.from(Array(numberOfYears).keys()).map(
-    (v) => new Date(Date.now()).getFullYear() - v
+    (v) => new Date(Date.now()).getFullYear() + 1 - v
   );
   const scoreOptions = Array.from(Array(10).keys());
   return (

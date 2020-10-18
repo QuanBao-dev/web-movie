@@ -68,8 +68,8 @@ const UpcomingAnimeList = () => {
     stream.init();
     const subscription = upcomingAnimeListUpdated$().subscribe((data) => {
       stream.updateUpcomingAnimeList([
-        ...data.slice(0, 8),
-        ...data.slice(0, 8),
+        ...data.slice(0, 25),
+        ...data.slice(0, 25),
       ]);
     });
     return () => {

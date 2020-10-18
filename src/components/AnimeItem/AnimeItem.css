@@ -108,13 +108,19 @@
 
 .top-center_summary{
   top:0;
-  left: 30%;
+  left: 28%;
 }
 
 .top-right_summary{
   top:0;
   right: 0;
 }
+
+.anime-item-info h3{
+  font-size: larger;
+  font-weight: bolder;
+}
+
 
 @media (max-width:700px){
   .anime-item{

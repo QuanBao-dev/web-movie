@@ -1,7 +1,6 @@
 import "./UpcomingAnimeList.css";
 
 import React, { useEffect, useState } from "react";
-
 import {
   scrollAnimeInterval$,
   scrollAnimeUser$,
@@ -12,6 +11,8 @@ import {
 import { updateModeScrolling } from "../../store/home";
 import AnimeList from "../AnimeList/AnimeList";
 
+let numberList = 50;
+let numberCloneList = 8;
 const UpcomingAnimeList = () => {
   const length = stream.currentState().upcomingAnimeList.length || 0;
   const [listenAgain, setListenAgain] = useState(false);
@@ -27,7 +28,8 @@ const UpcomingAnimeList = () => {
           ) {
             elementScroll.scroll({
               left:
-                elementScroll.childNodes[end - parseInt(length / 2)].offsetLeft,
+                elementScroll.childNodes[end - (length - numberCloneList)]
+                  .offsetLeft,
             });
             setListenAgain(!listenAgain);
           }
@@ -35,7 +37,8 @@ const UpcomingAnimeList = () => {
         subscription3 = scrollAnimeUserStart$(elementScroll).subscribe(() => {
           if (elementScroll.scrollLeft === 0) {
             elementScroll.scroll({
-              left: elementScroll.childNodes[parseInt(length / 2)].offsetLeft,
+              left:
+                elementScroll.childNodes[length - numberCloneList].offsetLeft,
             });
             setListenAgain(!listenAgain);
           }
@@ -49,7 +52,7 @@ const UpcomingAnimeList = () => {
             ) {
               elementScroll.scroll({
                 left:
-                  elementScroll.childNodes[end - parseInt(length / 2)]
+                  elementScroll.childNodes[end - (length - numberCloneList)]
                     .offsetLeft,
               });
               setListenAgain(!listenAgain);
@@ -68,8 +71,8 @@ const UpcomingAnimeList = () => {
     stream.init();
     const subscription = upcomingAnimeListUpdated$().subscribe((data) => {
       stream.updateUpcomingAnimeList([
-        ...data.slice(0, 25),
-        ...data.slice(0, 25),
+        ...data.slice(0, numberList),
+        ...data.slice(0, numberCloneList),
       ]);
     });
     return () => {

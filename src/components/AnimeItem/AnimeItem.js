@@ -1,11 +1,11 @@
-import './AnimeItem.css';
-import 'react-lazy-load-image-component/src/effects/opacity.css';
+import "./AnimeItem.css";
+import "react-lazy-load-image-component/src/effects/opacity.css";
 
-import React from 'react';
-import { LazyLoadImage } from 'react-lazy-load-image-component';
-import { useHistory } from 'react-router-dom';
+import React from "react";
+import { LazyLoadImage } from "react-lazy-load-image-component";
+import { useHistory } from "react-router-dom";
 
-import { limitAdultGenre } from '../../epics/home';
+import { limitAdultGenre } from "../../epics/home";
 
 const AnimeItem = ({ anime, lazy = false }) => {
   const history = useHistory();
@@ -27,6 +27,22 @@ const AnimeItem = ({ anime, lazy = false }) => {
             Aired
           </div>
         )}
+      {anime.start_date && (
+        <div
+          title="Already_Aired"
+          className="anime-info-display_summary top-left_summary color-green"
+        >
+          {anime.start_date}
+        </div>
+      )}
+      {!anime.airing_start && !anime.start_date && (
+        <div
+          title="Already_Aired"
+          className="anime-info-display_summary top-left_summary color-green"
+        >
+          ??
+        </div>
+      )}
 
       {anime.genres && !limitAdultGenre(anime.genres) && (
         <div
@@ -51,10 +67,11 @@ const AnimeItem = ({ anime, lazy = false }) => {
         <div
           title="Score"
           className="anime-info-display_summary top-right_summary color-red"
+          style={{
+            display: !anime.score || anime.score === "null" ? "none" : "block",
+          }}
         >
-          {!anime.score || anime.score === "null"
-            ? "??/10"
-            : `${anime.score}/10`}
+          {anime.score}/10
         </div>
       )}
       {anime.recommendation_count && (

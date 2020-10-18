@@ -10,6 +10,7 @@ import {
   delay,
   exhaustMap,
   filter,
+  first,
   map,
   mergeMap,
   pluck,
@@ -351,8 +352,40 @@ export const scrollAnimeInterval$ = (scrollE) => {
     updateModeScrolling("interval");
   });
   return interval(20).pipe(
-    delay(3000),
     filter(() => stream.currentState().modeScrolling === "interval"),
-    map(() => scrollE.scrollLeft)
+    map(() => scrollE.scrollLeft),
+    tap((scrollLeft) => {
+      if (scrollE.scroll) scrollE.scroll(scrollLeft + 2.4, 0);
+    }),
+    filter(() => {
+      if (scrollE.scrollLeft === 0) {
+        return false;
+      }
+      const distance =
+        scrollE.scrollLeft + scrollE.clientWidth - scrollE.scrollWidth;
+      return Math.abs(distance) < 100;
+    }),
+    first()
+  );
+};
+
+export const scrollAnimeUser$ = (scrollE, end) => {
+  return fromEvent(scrollE, "scroll").pipe(
+    filter(() => {
+      if (scrollE.scrollLeft === 0) {
+        return false;
+      }
+      return scrollE.scrollLeft >= scrollE.childNodes[end].offsetLeft;
+    }),
+    first()
+  );
+};
+
+export const scrollAnimeUserStart$ = (scrollE) => {
+  return fromEvent(scrollE, "scroll").pipe(
+    filter(() => {
+      return scrollE.scrollLeft === 0;
+    }),
+    first()
   );
 };

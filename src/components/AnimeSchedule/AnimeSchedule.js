@@ -55,7 +55,7 @@ const AnimeSchedule = () => {
                     index
                   ];
                   const maxHeight = homeState.dateSchedule[index]
-                    ? "4000px"
+                    ? "5000px"
                     : "3px";
                   movieRefs[index].current.style.maxHeight = maxHeight;
                   const showMovie = movieRefs.map((movie) => {
@@ -68,7 +68,7 @@ const AnimeSchedule = () => {
               </div>
               <div
                 style={{
-                  maxHeight: homeState.dateSchedule[index] ? "4000px" : "3px",
+                  maxHeight: homeState.dateSchedule[index] ? "5000px" : "3px",
                   transition: "0.4s",
                 }}
                 ref={movieRefs[index]}

@@ -13,7 +13,30 @@
 }
 
 .upcoming-anime-container{
-  height: 520px;
+  height: 560px;
+}
+
+.control-scrolling{
+  text-align: center;
+  display: flex;
+  justify-content: center;
+}
+
+.wrapper-control{
+  display: inline-block;
+  border-radius: 10px;
+  padding: 1rem;
+}
+
+.control-scrolling i{
+  margin: 0 1rem;
+  color: rgb(121, 126, 187);
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.control-scrolling i:hover{
+  color: white;
 }
 
 @media (max-width:700px){

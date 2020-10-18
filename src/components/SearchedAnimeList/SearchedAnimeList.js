@@ -13,8 +13,9 @@ const SearchedAnimeList = ({ homeState }) => {
     homeState.textSearch = "";
   }
   useEffect(() => {
-    searchListAnimeRef.current.scroll(0,0);
-  },[homeState.textSearch]);
+    if (searchListAnimeRef.current.scroll)
+      searchListAnimeRef.current.scroll(0, 0);
+  }, [homeState.textSearch]);
   return (
     <>
       {homeState.dataFilter && homeState.dataFilter.length !== 0 && (

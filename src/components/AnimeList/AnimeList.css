@@ -30,13 +30,11 @@
 }
 
 .list-anime-nowrap::-webkit-scrollbar{
-  height: 10px;
-  background-color: black;
+  display: none;
 }
 
 .list-anime-nowrap::-webkit-scrollbar-thumb{
-  border-radius: 5px;
-  background-color: rgba(255, 255, 255, 0.603);
+  display: none;
 }
 
 .list-anime-nowrap::-webkit-scrollbar-thumb:hover{

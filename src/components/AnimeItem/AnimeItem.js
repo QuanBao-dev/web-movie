@@ -155,10 +155,12 @@ const AnimeItem = ({ anime, lazy = false }) => {
           anime.title.split(" ").slice(0, 6).length
             ? "..."
             : ""}
-          {anime.genres && !limitAdultGenre(anime.genres) && (
-            <span title={`age_limited`} style={{ color: "red" }}> 18+</span>
-          )}
         </h3>
+        {anime.genres && !limitAdultGenre(anime.genres) && (
+          <span title={`age_limited`} style={{ color: "red" }}>
+            18+
+          </span>
+        )}
       </div>
     </div>
   );

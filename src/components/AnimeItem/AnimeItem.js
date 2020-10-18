@@ -27,23 +27,14 @@ const AnimeItem = ({ anime, lazy = false }) => {
             Aired
           </div>
         )}
-      {anime.start_date && (
+      {!anime.end_date && anime.start_date && (
         <div
           title="Already_Aired"
           className="anime-info-display_summary top-left_summary color-green"
         >
-          {anime.start_date}
+          {new Date(anime.start_date).toUTCString().slice(8,16)}
         </div>
       )}
-      {!anime.airing_start && !anime.start_date && (
-        <div
-          title="Already_Aired"
-          className="anime-info-display_summary top-left_summary color-green"
-        >
-          ??
-        </div>
-      )}
-
       {anime.genres && !limitAdultGenre(anime.genres) && (
         <div
           title="age limit"

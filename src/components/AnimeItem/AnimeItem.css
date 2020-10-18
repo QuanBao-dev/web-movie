@@ -20,9 +20,8 @@
 }
 
 .anime-item:hover .anime-item-info{
-  text-shadow: 3px 3px rgb(98, 12, 109);
   background-color: black;
-  color: rgb(241, 255, 47);
+  color: rgb(255, 251, 0);
 }
 
 .anime-item-info{
@@ -30,26 +29,20 @@
   position: absolute;
   bottom: 0;
   width: 100%;
-  background-color: rgba(0, 0, 0, 0.521);
+  background-color: rgba(0, 0, 0, 0.479);
   border-radius: 10px;
-  text-align: center;
-  transition: 0.2s;
+  transition: 0.5s all;
   min-height: 40px;
   max-height: 140px;
   text-align: center;
 }
 
-
-.anime-item:hover .anime-item-synopsis{
-  transition: 0.3s;
-  top:0;
-  opacity: 1;
-  z-index: 0;
-}
-
 .anime-item-synopsis{
   position: absolute;
   width: 100%;
+  font-size: 0.9rem;
+  font-family: Arial, Helvetica, sans-serif;
+  line-height: 1.2rem;
   height: 100%;
   color: white;
   background-color: rgb(78, 24, 128);
@@ -101,10 +94,6 @@
   color: yellow;
 }
 
-.color-have-not-aired{
-  color:rgb(243, 226, 190)
-}
-
 .top-left_summary{
   top:0;
   left: 0;
@@ -125,6 +114,14 @@
   font-weight: bolder;
 }
 
+@media(min-width:700px){
+  .anime-item:hover .anime-item-synopsis{
+    transition: 0.3s;
+    top:0;
+    opacity: 1;
+    z-index: 0;
+  }  
+}
 
 @media (max-width:700px){
   .anime-item{

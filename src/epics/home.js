@@ -100,12 +100,16 @@ export const fetchAnimeSeason$ = (
         pluck("response", "anime"),
         map((anime) => {
           updateOriginalData(anime);
-          anime = anime.filter(
-            (movie) =>
+          anime = anime.filter((movie) => {
+            if (stream.currentState().modeFilter === "all") {
+              return movie.airing_start && (movie.score > score || score === 0);
+            }
+            return (
               movie.airing_start &&
               limitAdultGenre(movie.genres) &&
               (movie.score > score || score === 0)
-          );
+            );
+          });
           updateMaxPage(
             Math.ceil(anime.length / stream.initialState.numberOfProduct)
           );
@@ -174,7 +178,8 @@ export const changeCurrentPage$ = () => {
 export const changeSeasonYear$ = (
   selectYearElement,
   selectSeasonElement,
-  selectScoreElement
+  selectScoreElement,
+  selectModeFilterElement
 ) => {
   // console.log("change")
   const listenEventYear$ = fromEvent(selectYearElement, "change").pipe(
@@ -188,10 +193,15 @@ export const changeSeasonYear$ = (
     pluck("target", "value"),
     map((v) => parseInt(v))
   );
+  const listenEventModeFilter$ = fromEvent(
+    selectModeFilterElement,
+    "change"
+  ).pipe(pluck("target", "value"));
   return from([
     listenEventYear$.pipe(startWith(stream.currentState().year)),
     listenEventSeason$.pipe(startWith(stream.currentState().season)),
     listenEventScore$.pipe(startWith(stream.currentState().score)),
+    listenEventModeFilter$.pipe(startWith(stream.currentState().modeFilter)),
   ]).pipe(combineAll());
 };
 

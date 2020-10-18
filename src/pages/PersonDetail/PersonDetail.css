@@ -88,9 +88,11 @@
 }
 
 .character-item-voice{
-  position: relative;
   cursor: pointer;
+  display: block;
   width: initial;
+  box-shadow: 0 0 1px 1px black;
+  margin: 1rem 0;
   height: 100%;
   margin:auto 5px;
 }
@@ -105,27 +107,23 @@
 
 @media(max-width:600px){
   .person__image-character{
-    height: 200px;
-    width: 100px;
+    height: 187px;
+    object-fit: contain;
+    width: 120px;
   }
 }
 
-.character-item-voice:hover .pop-up-hover-character{
-  opacity: 0;
-}
-
 .pop-up-hover-character{
-  opacity: 1;
+  background-color: #16163a;
   display: flex;
   transition: 0.4s;
-  background-color: #3c3c6663;
+  color: yellow;
   align-items: center;
   text-align: center;
   text-shadow: 2px 2px black;
   justify-content: center;
-  position: absolute;
-  top:0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+}
+
+.character-item-voice:hover .pop-up-hover-character{
+  background-color: #7a7a8f;
 }

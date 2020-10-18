@@ -198,12 +198,13 @@ const homeStore = {
     subject.next(state);
   },
 
-  updateSeasonYear: (season, year, score) => {
+  updateSeasonYear: (season, year, score, modeFilter) => {
     state = {
       ...state,
       season: season,
       year: year,
       score,
+      modeFilter
     };
     subject.next(state);
   },

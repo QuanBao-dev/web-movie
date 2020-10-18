@@ -4,7 +4,6 @@ import "react-lazy-load-image-component/src/effects/opacity.css";
 import React from "react";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import { useHistory } from "react-router-dom";
-
 import { limitAdultGenre } from "../../epics/home";
 
 const AnimeItem = ({ anime, lazy = false }) => {
@@ -31,8 +30,8 @@ const AnimeItem = ({ anime, lazy = false }) => {
         new Date(anime.airing_start).getTime() >
           new Date(Date.now()).getTime() && (
           <div
-            title="Already_Aired"
-            className="anime-info-display_summary top-left_summary color-have-not-aired"
+            title="start_date_airing"
+            className="anime-info-display_summary top-left_summary color-green"
           >
             {anime.airing_start && (
               <div>
@@ -53,22 +52,16 @@ const AnimeItem = ({ anime, lazy = false }) => {
             Aired
           </div>
         )}
-      {!anime.end_date && anime.start_date && (
-        <div
-          title="Already_Aired"
-          className="anime-info-display_summary top-left_summary color-green"
-        >
-          {anime.start_date.slice(0, 10)}
-        </div>
-      )}
-      {anime.genres && !limitAdultGenre(anime.genres) && (
-        <div
-          title="age limit"
-          className="anime-info-display_summary top-center_summary color-red"
-        >
-          18+
-        </div>
-      )}
+      {(new Date(anime.end_date).getTime() > new Date(Date.now()).getTime() ||
+        !anime.end_date) &&
+        anime.start_date && (
+          <div
+            title="start_date_airing"
+            className="anime-info-display_summary top-left_summary color-green"
+          >
+            {anime.start_date.slice(0, 10)}
+          </div>
+        )}
       {anime.end_date &&
         anime.end_date.length > 8 &&
         new Date(anime.end_date).getTime() <=
@@ -78,6 +71,17 @@ const AnimeItem = ({ anime, lazy = false }) => {
             className="anime-info-display_summary top-left_summary color-yellow"
           >
             Finished
+          </div>
+        )}
+
+      {!anime.score &&
+        anime.end_date &&
+        new Date(anime.end_date).getTime() > new Date(Date.now()).getTime() && (
+          <div
+            title={"End_date_Airing"}
+            className="anime-info-display_summary top-right_summary color-yellow"
+          >
+            {anime.end_date}
           </div>
         )}
       {!anime.recommendation_count && (
@@ -145,12 +149,15 @@ const AnimeItem = ({ anime, lazy = false }) => {
         </div>
       )}
       <div className="anime-item-info">
-        <h3 style={{ margin: "5px" }}>
+        <h3 style={{ margin: "5px" }} title="title_anime">
           {anime.title.split(" ").slice(0, 6).join(" ")}
           {anime.title.split(" ").length >
           anime.title.split(" ").slice(0, 6).length
             ? "..."
             : ""}
+          {anime.genres && !limitAdultGenre(anime.genres) && (
+            <span title={`age_limited`} style={{ color: "red" }}> 18+</span>
+          )}
         </h3>
       </div>
     </div>

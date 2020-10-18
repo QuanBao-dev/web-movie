@@ -88,13 +88,19 @@ const AnimeListSeason = () => {
 
     const subscription3 = changeCurrentPage$().subscribe();
     let subscription4;
-    if (selectYear.current && selectSeason.current && selectScore.current)
+    if (
+      selectYear.current &&
+      selectSeason.current &&
+      selectScore.current &&
+      selectFilterMode.current
+    )
       subscription4 = changeSeasonYear$(
         selectYear.current,
         selectSeason.current,
-        selectScore.current
-      ).subscribe(([year, season, score]) => {
-        stream.updateSeasonYear(season, year, score);
+        selectScore.current,
+        selectFilterMode.current
+      ).subscribe(([year, season, score, modeFilter]) => {
+        stream.updateSeasonYear(season, year, score, modeFilter);
       });
 
     return () => {
@@ -103,6 +109,7 @@ const AnimeListSeason = () => {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [homeState.shouldScrollToSeeMore, homeState.screenWidth]);
+  // console.log(homeState);
 
   useEffect(() => {
     let subscription2;
@@ -215,7 +222,6 @@ function SelectFilterAnime({
       </select>
       <select
         className="select-filter"
-        style={{}}
         defaultValue={`${stream.currentState().score}`}
         ref={selectScore}
       >
@@ -227,11 +233,8 @@ function SelectFilterAnime({
       </select>
       <select
         className="select-filter"
-        ref={selectFilterMode}
         defaultValue={stream.currentState().modeFilter}
-        onChange={(e) => {
-          stream.updateModeFilter(e.target.value);
-        }}
+        ref={selectFilterMode}
       >
         <option value={`all`}>All</option>
         <option value={`filter`}>Filter</option>

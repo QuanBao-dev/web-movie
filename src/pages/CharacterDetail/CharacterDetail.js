@@ -21,11 +21,16 @@ const CharacterDetail = (props) => {
   const history = useHistory();
   const [dataCharacterDetail, setDataCharacterDetail] = useState({});
   useEffect(() => {
+    return () => {
+      navBarStore.updateIsShowBlockPopUp(false);
+    };
+  }, []);
+  useEffect(() => {
     const subscription = fetchCharacterDetailData$(characterId).subscribe(
       (data) => {
         window.scroll({
           top: 0,
-        });    
+        });
         navBarStore.updateIsShowBlockPopUp(false);
         setDataCharacterDetail(data);
       }

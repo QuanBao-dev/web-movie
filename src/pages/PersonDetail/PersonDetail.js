@@ -84,8 +84,10 @@ const PersonDetail = (props) => {
   useEffect(() => {
     const subscription = personDetailStore.subscribe(setPersonDetailState);
     personDetailStore.init();
+    window.scroll({top:0})
     return () => {
       subscription.unsubscribe();
+      navBarStore.updateIsShowBlockPopUp(false);
     };
   }, []);
   useEffect(() => {

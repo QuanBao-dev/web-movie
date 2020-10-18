@@ -14,7 +14,9 @@ const SearchedAnimeList = ({ homeState }) => {
   }
   useEffect(() => {
     if (searchListAnimeRef.current.scroll)
-      searchListAnimeRef.current.scroll(0, 0);
+      searchListAnimeRef.current.scroll({
+        left: 0,
+      });
   }, [homeState.textSearch]);
   return (
     <>
@@ -37,7 +39,7 @@ const SearchedAnimeList = ({ homeState }) => {
         }}
       >
         {homeState.dataFilter.length > 0 &&
-          homeState.dataFilter.map((anime, index) => {
+          homeState.dataFilter.slice(0,7).map((anime, index) => {
             return (
               <SearchedAnime
                 key={index}

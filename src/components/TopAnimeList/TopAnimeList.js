@@ -99,7 +99,8 @@ function TopAnimeList({ homeState = stream.initialState }) {
           ))}
         <div
           style={{
-            display: homeState.isStopFetchTopMovie ? "none" : "",
+            display: homeState.isStopFetchTopMovie ? "none" : "block",
+            height:"70px"
           }}
         >
           <CircularProgress color="secondary" />

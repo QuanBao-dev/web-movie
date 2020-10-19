@@ -1,18 +1,18 @@
-import "./Name.css";
+import './Name.css';
 
-import loadable from "@loadable/component";
-import Axios from "axios";
-import orderBy from "lodash/orderBy";
-import random from "lodash/random";
-import React, { useEffect, useRef, useState } from "react";
-import { useCookies } from "react-cookie";
-import { Link, useHistory } from "react-router-dom";
-import { from, of } from "rxjs";
-import { ajax } from "rxjs/ajax";
-import { catchError, combineAll, map, pluck, retry, tap } from "rxjs/operators";
+import loadable from '@loadable/component';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import Axios from 'axios';
+import orderBy from 'lodash/orderBy';
+import random from 'lodash/random';
+import React, { useEffect, useRef, useState } from 'react';
+import { useCookies } from 'react-cookie';
+import { Link, useHistory } from 'react-router-dom';
+import { from } from 'rxjs';
+import { combineAll, tap } from 'rxjs/operators';
 
-import Input from "../../components/Input/Input";
-import { characterStream } from "../../epics/character";
+import Input from '../../components/Input/Input';
+import { characterStream } from '../../epics/character';
 import {
   capitalizeString,
   fetchAnimeRecommendation$,
@@ -21,14 +21,15 @@ import {
   fetchDataCharacter$,
   fetchDataVideo$,
   fetchEpisodeDataVideo$,
+  fetchLargePicture$,
   handleAddBoxMovie,
   handleDeleteBoxMovie,
   nameStream,
-} from "../../epics/name";
-import { pageWatchStream } from "../../epics/pageWatch";
-import { userStream } from "../../epics/user";
-import { allowShouldFetchComment } from "../../store/comment";
-import navBarStore from "../../store/navbar";
+} from '../../epics/name';
+import { pageWatchStream } from '../../epics/pageWatch';
+import { userStream } from '../../epics/user';
+import { allowShouldFetchComment } from '../../store/comment';
+import navBarStore from '../../store/navbar';
 
 const Characters = loadable(() =>
   import("../../components/Characters/Characters")
@@ -85,13 +86,13 @@ const Name = (props) => {
       document.title = `My Anime Fun - Watch latest anime in high quality`;
       subscription.unsubscribe();
       subscription2.unsubscribe();
-      navBarStore.updateIsShowBlockPopUp(false);
     };
   }, []);
   useEffect(() => {
     const fetchDataInfo$ = fetchData$(name).pipe(
       tap((v) => {
         document.title = `Watch ${v.title}`;
+        nameStream.updateIsLoading(false, "isLoadingInfoAnime");
         nameStream.updateDataInfoAnime(v);
       })
     );
@@ -101,11 +102,13 @@ const Name = (props) => {
           nameStream.updatePageVideo(1);
           nameStream.updateDataVideoPromo(promo);
         }
+        nameStream.updateIsLoading(false, "isLoadingVideoAnime");
       })
     );
     const fetchLargePictureUrl$ = fetchLargePicture$(name).pipe(
       tap(({ pictures }) => {
         try {
+          nameStream.updateIsLoading(false, "isLoadingLargePicture");
           if (pictures) {
             const imageUrl = pictures[random(pictures.length - 1)]
               ? pictures[random(pictures.length - 1)].large
@@ -113,6 +116,7 @@ const Name = (props) => {
             nameStream.updateDataLargePicture(imageUrl);
           }
         } catch (error) {
+          nameStream.updateIsLoading(false, "isLoadingLargePicture");
           console.log(error);
         }
       })
@@ -121,20 +125,26 @@ const Name = (props) => {
       .pipe(
         tap((api) => {
           if (!api.error) {
+            nameStream.updateIsLoading(false, "isLoadingEpisode");
             if (linkWatchingInputRef.current)
               linkWatchingInputRef.current.value = api.message.source;
             nameStream.updateDataEpisodesAnime(api.message);
           } else {
+            nameStream.updateIsLoading(false, "isLoadingEpisode");
             nameStream.updateDataEpisodesAnime({});
           }
         })
       )
       .subscribe();
     const fetchAnimeAppears$ = fetchAnimeRecommendation$(name).pipe(
-      tap((data) => nameStream.updateDataRelatedAnime(data))
+      tap((data) => {
+        nameStream.updateIsLoading(false, "isLoadingRelated");
+        nameStream.updateDataRelatedAnime(data);
+      })
     );
     const fetchCharacters$ = fetchDataCharacter$(name).pipe(
       tap((data) => {
+        nameStream.updateIsLoading(false, "isLoadingCharacter");
         characterStream.updateDataCharacter(data);
       })
     );
@@ -154,7 +164,6 @@ const Name = (props) => {
         .pipe(combineAll())
         .subscribe(() => {
           characterStream.updatePage(1);
-          navBarStore.updateIsShowBlockPopUp(false);
           nameStream.updateMalId(name);
         });
     }
@@ -249,6 +258,10 @@ const Name = (props) => {
     nameState.dataInformationAnime && (
       <div className="anime-name-info layout">
         <h1 className="title">{nameState.dataInformationAnime.title}</h1>
+        {nameState.isLoadingLargePicture !== null &&
+          nameState.isLoadingLargePicture === true && (
+            <CircularProgress color="secondary" size="4rem" />
+          )}
         <div className="image">
           <img
             src={
@@ -315,7 +328,11 @@ const Name = (props) => {
             >
               About
             </h1>
-            <ListInformation arrKeys={arrKeys} history={history} />
+            <ListInformation
+              arrKeys={arrKeys}
+              history={history}
+              isLoading={nameState.isLoadingInfoAnime}
+            />
             {!showThemeMusic && (
               <button
                 className="button-show-more-information"
@@ -335,16 +352,25 @@ const Name = (props) => {
               {nameState.dataInformationAnime.synopsis ||
                 "(No summary added yet)"}
             </div>
-            {episodeDataDisplay && episodeDataDisplay.episodeList.length > 0 && (
-              <div>
-                <h1 className="title">Latest Episodes</h1>
-                <ListVideoUrl
-                  episodeData={episodeDataDisplay.episodeList}
-                  name={name}
-                  keyListEpisode={episodeDataDisplay.key}
-                />
-              </div>
-            )}
+            {nameState.isLoadingEpisode !== null &&
+              nameState.isLoadingEpisode === true && (
+                <div>
+                  <h1 className="title">Latest Episodes</h1>
+                  <CircularProgress color="secondary" size="4rem" />
+                </div>
+              )}
+            {nameState.isLoadingEpisode === false &&
+              episodeDataDisplay &&
+              episodeDataDisplay.episodeList.length > 0 && (
+                <div>
+                  <h1 className="title">Latest Episodes</h1>
+                  <ListVideoUrl
+                    episodeData={episodeDataDisplay.episodeList}
+                    name={name}
+                    keyListEpisode={episodeDataDisplay.key}
+                  />
+                </div>
+              )}
             {user && user.role === "Admin" && (
               <div className="admin-section">
                 <h1 className="title">Adding episode url</h1>
@@ -410,25 +436,20 @@ const Name = (props) => {
             )}
           </div>
         </div>
-        <Characters malId={name} lazy={true} />
-        <RelatedAnime malId={name} />
+        <Characters lazy={true} isLoading={nameState.isLoadingCharacter} />
+        <RelatedAnime isLoading={nameState.isLoadingRelated} />
         {nameState.dataVideoPromo && (
-          <VideoPromotionList data={nameState.dataVideoPromo} lazy={true} />
+          <VideoPromotionList
+            data={nameState.dataVideoPromo}
+            lazy={true}
+            isLoading={nameState.isLoadingVideoAnime}
+          />
         )}
         <Reviews malId={name} />
       </div>
     )
   );
 };
-
-function fetchLargePicture$(name) {
-  return ajax(`https://api.jikan.moe/v3/anime/${name}/pictures`).pipe(
-    retry(10),
-    pluck("response", "pictures"),
-    map((pictures) => ({ pictures })),
-    catchError(() => of([]))
-  );
-}
 
 function MenuTable({ elementTitle, toggleNavTitle }) {
   return (
@@ -457,10 +478,14 @@ function MenuTable({ elementTitle, toggleNavTitle }) {
   );
 }
 
-function ListInformation({ arrKeys, history }) {
+function ListInformation({ arrKeys, history, isLoading }) {
   return (
     <ul>
-      {arrKeys &&
+      {isLoading !== null && isLoading === true && (
+        <CircularProgress color="secondary" size="4rem" />
+      )}
+      {isLoading === false &&
+        arrKeys &&
         arrKeys.map((v, index) => {
           if (
             typeof nameStream.currentState().dataInformationAnime[v] !==

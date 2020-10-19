@@ -5,9 +5,10 @@ import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 
 import { characterStream } from '../../epics/character';
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 const CharacterItem = loadable(() => import("../CharacterItem/CharacterItem"));
-const Characters = ({ malId, lazy = false }) => {
+const Characters = ({ lazy = false, isLoading }) => {
   const history = useHistory();
   const [charactersState, setCharactersState] = useState(
     characterStream.initialState
@@ -38,7 +39,11 @@ const Characters = ({ malId, lazy = false }) => {
     charactersState.dataCharacter.length > 0 && (
       <div>
         <h1 className="title">Characters</h1>
-        {characterStream.currentState() && (
+        {isLoading !== null &&
+          isLoading === true && (
+            <CircularProgress color="secondary" size="4rem" />
+          )}
+        {isLoading === false && characterStream.currentState() && (
           <div className="character-list">
             {charactersState.dataCharacter
               .slice(

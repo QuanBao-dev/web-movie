@@ -10,10 +10,17 @@ const VideoPromotionItem = loadable(
     fallback: <CircularProgress color="inherit" size="7rem" />,
   }
 );
-function VideoPromotionList({ data, lazy = false }) {
+function VideoPromotionList({ data, lazy = false, isLoading }) {
   return (
     <div className="video-promotion-list">
-      {data &&
+      {isLoading !== null && isLoading === true && (
+        <div>
+          <h1 className="title">Video</h1>
+          <CircularProgress color="secondary" size="4rem" />
+        </div>
+      )}
+      {isLoading === false &&
+        data &&
         data.map((video, index) => {
           return <VideoPromotionItem video={video} key={index} lazy={lazy} />;
         })}

@@ -1,13 +1,14 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import './RelatedAnime.css';
-import 'react-lazy-load-image-component/src/effects/opacity.css';
+import "./RelatedAnime.css";
+import "react-lazy-load-image-component/src/effects/opacity.css";
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from "react";
 
-import { nameStream } from '../../epics/name';
-import AnimeList from '../AnimeList/AnimeList';
+import { nameStream } from "../../epics/name";
+import AnimeList from "../AnimeList/AnimeList";
+import CircularProgress from "@material-ui/core/CircularProgress";
 
-const RelatedAnime = () => {
+const RelatedAnime = ({ isLoading }) => {
   const [recommendationState, setRecommendationState] = useState(
     nameStream.currentState() || nameStream.initialState
   );
@@ -38,29 +39,33 @@ const RelatedAnime = () => {
     recommendationState.dataRelatedAnime.length > 0 && (
       <div>
         <h1 className="title">You might like...</h1>
-        <AnimeList
-          data={recommendationState.dataRelatedAnime.slice(
-            0,
-            8 * recommendationState.pageRelated
-          )}
-          error={null}
-          lazy={true}
-        />
-        <div
-          className="see-more-movie"
-          ref={buttonRef}
-          onClick={() => {
-            nameStream.updatePageRelated(
-              nameStream.currentState().pageRelated + 1
-            );
-          }}
-        >
-          See more
-        </div>
+        {isLoading !== null && isLoading === true && (
+          <CircularProgress color="secondary" size="4rem" />
+        )}
+        {isLoading === false && <div>
+          <AnimeList
+            data={recommendationState.dataRelatedAnime.slice(
+              0,
+              8 * recommendationState.pageRelated
+            )}
+            error={null}
+            lazy={true}
+          />
+          <div
+            className="see-more-movie"
+            ref={buttonRef}
+            onClick={() => {
+              nameStream.updatePageRelated(
+                nameStream.currentState().pageRelated + 1
+              );
+            }}
+          >
+            See more
+          </div>
+        </div>}
       </div>
     )
   );
 };
-
 
 export default RelatedAnime;

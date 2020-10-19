@@ -157,9 +157,9 @@ const AnimeItem = ({ anime, lazy = false }) => {
             : ""}
         </h3>
         {anime.genres && !limitAdultGenre(anime.genres) && (
-          <span title={`age_limited`} style={{ color: "red" }}>
+          <h3 title={`age_limited`} style={{ color: "red", margin:"0" }}>
             18+
-          </span>
+          </h3>
         )}
       </div>
     </div>

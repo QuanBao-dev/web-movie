@@ -15,13 +15,14 @@ import {
 } from "rxjs/operators";
 
 import nameStore from "../store/name";
-import navBarStore from "../store/navbar";
 
 export const nameStream = nameStore;
 
 export const fetchData$ = (name) => {
   return timer(0).pipe(
-    tap(() => navBarStore.updateIsShowBlockPopUp(true)),
+    tap(() => {
+      nameStream.updateIsLoading(true, "isLoadingInfoAnime");
+    }),
     mergeMapTo(
       ajax(`https://api.jikan.moe/v3/anime/${name}`).pipe(
         retry(),
@@ -32,22 +33,52 @@ export const fetchData$ = (name) => {
 };
 
 export const fetchDataVideo$ = (malId) => {
-  return ajax(`https://api.jikan.moe/v3/anime/${malId}/videos`).pipe(
-    retry(5),
-    pluck("response"),
-    catchError((error) => of({ error }))
+  return timer(0).pipe(
+    tap(() => {
+      nameStream.updateIsLoading(true, "isLoadingVideoAnime");
+    }),
+    mergeMapTo(
+      ajax(`https://api.jikan.moe/v3/anime/${malId}/videos`).pipe(
+        retry(5),
+        pluck("response"),
+        catchError((error) => of({ error }))
+      )
+    )
   );
 };
 
 export const fetchEpisodeDataVideo$ = (malId) => {
-  return ajax(`/api/movies/${malId}/episodes`).pipe(
-    pluck("response"),
-    catchError(() => {
-      console.log("Don't have episodes");
-      return of({ error: "Don't have episodes" });
-    })
+  return timer(0).pipe(
+    tap(() => {
+      nameStream.updateIsLoading(true, "isLoadingEpisode");
+    }),
+    mergeMapTo(
+      ajax(`/api/movies/${malId}/episodes`).pipe(
+        pluck("response"),
+        catchError(() => {
+          console.log("Don't have episodes");
+          return of({ error: "Don't have episodes" });
+        })
+      )
+    )
   );
 };
+
+export function fetchLargePicture$(name) {
+  return timer(0).pipe(
+    tap(() => {
+      nameStream.updateIsLoading(true, "isLoadingLargePicture");
+    }),
+    mergeMapTo(
+      ajax(`https://api.jikan.moe/v3/anime/${name}/pictures`).pipe(
+        retry(10),
+        pluck("response", "pictures"),
+        map((pictures) => ({ pictures })),
+        catchError(() => of([]))
+      )
+    )
+  );
+}
 
 export const fetchBoxMovieOneMovie$ = (malId, idCartoonUser) => {
   return ajax({
@@ -67,20 +98,34 @@ export function capitalizeString(string) {
 }
 
 export function fetchAnimeRecommendation$(malId) {
-  return ajax({
-    url: `https://api.jikan.moe/v3/anime/${malId}/recommendations`,
-  }).pipe(
-    retry(10),
-    pluck("response", "recommendations"),
-    catchError(() => of([]))
+  return timer(0).pipe(
+    tap(() => {
+      nameStream.updateIsLoading(true, "isLoadingRelated");
+    }),
+    mergeMapTo(
+      ajax({
+        url: `https://api.jikan.moe/v3/anime/${malId}/recommendations`,
+      }).pipe(
+        retry(10),
+        pluck("response", "recommendations"),
+        catchError(() => of([]))
+      )
+    )
   );
 }
 
 export function fetchDataCharacter$(malId) {
-  return ajax(`https://api.jikan.moe/v3/anime/${malId}/characters_staff`).pipe(
-    retry(20),
-    pluck("response", "characters"),
-    catchError(() => of([]))
+  return timer(0).pipe(
+    tap(() => {
+      nameStream.updateIsLoading(true, "isLoadingCharacter");
+    }),
+    mergeMapTo(
+      ajax(`https://api.jikan.moe/v3/anime/${malId}/characters_staff`).pipe(
+        retry(20),
+        pluck("response", "characters"),
+        catchError(() => of([]))
+      )
+    )
   );
 }
 

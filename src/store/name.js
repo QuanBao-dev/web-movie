@@ -8,8 +8,14 @@ const initialState = {
   boxMovie: null,
   pageVideo: 1,
   malId: null,
-  dataRelatedAnime:[],
-  pageRelated:1
+  dataRelatedAnime: [],
+  pageRelated: 1,
+  isLoadingCharacter: null,
+  isLoadingInfoAnime: null,
+  isLoadingVideoAnime: null,
+  isLoadingLargePicture: null,
+  isLoadingEpisode: null,
+  isLoadingRelated: null,
 };
 const behaviorSubject = new BehaviorSubject(initialState);
 let state = initialState;
@@ -19,19 +25,34 @@ const nameStore = {
   init: () => {
     behaviorSubject.next(state);
   },
-  updateDataRelatedAnime:(data) => {
-    state={
+  updateIsLoading: (
+    bool,
+    key = "isLoadingCharacter" ||
+      "isLoadingInfoAnime" ||
+      "isLoadingVideoAnime" ||
+      "isLoadingLargePicture" ||
+      "isLoadingEpisode" ||
+      "isLoadingRelated"
+  ) => {
+    state = {
       ...state,
-      dataRelatedAnime:data
+      [key]: bool,
     };
     behaviorSubject.next(state);
   },
-  updatePageRelated:(page) => {
-    state={
+  updateDataRelatedAnime: (data) => {
+    state = {
       ...state,
-      pageRelated:page
+      dataRelatedAnime: data,
     };
-    behaviorSubject.next(state)
+    behaviorSubject.next(state);
+  },
+  updatePageRelated: (page) => {
+    state = {
+      ...state,
+      pageRelated: page,
+    };
+    behaviorSubject.next(state);
   },
   updateMalId: (malId) => {
     state = {

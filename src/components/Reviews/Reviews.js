@@ -75,7 +75,12 @@ const Reviews = ({ malId }) => {
           ) {
             pageWatchStream.updateIsStopFetching(true);
           }
+          if (updatedAnime.length === 0) {
+            pageWatchStream.updateIsStopFetching(true);
+            return;
+          }
           pageWatchStream.updateReviewsData(updatedAnime);
+          console.log(updatedAnime);
           pageWatchStream.updatePreviousMalId(malId);
           pageWatchStream.updatePageReviewsOnDestroy(
             pageWatchStream.currentState().pageReviewsData

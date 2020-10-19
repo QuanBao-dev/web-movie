@@ -112,7 +112,7 @@ const EpisodePage = (props) => {
         ["Eng", "vie", "EngDub"].includes(mode) &&
         episode && (
           <h1 className="episode-page__title">
-            Watch "{pageWatchState.title}" Episode {episode}{" "}
+            "{pageWatchState.title}" Episode {episode}{" "}
             {mode === "Eng"
               ? "English Subbed"
               : mode === "vie"
@@ -132,11 +132,16 @@ const EpisodePage = (props) => {
           <div
             className="previous-episode"
             onClick={() => {
-              history.push(`/anime/${malId}/watch/${episode - 1}/${mode}`);
+              history.push(
+                `/anime/${malId}/watch/${
+                  episodes[episodeIndex - 1].episode
+                }/${mode}`
+              );
             }}
           >
             <i className="fas fa-chevron-left"></i>
-            <i className="fas fa-chevron-left"></i> Watch episode {episode - 1}
+            <i className="fas fa-chevron-left"></i> Watch episode{" "}
+            {episodes[episodeIndex - 1].episode}
           </div>
         )}
         {mode === "Eng" &&
@@ -147,11 +152,13 @@ const EpisodePage = (props) => {
               className="next-episode"
               onClick={() => {
                 history.push(
-                  `/anime/${malId}/watch/${parseInt(episode) + 1}/${mode}`
+                  `/anime/${malId}/watch/${
+                    episodes[episodeIndex + 1].episode
+                  }/${mode}`
                 );
               }}
             >
-              Watch episode {parseInt(episode) + 1}{" "}
+              Watch episode {episodes[episodeIndex + 1].episode}{" "}
               <i className="fas fa-chevron-right"></i>
               <i className="fas fa-chevron-right"></i>
             </div>
@@ -164,11 +171,13 @@ const EpisodePage = (props) => {
               className="next-episode"
               onClick={() => {
                 history.push(
-                  `/anime/${malId}/watch/${parseInt(episode) + 1}/${mode}`
+                  `/anime/${malId}/watch/${
+                    episodes[episodeIndex + 1].episode
+                  }/${mode}`
                 );
               }}
             >
-              Watch episode {parseInt(episode) + 1}{" "}
+              Watch episode {episodes[episodeIndex + 1].episode}{" "}
               <i className="fas fa-chevron-right"></i>
               <i className="fas fa-chevron-right"></i>
             </div>
@@ -181,11 +190,13 @@ const EpisodePage = (props) => {
               className="next-episode"
               onClick={() => {
                 history.push(
-                  `/anime/${malId}/watch/${parseInt(episode) + 1}/${mode}`
+                  `/anime/${malId}/watch/${
+                    episodes[episodeIndex + 1].episode
+                  }/${mode}`
                 );
               }}
             >
-              Watch episode {parseInt(episode) + 1}{" "}
+              Watch episode {episodes[episodeIndex + 1].episode}{" "}
               <i className="fas fa-chevron-right"></i>
               <i className="fas fa-chevron-right"></i>
             </div>

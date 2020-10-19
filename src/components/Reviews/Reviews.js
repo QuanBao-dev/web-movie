@@ -80,7 +80,6 @@ const Reviews = ({ malId }) => {
             return;
           }
           pageWatchStream.updateReviewsData(updatedAnime);
-          console.log(updatedAnime);
           pageWatchStream.updatePreviousMalId(malId);
           pageWatchStream.updatePageReviewsOnDestroy(
             pageWatchStream.currentState().pageReviewsData

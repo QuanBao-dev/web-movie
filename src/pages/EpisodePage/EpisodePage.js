@@ -236,7 +236,7 @@ const EpisodePage = (props) => {
           pageWatchState.episodes.episodes.length > 0 && (
             <div
               className="container-episode-display"
-              style={{ maxHeight: isDisplayVietSub ? "1000px" : "100px" }}
+              style={{ maxHeight: isDisplayVietSub ? "10000px" : "100px" }}
             >
               <h1
                 className={`title${isDisplayVietSub ? " title-active" : ""}`}
@@ -260,7 +260,7 @@ const EpisodePage = (props) => {
           pageWatchState.episodes.episodesEng.length > 0 && (
             <div
               className="container-episode-display"
-              style={{ maxHeight: isDisplayEngSub ? "1000px" : "100px" }}
+              style={{ maxHeight: isDisplayEngSub ? "10000px" : "100px" }}
             >
               <h1
                 className={`title${isDisplayEngSub ? " title-active" : ""}`}
@@ -286,7 +286,7 @@ const EpisodePage = (props) => {
           pageWatchState.episodes.episodesEngDub.length > 0 && (
             <div
               className="container-episode-display"
-              style={{ maxHeight: isDisplayEngDub ? "1000px" : "100px" }}
+              style={{ maxHeight: isDisplayEngDub ? "10000px" : "100px" }}
             >
               <h1
                 className={`title${isDisplayEngDub ? " title-active" : ""}`}

@@ -458,7 +458,6 @@ function MenuTable({ elementTitle, toggleNavTitle }) {
             key={key}
             className="tag-scrolling-nav_item"
             onClick={() => {
-              console.log(e);
               e.scrollIntoView({
                 behavior: "smooth",
               });

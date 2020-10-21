@@ -42,10 +42,15 @@ const EpisodePage = (props) => {
   const [pageWatchState, setPageWatchState] = useState(
     pageWatchStream.initialState
   );
+  const [isDisplayVietSub, setIsDisplayVietSub] = useState(false);
+  const [isDisplayEngSub, setIsDisplayEngSub] = useState(false);
+  const [isDisplayEngDub, setIsDisplayEngDub] = useState(false);
+
   const user = userStream.currentState();
   useEffect(() => {
     const subscription = pageWatchStream.subscribe(setPageWatchState);
     pageWatchStream.init();
+    window.scroll({ top: 0 });
     return () => {
       subscription.unsubscribe();
     };
@@ -229,8 +234,16 @@ const EpisodePage = (props) => {
         {pageWatchState.episodes &&
           pageWatchState.episodes.episodes &&
           pageWatchState.episodes.episodes.length > 0 && (
-            <div>
-              <h1 className="title">Vietsub</h1>
+            <div
+              className="container-episode-display"
+              style={{ maxHeight: isDisplayVietSub ? "1000px" : "100px" }}
+            >
+              <h1
+                className={`title${isDisplayVietSub ? " title-active" : ""}`}
+                onClick={() => setIsDisplayVietSub(!isDisplayVietSub)}
+              >
+                Vietsub
+              </h1>
               <ListEpisodeUrlDisplay
                 episodes={
                   mode === "vie" ? episodes : pageWatchState.episodes.episodes
@@ -245,8 +258,16 @@ const EpisodePage = (props) => {
         {pageWatchState.episodes &&
           pageWatchState.episodes.episodesEng &&
           pageWatchState.episodes.episodesEng.length > 0 && (
-            <div>
-              <h1 className="title">Engsub</h1>
+            <div
+              className="container-episode-display"
+              style={{ maxHeight: isDisplayEngSub ? "1000px" : "100px" }}
+            >
+              <h1
+                className={`title${isDisplayEngSub ? " title-active" : ""}`}
+                onClick={() => setIsDisplayEngSub(!isDisplayEngSub)}
+              >
+                Engsub
+              </h1>
               <ListEpisodeUrlDisplay
                 episodes={
                   mode === "Eng"
@@ -263,8 +284,16 @@ const EpisodePage = (props) => {
         {pageWatchState.episodes &&
           pageWatchState.episodes.episodesEngDub &&
           pageWatchState.episodes.episodesEngDub.length > 0 && (
-            <div>
-              <h1 className="title">Engdub</h1>
+            <div
+              className="container-episode-display"
+              style={{ maxHeight: isDisplayEngDub ? "1000px" : "100px" }}
+            >
+              <h1
+                className={`title${isDisplayEngDub ? " title-active" : ""}`}
+                onClick={() => setIsDisplayEngDub(!isDisplayEngDub)}
+              >
+                Engdub
+              </h1>
               <ListEpisodeUrlDisplay
                 episodes={
                   mode === "EngDub"

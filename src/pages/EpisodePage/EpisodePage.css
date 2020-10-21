@@ -101,10 +101,20 @@
 
 .section-episodes-display .title{
   font-family: 'Times New Roman', Times, serif;
-  background-color: #39415f;
+  background-color: #1c2129;
   text-align: center;
+  transition: 0.4s;
+  cursor: pointer;
   padding: 0.4em;
   color: rgb(187, 187, 49);
+}
+
+.section-episodes-display .title:hover{
+  background-color: #39415f;
+}
+
+.section-episodes-display .title-active{
+  background-color: #39415f!important;
 }
 
 .result-success{
@@ -303,4 +313,11 @@
   color: rgba(255, 255, 255, 0.699);
   font-size: 1.5rem;
   font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+}
+
+.container-episode-display{
+  overflow: hidden;
+  padding: 1px;
+  max-height: 100px;
+  transition: 0.5s;
 }

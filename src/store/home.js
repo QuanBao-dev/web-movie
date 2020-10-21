@@ -200,6 +200,9 @@ const homeStore = {
   },
 
   updateSeasonYear: (season, year, score, modeFilter, genreId) => {
+    if(genreId === "12" && modeFilter === "filter"){
+      genreId = "0"
+    }
     state = {
       ...state,
       season: season,

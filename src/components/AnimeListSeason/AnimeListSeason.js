@@ -1,3 +1,4 @@
+import capitalize from "lodash/capitalize";
 import orderBy from "lodash/orderBy";
 import React, { useEffect, useRef, useState } from "react";
 
@@ -196,6 +197,18 @@ const AnimeListSeason = () => {
   }, [homeState.year, homeState.season, homeState.numberOfProduct]);
   return (
     <div>
+      <h1 style={{ textAlign: "center" }}>
+        {homeState.genreId !== "0"
+          ? genresData[parseInt(homeState.genreId) - 1].genre + " "
+          : homeState.modeFilter === "filter"
+          ? ""
+          : "All "}{" "}
+        Anime
+        {homeState.score !== 0
+          ? " with score greater than " + homeState.score
+          : ""}{" "}
+        in {capitalize(homeState.season)}, {homeState.year}
+      </h1>
       <SelectFilterAnime
         targetScroll={targetScroll}
         homeState={homeState}
@@ -304,11 +317,22 @@ function SelectFilterAnime({
         defaultValue={stream.currentState().genreId}
       >
         <option value={0}>All</option>
-        {genresData.map((data) => (
-          <option key={data.genreId} value={data.genreId}>
-            {data.genre}
-          </option>
-        ))}
+        {genresData.map((data) => {
+          if (data.genreId !== "12") {
+            return (
+              <option key={data.genreId} value={data.genreId}>
+                {data.genre}
+              </option>
+            );
+          }
+          if (stream.currentState().modeFilter === "all") {
+            return (
+              <option key={data.genreId} value={data.genreId}>
+                {data.genre}
+              </option>
+            );
+          }
+        })}
       </select>
     </div>
   );

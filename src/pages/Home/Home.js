@@ -1,10 +1,9 @@
-import "./Home.css";
+import './Home.css';
 
-import loadable from "@loadable/component";
-import capitalize from "lodash/capitalize";
-import React, { useEffect, useState } from "react";
+import loadable from '@loadable/component';
+import React, { useEffect, useState } from 'react';
 
-import { stream } from "../../epics/home";
+import { stream } from '../../epics/home';
 
 const SearchInput = loadable(
   () => import("../../components/SearchInput/SearchInput"),
@@ -105,13 +104,6 @@ function Home() {
       <div className="container-anime-list">
         <div className="container-display-anime__home">
           <div className="anime-pagination">
-            <h1 style={{ textAlign: "center" }}>
-              {homeState.modeFilter === "filter" ? "":"All "} Anime
-              {homeState.score !== 0
-                ? " with score greater than " + homeState.score
-                : ""}{" "}
-              in {capitalize(homeState.season)}, {homeState.year}
-            </h1>
             <AnimeListSeason />
           </div>
           <TopAnimeList homeState={homeState} />

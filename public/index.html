@@ -17,15 +17,28 @@
     <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
     <link
       rel="preconnect"
-      href="https://api.jikan.moe/v3"
+      href="https://api.jikan.moe"
       crossorigin="use-credentials"
     />
     <link
-      rel="stylesheet"
-      href="https://use.fontawesome.com/releases/v5.7.2/css/all.css"
-      integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr"
-      crossorigin="anonymous"
+      rel="preconnect"
+      href="https://cdn.myanimelist.net"
+      crossorigin="use-credentials"
     />
+    <link
+      rel="preconnect"
+      href="/background.jpg"
+      crossorigin="use-credentials"
+    />
+    <script type="text/javascript" defer>
+      (function () {
+        var css = document.createElement("link");
+        css.href = "https://use.fontawesome.com/releases/v5.1.0/css/all.css";
+        css.rel = "stylesheet";
+        css.type = "text/css";
+        document.getElementsByTagName("head")[0].appendChild(css);
+      })();
+    </script>
     <title>My Anime Fun - Watch latest anime in high quality</title>
   </head>
   <body>

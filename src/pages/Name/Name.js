@@ -204,7 +204,7 @@ const Name = (props) => {
     };
   }, [cookies.idCartoonUser, name]);
   const arrayTagTitle =
-    document.querySelectorAll(".anime-name-info.layout .title") || [];
+    document.querySelectorAll(".title") || [];
   const a = [...arrayTagTitle];
   useEffect(() => {
     setElementTitle(a);
@@ -441,7 +441,6 @@ const Name = (props) => {
         {nameState.dataVideoPromo && (
           <VideoPromotionList
             data={nameState.dataVideoPromo}
-            lazy={true}
             isLoading={nameState.isLoadingVideoAnime}
           />
         )}
@@ -466,6 +465,7 @@ function MenuTable({ elementTitle, toggleNavTitle }) {
             key={key}
             className="tag-scrolling-nav_item"
             onClick={() => {
+              console.log(e);
               e.scrollIntoView({
                 behavior: "smooth",
               });
@@ -880,7 +880,7 @@ function ListVideoUrl({ episodeData, name, keyListEpisode }) {
         orderBy(
           episodeData.map((data) => ({
             ...data,
-            episode: parseInt(data.episode),
+            episode: data.episode,
           })),
           ["episode"],
           "desc"

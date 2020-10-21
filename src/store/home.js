@@ -44,7 +44,8 @@ const initialState = {
   pageSplitTopMovie:1,
   positionScrollTop:0,
   modeFilter:"filter",
-  isFirstLaunch:true
+  isFirstLaunch:true,
+  genreId:"0"
 };
 
 const subject = new BehaviorSubject(initialState);
@@ -198,13 +199,14 @@ const homeStore = {
     subject.next(state);
   },
 
-  updateSeasonYear: (season, year, score, modeFilter) => {
+  updateSeasonYear: (season, year, score, modeFilter, genreId) => {
     state = {
       ...state,
       season: season,
       year: year,
       score,
-      modeFilter
+      modeFilter,
+      genreId
     };
     subject.next(state);
   },

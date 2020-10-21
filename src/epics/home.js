@@ -102,11 +102,22 @@ export const fetchAnimeSeason$ = (
           updateOriginalData(anime);
           anime = anime.filter((movie) => {
             if (stream.currentState().modeFilter === "all") {
-              return movie.airing_start && (movie.score > score || score === 0);
+              return (
+                movie.airing_start &&
+                checkAnimeIncludeGenre(
+                  movie.genres,
+                  stream.currentState().genreId
+                ) &&
+                (movie.score > score || score === 0)
+              );
             }
             return (
               movie.airing_start &&
               limitAdultGenre(movie.genres) &&
+              checkAnimeIncludeGenre(
+                movie.genres,
+                stream.currentState().genreId
+              ) &&
               (movie.score > score || score === 0)
             );
           });
@@ -154,6 +165,19 @@ export function limitAdultGenre(genres) {
   return check;
 }
 
+export function checkAnimeIncludeGenre(genresAnime, genreCheckMalId) {
+  let check = false;
+  if (genreCheckMalId === "0") {
+    return true;
+  }
+  genresAnime.forEach((genre) => {
+    if (genre.mal_id.toString() === genreCheckMalId) {
+      check = true;
+    }
+  });
+  return check;
+}
+
 export const changeCurrentPage$ = () => {
   return fromEvent(document, "keydown").pipe(
     filter((v) => v.target.tagName === "BODY"),
@@ -179,7 +203,8 @@ export const changeSeasonYear$ = (
   selectYearElement,
   selectSeasonElement,
   selectScoreElement,
-  selectModeFilterElement
+  selectModeFilterElement,
+  selectGenreElement
 ) => {
   // console.log("change")
   const listenEventYear$ = fromEvent(selectYearElement, "change").pipe(
@@ -197,11 +222,15 @@ export const changeSeasonYear$ = (
     selectModeFilterElement,
     "change"
   ).pipe(pluck("target", "value"));
+  const listenEventGenre$ = fromEvent(selectGenreElement, "change").pipe(
+    pluck("target", "value")
+  );
   return from([
     listenEventYear$.pipe(startWith(stream.currentState().year)),
     listenEventSeason$.pipe(startWith(stream.currentState().season)),
     listenEventScore$.pipe(startWith(stream.currentState().score)),
     listenEventModeFilter$.pipe(startWith(stream.currentState().modeFilter)),
+    listenEventGenre$.pipe(startWith(stream.currentState().genreId)),
   ]).pipe(combineAll());
 };
 
@@ -320,12 +349,12 @@ export const listenSearchInputPressEnter$ = (searchInputE) => {
 
 export const topMovieUpdatedScrolling$ = (topAnimeElement) => {
   return fromEvent(
-    stream.currentState().screenWidth > 1465 ? topAnimeElement : window,
+    stream.currentState().screenWidth > 1510 ? topAnimeElement : window,
     "scroll"
   ).pipe(
     debounceTime(500),
     filter(() =>
-      stream.currentState().screenWidth > 1465
+      stream.currentState().screenWidth > 1510
         ? topAnimeElement.scrollTop - (topAnimeElement.scrollHeight - 5000) > 0
         : document.body.scrollHeight - (window.scrollY + 2000) < 0
     ),

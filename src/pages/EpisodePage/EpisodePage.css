@@ -283,7 +283,19 @@
 .episode-page__title{
   margin: auto;
   margin-bottom: 3.2rem;
-  width: 80%;
+  width: 85%;
   text-align: center;
   color: rgba(255, 255, 0, 0.767);
+}
+
+.title-anime{
+  font-family: 'Times New Roman', Times, serif;
+  box-shadow: 0 3px 5px 1px rgb(20, 30, 61),0px 2px 1px 1px rgb(160, 163, 170);
+  padding: 1rem 4px;
+  margin-top: 1rem;
+  width: 100%;
+}
+
+.episode-sub-detail{
+  color: white;
 }

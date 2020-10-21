@@ -98,20 +98,16 @@ const Reviews = ({ malId }) => {
   return (
     reviewState && (
       <div className="container-reviews">
-        {reviewState &&
-          reviewState.reviewsData.length === 0 &&
-          !reviewState.isStopFetchingReviews && (
-            <div>
-              <h1 className="title">Reviews</h1>
-
-              <div className="loading-symbol-review">
-                <CircularProgress color="secondary" size="3rem" />
-              </div>
-            </div>
-          )}
         {reviewState && reviewState.reviewsData.length > 0 && (
           <h1 className="title">Reviews</h1>
         )}
+        {reviewState &&
+          reviewState.reviewsData.length === 0 &&
+          !reviewState.isStopFetchingReviews && (
+            <div className="loading-symbol-review">
+              <CircularProgress color="secondary" size="3rem" />
+            </div>
+          )}
         {reviewState && reviewState.reviewsData.length > 0 && (
           <div className="reviews-list-container">
             {reviewState &&

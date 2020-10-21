@@ -39,6 +39,7 @@
 .recently-updated-movie{
   color: white;
   background-color: #242847;
+  min-height: 2055px;
   box-shadow: 0 10px 5px 10px black;
 }
 
@@ -110,6 +111,10 @@
 @media (min-width:1510px){
   .container-display-anime__home{
     display: flex;
+  }
+  .anime-pagination{
+    min-width: 1166px;
+    min-height: 4124px;
   }
 }
 

@@ -6,10 +6,57 @@ import {
   changeSeasonYear$,
   fetchAnimeSeason$,
   stream,
+  limitAdultGenre,
+  checkAnimeIncludeGenre,
 } from "../../epics/home";
 import { updateDataOnDestroy, updateMaxPage } from "../../store/home";
 import AnimeList from "../AnimeList/AnimeList";
 import PageNavList from "../PageNavList/PageNavList";
+const genresData = [
+  { genreId: "1", genre: "Action" },
+  { genreId: "2", genre: "Adventure" },
+  { genreId: "3", genre: "Cars" },
+  { genreId: "4", genre: "Comedy" },
+  { genreId: "5", genre: "Dementia" },
+  { genreId: "6", genre: "Demons" },
+  { genreId: "7", genre: "Mystery" },
+  { genreId: "8", genre: "Drama" },
+  { genreId: "9", genre: "Ecchi" },
+  { genreId: "10", genre: "Fantasy" },
+  { genreId: "11", genre: "Game" },
+  { genreId: "12", genre: "Hentai" },
+  { genreId: "13", genre: "Historical" },
+  { genreId: "14", genre: "Horror" },
+  { genreId: "15", genre: "Kids" },
+  { genreId: "16", genre: "Magic" },
+  { genreId: "17", genre: "Martial Arts" },
+  { genreId: "18", genre: "Mecha" },
+  { genreId: "19", genre: "Music" },
+  { genreId: "20", genre: "Parody" },
+  { genreId: "21", genre: "Samurai" },
+  { genreId: "22", genre: "Romance" },
+  { genreId: "23", genre: "School" },
+  { genreId: "24", genre: "Sci Fi" },
+  { genreId: "25", genre: "Shoujo" },
+  { genreId: "26", genre: "Shoujo Ai" },
+  { genreId: "27", genre: "Shounen" },
+  { genreId: "28", genre: "Shounen Ai" },
+  { genreId: "29", genre: "Space" },
+  { genreId: "30", genre: "Sports" },
+  { genreId: "31", genre: "Super Power" },
+  { genreId: "32", genre: "Vampire" },
+  { genreId: "33", genre: "Yaoi" },
+  { genreId: "34", genre: "Yuri" },
+  { genreId: "35", genre: "Harem" },
+  { genreId: "36", genre: "Slice Of Life" },
+  { genreId: "37", genre: "Supernatural" },
+  { genreId: "38", genre: "Military" },
+  { genreId: "39", genre: "Police" },
+  { genreId: "40", genre: "Psychological" },
+  { genreId: "41", genre: "Thriller" },
+  { genreId: "42", genre: "Seinen" },
+  { genreId: "43", genre: "Josei" },
+];
 
 const AnimeListSeason = () => {
   const [homeState, setHomeState] = useState(
@@ -19,6 +66,7 @@ const AnimeListSeason = () => {
   const selectSeason = useRef(null);
   const selectScore = useRef(null);
   const selectFilterMode = useRef(null);
+  const selectGenre = useRef(null);
   const targetScroll = useRef(null);
 
   const startYear = 1963;
@@ -45,12 +93,14 @@ const AnimeListSeason = () => {
       if (homeState.modeFilter === "all") {
         return (
           movie.airing_start &&
+          checkAnimeIncludeGenre(movie.genres, stream.currentState().genreId) &&
           (movie.score > homeState.score || homeState.score === 0)
         );
       }
       return (
         movie.airing_start &&
         limitAdultGenre(movie.genres) &&
+        checkAnimeIncludeGenre(movie.genres, stream.currentState().genreId) &&
         (movie.score > homeState.score || homeState.score === 0)
       );
     });
@@ -68,7 +118,12 @@ const AnimeListSeason = () => {
     );
     stream.updateAnimeData(sortedArray);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [homeState.currentPage, homeState.score, homeState.modeFilter]);
+  }, [
+    homeState.currentPage,
+    homeState.score,
+    homeState.modeFilter,
+    homeState.genreId,
+  ]);
 
   useEffect(() => {
     if (homeState.shouldScrollToSeeMore) {
@@ -92,15 +147,17 @@ const AnimeListSeason = () => {
       selectYear.current &&
       selectSeason.current &&
       selectScore.current &&
-      selectFilterMode.current
+      selectFilterMode.current &&
+      selectGenre.current
     )
       subscription4 = changeSeasonYear$(
         selectYear.current,
         selectSeason.current,
         selectScore.current,
-        selectFilterMode.current
-      ).subscribe(([year, season, score, modeFilter]) => {
-        stream.updateSeasonYear(season, year, score, modeFilter);
+        selectFilterMode.current,
+        selectGenre.current
+      ).subscribe(([year, season, score, modeFilter, genreId]) => {
+        stream.updateSeasonYear(season, year, score, modeFilter, genreId);
       });
 
     return () => {
@@ -146,6 +203,7 @@ const AnimeListSeason = () => {
         selectYear={selectYear}
         selectScore={selectScore}
         selectFilterMode={selectFilterMode}
+        selectGenre={selectGenre}
         numberOfYears={numberOfYears}
       />
 
@@ -183,6 +241,7 @@ function SelectFilterAnime({
   selectYear,
   selectScore,
   selectFilterMode,
+  selectGenre,
   numberOfYears,
 }) {
   const elementOptions = Array.from(Array(numberOfYears).keys()).map(
@@ -239,6 +298,18 @@ function SelectFilterAnime({
         <option value={`all`}>All</option>
         <option value={`filter`}>Filter</option>
       </select>
+      <select
+        className="select-filter"
+        ref={selectGenre}
+        defaultValue={stream.currentState().genreId}
+      >
+        <option value={0}>All</option>
+        {genresData.map((data) => (
+          <option key={data.genreId} value={data.genreId}>
+            {data.genre}
+          </option>
+        ))}
+      </select>
     </div>
   );
 }
@@ -247,16 +318,6 @@ function unsubscribeSubscription(...subscriptions) {
   subscriptions.forEach((subscription) => {
     subscription.unsubscribe();
   });
-}
-
-function limitAdultGenre(genres) {
-  let check = true;
-  genres.forEach((genre) => {
-    if (genre.name === "Hentai") {
-      check = false;
-    }
-  });
-  return check;
 }
 
 export default AnimeListSeason;

@@ -17,9 +17,10 @@ function TopAnimeList({ homeState = stream.initialState }) {
   useEffect(() => {
     if (stream.currentState().screenWidth > 697) {
       setTimeout(() => {
-        document.querySelector(".top-anime-list-container").scroll({
-          top: stream.currentState().positionScrollTop,
-        });
+        if (document.querySelector(".top-anime-list-container"))
+          document.querySelector(".top-anime-list-container").scroll({
+            top: stream.currentState().positionScrollTop,
+          });
       }, 400);
     }
     if (stream.currentState().dataTopMovie.length === 0) {
@@ -41,7 +42,7 @@ function TopAnimeList({ homeState = stream.initialState }) {
       subscription11 = topMovieUpdatedScrolling$(topAnimeElement).subscribe(
         () => {
           if (
-            8 + (stream.currentState().pageSplitTopMovie - 1) * 5 >
+            8 + (stream.currentState().pageSplitTopMovie - 1) * 8 >
             stream.currentState().dataTopMovie.length
           )
             updateDataTopScrolling();
@@ -89,7 +90,7 @@ function TopAnimeList({ homeState = stream.initialState }) {
       <h1>Top Anime</h1>
       <ul className="top-anime-list">
         {homeState.dataTopMovie
-          .slice(0, 8 + (homeState.pageSplitTopMovie - 1) * 5)
+          .slice(0, 8 + (homeState.pageSplitTopMovie - 1) * 8)
           .map((movie, index) => (
             <TopAnimeItem
               movie={movie}
@@ -100,7 +101,8 @@ function TopAnimeList({ homeState = stream.initialState }) {
         <div
           style={{
             display: homeState.isStopFetchTopMovie ? "none" : "block",
-            height:"70px"
+            height: "70px",
+            width:"100%"
           }}
         >
           <CircularProgress color="secondary" />

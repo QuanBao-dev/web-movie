@@ -31,7 +31,7 @@
   display: hidden;
 }
 
-@media (max-width:1465px){
+@media (max-width:1510px){
   .top-anime-list-container{
     overflow-y: hidden;
     max-height: 100%;

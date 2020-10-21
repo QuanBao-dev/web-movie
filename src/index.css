@@ -11,7 +11,9 @@ body {
   background-attachment: fixed;
   background-size: cover;
   background-position: right;
-  background-image:url("/background.jpg")
+  background-image:url("/background.jpg");
+  max-width: 1516px;
+  margin: auto;
 }
 
 pre{

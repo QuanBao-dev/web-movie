@@ -44,6 +44,13 @@ const EpisodePage = (props) => {
   );
   const user = userStream.currentState();
   useEffect(() => {
+    const subscription = pageWatchStream.subscribe(setPageWatchState);
+    pageWatchStream.init();
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
+  useEffect(() => {
     if (
       pageWatchState.title &&
       ["Eng", "vie", "EngDub"].includes(mode) &&
@@ -61,21 +68,26 @@ const EpisodePage = (props) => {
     };
   }, [episode, malId, pageWatchState.title, mode]);
   useEffect(() => {
-    const subscription = pageWatchStream.subscribe(setPageWatchState);
-    pageWatchStream.init();
+    if (pageWatchStream.currentState().malId !== malId) {
+      pageWatchStream.resetState();
+    }
+  }, [malId]);
+  useEffect(() => {
     if (user)
       theaterStream.socket.emit("user-join-watch", malId, user.username);
-    const fetchEpisodesSub = fetchEpisodesOfMovie$(malId).subscribe((v) => {
-      pageWatchStream.updateEpisodes(v);
-    });
-    const fetchTitleAnimeSub = fetchTitle$(malId).subscribe((v) => {
-      pageWatchStream.updateTitle(v);
-    });
+    let fetchEpisodesSub, fetchTitleAnimeSub;
+    if (pageWatchStream.currentState().malId !== malId) {
+      fetchEpisodesSub = fetchEpisodesOfMovie$(malId).subscribe((v) => {
+        pageWatchStream.updateEpisodes(v);
+        pageWatchStream.updateInfoPageWatch(malId);
+      });
+      fetchTitleAnimeSub = fetchTitle$(malId).subscribe((v) => {
+        pageWatchStream.updateTitle(v);
+      });
+    }
     return () => {
-      fetchTitleAnimeSub.unsubscribe();
-      subscription.unsubscribe();
+      fetchTitleAnimeSub && fetchTitleAnimeSub.unsubscribe();
       fetchEpisodesSub && fetchEpisodesSub.unsubscribe();
-      pageWatchStream.updateEpisodes([]);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [malId]);
@@ -112,12 +124,15 @@ const EpisodePage = (props) => {
         ["Eng", "vie", "EngDub"].includes(mode) &&
         episode && (
           <h1 className="episode-page__title">
-            "{pageWatchState.title}" Episode {episode}{" "}
-            {mode === "Eng"
-              ? "English Subbed"
-              : mode === "vie"
-              ? "Vietnamese Subbed"
-              : "English Dubbed"}
+            <div className="title-anime">{pageWatchState.title}</div>
+            <div className="episode-sub-detail">
+              Episode {episode} {"- "}
+              {mode === "Eng"
+                ? "English Subbed"
+                : mode === "vie"
+                ? "Vietnamese Subbed"
+                : "English Dubbed"}
+            </div>
           </h1>
         )}
       <div className="wrapper-player-video">

@@ -27,9 +27,7 @@ const UpcomingAnimeList = () => {
             elementScroll.scrollLeft >= elementScroll.childNodes[end].offsetLeft
           ) {
             elementScroll.scroll({
-              left:
-                elementScroll.childNodes[end - (length - numberCloneList)]
-                  .offsetLeft,
+              left: elementScroll.childNodes[end - numberList].offsetLeft,
             });
             setListenAgain(!listenAgain);
           }
@@ -37,22 +35,20 @@ const UpcomingAnimeList = () => {
         subscription3 = scrollAnimeUserStart$(elementScroll).subscribe(() => {
           if (elementScroll.scrollLeft === 0) {
             elementScroll.scroll({
-              left:
-                elementScroll.childNodes[length - numberCloneList].offsetLeft,
+              left: elementScroll.childNodes[numberList].offsetLeft,
             });
             setListenAgain(!listenAgain);
           }
         });
         subscription2 = scrollAnimeInterval$(elementScroll, end).subscribe(
           () => {
-            console.log("done");
             if (
               elementScroll.scrollLeft >=
               elementScroll.childNodes[end].offsetLeft
             ) {
               elementScroll.scroll({
                 left:
-                  elementScroll.childNodes[end - (length - numberCloneList)]
+                  elementScroll.childNodes[end - numberList]
                     .offsetLeft,
               });
               setListenAgain(!listenAgain);

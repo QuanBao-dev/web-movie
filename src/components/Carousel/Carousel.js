@@ -14,7 +14,13 @@ import { stream } from "../../epics/home";
 import { userStream } from "../../epics/user";
 import navBarStore from "../../store/navbar";
 
-const CarouselItem = loadable(() => import("../CarouselItem/CarouselItem"));
+const CarouselItem = loadable(() => import("../CarouselItem/CarouselItem"), {
+  fallback: (
+    <div className="section-carousel-container">
+      <i className="fas fa-spinner fa-9x fa-spin"></i>
+    </div>
+  ),
+});
 const Carousel = () => {
   const { dataCarousel } = stream.currentState();
   const user = userStream.currentState();
@@ -186,8 +192,9 @@ const Carousel = () => {
             <div
               key={key}
               onClick={() => {
-                document.querySelector(".section-carousel-container").style.transition =
-                "0.4s";        
+                document.querySelector(
+                  ".section-carousel-container"
+                ).style.transition = "0.4s";
                 setPageCarousel(key);
               }}
               className={`dot-item${pageDisplay === key ? " active-dot" : ""}`}

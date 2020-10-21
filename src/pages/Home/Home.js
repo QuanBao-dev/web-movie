@@ -1,9 +1,9 @@
-import './Home.css';
+import "./Home.css";
 
-import loadable from '@loadable/component';
-import React, { useEffect, useState } from 'react';
+import loadable from "@loadable/component";
+import React, { useEffect, useState } from "react";
 
-import { stream } from '../../epics/home';
+import { stream } from "../../epics/home";
 
 const SearchInput = loadable(
   () => import("../../components/SearchInput/SearchInput"),
@@ -67,7 +67,11 @@ const Carousel = loadable(
   () =>
     /* webpackPrefetch: true */ import("../../components/Carousel/Carousel"),
   {
-    fallback: <i className="fas fa-spinner fa-9x fa-spin"></i>,
+    fallback: (
+      <div style={{ height: "650px" }}>
+        <i className="fas fa-spinner fa-9x fa-spin"></i>,
+      </div>
+    ),
   }
 );
 

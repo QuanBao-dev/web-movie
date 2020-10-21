@@ -1,6 +1,7 @@
 import './CarouselItem.css';
-
+import "react-lazy-load-image-component/src/effects/opacity.css"
 import React from 'react';
+import { LazyLoadImage } from 'react-lazy-load-image-component';
 
 function CarouselItem({ data, history }) {
   return (
@@ -14,7 +15,7 @@ function CarouselItem({ data, history }) {
         }
       }}
     >
-      <img src={data.url} alt="NOT_FOUND" />
+      <LazyLoadImage src={data.url} alt="NOT_FOUND" effect="opacity"/>
       <div className="container-title">
         <h1>{data.title}</h1>
       </div>

@@ -3,7 +3,6 @@ import './Name.css';
 import loadable from '@loadable/component';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Axios from 'axios';
-import orderBy from 'lodash/orderBy';
 import random from 'lodash/random';
 import React, { useEffect, useRef, useState } from 'react';
 import { useCookies } from 'react-cookie';
@@ -203,8 +202,7 @@ const Name = (props) => {
       linkWatchingInputRef.current && (linkWatchingInputRef.current.value = "");
     };
   }, [cookies.idCartoonUser, name]);
-  const arrayTagTitle =
-    document.querySelectorAll(".title") || [];
+  const arrayTagTitle = document.querySelectorAll(".title") || [];
   const a = [...arrayTagTitle];
   useEffect(() => {
     setElementTitle(a);
@@ -877,15 +875,12 @@ function ListVideoUrl({ episodeData, name, keyListEpisode }) {
   return (
     <div className={"list-video-url"}>
       {episodeData &&
-        orderBy(
-          episodeData.map((data) => ({
+        episodeData
+          .map((data) => ({
             ...data,
             episode: data.episode,
-          })),
-          ["episode"],
-          "desc"
-        )
-          .slice(0, 6)
+          }))
+          .slice(episodeData.length - 6, episodeData.length)
           .map((episode, index) => {
             return (
               <Link

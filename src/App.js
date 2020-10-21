@@ -164,7 +164,10 @@ window.addEventListener("scroll", () => {
       }
   });
 });
-
+window.addEventListener("load", () => {
+  const body = document.querySelector("body");
+  body.style.backgroundImage = "url(/background.jpg)";
+});
 function App() {
   const navLoginRef = useRef();
   const navRegisterRef = useRef();
@@ -180,8 +183,8 @@ function App() {
     return () => {
       subscription.unsubscribe();
       subscriptionLock.unsubscribe();
-    }
-  },[])
+    };
+  }, []);
 
   useEffect(() => {
     navBarStore.init();
@@ -195,8 +198,8 @@ function App() {
     const fetchingUserSub = fetchingUser$(cookies.idCartoonUser).subscribe();
     return () => {
       fetchingUserSub.unsubscribe();
-    }
-  },[cookies.idCartoonUser])
+    };
+  }, [cookies.idCartoonUser]);
   return (
     <Router>
       {toggleNavBarState.isShowBlockPopUp && (

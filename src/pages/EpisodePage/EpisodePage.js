@@ -9,10 +9,10 @@ import { Link, useHistory } from "react-router-dom";
 import { fetchEpisodesOfMovie$, pageWatchStream } from "../../epics/pageWatch";
 import { theaterStream } from "../../epics/theater";
 import { userStream } from "../../epics/user";
-import { allowShouldFetchComment } from "../../store/comment";
 import { ajax } from "rxjs/ajax";
 import { catchError, pluck, retry } from "rxjs/operators";
 import { of } from "rxjs";
+import { nameStream } from "../../epics/name";
 const Comment = loadable(() => import("../../components/Comment/Comment"));
 const Chat = loadable(() => import("../../components/Chat/Chat"), {
   fallback: (
@@ -76,7 +76,15 @@ const EpisodePage = (props) => {
     if (user)
       theaterStream.socket.emit("user-join-watch", malId, user.username);
     let fetchEpisodesSub, fetchTitleAnimeSub;
-    if (pageWatchStream.currentState().malId !== malId) {
+    if (nameStream.currentState().malId === malId) {
+      pageWatchStream.updateEpisodes(
+        nameStream.currentState().dataEpisodesAnime
+      );
+      pageWatchStream.updateTitle(
+        nameStream.currentState().dataInformationAnime.title
+      );
+      pageWatchStream.updateInfoPageWatch(malId);
+    } else if (pageWatchStream.currentState().malId !== malId) {
       fetchEpisodesSub = fetchEpisodesOfMovie$(malId).subscribe((v) => {
         pageWatchStream.updateEpisodes(v);
         pageWatchStream.updateInfoPageWatch(malId);
@@ -295,7 +303,6 @@ function ListEpisodeUrlDisplay({
               }`}
               to={`/anime/${malId}/watch/${ep.episode}/${modeDisplay}`}
               key={index}
-              onClick={() => allowShouldFetchComment(true)}
             >
               {ep.episode}
             </Link>

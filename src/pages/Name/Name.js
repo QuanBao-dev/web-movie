@@ -27,7 +27,6 @@ import {
 } from '../../epics/name';
 import { pageWatchStream } from '../../epics/pageWatch';
 import { userStream } from '../../epics/user';
-import { allowShouldFetchComment } from '../../store/comment';
 import navBarStore from '../../store/navbar';
 
 const Characters = loadable(() =>
@@ -172,7 +171,6 @@ const Name = (props) => {
       setShowThemeMusic(false);
     };
   }, [name]);
-  // console.log(nameStream.currentState().boxMovie);
   useEffect(() => {
     const subscription = fetchBoxMovieOneMovie$(
       name,
@@ -277,9 +275,6 @@ const Name = (props) => {
           {episodeDataDisplay && episodeDataDisplay.episodeList.length > 0 && (
             <Link
               className="btn btn-success"
-              onClick={() => {
-                allowShouldFetchComment(true);
-              }}
               to={
                 "/anime/" +
                 name +
@@ -881,6 +876,7 @@ function ListVideoUrl({ episodeData, name, keyListEpisode }) {
             episode: data.episode,
           }))
           .slice(episodeData.length - 6, episodeData.length)
+          .reverse()
           .map((episode, index) => {
             return (
               <Link
@@ -891,9 +887,6 @@ function ListVideoUrl({ episodeData, name, keyListEpisode }) {
                     ? "vie"
                     : keyListEpisode.replace("episodes", "")
                 }`}
-                onClick={() => {
-                  allowShouldFetchComment(true);
-                }}
               >
                 {episode.episode}
               </Link>

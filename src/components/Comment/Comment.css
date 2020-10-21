@@ -54,6 +54,7 @@
   padding: 1rem;
   border: none;
   color: white;
+  cursor: text;
   font-size: 1.4rem;
   outline: none;
   max-height: 200px;

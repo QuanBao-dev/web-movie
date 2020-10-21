@@ -332,6 +332,7 @@ function SelectFilterAnime({
               </option>
             );
           }
+          return undefined;
         })}
       </select>
     </div>

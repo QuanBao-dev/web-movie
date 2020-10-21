@@ -60,9 +60,6 @@ const chatStore = {
   }
 };
 
-export const allowShouldFetchComment = (bool) =>{
-  state.shouldFetchComment = bool;
-}
 export const updateCurrentName = (name) => {
   state.currentName = name;
 }

@@ -11,10 +11,7 @@ import {
 } from "../../epics/comment";
 import Input from "../Input/Input";
 import { useCookies } from "react-cookie";
-import {
-  allowShouldFetchComment,
-  updateCurrentName,
-} from "../../store/comment";
+import { updateCurrentName } from "../../store/comment";
 import navBarStore from "../../store/navbar";
 import { nanoid } from "nanoid";
 // import theaterStore from "../../store/theater";
@@ -57,20 +54,23 @@ function Comment({ malId, user }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
   useEffect(() => {
+    let subscription1;
+    subscription1 = fetchPageMessage$(malId).subscribe((responseMessage) => {
+      chatStream.updateMessages(responseMessage);
+      chatStream.updateCurrentPage(chatState.currentPage);
+      wrapperMessage.current.style.display = "block";
+    });
+    return () => {
+      subscription1 && subscription1.unsubscribe();
+    };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  useEffect(() => {
     const subscription = chatStream.subscribe(setChatState);
     chatStream.init();
-    let subscription1;
     let subscription2;
     let subscription3;
 
-    if (chatState.shouldFetchComment) {
-      subscription1 = fetchPageMessage$(malId).subscribe((responseMessage) => {
-        chatStream.updateMessages(responseMessage);
-        chatStream.updateCurrentPage(chatState.currentPage);
-        wrapperMessage.current.style.display = "block";
-        allowShouldFetchComment(false);
-      });
-    }
     if (user) {
       inputAuthor.current.value = chatStream.currentState().currentName;
       if (
@@ -98,7 +98,6 @@ function Comment({ malId, user }) {
     }
     return () => {
       subscription.unsubscribe();
-      subscription1 && subscription1.unsubscribe();
       subscription2 && subscription2.unsubscribe();
       subscription3 && subscription3.unsubscribe();
     };
@@ -109,7 +108,6 @@ function Comment({ malId, user }) {
     chatState.shouldFetchComment,
     inputAuthorRefs,
     inputRefs,
-    malId,
     user,
   ]);
   let allPos50pxMargin = [];

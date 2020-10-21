@@ -50,7 +50,7 @@
   flex-wrap: nowrap;
   width: 700%;
   align-items: center;
-  justify-content: flex-start;
+  justify-content: center;
   height: 650px;
   position: relative;
   transition: 0.4s;

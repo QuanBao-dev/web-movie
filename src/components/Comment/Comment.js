@@ -55,16 +55,16 @@ function Comment({ malId, user }) {
   }, [user]);
   useEffect(() => {
     let subscription1;
-    subscription1 = fetchPageMessage$(malId).subscribe((responseMessage) => {
-      chatStream.updateMessages(responseMessage);
-      chatStream.updateCurrentPage(chatState.currentPage);
+    subscription1 = fetchPageMessage$(malId).subscribe(({ data, lastPage }) => {
+      const updatedData = [...chatStream.currentState().messages, ...data];
+      chatStream.updateMessages(updatedData, lastPage);
       wrapperMessage.current.style.display = "block";
     });
     return () => {
       subscription1 && subscription1.unsubscribe();
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [chatState.currentPage, chatState.triggerFetch]);
   useEffect(() => {
     const subscription = chatStream.subscribe(setChatState);
     chatStream.init();
@@ -110,30 +110,11 @@ function Comment({ malId, user }) {
     inputRefs,
     user,
   ]);
-  let allPos50pxMargin = [];
-  for (let i = 1; i < chatState.messages.length; i++) {
-    if (
-      chatState.messages[i - 1].marginLeft === "50px" &&
-      convertPxToInt(chatState.messages[i].marginLeft) >=
-        convertPxToInt(chatState.messages[i - 1].marginLeft)
-    ) {
-      allPos50pxMargin.push({ pos: i });
-    }
-  }
-  if (
-    chatState.messages[chatState.messages.length - 1] &&
-    chatState.messages[chatState.messages.length - 1].marginLeft === "50px"
-  ) {
-    allPos50pxMargin.push({ pos: chatState.messages.length });
-  }
   // console.log(allPos50pxMargin);
 
   const e = document.getElementsByClassName("comment-button-see").item(0);
   if (e) {
-    if (
-      allPos50pxMargin.length <=
-      chatState.currentPage * chatState.numberCommentOfEachPage
-    ) {
+    if (chatState.currentPage >= chatState.lastPageComment) {
       e.style.display = "none";
     } else {
       e.style.display = "block";
@@ -188,51 +169,34 @@ function Comment({ malId, user }) {
         )}
         {!user && <h3>You need to sign in to comment</h3>}
       </div>
-      {chatState.messages
-        .slice(
-          0,
-          allPos50pxMargin[
-            chatState.currentPage * chatState.numberCommentOfEachPage
-          ]
-            ? allPos50pxMargin[
-                chatState.currentPage * chatState.numberCommentOfEachPage
-              ].pos - 1
-            : chatState.messages.length
-        )
-        .map((v, index) => {
-          return (
-            <div key={index}>
-              <UserComment
-                v={v}
-                user={user}
-                index={index}
-                malId={malId}
-                cookies={cookies}
-                containerInputRefs={containerInputRefs}
-                buttonSubmitRefs={buttonSubmitRefs}
-              />
-              <FormReply
-                containerInputRefs={containerInputRefs}
-                index={index}
-                v={v}
-                inputAuthorRefs={inputAuthorRefs}
-                inputRefs={inputRefs}
-                buttonSubmitRefs={buttonSubmitRefs}
-                malId={malId}
-              />
-            </div>
-          );
-        })}
+      {chatState.messages.map((v, index) => {
+        return (
+          <div key={index}>
+            <UserComment
+              v={v}
+              user={user}
+              index={index}
+              malId={malId}
+              cookies={cookies}
+              containerInputRefs={containerInputRefs}
+              buttonSubmitRefs={buttonSubmitRefs}
+            />
+            <FormReply
+              containerInputRefs={containerInputRefs}
+              index={index}
+              v={v}
+              inputAuthorRefs={inputAuthorRefs}
+              inputRefs={inputRefs}
+              buttonSubmitRefs={buttonSubmitRefs}
+              malId={malId}
+            />
+          </div>
+        );
+      })}
       <div
         className="comment-button-see"
         onClick={() => {
           const nextPage = chatState.currentPage;
-          if (
-            chatState.messages.length <
-            nextPage * chatState.numberCommentOfEachPage
-          ) {
-            return;
-          }
           chatStream.updateCurrentPage(nextPage + 1);
         }}
       >
@@ -374,7 +338,7 @@ function DeleteComment({ v, malId, cookies }) {
       onClick={async () => {
         navBarStore.updateIsShowBlockPopUp(true);
         try {
-          const messages = await Axios.put(
+          await Axios.put(
             "/api/movies/message/delete/" + malId,
             {
               commentId: v.commentId,
@@ -385,11 +349,31 @@ function DeleteComment({ v, malId, cookies }) {
               },
             }
           );
-          chatStream.updateMessages(messages.data.message);
+          if (chatStream.currentState().currentPage !== 1) {
+            chatStream.resetComments();
+          } else {
+            chatStream.updateTriggerFetch(
+              !chatStream.currentState().triggerFetch
+            );
+          }
+          // chatStream.updateMessages(
+          //   messages.data.message,
+          //   chatStream.currentState().lastPageComment
+          // );
         } catch (error) {
-          const { message, comments } = error.response.data.error;
+          const { message } = error.response.data.error;
           alert(message);
-          chatStream.updateMessages(comments);
+          if (chatStream.currentState().currentPage !== 1) {
+            chatStream.resetComments();
+          } else {
+            chatStream.updateTriggerFetch(
+              !chatStream.currentState().triggerFetch
+            );
+          }
+          // chatStream.updateMessages(
+          //   comments,
+          //   chatStream.currentState().lastPageComment
+          // );
         }
         navBarStore.updateIsShowBlockPopUp(false);
       }}
@@ -415,9 +399,6 @@ function addInputReply(user, containerInputRefs, buttonSubmitRefs, index) {
 
 function multipleCreateRefList(n) {
   return Array.from(Array(n).keys()).map(() => createRef());
-}
-function convertPxToInt(string = "") {
-  return parseInt(string.replace(/px/g, ""));
 }
 async function handleUpdateMessage(
   malId,
@@ -451,7 +432,7 @@ async function handleUpdateMessage(
     : null;
   try {
     navBarStore.updateIsShowBlockPopUp(true);
-    const messages = await Axios.put(
+    await Axios.put(
       `/api/movies/${malId}`,
       {
         newMessage,
@@ -464,12 +445,20 @@ async function handleUpdateMessage(
         },
       }
     );
-    chatStream.updateMessages(messages.data.message);
+    if (chatStream.currentState().currentPage !== 1) {
+      chatStream.resetComments();
+    } else {
+      chatStream.updateTriggerFetch(!chatStream.currentState().triggerFetch);
+    }
     inputElement.innerText = "";
   } catch (error) {
-    const { message, comments } = error.response.data.error;
+    const { message } = error.response.data.error;
     alert(message);
-    chatStream.updateMessages(comments);
+    if (chatStream.currentState().currentPage !== 1) {
+      chatStream.resetComments();
+    } else {
+      chatStream.updateTriggerFetch(!chatStream.currentState().triggerFetch);
+    }
   }
   navBarStore.updateIsShowBlockPopUp(false);
 }

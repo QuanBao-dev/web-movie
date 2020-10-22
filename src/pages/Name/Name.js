@@ -242,7 +242,7 @@ const Name = (props) => {
   Object.keys(nameState.dataEpisodesAnime).forEach((key) => {
     const episodeList = nameState.dataEpisodesAnime[key];
     if (["episodes", "episodesEng", "episodesEngDub"].includes(key)) {
-      if (episodeList.length > episodeDataDisplay.episodeList.length) {
+      if (episodeList.length >= episodeDataDisplay.episodeList.length) {
         episodeDataDisplay = { key, episodeList: [...episodeList] };
       }
     }
@@ -348,7 +348,6 @@ const Name = (props) => {
             {nameState.isLoadingEpisode !== null &&
               nameState.isLoadingEpisode === true && (
                 <div>
-                  <h1 className="title">Latest Episodes</h1>
                   <CircularProgress color="secondary" size="4rem" />
                 </div>
               )}

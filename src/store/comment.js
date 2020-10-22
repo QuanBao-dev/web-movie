@@ -8,6 +8,8 @@ const initialState = {
   malId: null,
   shouldFetchComment: true,
   currentName:"",
+  lastPageComment:1,
+  triggerFetch:0
 };
 
 const behaviorSubject = new BehaviorSubject();
@@ -23,12 +25,13 @@ const chatStore = {
     behaviorSubject.subscribe((v) => {
       ans = v;
     });
-    return ans;
+    return ans || initialState;
   },
-  updateMessages: (messages) => {
+  updateMessages: (messages,lastPage) => {
     state = {
       ...state,
-      messages: [...messages],
+      messages: messages,
+      lastPageComment:lastPage
     };
     behaviorSubject.next(state);
   },
@@ -57,6 +60,24 @@ const chatStore = {
       currentPage:page
     };
     behaviorSubject.next(state);
+  },
+  updateTriggerFetch:(bool) => {
+    state={
+      ...state,
+      triggerFetch:bool,
+      messages:[],
+      lastPageComment:1
+    };
+    behaviorSubject.next(state)
+  },
+  resetComments:()=>{
+    state={
+      ...state,
+      messages:[],
+      currentPage:1,
+      lastPageComment:1
+    };
+    behaviorSubject.next(state)
   }
 };
 

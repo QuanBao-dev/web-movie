@@ -42,10 +42,10 @@ export const validateInput$ = (
 };
 
 export const fetchPageMessage$ = (malId) => {
-  return timer(0).pipe(
+  return timer(0).pipe( 
     switchMapTo(
       ajax({
-        url: `/api/movies/${malId}`,
+        url: `/api/movies/${malId}?page=`+chatStream.currentState().currentPage,
       }).pipe(
         map((res) => res.response.message),
         catchError(() => of([]))

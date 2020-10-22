@@ -45,7 +45,11 @@ const initialState = {
   positionScrollTop:0,
   modeFilter:"filter",
   isFirstLaunch:true,
-  genreId:"0"
+  genreId:"0",
+  currentPageUpdatedMovie:1,
+  currentPageBoxMovie:1,
+  lastPageUpdatedMovie:1,
+  lastPageBoxMovie:1,
 };
 
 const subject = new BehaviorSubject(initialState);
@@ -229,18 +233,34 @@ const homeStore = {
     };
     subject.next(state);
   },
-  updateUpdatedMovie: (data) => {
+  updateUpdatedMovie: (data,lastPage) => {
     state = {
       ...state,
       updatedMovie: [...data],
+      lastPageUpdatedMovie:lastPage
     };
     subject.next(state);
   },
 
-  updateBoxMovie: (data) => {
+  updateCurrentPageUpdatedMovie:(page) => {
+    state={
+      ...state,
+      currentPageUpdatedMovie:page
+    };
+    subject.next(state);
+  },
+  updateCurrentPageBoxMovie:(page) => {
+    state={
+      ...state,
+      currentPageBoxMovie:page
+    };
+    subject.next(state);
+  },
+  updateBoxMovie: (data, lastPage) => {
     state = {
       ...state,
       boxMovie: [...data],
+      lastPageBoxMovie:lastPage
     };
     subject.next(state);
   },

@@ -13,6 +13,7 @@ import { ajax } from "rxjs/ajax";
 import { catchError, pluck, retry } from "rxjs/operators";
 import { of } from "rxjs";
 import { nameStream } from "../../epics/name";
+import { chatStream } from "../../epics/comment";
 const Comment = loadable(() => import("../../components/Comment/Comment"));
 const Chat = loadable(() => import("../../components/Chat/Chat"), {
   fallback: (
@@ -50,6 +51,13 @@ const EpisodePage = (props) => {
   useEffect(() => {
     const subscription = pageWatchStream.subscribe(setPageWatchState);
     pageWatchStream.init();
+    if (mode === "Eng") {
+      setIsDisplayEngSub(true);
+    } else if (mode === "EngDub") {
+      setIsDisplayEngDub(true);
+    } else {
+      setIsDisplayVietSub(true);
+    }
     window.scroll({ top: 0 });
     return () => {
       subscription.unsubscribe();
@@ -75,6 +83,7 @@ const EpisodePage = (props) => {
   useEffect(() => {
     if (pageWatchStream.currentState().malId !== malId) {
       pageWatchStream.resetState();
+      chatStream.resetComments();
     }
   }, [malId]);
   useEffect(() => {

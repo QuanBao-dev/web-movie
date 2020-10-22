@@ -1,24 +1,26 @@
 import loadable from "@loadable/component";
-import orderBy  from "lodash/orderBy";
 import React, { useEffect, useState } from "react";
 import { useCookies } from "react-cookie";
 
 import { fetchBoxMovie$, fetchUpdatedMovie$, stream } from "../../epics/home";
 import { userStream } from "../../epics/user";
+const PaginationAnime = loadable(
+  () => import("../PaginationAnimeList/PaginationAnime"),
+  {
+    fallback: (
+      <div>
+        <i className="fas fa-spinner fa-9x fa-spin"></i>
+      </div>
+    ),
+  }
+);
 
-const AnimeList = loadable(() => import("../AnimeList/AnimeList"), {
-  fallback: <div>Loading...</div>,
-});
-const numberOfMovieShown = 18;
 const UpdatedAnime = () => {
   const [homeState, setHomeState] = useState(
     stream.currentState() || stream.initialState
   );
   const [subNavToggle, setSubNavToggle] = useState(0);
   const [cookies] = useCookies(["idCartoonUser"]);
-  const [limitShowRecentlyUpdated, setLimitShowRecentlyUpdated] = useState(
-    numberOfMovieShown
-  );
   const user = userStream.currentState();
   useEffect(() => {
     const subscription = stream.subscribe(setHomeState);
@@ -27,41 +29,35 @@ const UpdatedAnime = () => {
     };
   }, []);
   useEffect(() => {
+    const subNavBar = document.querySelector(".sub-nav-bar");
+    window.scroll({
+      top: subNavBar.offsetTop - 90,
+    });
     let subscription8, subscription9;
     if (subNavToggle === 0) {
-      subscription8 = fetchUpdatedMovie$().subscribe((updatedMovie) => {
-        // console.log("updated movie");
-        stream.updateUpdatedMovie(updatedMovie);
+      stream.updateUpdatedMovie([], stream.currentState().lastPageUpdatedMovie);
+      subscription8 = fetchUpdatedMovie$().subscribe(({ data, lastPage }) => {
+        stream.updateUpdatedMovie(data, lastPage);
       });
     }
     if (subNavToggle === 1) {
-      subscription9 = fetchBoxMovie$(cookies.idCartoonUser).subscribe((v) => {
-        stream.updateBoxMovie(v);
-      });
+      stream.updateBoxMovie([], stream.currentState().lastPageBoxMovie);
+      subscription9 = fetchBoxMovie$(cookies.idCartoonUser).subscribe(
+        ({ data, lastPage }) => {
+          stream.updateBoxMovie(data, lastPage);
+        }
+      );
     }
     return () => {
       subscription8 && subscription8.unsubscribe();
       subscription9 && subscription9.unsubscribe();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [subNavToggle]);
-  const e = document.getElementById("button-see-more__home");
-  if (e) {
-    if (subNavToggle === 0) {
-      if (limitShowRecentlyUpdated >= homeState.updatedMovie.length) {
-        e.style.display = "none";
-      } else {
-        e.style.display = "flex";
-      }
-    } else {
-      const e = document.getElementById("button-see-more__home");
-      if (limitShowRecentlyUpdated >= homeState.boxMovie.length) {
-        e.style.display = "none";
-      } else {
-        e.style.display = "flex";
-      }
-    }
-  }
+  }, [
+    subNavToggle,
+    homeState.currentPageBoxMovie,
+    homeState.currentPageUpdatedMovie,
+  ]);
   return (
     <div>
       <SubNavBar
@@ -69,50 +65,24 @@ const UpdatedAnime = () => {
         setSubNavToggle={setSubNavToggle}
         user={user}
       />
-      <AnimeList
-        empty={true}
-        lazy={true}
-        data={
-          subNavToggle === 0
-            ? orderBy(homeState.updatedMovie, ["updatedAt"], ["desc"]).slice(
-                0,
-                limitShowRecentlyUpdated > homeState.updatedMovie.length
-                  ? homeState.updatedMovie.length
-                  : limitShowRecentlyUpdated
-              )
-            : subNavToggle === 1 && user
-            ? orderBy(homeState.boxMovie, ["dateAdded"], ["desc"]).slice(
-                0,
-                limitShowRecentlyUpdated > homeState.boxMovie.length
-                  ? homeState.boxMovie.length
-                  : limitShowRecentlyUpdated
-              )
-            : []
+      <PaginationAnime
+        updatedMovie={
+          subNavToggle === 0 ? homeState.updatedMovie : homeState.boxMovie
         }
-        error={homeState.error || null}
+        lastPage={
+          subNavToggle === 0
+            ? homeState.lastPageUpdatedMovie
+            : homeState.lastPageBoxMovie
+        }
+        subNavToggle={subNavToggle}
+        currentPage={
+          subNavToggle === 0
+            ? stream.currentState().currentPageUpdatedMovie
+            : stream.currentState().currentPageBoxMovie
+        }
       />
-      <div id="button-see-more__home" onClick={() => showMoreAnime()}>
-        <div>See more</div>
-      </div>
     </div>
   );
-  function showMoreAnime() {
-    const temp = limitShowRecentlyUpdated;
-    stream.allowScrollToSeeMore(false);
-    if (subNavToggle === 0) {
-      if (temp + numberOfMovieShown <= homeState.updatedMovie.length) {
-        setLimitShowRecentlyUpdated(temp + numberOfMovieShown);
-      } else {
-        setLimitShowRecentlyUpdated(homeState.updatedMovie.length);
-      }
-    } else if (subNavToggle === 1) {
-      if (temp + numberOfMovieShown <= homeState.boxMovie.length) {
-        setLimitShowRecentlyUpdated(temp + numberOfMovieShown);
-      } else {
-        setLimitShowRecentlyUpdated(homeState.boxMovie.length);
-      }
-    }
-  }
 };
 
 function SubNavBar({ subNavToggle, setSubNavToggle, user }) {

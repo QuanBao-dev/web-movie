@@ -23,12 +23,29 @@ router.get("/", verifyRole("Admin"), async (req, res) => {
 });
 
 router.get("/latest", async (req, res) => {
+  const page = req.query.page || "1";
   try {
+    let movies, lastPage;
     const updatedMovies = await UpdatedMovie.find();
+    lastPage = Math.ceil(updatedMovies.length / 18);
+    if (page) {
+      movies = updatedMovies.sort(
+        (moviePrev, movieCurrent) =>
+          -new Date(moviePrev.updatedAt).getTime() +
+          new Date(movieCurrent.updatedAt).getTime()
+      );
+      movies = updatedMovies.slice(
+        (parseInt(page) - 1) * 18,
+        parseInt(page) * 18
+      );
+    }
     res.json({
-      message: updatedMovies.map((movie) => {
-        return ignoreProps(["_id", "__v"], movie.toJSON());
-      }),
+      message: {
+        data: movies.map((movie) => {
+          return ignoreProps(["_id", "__v"], movie.toJSON());
+        }),
+        lastPage,
+      },
     });
   } catch (error) {
     res.status(404).send({ error: "Something went wrong" });
@@ -111,6 +128,8 @@ router.get("/:malId/episodes", async (req, res) => {
 });
 
 router.get("/:malId", async (req, res) => {
+  const page = parseInt(req.query.page || "1");
+  const numberCommentOfEachPage = 5;
   try {
     const movie = await Movie.findOne({ malId: req.params.malId });
     const newMovie = new Movie({
@@ -125,10 +144,40 @@ router.get("/:malId", async (req, res) => {
       });
     }
     const messages = movie.messages;
+
+    let allPos50pxMargin = [];
+    for (let i = 1; i < messages.length; i++) {
+      if (
+        messages[i - 1].marginLeft === "50px" &&
+        convertPxToInt(messages[i].marginLeft) >=
+          convertPxToInt(messages[i - 1].marginLeft)
+      ) {
+        allPos50pxMargin.push({ pos: i });
+      }
+    }
+    if (
+      messages[messages.length - 1] &&
+      messages[messages.length - 1].marginLeft === "50px"
+    ) {
+      allPos50pxMargin.push({ pos: messages.length });
+    }
     res.send({
-      message: messages.map((message) => {
-        return ignoreProps(["_id", "__v"], message.toJSON());
-      }),
+      message: {
+        data: messages
+          .slice(
+            allPos50pxMargin[(page - 1) * numberCommentOfEachPage]
+              ? allPos50pxMargin[(page - 1) * numberCommentOfEachPage].pos - 1
+              : 0,
+            allPos50pxMargin[page * numberCommentOfEachPage]
+              ? allPos50pxMargin[page * numberCommentOfEachPage].pos - 1
+              : messages.length
+          )
+          .map((message) => {
+            return ignoreProps(["_id", "__v"], message.toJSON());
+          }),
+        lastPage:
+          Math.ceil(allPos50pxMargin.length / numberCommentOfEachPage) || 1,
+      },
     });
   } catch (error) {
     res.status(404).send({ error: "Something went wrong" });
@@ -148,9 +197,6 @@ router.put(
       return res.status(404).send({
         error: {
           message: "comment has been deleted",
-          comments: movie.messages.map((message) => {
-            return ignoreProps(["_id", "__v"], message.toJSON());
-          }),
         },
       });
     }
@@ -177,12 +223,8 @@ router.put(
     }
     try {
       movie.messages = updateDeleteComment(movie, listDelete);
-      const movieAfterDeleteMessage = await movie.save();
-      res.send({
-        message: movieAfterDeleteMessage.messages.map((message) => {
-          return ignoreProps(["_id", "__v"], message.toJSON());
-        }),
-      });
+      await movie.save();
+      res.send({});
     } catch (error) {
       res.status(404).send({ error: "Something went wrong" });
     }
@@ -391,21 +433,14 @@ router.put("/:malId", verifyRole("Admin", "User"), async (req, res) => {
       return res.status(404).send({
         error: {
           message: "The comment you answer has just been deleted",
-          comments: movie.messages.map((message) => {
-            return ignoreProps(["_id", "__v"], message.toJSON());
-          }),
         },
       });
     }
   }
   try {
     movie.messages = updateComment(movie, newMessage, index, isPush);
-    const movieSaved = await movie.save();
-    res.send({
-      message: movieSaved.messages.map((message) =>
-        ignoreProps(["_id", "__v"], message.toJSON())
-      ),
-    });
+    await movie.save();
+    res.send({});
   } catch (error) {
     res.status(404).send({ error: "Something went wrong" });
   }

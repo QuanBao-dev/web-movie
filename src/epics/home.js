@@ -292,7 +292,9 @@ export const fetchUpdatedMovie$ = () => {
   return timer(0).pipe(
     switchMapTo(
       ajax({
-        url: "/api/movies/latest",
+        url:
+          "/api/movies/latest?page=" +
+          stream.currentState().currentPageUpdatedMovie,
       }).pipe(
         pluck("response", "message"),
         retry(20),
@@ -327,7 +329,8 @@ export const fetchBoxMovie$ = (idCartoonUser) => {
   return timer(0).pipe(
     switchMap(() =>
       ajax({
-        url: "/api/movies/box/",
+        url:
+          "/api/movies/box?page=" + stream.currentState().currentPageBoxMovie,
         headers: {
           authorization: `Bearer ${idCartoonUser}`,
         },

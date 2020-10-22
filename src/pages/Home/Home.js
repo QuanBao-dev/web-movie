@@ -6,7 +6,13 @@ import React, { useEffect, useState } from "react";
 import { stream } from "../../epics/home";
 
 const SearchInput = loadable(
-  () => import("../../components/SearchInput/SearchInput"),
+  () =>
+    new Promise((res, rej) =>
+      setTimeout(
+        () => res(import("../../components/SearchInput/SearchInput")),
+        100
+      )
+    ),
   {
     fallback: (
       <div style={{ textAlign: "center" }}>
@@ -17,7 +23,13 @@ const SearchInput = loadable(
 );
 
 const AnimeListSeason = loadable(
-  () => import("../../components/AnimeListSeason/AnimeListSeason"),
+  () =>
+    new Promise((res, rej) =>
+      setTimeout(
+        () => res(import("../../components/AnimeListSeason/AnimeListSeason")),
+        2000
+      )
+    ),
   {
     fallback: (
       <div style={{ textAlign: "center" }}>
@@ -40,10 +52,18 @@ const UpdatedAnime = loadable(
   }
 );
 
-const AnimeSchedule = loadable(() =>
-  /* webpackPrefetch: true */ import(
-    "../../components/AnimeSchedule/AnimeSchedule"
-  )
+const AnimeSchedule = loadable(
+  () =>
+    new Promise((res, rej) =>
+      setTimeout(() => {
+        res(
+          /* webpackPrefetch: true */ import(
+            "../../components/AnimeSchedule/AnimeSchedule"
+          )
+        );
+      }, 1000)
+    ),
+  { fallback: <i className="fas fa-spinner fa-9x fa-spin"></i> }
 );
 
 const Genres = loadable(() => import("../../components/Genres/Genres"));
@@ -51,25 +71,58 @@ const Genres = loadable(() => import("../../components/Genres/Genres"));
 const SearchedAnimeList = loadable(() =>
   import("../../components/SearchedAnimeList/SearchedAnimeList")
 );
-const UpcomingAnimeList = loadable(() =>
-  /* webpackPrefetch: true */ import(
-    "../../components/UpcomingAnimeList/UpcomingAnimeList"
-  )
+const UpcomingAnimeList = loadable(
+  () =>
+    new Promise((res, rej) =>
+      setTimeout(() => {
+        res(
+          /* webpackPrefetch: true */ import(
+            "../../components/UpcomingAnimeList/UpcomingAnimeList"
+          )
+        );
+      }, 500)
+    ),
+  {
+    fallback: <i className="fas fa-spinner fa-9x fa-spin"></i>,
+  }
 );
 
-const TopAnimeList = loadable(() =>
-  /* webpackPrefetch: true */ import(
-    "../../components/TopAnimeList/TopAnimeList"
-  )
+const TopAnimeList = loadable(
+  () => import("../../components/TopAnimeList/TopAnimeList"),
+  {
+    fallback: (
+      <div>
+        <i className="fas fa-spinner fa-4x fa-spin"></i>
+      </div>
+    ),
+  }
 );
 
 const Carousel = loadable(
   () =>
-    /* webpackPrefetch: true */ import("../../components/Carousel/Carousel"),
+    new Promise((res, rej) =>
+      setTimeout(
+        () =>
+          res(
+            /* webpackPrefetch: true */ import(
+              "../../components/Carousel/Carousel"
+            )
+          ),
+        0
+      )
+    ),
   {
     fallback: (
-      <div style={{ height: "650px" }}>
-        <i className="fas fa-spinner fa-9x fa-spin"></i>,
+      <div
+        style={{
+          height: "650px",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          backgroundColor: "black",
+        }}
+      >
+        <i className="fas fa-spinner fa-9x fa-spin"></i>
       </div>
     ),
   }

@@ -1,10 +1,12 @@
-import "./AnimeSchedule.css";
+import './AnimeSchedule.css';
 
-import React, { createRef, useEffect, useState } from "react";
+import loadable from '@loadable/component';
+import React, { createRef, useEffect, useState } from 'react';
 
-import { fetchAnimeSchedule$, stream } from "../../epics/home";
-import { resetScheduleDate } from "../../store/home";
-import AnimeList from "../AnimeList/AnimeList";
+import { fetchAnimeSchedule$, stream } from '../../epics/home';
+import { resetScheduleDate } from '../../store/home';
+
+const AnimeList = loadable(() => import("../AnimeList/AnimeList"));
 resetScheduleDate();
 const AnimeSchedule = () => {
   const week = [

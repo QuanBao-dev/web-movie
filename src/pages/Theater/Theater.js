@@ -1,5 +1,6 @@
 import "./Theater.css";
 
+import loadable from "@loadable/component";
 import Axios from "axios";
 import React, { useEffect, useRef, useState } from "react";
 import { useCookies } from "react-cookie";
@@ -8,19 +9,25 @@ import { asyncScheduler, fromEvent } from "rxjs";
 import { throttleTime } from "rxjs/operators";
 
 import Input from "../../components/Input/Input";
-import Toggle from "../../components/Toggle/Toggle";
 import {
   fetchRoomsData$,
   theaterStream,
   validateForm$,
 } from "../../epics/theater";
-import TheaterWatch from "../../pages/TheaterWatch/TheaterWatch";
 import {
   updateAllowFetchCurrentRoomDetail,
   updateAllowFetchRooms,
   updateAllowUserJoin,
   updateSignIn,
 } from "../../store/theater";
+
+const Toggle = loadable(() => import("../../components/Toggle/Toggle"));
+const TheaterWatch = loadable(
+  () => import("../../pages/TheaterWatch/TheaterWatch"),
+  {
+    fallback: <i className="fas fa-spinner fa-9x fa-spin"></i>,
+  }
+);
 
 const socket = theaterStream.socket;
 const Theater = (props) => {
@@ -74,7 +81,7 @@ const Theater = (props) => {
       buttonSubmitRef.current,
       inputRoomNameRef.current,
       inputPasswordRef.current
-    ).subscribe(); 
+    ).subscribe();
     ///TODO create new room
     return () => {
       subscription.unsubscribe();
@@ -187,7 +194,7 @@ function InputCreateRoom({
             socket.emit("create-new-room");
             updateAllowFetchRooms(true);
             inputRoomNameRef.current.value = "";
-            inputPasswordRef.current.value = ""
+            inputPasswordRef.current.value = "";
             theaterStream.addRoomTheater(res.data.message);
           } catch (error) {
             if (error.response.data.error.toLowerCase().includes("roomname")) {
@@ -196,16 +203,16 @@ function InputCreateRoom({
             } else {
               setRoomNameError(null);
               inputRoomNameRef.current.value = "";
-              inputPasswordRef.current.value = ""
+              inputPasswordRef.current.value = "";
             }
             if (error.response.data.error.toLowerCase().includes("password")) {
               setPasswordError(error.response.data.error);
-              inputPasswordRef.current.value = ""
+              inputPasswordRef.current.value = "";
             } else {
               inputRoomNameRef.current.value = "";
               inputPasswordRef.current.value = "";
               setPasswordError(null);
-            };
+            }
           }
         }}
         ref={buttonSubmitRef}

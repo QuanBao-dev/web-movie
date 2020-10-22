@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import { BehaviorSubject } from "rxjs";
+import { BehaviorSubject, ReplaySubject } from "rxjs";
 let today = new Date(Date.now()).getMonth() + 1;
 let currentSeason;
 let numSeason = today / 3;
@@ -50,6 +50,7 @@ const initialState = {
   currentPageBoxMovie:1,
   lastPageUpdatedMovie:1,
   lastPageBoxMovie:1,
+  triggerScroll:false
 };
 
 const subject = new BehaviorSubject(initialState);
@@ -66,6 +67,13 @@ const homeStore = {
     state={
       ...state,
       modeFilter:mode
+    };
+    subject.next(state);
+  },
+  updateTriggerScroll:(bool) => {
+    state={
+      ...state,
+      triggerScroll:bool
     };
     subject.next(state);
   },

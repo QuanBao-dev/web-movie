@@ -105,6 +105,11 @@
   object-fit: contain;
 }
 
+pre{
+  color:#d4c4c4
+}
+
+
 @media(max-width:600px){
   .person__image-character{
     height: 187px;

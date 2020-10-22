@@ -47,9 +47,7 @@ const UpcomingAnimeList = () => {
               elementScroll.childNodes[end].offsetLeft
             ) {
               elementScroll.scroll({
-                left:
-                  elementScroll.childNodes[end - numberList]
-                    .offsetLeft,
+                left: elementScroll.childNodes[end - numberList].offsetLeft,
               });
               setListenAgain(!listenAgain);
             }

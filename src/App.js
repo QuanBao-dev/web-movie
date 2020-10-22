@@ -165,8 +165,13 @@ window.addEventListener("scroll", () => {
   });
 });
 window.addEventListener("load", () => {
-  const body = document.querySelector("body");
-  body.style.backgroundImage = "url(/background.jpg)";
+  new Promise((res, rej) => {
+    setTimeout(() => {
+      const body = document.querySelector("body");
+      body.style.backgroundImage = "url(/background.jpg)";
+      res();
+    }, 3000);
+  });
 });
 function App() {
   const navLoginRef = useRef();

@@ -39,8 +39,20 @@ const PaginationAnime = ({
         <div
           className="home__page-item-search"
           onClick={() => {
-            if (subNavToggle === 0) stream.updateCurrentPageUpdatedMovie(1);
-            else stream.updateCurrentPageBoxMovie(1);
+            if (subNavToggle === 0) {
+              stream.updateCurrentPageUpdatedMovie(1);
+              stream.updateUpdatedMovie(
+                [],
+                stream.currentState().lastPageUpdatedMovie
+              );
+            } else {
+              stream.updateBoxMovie([], stream.currentState().lastPageBoxMovie);
+              stream.updateCurrentPageBoxMovie(1);
+            }
+            const subNavBar = document.querySelector(".sub-nav-bar");
+            window.scroll({
+              top: subNavBar.offsetTop - 90,
+            });
           }}
         >
           <i className="fas fa-chevron-left"></i>
@@ -54,9 +66,23 @@ const PaginationAnime = ({
                 pageData === currentPage ? " home__active-page-search" : ""
               }`}
               onClick={() => {
-                if (subNavToggle === 0)
+                if (subNavToggle === 0) {
+                  stream.updateUpdatedMovie(
+                    [],
+                    stream.currentState().lastPageUpdatedMovie
+                  );
                   stream.updateCurrentPageUpdatedMovie(pageData);
-                else stream.updateCurrentPageBoxMovie(pageData);
+                } else {
+                  stream.updateBoxMovie(
+                    [],
+                    stream.currentState().lastPageBoxMovie
+                  );
+                  stream.updateCurrentPageBoxMovie(pageData);
+                }
+                const subNavBar = document.querySelector(".sub-nav-bar");
+                window.scroll({
+                  top: subNavBar.offsetTop - 90,
+                });
               }}
             >
               {pageData}
@@ -65,9 +91,20 @@ const PaginationAnime = ({
         <div
           className="home__page-item-search"
           onClick={() => {
-            if (subNavToggle === 0)
+            if (subNavToggle === 0) {
+              stream.updateUpdatedMovie(
+                [],
+                stream.currentState().lastPageUpdatedMovie
+              );
               stream.updateCurrentPageUpdatedMovie(lastPage);
-            else stream.updateCurrentPageBoxMovie(lastPage);
+            } else {
+              stream.updateBoxMovie([], stream.currentState().lastPageBoxMovie);
+              stream.updateCurrentPageBoxMovie(lastPage);
+            }
+            const subNavBar = document.querySelector(".sub-nav-bar");
+            window.scroll({
+              top: subNavBar.offsetTop - 90,
+            });
           }}
         >
           <i className="fas fa-chevron-right"></i>

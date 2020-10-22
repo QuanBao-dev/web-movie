@@ -1,4 +1,7 @@
-import React from "react";
+import './VideoPlayerSection.css';
+
+import React from 'react';
+
 function VideoPlayerSection({ currentEpisode, user }) {
   return (
     <div className="video-player-container">

@@ -110,7 +110,7 @@
 }
 
 .section-episodes-display .title:hover{
-  background-color: #39415f;
+  box-shadow: 0 0 3px 1px rgba(146, 146, 146, 0.692);
 }
 
 .section-episodes-display .title-active{
@@ -154,7 +154,12 @@
   border: 1px double #7a7a37;
   text-decoration: none;
   color: white;
+  transition: 0.3s;
   background-color: #1c2129;
+}
+
+.episode-link-movie:hover{
+  background-color: #7a7a37;
 }
 
 .list-episode-movie::-webkit-scrollbar{
@@ -318,5 +323,4 @@
   overflow: hidden;
   padding: 1px;
   max-height: 100px;
-  transition: 0.5s;
 }

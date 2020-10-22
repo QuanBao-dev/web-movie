@@ -10,6 +10,7 @@ const SearchInput = () => {
   );
   useEffect(() => {
     const subscription = stream.subscribe(setHomeState);
+    window.scroll({ top: 0 });
     return () => {
       subscription.unsubscribe();
     };

@@ -4,6 +4,11 @@
   padding-right: 1rem;
 }
 
+pre{
+  color:#d4c4c4
+}
+
+
 .container-board-evaluate{
   display: flex;
   max-width: 240px;

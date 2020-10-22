@@ -28,13 +28,13 @@
 }
 
 .top-anime-list li img{
-  width: 70%;
+  width: auto;
   height: 260px;
   display: block;
   cursor: pointer;
   margin: 15px auto 10px auto;
   box-shadow: 0 0 10px 5px rgb(75, 75, 49);
-  object-fit: cover;
+  object-fit: contain;
   border-radius: 10px;
   object-position: center;
   animation: none;
@@ -47,7 +47,7 @@
 }
 
 .top-anime-list-info span img{
-  object-fit: cover;
+  object-fit: contain;
 } 
 
 .top-anime-list li img:hover{

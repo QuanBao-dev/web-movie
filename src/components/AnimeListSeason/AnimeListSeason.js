@@ -83,7 +83,6 @@ const AnimeListSeason = () => {
   }
   useEffect(() => {
     const subscription = stream.subscribe(setHomeState);
-    window.scroll({ top: 0 });
     return () => {
       subscription.unsubscribe();
     };
@@ -131,7 +130,6 @@ const AnimeListSeason = () => {
       stream.allowScrollToSeeMore(false);
       window.scroll({
         top: targetScroll.current.offsetTop - 170,
-        behavior: "smooth",
       });
     }
 

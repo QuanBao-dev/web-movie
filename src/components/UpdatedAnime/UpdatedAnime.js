@@ -29,19 +29,13 @@ const UpdatedAnime = () => {
     };
   }, []);
   useEffect(() => {
-    const subNavBar = document.querySelector(".sub-nav-bar");
-    window.scroll({
-      top: subNavBar.offsetTop - 90,
-    });
     let subscription8, subscription9;
     if (subNavToggle === 0) {
-      stream.updateUpdatedMovie([], stream.currentState().lastPageUpdatedMovie);
       subscription8 = fetchUpdatedMovie$().subscribe(({ data, lastPage }) => {
         stream.updateUpdatedMovie(data, lastPage);
       });
     }
     if (subNavToggle === 1) {
-      stream.updateBoxMovie([], stream.currentState().lastPageBoxMovie);
       subscription9 = fetchBoxMovie$(cookies.idCartoonUser).subscribe(
         ({ data, lastPage }) => {
           stream.updateBoxMovie(data, lastPage);

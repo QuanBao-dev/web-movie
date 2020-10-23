@@ -41,12 +41,18 @@ const PaginationAnime = ({
           onClick={() => {
             if (subNavToggle === 0) {
               stream.updateCurrentPageUpdatedMovie(1);
-              stream.updateUpdatedMovie(
-                [],
-                stream.currentState().lastPageUpdatedMovie
-              );
+              if (stream.currentState().currentPageUpdatedMovie !== 1)
+                stream.updateUpdatedMovie(
+                  [],
+                  stream.currentState().lastPageUpdatedMovie
+                );
             } else {
-              stream.updateBoxMovie([], stream.currentState().lastPageBoxMovie);
+              if (stream.currentState().currentPageBoxMovie !== 1) {
+                stream.updateBoxMovie(
+                  [],
+                  stream.currentState().lastPageBoxMovie
+                );
+              }
               stream.updateCurrentPageBoxMovie(1);
             }
             const subNavBar = document.querySelector(".sub-nav-bar");
@@ -67,16 +73,20 @@ const PaginationAnime = ({
               }`}
               onClick={() => {
                 if (subNavToggle === 0) {
-                  stream.updateUpdatedMovie(
-                    [],
-                    stream.currentState().lastPageUpdatedMovie
-                  );
+                  if (
+                    stream.currentState().currentPageUpdatedMovie !== pageData
+                  )
+                    stream.updateUpdatedMovie(
+                      [],
+                      stream.currentState().lastPageUpdatedMovie
+                    );
                   stream.updateCurrentPageUpdatedMovie(pageData);
                 } else {
-                  stream.updateBoxMovie(
-                    [],
-                    stream.currentState().lastPageBoxMovie
-                  );
+                  if (stream.currentState().currentPageBoxMovie !== pageData)
+                    stream.updateBoxMovie(
+                      [],
+                      stream.currentState().lastPageBoxMovie
+                    );
                   stream.updateCurrentPageBoxMovie(pageData);
                 }
                 const subNavBar = document.querySelector(".sub-nav-bar");
@@ -92,13 +102,18 @@ const PaginationAnime = ({
           className="home__page-item-search"
           onClick={() => {
             if (subNavToggle === 0) {
-              stream.updateUpdatedMovie(
-                [],
-                stream.currentState().lastPageUpdatedMovie
-              );
+              if (stream.currentState().currentPageUpdatedMovie !== lastPage)
+                stream.updateUpdatedMovie(
+                  [],
+                  stream.currentState().lastPageUpdatedMovie
+                );
               stream.updateCurrentPageUpdatedMovie(lastPage);
             } else {
-              stream.updateBoxMovie([], stream.currentState().lastPageBoxMovie);
+              if (stream.currentState().currentPageBoxMovie !== lastPage)
+                stream.updateBoxMovie(
+                  [],
+                  stream.currentState().lastPageBoxMovie
+                );
               stream.updateCurrentPageBoxMovie(lastPage);
             }
             const subNavBar = document.querySelector(".sub-nav-bar");

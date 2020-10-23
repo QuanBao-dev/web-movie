@@ -501,7 +501,7 @@ function ListInformation({ arrKeys, history, isLoading }) {
               );
             else
               return (
-                <li key={index}>
+                <li key={index} style={{ lineHeight: "2.3rem" }}>
                   <span
                     style={{
                       fontFamily: "Arial",

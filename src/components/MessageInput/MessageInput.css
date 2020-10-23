@@ -3,13 +3,12 @@
   background-color: rgb(92, 80, 80);
   border-radius: 10px;
   font-size: larger;
-  transition: 0.4s;
-  width: 40px;
   padding-top:10px;
   padding-bottom: 10px;
-  max-height: 150px;
+  max-height: 98px;
   overflow-y: auto;
   user-select: text;
+  width: 40px;
   -webkit-user-select: text;
   -moz-user-select: text;
   white-space: pre-wrap;

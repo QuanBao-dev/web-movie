@@ -86,12 +86,12 @@ io.on("connection", (socket) => {
         socket.to(groupId).emit("fetch-user-online");
       });
 
-      socket.on("delete-specific-member",async(publicUserId,groupId) => {
+      socket.on("delete-specific-member", async (publicUserId, groupId) => {
         await TheaterRoomMember.deleteMany({
           userId: publicUserId,
           groupId,
         }).lean();
-      })
+      });
 
       socket.on("new-video", (videoUri, groupId, uploadOtherVideo) => {
         socket.broadcast.emit(
@@ -272,10 +272,13 @@ app.use((req, res, next) => {
     res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Headers", "*");
   res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
+  res.setHeader("X-Frame-Options", "SAMEORIGIN");
+  res.setHeader("X-XSS-Protection", "1; mode=block");
+  res.setHeader("X-Content-Type-Options", "nosniff");
   next();
 });
 app.use("/peerjs", peerServer);
-app.use("/api/faq",faqRoute);
+app.use("/api/faq", faqRoute);
 app.use("/api/theater/", theaterRoute);
 app.use("/api/movies/box", boxMovieRoute);
 app.use("/api/movies", moviesRoute);

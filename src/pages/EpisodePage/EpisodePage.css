@@ -93,10 +93,7 @@
 
 .section-episodes-display{
   padding: 2rem;
-  margin: 1rem;
   width: 90%;
-  margin-top: 2rem;
-  border: 1px double rgb(88, 92, 71);
 }
 
 .section-episodes-display .title{
@@ -252,7 +249,7 @@
 }
 
 .video-player-container{
-  width: 64%;
+  width: 73%;
   height: 100%;
   padding: 0.5em;
   box-shadow: 0 0 1px 1px black;

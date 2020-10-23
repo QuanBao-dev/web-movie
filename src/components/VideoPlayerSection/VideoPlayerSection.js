@@ -1,18 +1,30 @@
-import './VideoPlayerSection.css';
+import "./VideoPlayerSection.css";
 
-import React from 'react';
+import React, { useEffect, useState } from "react";
+import { pageWatchStream } from "../../epics/pageWatch";
 
 function VideoPlayerSection({ currentEpisode, user }) {
+  const { imageUrl } = pageWatchStream.currentState();
+  const [switchVideo, setSwitchVideo] = useState(false);
   return (
     <div className="video-player-container">
       <div
+        onClick={() => setSwitchVideo(true)}
         className={`section-play-movie${
           currentEpisode && !currentEpisode.typeVideo
             ? " padding-control"
             : " padding-none"
         }`}
       >
-        {currentEpisode && !currentEpisode.typeVideo && (
+        {!switchVideo && (
+          <div>
+            <img className="image-video-player" src={imageUrl} alt="image_video"></img>
+            <div className="play-video-button-container">
+              <span className="play-video-button">▶</span>
+            </div>
+          </div>
+        )}
+        {switchVideo && currentEpisode && !currentEpisode.typeVideo && (
           <iframe
             className="embed-video-player"
             width="100%"
@@ -22,7 +34,7 @@ function VideoPlayerSection({ currentEpisode, user }) {
             allowFullScreen
           />
         )}
-        {currentEpisode && currentEpisode.typeVideo && (
+        {switchVideo && currentEpisode && currentEpisode.typeVideo && (
           <div className="video-container__episode">
             {user && (
               <div className="container-copy">

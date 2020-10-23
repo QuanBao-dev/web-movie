@@ -62,7 +62,7 @@ const EpisodePage = (props) => {
     return () => {
       subscription.unsubscribe();
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   useEffect(() => {
     if (
@@ -91,21 +91,28 @@ const EpisodePage = (props) => {
     if (user)
       theaterStream.socket.emit("user-join-watch", malId, user.username);
     let fetchEpisodesSub, fetchTitleAnimeSub;
-    if (nameStream.currentState().malId === malId) {
+    if (
+      nameStream.currentState().malId === malId &&
+      !!nameStream.currentState().dataLargePicture
+    ) {
       pageWatchStream.updateEpisodes(
         nameStream.currentState().dataEpisodesAnime
       );
       pageWatchStream.updateTitle(
         nameStream.currentState().dataInformationAnime.title
       );
+      pageWatchStream.updateImageUrl(
+        nameStream.currentState().dataLargePicture
+      );
       pageWatchStream.updateInfoPageWatch(malId);
-    } else if (pageWatchStream.currentState().malId !== malId) {
+    } else {
       fetchEpisodesSub = fetchEpisodesOfMovie$(malId).subscribe((v) => {
         pageWatchStream.updateEpisodes(v);
         pageWatchStream.updateInfoPageWatch(malId);
       });
       fetchTitleAnimeSub = fetchTitle$(malId).subscribe((v) => {
-        pageWatchStream.updateTitle(v);
+        pageWatchStream.updateTitle(v.title);
+        pageWatchStream.updateImageUrl(v.image_url);
       });
     }
     return () => {
@@ -354,7 +361,7 @@ function ListEpisodeUrlDisplay({
 function fetchTitle$(malId) {
   return ajax("https://api.jikan.moe/v3/anime/" + malId).pipe(
     retry(10),
-    pluck("response", "title"),
+    pluck("response"),
     catchError((error) => of({ error }))
   );
 }

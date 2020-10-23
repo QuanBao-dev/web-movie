@@ -114,12 +114,13 @@
 @media(max-width:376px){
   .wrapper-messages{
     padding: .5rem!important;
+    box-shadow: none!important;
   }
 }
 
 .comment-button-see{
   width: 100%;
-  padding: 1rem;
+  padding: 1rem 0;
   background-color: #000000;
   text-align: center;
   text-transform: uppercase;

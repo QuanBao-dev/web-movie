@@ -113,7 +113,11 @@ const MessageInput = ({
           document.execCommand("insertHTML", false, text);
         }}
         className="message-input-container"
-        onFocus={(e) => {
+        onClick={(e) => {
+          e.target.style.transition = "0.4s";
+          e.target.style.width = "100%";
+        }}
+        onTouchStart={(e) => {
           e.target.style.transition = "0.4s";
           e.target.style.width = "100%";
         }}

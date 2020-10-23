@@ -10,6 +10,7 @@ const initialState = {
   pageSplit: 1,
   title: null,
   malId: null,
+  imageUrl: null,
 };
 const behaviorSubject = new BehaviorSubject(initialState);
 let state = initialState;
@@ -44,6 +45,13 @@ const pageWatchStore = {
     state = {
       ...state,
       title,
+    };
+    behaviorSubject.next(state);
+  },
+  updateImageUrl: (imageUrl) => {
+    state = {
+      ...state,
+      imageUrl,
     };
     behaviorSubject.next(state);
   },

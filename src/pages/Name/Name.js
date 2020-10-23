@@ -492,9 +492,10 @@ function ListInformation({ arrKeys, history, isLoading }) {
                       padding: "10px",
                       backgroundColor: "#353940",
                       borderRadius: "10px",
+                      color:"white"
                     }}
                   >
-                    {capitalizeString(v)}
+                    {capitalizeString(v)}:
                   </span>{" "}
                   {`${nameStream.currentState().dataInformationAnime[v]}`}
                 </li>
@@ -508,9 +509,10 @@ function ListInformation({ arrKeys, history, isLoading }) {
                       padding: "10px",
                       backgroundColor: "#353940",
                       borderRadius: "10px",
+                      color:"white"
                     }}
                   >
-                    {capitalizeString(v)}
+                    {capitalizeString(v)}:
                   </span>{" "}
                   <span
                     style={{

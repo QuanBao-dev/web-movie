@@ -1,16 +1,15 @@
 import './VideoPlayerSection.css';
 
-import React, { useState } from 'react';
+import React from 'react';
 
 import { pageWatchStream } from '../../epics/pageWatch';
 
 function VideoPlayerSection({ currentEpisode, user }) {
-  const { imageUrl } = pageWatchStream.currentState();
-  const [switchVideo, setSwitchVideo] = useState(false);
+  const { imageUrl, switchVideo } = pageWatchStream.currentState();
   return (
     <div className="video-player-container">
       <div
-        onClick={() => setSwitchVideo(true)}
+        onClick={() => pageWatchStream.updateSwitchVideo(true)}
         className={`section-play-movie${
           currentEpisode && !currentEpisode.typeVideo
             ? " padding-control"

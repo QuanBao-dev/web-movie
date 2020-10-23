@@ -11,6 +11,7 @@ const initialState = {
   title: null,
   malId: null,
   imageUrl: null,
+  switchVideo:false
 };
 const behaviorSubject = new BehaviorSubject(initialState);
 let state = initialState;
@@ -24,6 +25,13 @@ const pageWatchStore = {
   },
   subscribe: (setState) => behaviorSubject.subscribe((v) => setState(v)),
   init: () => {
+    behaviorSubject.next(state);
+  },
+  updateSwitchVideo:(bool)=>{
+    state={
+      ...state,
+      switchVideo:bool
+    };
     behaviorSubject.next(state);
   },
   updateInfoPageWatch: (malId) => {

@@ -48,6 +48,9 @@ const EpisodePage = (props) => {
   const [isDisplayEngDub, setIsDisplayEngDub] = useState(false);
 
   const user = userStream.currentState();
+  useEffect(()=>{
+    pageWatchStream.updateSwitchVideo(false);
+  },[episode,mode]);
   useEffect(() => {
     const subscription = pageWatchStream.subscribe(setPageWatchState);
     pageWatchStream.init();

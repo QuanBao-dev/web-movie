@@ -262,6 +262,7 @@
 }
 
 .title-synonym-list > li{
+  margin:0!important;
   text-shadow: 2px 2px black;
   font-size: 1em!important;
   box-shadow: 0 0 1px 1px black;

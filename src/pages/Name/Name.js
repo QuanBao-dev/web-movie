@@ -75,7 +75,7 @@ const Name = (props) => {
     const subscription2 = nameStream.subscribe(setNameState);
     pageWatchStream.init();
     nameStream.init();
-    window.scroll({ top: 0, behavior: "smooth" });
+    window.scroll({ top: 0 });
     document.title = `Watch ${
       nameStream.currentState().dataInformationAnime.title
     }`;

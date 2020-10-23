@@ -1,7 +1,8 @@
-import "./VideoPlayerSection.css";
+import './VideoPlayerSection.css';
 
-import React, { useEffect, useState } from "react";
-import { pageWatchStream } from "../../epics/pageWatch";
+import React, { useState } from 'react';
+
+import { pageWatchStream } from '../../epics/pageWatch';
 
 function VideoPlayerSection({ currentEpisode, user }) {
   const { imageUrl } = pageWatchStream.currentState();

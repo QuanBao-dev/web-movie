@@ -1,17 +1,17 @@
-import './Name.css';
+import "./Name.css";
 
-import loadable from '@loadable/component';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import Axios from 'axios';
-import random from 'lodash/random';
-import React, { useEffect, useRef, useState } from 'react';
-import { useCookies } from 'react-cookie';
-import { Link, useHistory } from 'react-router-dom';
-import { from } from 'rxjs';
-import { combineAll, tap } from 'rxjs/operators';
+import loadable from "@loadable/component";
+import CircularProgress from "@material-ui/core/CircularProgress";
+import Axios from "axios";
+import random from "lodash/random";
+import React, { useEffect, useRef, useState } from "react";
+import { useCookies } from "react-cookie";
+import { Link, useHistory } from "react-router-dom";
+import { from } from "rxjs";
+import { combineAll, tap } from "rxjs/operators";
 
-import Input from '../../components/Input/Input';
-import { characterStream } from '../../epics/character';
+import Input from "../../components/Input/Input";
+import { characterStream } from "../../epics/character";
 import {
   capitalizeString,
   fetchAnimeRecommendation$,
@@ -24,10 +24,10 @@ import {
   handleAddBoxMovie,
   handleDeleteBoxMovie,
   nameStream,
-} from '../../epics/name';
-import { pageWatchStream } from '../../epics/pageWatch';
-import { userStream } from '../../epics/user';
-import navBarStore from '../../store/navbar';
+} from "../../epics/name";
+import { pageWatchStream } from "../../epics/pageWatch";
+import { userStream } from "../../epics/user";
+import navBarStore from "../../store/navbar";
 
 const Characters = loadable(() =>
   import("../../components/Characters/Characters")
@@ -75,7 +75,7 @@ const Name = (props) => {
     const subscription2 = nameStream.subscribe(setNameState);
     pageWatchStream.init();
     nameStream.init();
-    window.scroll({ top: 0, behavior:"smooth" });
+    window.scroll({ top: 0, behavior: "smooth" });
     document.title = `Watch ${
       nameStream.currentState().dataInformationAnime.title
     }`;
@@ -150,7 +150,7 @@ const Name = (props) => {
     if (nameStream.currentState().malId !== name) {
       window.scroll({
         top: 0,
-        behavior:"smooth"
+        behavior: "smooth",
       });
       nameStream.resetState();
       subscription = from([
@@ -485,33 +485,47 @@ function ListInformation({ arrKeys, history, isLoading }) {
           ) {
             if (v !== "rank")
               return (
-                <li key={index}>
+                <li key={index} style={{ lineHeight: "2.3rem" }}>
                   <span
                     style={{
                       fontFamily: "Arial",
+                      padding: "10px",
+                      backgroundColor: "#353940",
+                      borderRadius: "10px",
                     }}
                   >
-                    {capitalizeString(v)}:
+                    {capitalizeString(v)}
                   </span>{" "}
                   {`${nameStream.currentState().dataInformationAnime[v]}`}
                 </li>
               );
             else
               return (
-                <li
-                  key={index}
-                  style={{
-                    color:
-                      nameStream.currentState().dataInformationAnime[v] <= 1000
-                        ? "Yellow"
-                        : nameStream.currentState().dataInformationAnime[v] <=
-                          2000
-                        ? "#8b8bff"
-                        : "inherit",
-                  }}
-                >
-                  <span>{capitalizeString(v)}:</span>{" "}
-                  {`${nameStream.currentState().dataInformationAnime[v]}`}
+                <li key={index}>
+                  <span
+                    style={{
+                      fontFamily: "Arial",
+                      padding: "10px",
+                      backgroundColor: "#353940",
+                      borderRadius: "10px",
+                    }}
+                  >
+                    {capitalizeString(v)}
+                  </span>{" "}
+                  <span
+                    style={{
+                      color:
+                        nameStream.currentState().dataInformationAnime[v] <=
+                        1000
+                          ? "Yellow"
+                          : nameStream.currentState().dataInformationAnime[v] <=
+                            2000
+                          ? "#8b8bff"
+                          : "inherit",
+                    }}
+                  >
+                    {`${nameStream.currentState().dataInformationAnime[v]}`}
+                  </span>
                 </li>
               );
           } else {

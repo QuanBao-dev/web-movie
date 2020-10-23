@@ -54,12 +54,26 @@ const AnimeItem = ({ anime, lazy = false }) => {
         )}
       {(new Date(anime.end_date).getTime() > new Date(Date.now()).getTime() ||
         !anime.end_date) &&
-        anime.start_date && (
+        anime.start_date &&
+        new Date(anime.start_date).getTime() >
+          new Date(Date.now()).getTime() && (
           <div
             title="start_date_airing"
             className="anime-info-display_summary top-left_summary color-green"
           >
             {anime.start_date.slice(0, 10)}
+          </div>
+        )}
+      {(new Date(anime.end_date).getTime() > new Date(Date.now()).getTime() ||
+        !anime.end_date) &&
+        anime.start_date &&
+        new Date(anime.start_date).getTime() <=
+          new Date(Date.now()).getTime() && (
+          <div
+            title="start_date_airing"
+            className="anime-info-display_summary top-left_summary color-green"
+          >
+            Aired
           </div>
         )}
       {anime.end_date &&
@@ -81,7 +95,7 @@ const AnimeItem = ({ anime, lazy = false }) => {
             title={"End_date_Airing"}
             className="anime-info-display_summary top-right_summary color-yellow"
           >
-            {anime.end_date}
+            {anime.end_date.slice(0, 10)}
           </div>
         )}
       {!anime.recommendation_count && (
@@ -157,7 +171,7 @@ const AnimeItem = ({ anime, lazy = false }) => {
             : ""}
         </h3>
         {anime.genres && !limitAdultGenre(anime.genres) && (
-          <h3 title={`age_limited`} style={{ color: "red", margin:"0" }}>
+          <h3 title={`age_limited`} style={{ color: "red", margin: "0" }}>
             18+
           </h3>
         )}

@@ -151,6 +151,9 @@
 }
 
 @media (max-width:365px){
+  .upcoming-anime-container .anime-item{
+    width: 145px;
+  }
   .anime-item{
     font-size: 0.75rem;
     width: 40%;

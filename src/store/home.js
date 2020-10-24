@@ -50,7 +50,9 @@ const initialState = {
   currentPageBoxMovie:1,
   lastPageUpdatedMovie:1,
   lastPageBoxMovie:1,
-  triggerScroll:false
+  triggerScroll:false,
+  offsetLeft:0,
+  shouldScrollLeft:true
 };
 
 const subject = new BehaviorSubject(initialState);
@@ -68,6 +70,14 @@ const homeStore = {
       ...state,
       modeFilter:mode
     };
+    subject.next(state);
+  },
+  updateOffsetLeft:(offsetLeft) => {
+    state.offsetLeft = offsetLeft;
+    subject.next(state);
+  },
+  allowScrollLeft:(bool) => {
+    state.shouldScrollLeft = bool;
     subject.next(state);
   },
   updateTriggerScroll:(bool) => {

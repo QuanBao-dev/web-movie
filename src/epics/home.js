@@ -1,16 +1,14 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-useless-escape */
-import orderBy from "lodash/orderBy";
-import { from, fromEvent, interval, of, timer } from "rxjs";
-import { ajax } from "rxjs/ajax";
+import orderBy from 'lodash/orderBy';
+import { asyncScheduler, from, fromEvent, interval, of, timer } from 'rxjs';
+import { ajax } from 'rxjs/ajax';
 import {
   catchError,
   combineAll,
   debounceTime,
-  delay,
   exhaustMap,
   filter,
-  first,
   map,
   mergeMap,
   pluck,
@@ -18,19 +16,18 @@ import {
   startWith,
   switchMap,
   switchMapTo,
+  takeWhile,
   tap,
   throttleTime,
-} from "rxjs/operators";
+} from 'rxjs/operators';
 
 import homeStore, {
-  allowScrollToSeeMore,
   savingTextSearch,
   updateMaxPage,
   updateModeScrolling,
   updateOriginalData,
   updatePageTopMovieOnDestroy,
-} from "../store/home";
-import navBarStore from "../store/navbar";
+} from '../store/home';
 
 export const stream = homeStore;
 
@@ -386,7 +383,7 @@ export const upcomingAnimeListUpdated$ = () => {
     )
   );
 };
-export const scrollAnimeInterval$ = (scrollE) => {
+export const scrollAnimeInterval$ = (scrollE, end) => {
   fromEvent(scrollE, "mouseenter").subscribe(() => {
     updateModeScrolling("enter");
   });
@@ -395,39 +392,79 @@ export const scrollAnimeInterval$ = (scrollE) => {
   });
   return interval(20).pipe(
     filter(() => stream.currentState().modeScrolling === "interval"),
-    map(() => scrollE.scrollLeft),
-    tap((scrollLeft) => {
-      if (scrollE.scroll) scrollE.scroll(scrollLeft + 2.4, 0);
+    tap(() => {
+      const offsetLeft = stream.currentState().offsetLeft - 2.4;
+      stream.updateOffsetLeft(offsetLeft);
+      scrollE.style.transform = `translateX(${offsetLeft}px)`;
     }),
-    filter(() => {
-      if (scrollE.scrollLeft === 0) {
-        return false;
-      }
-      const distance =
-        scrollE.scrollLeft + scrollE.clientWidth - scrollE.scrollWidth;
-      return Math.abs(distance) < 100;
-    }),
-    first()
+    filter(
+      () =>
+        scrollE.childNodes[end] &&
+        Math.abs(stream.currentState().offsetLeft) >=
+          scrollE.childNodes[end].offsetLeft
+    ),
+    throttleTime(1000, asyncScheduler, {
+      leading: true,
+      trailing: false,
+    })
   );
 };
-
-export const scrollAnimeUser$ = (scrollE, end) => {
-  return fromEvent(scrollE, "scroll").pipe(
-    filter(() => {
-      if (scrollE.scrollLeft === 0) {
-        return false;
+export const scrollAnimeUser$ = (
+  distance,
+  elementScroll,
+  forward,
+  numberList
+) => {
+  let deltaDistance = 0;
+  let end = stream.currentState().upcomingAnimeList.length - 7;
+  return timer(0, 2).pipe(
+    takeWhile(() => deltaDistance < distance),
+    tap(() => {
+      updateModeScrolling("enter");
+      stream.allowScrollLeft(false);
+      deltaDistance += 10;
+      let check = true;
+      const offsetLeft =
+        stream.currentState().offsetLeft - deltaDistance * forward;
+      if (
+        elementScroll.childNodes[end] &&
+        Math.abs(offsetLeft) >= elementScroll.childNodes[end].offsetLeft
+      ) {
+        stream.updateOffsetLeft(
+          -elementScroll.childNodes[end - numberList].offsetLeft
+        );
+        elementScroll.style.transition = "0s";
+        elementScroll.style.transform = `translateX(${
+          stream.currentState().offsetLeft
+        })`;
+        check = false
       }
-      return scrollE.scrollLeft >= scrollE.childNodes[end].offsetLeft;
+      if (
+        elementScroll.childNodes[0] &&
+        offsetLeft - elementScroll.childNodes[0].offsetLeft > 0
+      ) {
+        stream.updateOffsetLeft(
+          -elementScroll.childNodes[numberList].offsetLeft
+        );
+        elementScroll.style.transition = "0s";
+        elementScroll.style.transform = `translateX(${
+          stream.currentState().offsetLeft
+        })`;
+        check = false
+      }
+      if (check)
+        elementScroll.style.transform = `translateX(${
+          stream.currentState().offsetLeft - deltaDistance * forward
+        }px)`;
     }),
-    first()
-  );
-};
-
-export const scrollAnimeUserStart$ = (scrollE) => {
-  return fromEvent(scrollE, "scroll").pipe(
-    filter(() => {
-      return scrollE.scrollLeft === 0;
-    }),
-    first()
+    filter(() => deltaDistance >= distance),
+    tap(() =>{
+      stream.updateOffsetLeft(
+        stream.currentState().offsetLeft - deltaDistance * forward
+      );
+      stream.allowScrollLeft(true);
+      updateModeScrolling("interval");
+    }
+    )
   );
 };

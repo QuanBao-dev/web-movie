@@ -8,9 +8,8 @@
 }
 
 .list-anime-nowrap{
-  display: block;
-  overflow-x: scroll;
-  width: 100%;
+  display: table;
+  width: fit-content;
   white-space: nowrap;
   overflow-y: hidden;
   border-top-left-radius: 30px;

@@ -1,10 +1,10 @@
 import "./UpcomingAnimeList.css";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
+
 import {
   scrollAnimeInterval$,
   scrollAnimeUser$,
-  scrollAnimeUserStart$,
   stream,
   upcomingAnimeListUpdated$,
 } from "../../epics/home";
@@ -15,52 +15,31 @@ let numberList = 50;
 let numberCloneList = 8;
 const UpcomingAnimeList = () => {
   const length = stream.currentState().upcomingAnimeList.length || 0;
-  const [listenAgain, setListenAgain] = useState(false);
   useEffect(() => {
-    let subscription1, subscription2, subscription3;
+    let subscription2;
     if (length !== 0) {
       const elementScroll = document.querySelector(".list-anime-nowrap");
       if (elementScroll) {
         const end = length - 7;
-        subscription1 = scrollAnimeUser$(elementScroll, end).subscribe(() => {
-          if (
-            elementScroll.scrollLeft >= elementScroll.childNodes[end].offsetLeft
-          ) {
-            elementScroll.scroll({
-              left: elementScroll.childNodes[end - numberList].offsetLeft,
-            });
-            setListenAgain(!listenAgain);
-          }
+        subscription2 = scrollAnimeInterval$(
+          elementScroll,
+          end,
+          numberList
+        ).subscribe(() => {
+          stream.updateOffsetLeft(
+            -elementScroll.childNodes[end - numberList].offsetLeft
+          );
+          elementScroll.style.transition = "0s";
+          elementScroll.style.transform = `translateX(${
+            stream.currentState().offsetLeft
+          })`;
         });
-        subscription3 = scrollAnimeUserStart$(elementScroll).subscribe(() => {
-          if (elementScroll.scrollLeft === 0) {
-            elementScroll.scroll({
-              left: elementScroll.childNodes[numberList].offsetLeft,
-            });
-            setListenAgain(!listenAgain);
-          }
-        });
-        subscription2 = scrollAnimeInterval$(elementScroll, end).subscribe(
-          () => {
-            if (
-              elementScroll.scrollLeft >=
-              elementScroll.childNodes[end].offsetLeft
-            ) {
-              elementScroll.scroll({
-                left: elementScroll.childNodes[end - numberList].offsetLeft,
-              });
-              setListenAgain(!listenAgain);
-            }
-          }
-        );
       }
     }
     return () => {
-      subscription1 && subscription1.unsubscribe();
       subscription2 && subscription2.unsubscribe();
-      subscription3 && subscription3.unsubscribe();
     };
-  }, [length, listenAgain]);
+  }, [length]);
   useEffect(() => {
     stream.init();
     const subscription = upcomingAnimeListUpdated$().subscribe((data) => {
@@ -79,15 +58,6 @@ const UpcomingAnimeList = () => {
   return (
     <section
       className="upcoming-anime-container"
-      onMouseEnter={() => {
-        updateModeScrolling("enter");
-      }}
-      onMouseMove={() => {
-        updateModeScrolling("enter");
-      }}
-      onMouseLeave={() => {
-        updateModeScrolling("interval");
-      }}
       onTouchMove={() => {
         updateModeScrolling("enter");
       }}
@@ -110,13 +80,11 @@ const UpcomingAnimeList = () => {
               const elementScroll = document.querySelector(
                 ".list-anime-nowrap"
               );
-              if (elementScroll.scroll)
-                elementScroll.scroll({
-                  left:
-                    elementScroll.scrollLeft -
-                    elementScroll.childNodes[0].offsetWidth,
-                  behavior: "smooth",
-                });
+              scrollByTranslate(
+                elementScroll.childNodes[0].offsetWidth,
+                -1,
+                elementScroll
+              );
             }}
           ></i>
           <i
@@ -125,25 +93,28 @@ const UpcomingAnimeList = () => {
               const elementScroll = document.querySelector(
                 ".list-anime-nowrap"
               );
-              if (elementScroll.scroll)
-                elementScroll.scroll({
-                  left:
-                    elementScroll.scrollLeft +
-                    elementScroll.childNodes[0].offsetWidth,
-                  behavior: "smooth",
-                });
+              scrollByTranslate(
+                elementScroll.childNodes[0].offsetWidth,
+                1,
+                elementScroll
+              );
             }}
           ></i>
         </div>
       </div>
+
       <AnimeList
         empty={true}
         data={stream.currentState().upcomingAnimeList}
         isWrap={false}
-        lazy={true}
         error={stream.currentState().error}
       />
     </section>
   );
 };
+function scrollByTranslate(distance, forward = 1, elementScroll) {
+  if (stream.currentState().shouldScrollLeft)
+    scrollAnimeUser$(distance, elementScroll, forward, numberList).subscribe();
+}
+
 export default UpcomingAnimeList;

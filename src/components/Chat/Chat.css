@@ -222,3 +222,33 @@
   margin:auto;
   color:white;
 }
+
+.btn{
+  padding:1rem;
+  text-decoration: none;
+  color: white;
+  border: none;
+  outline: none;
+  cursor: pointer;
+}
+
+.btn:active{
+  transform: scale(1.1,1.1);
+}
+
+.btn:disabled{
+  pointer-events: none;
+  background-color: #6b3333;
+}
+
+.btn-success{
+  background-color: green;
+}
+
+.btn-primary{
+  background-color: #1838c5;
+}
+
+.btn-danger{
+  background-color: #a31212;
+}

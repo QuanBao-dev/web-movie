@@ -1,28 +1,28 @@
-import "./TheaterWatch.css";
+import './TheaterWatch.css';
 
-import Axios from "axios";
-import { nanoid } from "nanoid";
-import Peer from "peerjs";
-import React, { useEffect, useRef, useState } from "react";
-import { useCookies } from "react-cookie";
-import { ReplaySubject } from "rxjs";
-import { first } from "rxjs/operators";
+import loadable from '@loadable/component';
+import Axios from 'axios';
+import { nanoid } from 'nanoid';
+import Peer from 'peerjs';
+import React, { useEffect, useRef, useState } from 'react';
+import { useCookies } from 'react-cookie';
+import { ReplaySubject } from 'rxjs';
+import { first } from 'rxjs/operators';
 
-import Chat from "../../components/Chat/Chat";
-import Input from "../../components/Input/Input";
-import {
-  fetchUserOnline$,
-  submitFormPasswordRoom$,
-  theaterStream,
-} from "../../epics/theater";
-import { userStream } from "../../epics/user";
+import Input from '../../components/Input/Input';
+import { fetchUserOnline$, submitFormPasswordRoom$, theaterStream } from '../../epics/theater';
+import { userStream } from '../../epics/user';
 import {
   updateAllowFetchCurrentRoomDetail,
   updateAllowRemoveVideoWatch,
   updateAllowUserJoin,
   updateSignIn,
   updateUserIdNow,
-} from "../../store/theater";
+} from '../../store/theater';
+
+const Chat = loadable(() => import("../../components/Chat/Chat"), {
+  fallback: <i className="fas fa-spinner fa-9x fa-spin"></i>,
+});
 
 const socket = theaterStream.socket;
 const peers = {};
@@ -60,7 +60,10 @@ const TheaterWatch = (props) => {
     let submitFormSub;
     if (theaterState.isSignIn) {
       if (theaterStream.currentState().allowUserJoin) {
-        newUserJoinHandleVideo(audioCallRef.current);
+        newUserJoinHandleVideo(
+          audioCallRef.current ||
+            document.querySelector(".container-audio-call")
+        );
         setErrorPassword(null);
         updateAllowUserJoin(false);
       }
@@ -135,7 +138,7 @@ const TheaterWatch = (props) => {
     if (audioCallRef.current) {
       if (theaterState.usersOnline.length === 1) {
         replaySubject.pipe(first()).subscribe((groupId) => {
-          socket.emit("delete-specific-member",user.userId,groupId)
+          socket.emit("delete-specific-member", user.userId, groupId);
         });
       }
       theaterState.usersOnline = [];
@@ -194,6 +197,7 @@ const TheaterWatch = (props) => {
               />
               <div className="wrapper-video-player">
                 <video
+                  className="video-watch"
                   poster="https://videopromotion.club/assets/images/default-video-thumbnail.jpg"
                   ref={videoWatchRef}
                   onContextMenu={(e) => e.preventDefault()}
@@ -204,6 +208,10 @@ const TheaterWatch = (props) => {
                     id="button-get-remote"
                     className="btn btn-danger"
                     onClick={async (e) => {
+                      if (!videoWatchElement)
+                        videoWatchElement = document.querySelector(
+                          ".video-watch"
+                        );
                       if (videoWatchElement && videoWatchElement.src) {
                         videoWatchElement.controls = true;
                         const element = e.target;
@@ -299,6 +307,8 @@ socket.on("reconnect", async () => {
   if (theaterStream.currentState()) {
     const { isSignIn } = theaterStream.currentState();
     if (isSignIn) {
+      if (!audioCallE)
+        audioCallE = document.querySelector(".container-audio-call");
       await newUserJoinHandleVideo(audioCallE);
     }
   }
@@ -349,7 +359,9 @@ function allowFullscreen() {
   }
 }
 
-async function newUserJoinHandleVideo(audioCallE) {
+async function newUserJoinHandleVideo(
+  audioCallE = document.querySelector(".container-audio-call")
+) {
   const id = nanoid();
   let isError = false;
   updateUserIdNow(id);
@@ -381,24 +393,28 @@ async function newUserJoinHandleVideo(audioCallE) {
           groupId,
           id,
           user.userId,
-          buttonGetRemoteElement ? buttonGetRemoteElement.disabled:false
+          buttonGetRemoteElement ? buttonGetRemoteElement.disabled : false
         );
+        if (!audioCallE)
+          audioCallE = document.querySelector(".container-audio-call");
         addAudioStream(myAudio, stream, audioCallE);
+        appendNewMessageNotification(
+          "Your " + elementCall + " is connected",
+          notificationE,
+          "audio-connected"
+        );
         myPeer.on("open", (id) => {
           myAudio.id = id;
-          appendNewMessageNotification(
-            "Your " + elementCall + " is connected",
-            notificationE,
-            "audio-connected"
-          );  
           myPeer.on("call", (call) => {
             call.answer(stream);
             const audio = document.createElement(elementCall);
             call.on("stream", (stream) => {
+              if (!audioCallE)
+                audioCallE = document.querySelector(".container-audio-call");
               addAudioStream(audio, stream, audioCallE);
             });
           });
-      });
+        });
       })
       .catch(async (err) => {
         isError = true;
@@ -486,7 +502,9 @@ async function updateUserKeepRemote(groupId, userId) {
   );
 }
 
-function addEventListenerVideoElement(videoWatchElement) {
+function addEventListenerVideoElement(
+  videoWatchElement = document.querySelector(".video-watch")
+) {
   if (videoWatchElement && videoWatchElement.src) {
     videoWatchElement.addEventListener("pause", socketPauseAll);
     videoWatchElement.addEventListener("play", socketPlayAll);
@@ -494,7 +512,9 @@ function addEventListenerVideoElement(videoWatchElement) {
   }
 }
 
-function removeEventListenerVideoElement(videoWatchElement) {
+function removeEventListenerVideoElement(
+  videoWatchElement = document.querySelector(".video-watch")
+) {
   if (videoWatchElement && videoWatchElement.src) {
     videoWatchElement.controls = false;
     videoWatchElement.removeEventListener("pause", socketPauseAll);
@@ -504,10 +524,14 @@ function removeEventListenerVideoElement(videoWatchElement) {
 }
 
 function socketPauseAll() {
+  if (!videoWatchElement)
+    videoWatchElement = document.querySelector(".video-watch");
   socket.emit("pause-all-video", videoWatchElement.currentTime, groupId);
 }
 
 function socketPlayAll() {
+  if (!videoWatchElement)
+    videoWatchElement = document.querySelector(".video-watch");
   socket.emit("play-all-video", videoWatchElement.currentTime, groupId);
 }
 
@@ -521,6 +545,8 @@ socket.on("user-join", async (username, userId, roomId) => {
       audio: true,
     })
     .then((stream) => {
+      if (!audioCallE)
+        audioCallE = document.querySelector(".container-audio-call");
       connectToNewUser(userId, stream, audioCallE);
     })
     .catch((err) => {
@@ -536,6 +562,7 @@ socket.on("disconnected-user", async (username, userId, roomId) => {
   if (peers[userId]) {
     peers[userId].close();
   }
+  if (!audioCallE) audioCallE = document.querySelector(".container-audio-call");
   if (audioCallE) {
     const audioCallChildList = [...audioCallE.childNodes];
     audioCallChildList.forEach((child) => {
@@ -558,6 +585,8 @@ socket.on("fetch-user-online", () => {
   });
 });
 socket.on("play-video-user", (currentTime, idGroup) => {
+  if (!videoWatchElement)
+    videoWatchElement = document.querySelector(".video-watch");
   if (idGroup === groupId && videoWatchElement) {
     if (videoWatchElement.src && videoWatchElement.src !== "") {
       videoWatchElement
@@ -570,6 +599,8 @@ socket.on("play-video-user", (currentTime, idGroup) => {
   }
 });
 socket.on("pause-video-user", (currentTime, idGroup) => {
+  if (!videoWatchElement)
+    videoWatchElement = document.querySelector(".video-watch");
   if (idGroup === groupId && videoWatchElement) {
     const playPromise = videoWatchElement.play();
     if (playPromise) {
@@ -584,6 +615,8 @@ socket.on("pause-video-user", (currentTime, idGroup) => {
 });
 
 socket.on("upload-video", (uri, idGroup, uploadVideoOtherUser) => {
+  if (!videoWatchElement)
+    videoWatchElement = document.querySelector(".video-watch");
   if (idGroup === groupId && videoWatchElement) {
     if (uploadVideoOtherUser) {
       uploadNewVideo(uri, videoWatchElement);
@@ -596,6 +629,8 @@ socket.on("upload-video", (uri, idGroup, uploadVideoOtherUser) => {
 });
 
 socket.on("change-user-keep-remote", (idGroup) => {
+  if (!videoWatchElement)
+    videoWatchElement = document.querySelector(".video-watch");
   if (idGroup === groupId && videoWatchElement) {
     removeEventListenerVideoElement(videoWatchElement);
     if (document.getElementById("button-get-remote")) {
@@ -604,14 +639,22 @@ socket.on("change-user-keep-remote", (idGroup) => {
   }
 });
 
-function uploadNewVideo(fileContent, videoWatchElement, isControls = false) {
+function uploadNewVideo(
+  fileContent,
+  videoWatchElement = document.querySelector(".video-watch"),
+  isControls = false
+) {
   try {
     videoWatchElement.controls = isControls;
     videoWatchElement.src = fileContent;
   } catch (error) {}
 }
 
-function appendNewMessageNotification(message, notificationE, className) {
+function appendNewMessageNotification(
+  message,
+  notificationE = document.querySelector(".notification-user-join"),
+  className
+) {
   const messageElement = document.createElement("div");
   messageElement.innerText = message;
   messageElement.style.wordWrap = "break-word";
@@ -645,6 +688,8 @@ function connectToNewUser(userId, stream, audioGridElement) {
   });
   call.on("close", () => {
     audio.remove();
+    if (!audioCallE)
+      audioCallE = document.querySelector(".container-audio-call");
     if (audioCallE) {
       const audioCallChildList = [...audioCallE.childNodes];
       audioCallChildList.forEach((child) => {

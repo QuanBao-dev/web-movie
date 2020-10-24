@@ -24,11 +24,13 @@ const Chat = ({ groupId, user, withoutName = false, isZoom = false }) => {
   const buttonLikeRef = useRef();
   const containerMessageChatBotRef = useRef(null);
   const [errorName, setErrorName] = useState(null);
+  messageDialogE = messageDialogRef.current;
   useEffect(() => {
     messageDialogE = messageDialogRef.current;
     user && !withoutName && (inputNameDialogRef.current.value = user.username);
   }, [user, withoutName, isZoom]);
   useEffect(() => {
+    messageDialogE = messageDialogRef.current;
     if (!socket.connected) socket.connect();
     messageInputStream.init();
     const subscription = fromEvent(containerMessageChatBotRef.current, "scroll")
@@ -55,10 +57,11 @@ const Chat = ({ groupId, user, withoutName = false, isZoom = false }) => {
     return () => {
       subscription.unsubscribe();
       subscription2.unsubscribe();
-      socket.close()
+      socket.close();
     };
   }, []);
   useEffect(() => {
+    messageDialogE = messageDialogRef.current;
     let subscription;
     if (buttonLikeRef.current) {
       subscription = fromEvent(buttonLikeRef.current, "click")
@@ -457,7 +460,7 @@ function appendNewMessageDialog(
   message,
   username,
   isYourMessage,
-  messageDialogContainerE,
+  messageDialogContainerE = document.querySelector(".message-dialog"),
   avatarImage = "https://iupac.org/wp-content/uploads/2018/05/default-avatar.png"
 ) {
   const newElement = document.createElement("div");
@@ -538,7 +541,7 @@ function appendNewPhotoMessage(
   uri,
   username,
   isYourMessage,
-  messageDialogContainerE,
+  messageDialogContainerE = document.querySelector(".message-dialog"),
   avatarImage = "https://iupac.org/wp-content/uploads/2018/05/default-avatar.png"
 ) {
   const newElement = document.createElement("div");

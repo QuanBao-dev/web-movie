@@ -23,7 +23,9 @@ const AnimeItem = ({ anime, lazy = false }) => {
             title="Already_Aired"
             className="anime-info-display_summary top-left_summary color-green"
           >
-            Aired
+            {new Date(anime.airing_start).getMonth() + 1}-
+            {new Date(anime.airing_start).getDate()}-
+            {new Date(anime.airing_start).getFullYear()}
           </div>
         )}
       {anime.airing_start &&
@@ -49,7 +51,9 @@ const AnimeItem = ({ anime, lazy = false }) => {
             title="Already_Aired"
             className="anime-info-display_summary top-left_summary color-green"
           >
-            Aired
+            {new Date(anime.airing_start).getMonth() + 1}-
+            {new Date(anime.airing_start).getDate()}-
+            {new Date(anime.airing_start).getFullYear()}
           </div>
         )}
       {(new Date(anime.end_date).getTime() > new Date(Date.now()).getTime() ||
@@ -73,7 +77,7 @@ const AnimeItem = ({ anime, lazy = false }) => {
             title="start_date_airing"
             className="anime-info-display_summary top-left_summary color-green"
           >
-            Aired
+            {anime.start_date.slice(0, 10)}
           </div>
         )}
       {anime.end_date &&
@@ -84,7 +88,7 @@ const AnimeItem = ({ anime, lazy = false }) => {
             title={"End_Airing"}
             className="anime-info-display_summary top-left_summary color-yellow"
           >
-            Finished
+            {anime.end_date.slice(0, 10)}
           </div>
         )}
 

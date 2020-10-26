@@ -1,21 +1,16 @@
-import "./Comment.css";
+import './Comment.css';
 
-import Axios from "axios";
-import React, { createRef, useEffect, useRef, useState } from "react";
+import Axios from 'axios';
+import { nanoid } from 'nanoid';
+import React, { createRef, useEffect, useRef, useState } from 'react';
+import { useCookies } from 'react-cookie';
 
-import {
-  chatStream,
-  fetchPageMessage$,
-  timeSince,
-  validateInput$,
-} from "../../epics/comment";
-import Input from "../Input/Input";
-import { useCookies } from "react-cookie";
-import { updateCurrentName } from "../../store/comment";
-import navBarStore from "../../store/navbar";
-import { nanoid } from "nanoid";
+import { chatStream, fetchPageMessage$, timeSince, validateInput$ } from '../../epics/comment';
+import { updateCurrentName } from '../../store/comment';
+import navBarStore from '../../store/navbar';
+import Input from '../Input/Input';
+
 // import theaterStore from "../../store/theater";
-import { createCaretPlacer } from "../../epics/message-input";
 // const socket = theaterStore.socket;
 let idCartoonUser;
 let userGlobal;
@@ -297,9 +292,6 @@ function FormReply({
       <div className="textarea-comment-container">
         <div
           className="textarea-comment"
-          onKeyDown={(e) => {
-            createCaretPlacer(e.target, false);
-          }}
           onPaste={(e) => {
             e.preventDefault();
             let text = (e.originalEvent || e).clipboardData.getData(

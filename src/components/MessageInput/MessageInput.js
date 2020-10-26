@@ -183,7 +183,7 @@ const MessageInput = ({
                 return;
               }
               const check = sendMessage(
-                e.target.innerText,
+                e.target.innerHTML,
                 messageInputState.imgsMessage,
                 isWithoutName,
                 inputNameDialogRef,
@@ -209,7 +209,7 @@ const MessageInput = ({
           onClick={(e) => {
             const input = document.querySelector(".message-input-container");
             const check = sendMessage(
-              input.innerText,
+              input.innerHTML,
               messageInputState.imgsMessage,
               isWithoutName,
               inputNameDialogRef,

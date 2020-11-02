@@ -15,7 +15,7 @@ const theaterRoomSchema = new mongoose.Schema({
   },
   groupId: {
     type: String,
-    default: nanoid(),
+    default: nanoid,
   },
   createdAt:{
     type:Date,

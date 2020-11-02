@@ -4,7 +4,7 @@ const { nanoid } = require("nanoid");
 const userSchema = new mongoose.Schema({
   userId:{
     type:String,
-    default:nanoid()
+    default:nanoid
   },
   createdAt: {
     type: Date,

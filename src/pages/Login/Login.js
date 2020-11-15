@@ -1,11 +1,11 @@
-import './Login.css';
+import "./Login.css";
 
-import React, { useEffect, useRef, useState } from 'react';
-import { useCookies } from 'react-cookie';
+import React, { useEffect, useRef, useState } from "react";
+import { useCookies } from "react-cookie";
 import Axios from "axios";
 
-import Input from '../../components/Input/Input';
-import { validateFormSubmitLogin$ } from '../../epics/home';
+import Input from "../../components/Input/Input";
+import { validateFormSubmitLogin$ } from "../../epics/home";
 
 const Login = () => {
   // eslint-disable-next-line no-unused-vars
@@ -39,8 +39,32 @@ const Login = () => {
     >
       <div className="form-login">
         <h1 style={{ color: "white", textAlign: "center" }}>Login</h1>
-        <Input label="Email" input={emailRef} error={emailError} />
         <Input
+          label="Email"
+          input={emailRef}
+          error={emailError}
+          onKeyDown={(e) => {
+            if(e.keyCode === 13)
+            submitForm(
+              emailRef.current,
+              passwordRef.current,
+              setCookie,
+              setEmailError,
+              setPasswordError
+            );
+          }}
+        />
+        <Input
+          onKeyDown={(e) => {
+            if (e.keyCode === 13)
+              submitForm(
+                emailRef.current,
+                passwordRef.current,
+                setCookie,
+                setEmailError,
+                setPasswordError
+              );
+          }}
           label="Password"
           input={passwordRef}
           type="password"

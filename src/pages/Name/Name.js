@@ -27,7 +27,6 @@ import {
 } from "../../epics/name";
 import { pageWatchStream } from "../../epics/pageWatch";
 import { userStream } from "../../epics/user";
-import navBarStore from "../../store/navbar";
 
 const Characters = loadable(() =>
   import("../../components/Characters/Characters")
@@ -407,18 +406,15 @@ const Name = (props) => {
                   ref={buttonDeleteCrawlInputRef}
                   onClick={async () => {
                     buttonDeleteCrawlInputRef.current.disabled = true;
-                    navBarStore.updateIsShowBlockPopUp(true);
                     try {
                       await Axios.delete(`/api/movies/${name}`, {
                         headers: {
                           authorization: `Bearer ${cookies.idCartoonUser}`,
                         },
                       });
-                      navBarStore.updateIsShowBlockPopUp(false);
                       nameStream.updateDataEpisodesAnime({});
                       buttonDeleteCrawlInputRef.current.disabled = false;
                     } catch (error) {
-                      navBarStore.updateIsShowBlockPopUp(false);
                       buttonDeleteCrawlInputRef.current.disabled = false;
                     }
                   }}
@@ -731,7 +727,6 @@ function FormSubmitCrawl({
           }
           try {
             buttonSubmitCrawlInputRef.current.disabled = true;
-            navBarStore.updateIsShowBlockPopUp(true);
             const updateMovie = await Axios.put(
               `/api/movies/${name}/episodes/crawl`,
               {
@@ -752,18 +747,21 @@ function FormSubmitCrawl({
             setError(null);
             startEpisodeInputRef.current.value = "";
             endEpisodeInputRef.current.value = "";
-            navBarStore.updateIsShowBlockPopUp(false);
             buttonSubmitCrawlInputRef.current.disabled = false;
             linkWatchingInputRef.current &&
               (linkWatchingInputRef.current.value =
                 updateMovie.data.message.source || "");
           } catch (error) {
-            if (error && error.response.data && error.response.data.error) {
+            if (
+              error &&
+              error.response &&
+              error.response.data &&
+              error.response.data.error
+            ) {
               setError(error.response.data.error);
             }
             startEpisodeInputRef.current.value = "";
             endEpisodeInputRef.current.value = "";
-            navBarStore.updateIsShowBlockPopUp(false);
             linkWatchingInputRef.current &&
               (buttonSubmitCrawlInputRef.current.disabled = false);
           }

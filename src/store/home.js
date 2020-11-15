@@ -40,19 +40,21 @@ const initialState = {
   currentPageOnDestroy: null,
   currentYearOnDestroy: null,
   currentSeasonOnDestroy: null,
-  pageSplit:1,
-  pageSplitTopMovie:1,
-  positionScrollTop:0,
-  modeFilter:"filter",
-  isFirstLaunch:true,
-  genreId:"0",
-  currentPageUpdatedMovie:1,
-  currentPageBoxMovie:1,
-  lastPageUpdatedMovie:1,
-  lastPageBoxMovie:1,
-  triggerScroll:false,
-  offsetLeft:0,
-  shouldScrollLeft:true
+  pageSplit: 1,
+  pageSplitTopMovie: 1,
+  positionScrollTop: 0,
+  modeFilter: "filter",
+  isFirstLaunch: true,
+  genreId: "0",
+  currentPageUpdatedMovie: 1,
+  currentPageBoxMovie: 1,
+  lastPageUpdatedMovie: 1,
+  lastPageBoxMovie: 1,
+  triggerScroll: false,
+  offsetLeft: 0,
+  shouldScrollLeft: true,
+  mouseStartX:null,
+  hasMoved:false
 };
 
 const subject = new BehaviorSubject(initialState);
@@ -65,60 +67,75 @@ const homeStore = {
     subject.subscribe((v) => (ans = v));
     return ans || initialState;
   },
-  updateModeFilter:(mode) => {
-    state={
+  updateData: (object = initialState) => {
+    state = {
       ...state,
-      modeFilter:mode
+      ...object,
     };
     subject.next(state);
   },
-  updateOffsetLeft:(offsetLeft) => {
+  updateHasMoved:(bool) => {
+    state.hasMoved = bool;
+    subject.next(state);
+  },
+  updateMouseStartX:(x) => {
+    state.mouseStartX = x;
+    subject.next(state);
+  },
+  updateModeFilter: (mode) => {
+    state = {
+      ...state,
+      modeFilter: mode,
+    };
+    subject.next(state);
+  },
+  updateOffsetLeft: (offsetLeft) => {
     state.offsetLeft = offsetLeft;
     subject.next(state);
   },
-  allowScrollLeft:(bool) => {
+  allowScrollLeft: (bool) => {
     state.shouldScrollLeft = bool;
     subject.next(state);
   },
-  updateTriggerScroll:(bool) => {
-    state={
-      ...state,
-      triggerScroll:bool
-    };
-    subject.next(state);
-  },
-  updateIsFirstLaunch:(bool) => {
-    state={
-      ...state,
-      isFirstLaunch:bool
-    };
-    subject.next(state);
-  },
-  updateNumberOfProduct:(number) => {
-    state={
-      ...state,
-      numberOfProduct:number
-    };
-    subject.next(state);
-  },
-  updatePositionScrollTop:(pos) => {
+  updateTriggerScroll: (bool) => {
     state = {
       ...state,
-      positionScrollTop:pos
+      triggerScroll: bool,
     };
     subject.next(state);
   },
-  updatePageSplitTopMovie:(page)=>{
+  updateIsFirstLaunch: (bool) => {
     state = {
       ...state,
-      pageSplitTopMovie:page
+      isFirstLaunch: bool,
     };
     subject.next(state);
   },
-  updatePageSplit:(page) => {
-    state={
+  updateNumberOfProduct: (number) => {
+    state = {
       ...state,
-      pageSplit:page
+      numberOfProduct: number,
+    };
+    subject.next(state);
+  },
+  updatePositionScrollTop: (pos) => {
+    state = {
+      ...state,
+      positionScrollTop: pos,
+    };
+    subject.next(state);
+  },
+  updatePageSplitTopMovie: (page) => {
+    state = {
+      ...state,
+      pageSplitTopMovie: page,
+    };
+    subject.next(state);
+  },
+  updatePageSplit: (page) => {
+    state = {
+      ...state,
+      pageSplit: page,
     };
     subject.next(state);
   },
@@ -222,8 +239,8 @@ const homeStore = {
   },
 
   updateSeasonYear: (season, year, score, modeFilter, genreId) => {
-    if(genreId === "12" && modeFilter === "filter"){
-      genreId = "0"
+    if (genreId === "12" && modeFilter === "filter") {
+      genreId = "0";
     }
     state = {
       ...state,
@@ -231,7 +248,7 @@ const homeStore = {
       year: year,
       score,
       modeFilter,
-      genreId
+      genreId,
     };
     subject.next(state);
   },
@@ -251,26 +268,26 @@ const homeStore = {
     };
     subject.next(state);
   },
-  updateUpdatedMovie: (data,lastPage) => {
+  updateUpdatedMovie: (data, lastPage) => {
     state = {
       ...state,
       updatedMovie: [...data],
-      lastPageUpdatedMovie:lastPage
+      lastPageUpdatedMovie: lastPage,
     };
     subject.next(state);
   },
 
-  updateCurrentPageUpdatedMovie:(page) => {
-    state={
+  updateCurrentPageUpdatedMovie: (page) => {
+    state = {
       ...state,
-      currentPageUpdatedMovie:page
+      currentPageUpdatedMovie: page,
     };
     subject.next(state);
   },
-  updateCurrentPageBoxMovie:(page) => {
-    state={
+  updateCurrentPageBoxMovie: (page) => {
+    state = {
       ...state,
-      currentPageBoxMovie:page
+      currentPageBoxMovie: page,
     };
     subject.next(state);
   },
@@ -278,7 +295,7 @@ const homeStore = {
     state = {
       ...state,
       boxMovie: [...data],
-      lastPageBoxMovie:lastPage
+      lastPageBoxMovie: lastPage,
     };
     subject.next(state);
   },
@@ -290,13 +307,13 @@ const homeStore = {
     };
     subject.next(state);
   },
-  allowScrollToSeeMore : (bool) => {
+  allowScrollToSeeMore: (bool) => {
     state = {
       ...state,
-      shouldScrollToSeeMore: bool
-    }
+      shouldScrollToSeeMore: bool,
+    };
     subject.next(state);
-  }
+  },
 };
 
 export const updateDataOnDestroy = (page, season, year) => {
@@ -328,7 +345,7 @@ export const resetScheduleDate = () => {
     .slice(0, 3)
     .toLocaleLowerCase();
   const todayIndex = week.findIndex((day) => day.includes(todayDate));
-  state.dateSchedule[todayIndex] = true;
+  state.todayIndex = todayIndex;
 };
 
 export const updateMaxPage = (max) => {

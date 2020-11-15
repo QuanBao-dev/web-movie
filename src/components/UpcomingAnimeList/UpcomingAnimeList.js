@@ -1,15 +1,11 @@
-import "./UpcomingAnimeList.css";
+import './UpcomingAnimeList.css';
 
-import React, { useEffect } from "react";
+import React, { useEffect } from 'react';
+import { fromEvent } from 'rxjs';
 
-import {
-  scrollAnimeInterval$,
-  scrollAnimeUser$,
-  stream,
-  upcomingAnimeListUpdated$,
-} from "../../epics/home";
-import { updateModeScrolling } from "../../store/home";
-import AnimeList from "../AnimeList/AnimeList";
+import { scrollAnimeInterval$, scrollAnimeUser$, stream, upcomingAnimeListUpdated$ } from '../../epics/home';
+import { updateModeScrolling } from '../../store/home';
+import AnimeList from '../AnimeList/AnimeList';
 
 let numberList = 50;
 let numberCloneList = 8;
@@ -21,6 +17,96 @@ const UpcomingAnimeList = () => {
       const elementScroll = document.querySelector(".list-anime-nowrap");
       if (elementScroll) {
         const end = length - 7;
+        fromEvent(elementScroll, "touchstart").subscribe((e) => {
+          stream.updateHasMoved(false);
+          stream.updateMouseStartX(e.touches[0].clientX);
+        });
+        fromEvent(elementScroll, "touchmove").subscribe((e) => {
+          stream.updateHasMoved(false);
+          if (stream.currentState().mouseStartX) {
+            const delta =
+              e.touches[0].clientX - stream.currentState().mouseStartX;
+            const offsetLeft = stream.currentState().offsetLeft + delta * 0.1;
+            elementScroll.style.transform = `translateX(${
+              stream.currentState().offsetLeft + delta * 0.1
+            }px)`;
+            stream.updateOffsetLeft(offsetLeft);
+            if (
+              elementScroll.childNodes[0] &&
+              offsetLeft - elementScroll.childNodes[0].offsetLeft > 0
+            ) {
+              stream.updateOffsetLeft(
+                -elementScroll.childNodes[numberList].offsetLeft
+              );
+              elementScroll.style.transition = "0s";
+              elementScroll.style.transform = `translateX(${-elementScroll
+                .childNodes[numberList].offsetLeft})`;
+            }
+
+            if (
+              elementScroll.childNodes[end] &&
+              Math.abs(offsetLeft) >= elementScroll.childNodes[end].offsetLeft
+            ) {
+              stream.updateOffsetLeft(
+                -elementScroll.childNodes[end - numberList].offsetLeft
+              );
+              elementScroll.style.transition = "0s";
+              elementScroll.style.transform = `translateX(${
+                stream.currentState().offsetLeft
+              })`;
+            }
+          }
+        });
+        fromEvent(elementScroll, "touchend").subscribe(() => {
+          stream.updateMouseStartX(null);
+        });
+
+        fromEvent(elementScroll, "mousedown").subscribe((e) => {
+          stream.updateMouseStartX(e.clientX);
+        });
+        fromEvent(elementScroll, "mousemove").subscribe((e) => {
+          if (stream.currentState().mouseStartX) {
+            stream.updateHasMoved(true);
+            const delta = e.clientX - stream.currentState().mouseStartX;
+            const offsetLeft = stream.currentState().offsetLeft + delta * 0.1;
+            elementScroll.style.transform = `translateX(${
+              stream.currentState().offsetLeft + delta * 0.1
+            }px)`;
+            stream.updateOffsetLeft(offsetLeft);
+            if (
+              elementScroll.childNodes[0] &&
+              offsetLeft - elementScroll.childNodes[0].offsetLeft > 0
+            ) {
+              stream.updateOffsetLeft(
+                -elementScroll.childNodes[numberList].offsetLeft
+              );
+              elementScroll.style.transition = "0s";
+              elementScroll.style.transform = `translateX(${-elementScroll
+                .childNodes[numberList].offsetLeft})`;
+            }
+
+            if (
+              elementScroll.childNodes[end] &&
+              Math.abs(offsetLeft) >= elementScroll.childNodes[end].offsetLeft
+            ) {
+              stream.updateOffsetLeft(
+                -elementScroll.childNodes[end - numberList].offsetLeft
+              );
+              elementScroll.style.transition = "0s";
+              elementScroll.style.transform = `translateX(${
+                stream.currentState().offsetLeft
+              })`;
+            }
+          }
+        });
+        fromEvent(elementScroll, "mouseup").subscribe(() => {
+          stream.updateMouseStartX(null);
+        });
+        fromEvent(elementScroll, "mouseleave").subscribe(() => {
+          stream.updateMouseStartX(null);
+          stream.updateHasMoved(false);
+        });
+        
         subscription2 = scrollAnimeInterval$(
           elementScroll,
           end,
@@ -104,6 +190,7 @@ const UpcomingAnimeList = () => {
       </div>
 
       <AnimeList
+        lazy={true}
         empty={true}
         data={stream.currentState().upcomingAnimeList}
         isWrap={false}

@@ -1,7 +1,9 @@
-import "./AnimeList.css";
-import CircularProgress from "@material-ui/core/CircularProgress";
-import React from "react";
-import loadable from "@loadable/component";
+import './AnimeList.css';
+
+import loadable from '@loadable/component';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import React, { useRef } from 'react';
+
 const AnimeItem = loadable(() => import("../AnimeItem/AnimeItem"));
 
 const AnimeList = ({
@@ -11,8 +13,12 @@ const AnimeList = ({
   lazy = false,
   empty = false,
 }) => {
+  const listAnimeRef = useRef();
   return (
-    <div className={isWrap ? "list-anime" : "list-anime-nowrap"}>
+    <div
+      ref={listAnimeRef}
+      className={isWrap ? "list-anime" : "list-anime-nowrap"}
+    >
       {data &&
         !error &&
         data.map((anime, index) => {

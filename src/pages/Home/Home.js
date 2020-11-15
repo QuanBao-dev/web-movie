@@ -6,13 +6,7 @@ import React, { useEffect, useState } from "react";
 import { stream } from "../../epics/home";
 
 const SearchInput = loadable(
-  () =>
-    new Promise((res, rej) =>
-      setTimeout(
-        () => res(import("../../components/SearchInput/SearchInput")),
-        100
-      )
-    ),
+  () => import("../../components/SearchInput/SearchInput"),
   {
     fallback: (
       <div style={{ textAlign: "center" }}>
@@ -23,13 +17,7 @@ const SearchInput = loadable(
 );
 
 const AnimeListSeason = loadable(
-  () =>
-    new Promise((res, rej) =>
-      setTimeout(
-        () => res(import("../../components/AnimeListSeason/AnimeListSeason")),
-        2000
-      )
-    ),
+  () => import("../../components/AnimeListSeason/AnimeListSeason"),
   {
     fallback: (
       <div style={{ textAlign: "center" }}>
@@ -54,14 +42,8 @@ const UpdatedAnime = loadable(
 
 const AnimeSchedule = loadable(
   () =>
-    new Promise((res, rej) =>
-      setTimeout(() => {
-        res(
-          /* webpackPrefetch: true */ import(
-            "../../components/AnimeSchedule/AnimeSchedule"
-          )
-        );
-      }, 1000)
+    /* webpackPrefetch: true */ import(
+      "../../components/AnimeSchedule/AnimeSchedule"
     ),
   { fallback: <i className="fas fa-spinner fa-9x fa-spin"></i> }
 );
@@ -73,14 +55,8 @@ const SearchedAnimeList = loadable(() =>
 );
 const UpcomingAnimeList = loadable(
   () =>
-    new Promise((res, rej) =>
-      setTimeout(() => {
-        res(
-          /* webpackPrefetch: true */ import(
-            "../../components/UpcomingAnimeList/UpcomingAnimeList"
-          )
-        );
-      }, 500)
+    /* webpackPrefetch: true */ import(
+      "../../components/UpcomingAnimeList/UpcomingAnimeList"
     ),
   {
     fallback: <i className="fas fa-spinner fa-9x fa-spin"></i>,
@@ -100,17 +76,7 @@ const TopAnimeList = loadable(
 
 const Carousel = loadable(
   () =>
-    new Promise((res, rej) =>
-      setTimeout(
-        () =>
-          res(
-            /* webpackPrefetch: true */ import(
-              "../../components/Carousel/Carousel"
-            )
-          ),
-        0
-      )
-    ),
+    /* webpackPrefetch: true */ import("../../components/Carousel/Carousel"),
   {
     fallback: (
       <div

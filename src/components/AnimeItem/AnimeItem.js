@@ -4,16 +4,61 @@ import "react-lazy-load-image-component/src/effects/opacity.css";
 import React from "react";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import { useHistory } from "react-router-dom";
-import { limitAdultGenre } from "../../epics/home";
+import { limitAdultGenre, stream } from "../../epics/home";
+import { useRef } from "react";
 
 const AnimeItem = ({ anime, lazy = false }) => {
   const history = useHistory();
+  const animeItemRef = useRef();
   // {!limitAdultGenre(anime.genres) ? "/18+" : ""}
   return (
     <div
+      ref={animeItemRef}
       className="anime-item"
       onClick={() => {
-        history.push(`/anime/${anime.malId || anime.mal_id}`);
+        if (!stream.currentState().hasMoved) {
+          history.push(`/anime/${anime.malId || anime.mal_id}`);
+        };
+        stream.updateHasMoved(false);
+      }}
+      onMouseDown={() => {
+        animeItemRef.current.style.transform = "scale(1)";
+      }}
+      onMouseOut={() => {
+        animeItemRef.current.style.transform =
+          "perspective(500px) scale(1) rotateX(0) rotateY(0)";
+      }}
+      onMouseMove={(e) => {
+        let xVal;
+        let yVal;
+        if (
+          animeItemRef.current.parentElement.className.includes(
+            "list-anime-nowrap"
+          )
+        ) {
+          yVal = e.pageY - animeItemRef.current.parentElement.offsetTop;
+          xVal = e.pageX - e.target.getBoundingClientRect().x;
+        } else {
+          xVal = e.pageX - animeItemRef.current.offsetLeft;
+          yVal = e.pageY - animeItemRef.current.offsetTop;
+        }
+        const width = animeItemRef.current.clientWidth;
+        const height = animeItemRef.current.clientHeight;
+        const yRotation = 20 * ((xVal - width / 2) / width);
+
+        /* Calculate the rotation along the X-axis */
+        const xRotation = -20 * ((yVal - height / 2) / height);
+
+        /* Generate string for CSS transform property */
+        const string =
+          "perspective(500px) scale(1.1) rotateX(" +
+          xRotation +
+          "deg) rotateY(" +
+          yRotation +
+          "deg)";
+
+        /* Apply the calculated transformation */
+        animeItemRef.current.style.transform = string;
       }}
     >
       {anime.airing_start &&
@@ -123,6 +168,7 @@ const AnimeItem = ({ anime, lazy = false }) => {
       )}
       {lazy === true && (
         <LazyLoadImage
+          draggable={false}
           style={{
             objectFit: "contain",
             position: "absolute",
@@ -136,6 +182,7 @@ const AnimeItem = ({ anime, lazy = false }) => {
       )}
       {lazy === false && (
         <img
+          draggable={false}
           style={{
             objectFit: "contain",
             position: "absolute",
@@ -149,30 +196,15 @@ const AnimeItem = ({ anime, lazy = false }) => {
       {anime.synopsis && (
         <div className="anime-item-synopsis">
           <p className="text-synopsis">
-            {anime.synopsis === " " && "No content."}
-            {anime.synopsis
-              ? anime.synopsis
-                  .split(" ")
-                  .slice(0, window.innerWidth <= 700 ? 10 : 40)
-                  .join(" ")
-              : "No content."}
-            {anime.synopsis &&
-            anime.synopsis.split(" ").length >
-              anime.synopsis
-                .split(" ")
-                .slice(0, window.innerWidth <= 700 ? 10 : 40).length
-              ? "....."
-              : ""}
+            {anime.synopsis === " " || !anime.synopsis
+              ? "No content."
+              : anime.synopsis}
           </p>
         </div>
       )}
       <div className="anime-item-info">
         <h3 style={{ margin: "5px" }} title="title_anime">
-          {anime.title.split(" ").slice(0, 6).join(" ")}
-          {anime.title.split(" ").length >
-          anime.title.split(" ").slice(0, 6).length
-            ? "..."
-            : ""}
+          {anime.title}
         </h3>
         {anime.genres && !limitAdultGenre(anime.genres) && (
           <h3 title={`age_limited`} style={{ color: "red", margin: "0" }}>

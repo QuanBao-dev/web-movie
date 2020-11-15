@@ -19,9 +19,9 @@ export const fetchingUser$ = (idCartoonUser) => {
     tap(((v) => {
       userStream.updateUser(v.response.message);
     })),
-    catchError((v) => {
+    catchError((error) => {
       userStream.updateUser(userStream.initialState);
-      return of(undefined)
+      return of({error})
     })
   );
 }

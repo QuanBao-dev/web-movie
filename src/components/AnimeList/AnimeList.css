@@ -11,9 +11,19 @@
   display: table;
   width: fit-content;
   white-space: nowrap;
+  position: relative;
   overflow-y: hidden;
   border-top-left-radius: 30px;
   border-bottom-left-radius: 30px;
+}
+
+.block-list-anime{
+  width: 100%;
+  height: 100%;
+  content: "";
+  position: absolute;
+  display: block;
+  z-index: 2;
 }
 
 .empty{

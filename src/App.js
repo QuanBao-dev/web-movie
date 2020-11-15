@@ -165,13 +165,8 @@ window.addEventListener("scroll", () => {
   });
 });
 window.addEventListener("load", () => {
-  new Promise((res, rej) => {
-    setTimeout(() => {
-      const body = document.querySelector("body");
-      body.style.backgroundImage = "url(/background.jpg)";
-      res();
-    }, 3000);
-  });
+  const body = document.querySelector("body");
+  body.style.backgroundImage = "url(/background.jpg)";
 });
 function App() {
   const navLoginRef = useRef();

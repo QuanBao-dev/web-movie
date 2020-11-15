@@ -44,7 +44,6 @@ const AnimeSchedule = () => {
       fetchDataScheduleSub.unsubscribe();
     };
   }, [homeState.dateSchedule]);
-  // console.log(homeState);
   return (
     <div className="container-week-schedule-movie">
       <ul className="week-schedule-movie">
@@ -68,7 +67,7 @@ const AnimeSchedule = () => {
                   stream.updateDate(showMovie);
                 }}
               >
-                {date}
+                {index === homeState.todayIndex ? "Today" : date}
               </div>
               <div
                 style={{

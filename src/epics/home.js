@@ -443,6 +443,7 @@ export const scrollAnimeUser$ = (
         elementScroll.childNodes[0] &&
         offsetLeft - elementScroll.childNodes[0].offsetLeft > 0
       ) {
+        console.log("reset");
         stream.updateOffsetLeft(
           -elementScroll.childNodes[numberList].offsetLeft
         );

@@ -32,13 +32,19 @@ const UpdatedAnime = () => {
     let subscription8, subscription9;
     if (subNavToggle === 0) {
       subscription8 = fetchUpdatedMovie$().subscribe(({ data, lastPage }) => {
-        stream.updateUpdatedMovie(data, lastPage);
+        stream.updateData({
+          updatedMovie: data,
+          lastPageUpdatedMovie: lastPage,
+        });
       });
     }
     if (subNavToggle === 1) {
       subscription9 = fetchBoxMovie$(cookies.idCartoonUser).subscribe(
         ({ data, lastPage }) => {
-          stream.updateBoxMovie(data, lastPage);
+          stream.updateData({
+            boxMovie: data,
+            lastPageBoxMovie: lastPage,
+          });
         }
       );
     }
@@ -84,7 +90,9 @@ function SubNavBar({ subNavToggle, setSubNavToggle, user }) {
     <div className="sub-nav-bar">
       <h1
         className={`sub-nav-item${subNavToggle === 0 ? " sub-nav-active" : ""}`}
-        onClick={() => setSubNavToggle(0)}
+        onClick={() => {
+          setSubNavToggle(0);
+        }}
       >
         Updated Anime
       </h1>

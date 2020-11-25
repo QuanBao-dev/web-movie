@@ -1,11 +1,16 @@
-import './UpcomingAnimeList.css';
+import "./UpcomingAnimeList.css";
 
-import React, { useEffect } from 'react';
-import { fromEvent } from 'rxjs';
+import React, { useEffect } from "react";
+import { fromEvent } from "rxjs";
 
-import { scrollAnimeInterval$, scrollAnimeUser$, stream, upcomingAnimeListUpdated$ } from '../../epics/home';
-import { updateModeScrolling } from '../../store/home';
-import AnimeList from '../AnimeList/AnimeList';
+import {
+  scrollAnimeInterval$,
+  scrollAnimeUser$,
+  stream,
+  upcomingAnimeListUpdated$,
+} from "../../epics/home";
+import { updateModeScrolling } from "../../store/home";
+import AnimeList from "../AnimeList/AnimeList";
 
 let numberList = 50;
 let numberCloneList = 8;
@@ -62,6 +67,7 @@ const UpcomingAnimeList = () => {
         });
 
         fromEvent(elementScroll, "mousedown").subscribe((e) => {
+          e.preventDefault();
           stream.updateMouseStartX(e.clientX);
         });
         fromEvent(elementScroll, "mousemove").subscribe((e) => {
@@ -106,7 +112,7 @@ const UpcomingAnimeList = () => {
           stream.updateMouseStartX(null);
           stream.updateHasMoved(false);
         });
-        
+
         subscription2 = scrollAnimeInterval$(
           elementScroll,
           end,
@@ -129,17 +135,20 @@ const UpcomingAnimeList = () => {
   useEffect(() => {
     stream.init();
     const subscription = upcomingAnimeListUpdated$().subscribe((data) => {
-      stream.updateUpcomingAnimeList([
-        ...data.slice(0, numberList),
-        ...data.slice(0, numberCloneList),
-      ]);
+      stream.updateData({
+        upcomingAnimeList: [
+          ...data.slice(0, numberList),
+          ...data.slice(0, numberCloneList),
+        ],
+      });
     });
     return () => {
       updateModeScrolling("interval");
       subscription && subscription.unsubscribe();
-      stream.updateIsFirstLaunch(false);
+      stream.updateData({
+        isFirstLaunch: false
+      })
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   return (
     <section

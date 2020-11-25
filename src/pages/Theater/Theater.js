@@ -65,14 +65,14 @@ const Theater = (props) => {
     theaterStream.init();
     if (theaterState.allowFetchRooms) {
       fetchRoomsData$(cookies.idCartoonUser).subscribe((rooms) => {
-        theaterStream.updateRoomsTheater(rooms);
+        theaterStream.updateData({ rooms });
         updateAllowFetchRooms(false);
       });
     }
     socket.on("fetch-data-rooms", () => {
       if (theaterState.allowFetchRooms) {
         fetchRoomsData$(cookies.idCartoonUser).subscribe((rooms) => {
-          theaterStream.updateRoomsTheater(rooms);
+          theaterStream.updateData({ rooms });
           updateAllowFetchRooms(false);
         });
       }
@@ -195,7 +195,9 @@ function InputCreateRoom({
             updateAllowFetchRooms(true);
             inputRoomNameRef.current.value = "";
             inputPasswordRef.current.value = "";
-            theaterStream.addRoomTheater(res.data.message);
+            theaterStream.updateData({
+              rooms: [...theaterStream.currentState().rooms, res.data.message],
+            });
           } catch (error) {
             if (error.response.data.error.toLowerCase().includes("roomname")) {
               setRoomNameError(error.response.data.error);

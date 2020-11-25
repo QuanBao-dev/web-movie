@@ -499,7 +499,9 @@ function appendNewMessageDialog(
   const e = document.querySelector(".chat-watch-zoom");
   if (e && e.style.transform === "scale(0)") {
     const numMessage = theaterStream.currentState().unreadMessage;
-    theaterStream.updateUnreadMessage(numMessage + 1);
+    theaterStream.updateData({
+      unreadMessage: numMessage + 1,
+    });
   }
 }
 
@@ -599,7 +601,9 @@ function appendNewPhotoMessage(
   const e = document.querySelector(".chat-watch-zoom");
   if (e && e.style.transform === "scale(0)") {
     const numMessage = theaterStream.currentState().unreadMessage;
-    theaterStream.updateUnreadMessage(numMessage + 1);
+    theaterStream.updateData({
+      unreadMessage: numMessage + 1,
+    });
   }
 }
 

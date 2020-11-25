@@ -1,24 +1,28 @@
-import './TheaterWatch.css';
+import "./TheaterWatch.css";
 
-import loadable from '@loadable/component';
-import Axios from 'axios';
-import { nanoid } from 'nanoid';
-import Peer from 'peerjs';
-import React, { useEffect, useRef, useState } from 'react';
-import { useCookies } from 'react-cookie';
-import { ReplaySubject } from 'rxjs';
-import { first } from 'rxjs/operators';
+import loadable from "@loadable/component";
+import Axios from "axios";
+import { nanoid } from "nanoid";
+import Peer from "peerjs";
+import React, { useEffect, useRef, useState } from "react";
+import { useCookies } from "react-cookie";
+import { ReplaySubject } from "rxjs";
+import { first } from "rxjs/operators";
 
-import Input from '../../components/Input/Input';
-import { fetchUserOnline$, submitFormPasswordRoom$, theaterStream } from '../../epics/theater';
-import { userStream } from '../../epics/user';
+import Input from "../../components/Input/Input";
+import {
+  fetchUserOnline$,
+  submitFormPasswordRoom$,
+  theaterStream,
+} from "../../epics/theater";
+import { userStream } from "../../epics/user";
 import {
   updateAllowFetchCurrentRoomDetail,
   updateAllowRemoveVideoWatch,
   updateAllowUserJoin,
   updateSignIn,
   updateUserIdNow,
-} from '../../store/theater';
+} from "../../store/theater";
 
 const Chat = loadable(() => import("../../components/Chat/Chat"), {
   fallback: <i className="fas fa-spinner fa-9x fa-spin"></i>,
@@ -269,7 +273,9 @@ const TheaterWatch = (props) => {
                           top: chatBot.scrollHeight,
                           behavior: "smooth",
                         });
-                        theaterStream.updateUnreadMessage(0);
+                        theaterStream.updateData({
+                          unreadMessage: 0,
+                        });
                       } else {
                         e.style.transform = "scale(0)";
                         chatBot.style.transform = "scale(0)";
@@ -316,7 +322,9 @@ socket.on("reconnect", async () => {
 
 socket.on("mongo-change-watch", () => {
   fetchUserOnline$(groupId, idCartoonUser).subscribe((users) => {
-    theaterStream.updateUsersOnline(users);
+    theaterStream.updateData({
+      usersOnline: users,
+    });
   });
 });
 
@@ -557,7 +565,9 @@ socket.on("user-join", async (username, userId, roomId) => {
 socket.on("disconnected-user", async (username, userId, roomId) => {
   // console.log(roomId, groupId);
   fetchUserOnline$(groupId, idCartoonUser).subscribe((users) => {
-    theaterStream.updateUsersOnline(users);
+    theaterStream.updateData({
+      usersOnline: users,
+    });
   });
   if (peers[userId]) {
     peers[userId].close();
@@ -581,7 +591,9 @@ socket.on("disconnect", () => {
 
 socket.on("fetch-user-online", () => {
   fetchUserOnline$(groupId, idCartoonUser).subscribe((users) => {
-    theaterStream.updateUsersOnline(users);
+    theaterStream.updateData({
+      usersOnline:users
+    })
   });
 });
 socket.on("play-video-user", (currentTime, idGroup) => {
@@ -712,7 +724,9 @@ async function fetchGroup(groupId, idCartoonUser) {
   try {
     updateAllowFetchCurrentRoomDetail(false);
     updateSignIn(true);
-    theaterStream.updateCurrentRoomDetail(res.data.message);
+    theaterStream.updateData({
+      currentRoomDetail: res.data.message,
+    });
   } catch (error) {}
 }
 export default TheaterWatch;

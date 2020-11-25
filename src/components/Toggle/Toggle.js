@@ -5,7 +5,9 @@ import Switch from "@material-ui/core/Switch";
 const Toggle = ({ mode }) => {
   useEffect(() => {
     return () => {
-      theaterStream.updateModeRoom(1);
+      theaterStream.updateData({
+        modeRoom: 1,
+      });
     };
   }, []);
   return (
@@ -13,9 +15,13 @@ const Toggle = ({ mode }) => {
       className="toggle"
       onClick={() => {
         if (mode === 1) {
-          theaterStream.updateModeRoom(0);
+          theaterStream.updateData({
+            modeRoom: 0,
+          });
         } else {
-          theaterStream.updateModeRoom(1);
+          theaterStream.updateData({
+            modeRoom: 1,
+          });
         }
       }}
     >

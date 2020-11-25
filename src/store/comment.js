@@ -7,9 +7,9 @@ const initialState = {
   indexInputDisplayBlock: null,
   malId: null,
   shouldFetchComment: true,
-  currentName:"",
-  lastPageComment:1,
-  triggerFetch:0
+  currentName: "",
+  lastPageComment: 1,
+  triggerFetch: 0,
 };
 
 const behaviorSubject = new BehaviorSubject();
@@ -20,6 +20,13 @@ const chatStore = {
   init: () => {
     behaviorSubject.next(state);
   },
+  updateData: (object = initialState) => {
+    state = {
+      ...state,
+      ...object,
+    };
+    behaviorSubject.next(state);
+  },
   currentState: () => {
     let ans;
     behaviorSubject.subscribe((v) => {
@@ -27,29 +34,11 @@ const chatStore = {
     });
     return ans || initialState;
   },
-  updateMessages: (messages,lastPage) => {
+  updateMessages: (messages, lastPage) => {
     state = {
       ...state,
       messages: messages,
-      lastPageComment:lastPage
-    };
-    behaviorSubject.next(state);
-  },
-
-  updateDeleteMessage: (listDelete = []) => {
-    state = {
-      ...state,
-      messages: state.messages.filter(
-        (message, index) => !listDelete.includes(index)
-      ),
-    };
-    behaviorSubject.next(state);
-  },
-
-  updateInputDisplayBlock: (index) => {
-    state = {
-      ...state,
-      indexInputDisplayBlock: index,
+      lastPageComment: lastPage,
     };
     behaviorSubject.next(state);
   },
@@ -57,31 +46,13 @@ const chatStore = {
   updateCurrentPage: (page) => {
     state = {
       ...state,
-      currentPage:page
+      currentPage: page,
     };
     behaviorSubject.next(state);
   },
-  updateTriggerFetch:(bool) => {
-    state={
-      ...state,
-      triggerFetch:bool,
-      messages:[],
-      lastPageComment:1
-    };
-    behaviorSubject.next(state)
-  },
-  resetComments:()=>{
-    state={
-      ...state,
-      messages:[],
-      currentPage:1,
-      lastPageComment:1
-    };
-    behaviorSubject.next(state)
-  }
 };
 
 export const updateCurrentName = (name) => {
   state.currentName = name;
-}
+};
 export default chatStore;

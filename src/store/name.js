@@ -40,44 +40,9 @@ const nameStore = {
     };
     behaviorSubject.next(state);
   },
-  updateDataRelatedAnime: (data) => {
-    state = {
-      ...state,
-      dataRelatedAnime: data,
-    };
-    behaviorSubject.next(state);
-  },
-  updatePageRelated: (page) => {
-    state = {
-      ...state,
-      pageRelated: page,
-    };
-    behaviorSubject.next(state);
-  },
-  updateMalId: (malId) => {
-    state = {
-      ...state,
-      malId,
-    };
-    behaviorSubject.next(state);
-  },
   resetState: () => {
     state = {
       ...initialState,
-    };
-    behaviorSubject.next(state);
-  },
-  updateBoxMovie: (data) => {
-    state = {
-      ...state,
-      boxMovie: data === null ? null : { ...data },
-    };
-    behaviorSubject.next(state);
-  },
-  updatePageVideo: (page) => {
-    state = {
-      ...state,
-      pageVideo: page,
     };
     behaviorSubject.next(state);
   },
@@ -86,31 +51,10 @@ const nameStore = {
     behaviorSubject.subscribe((v) => (ans = v));
     return ans || initialState;
   },
-  updateDataInfoAnime: (data) => {
+  updateData: (object = initialState) => {
     state = {
       ...state,
-      dataInformationAnime: { ...data },
-    };
-    behaviorSubject.next(state);
-  },
-  updateDataVideoPromo: (data) => {
-    state = {
-      ...state,
-      dataVideoPromo: [...data],
-    };
-    behaviorSubject.next(state);
-  },
-  updateDataEpisodesAnime: (data) => {
-    state = {
-      ...state,
-      dataEpisodesAnime: { ...data },
-    };
-    behaviorSubject.next(state);
-  },
-  updateDataLargePicture: (url) => {
-    state = {
-      ...state,
-      dataLargePicture: url,
+      ...object,
     };
     behaviorSubject.next(state);
   },

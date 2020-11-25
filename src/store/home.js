@@ -82,13 +82,6 @@ const homeStore = {
     state.mouseStartX = x;
     subject.next(state);
   },
-  updateModeFilter: (mode) => {
-    state = {
-      ...state,
-      modeFilter: mode,
-    };
-    subject.next(state);
-  },
   updateOffsetLeft: (offsetLeft) => {
     state.offsetLeft = offsetLeft;
     subject.next(state);
@@ -97,88 +90,10 @@ const homeStore = {
     state.shouldScrollLeft = bool;
     subject.next(state);
   },
-  updateTriggerScroll: (bool) => {
-    state = {
-      ...state,
-      triggerScroll: bool,
-    };
-    subject.next(state);
-  },
-  updateIsFirstLaunch: (bool) => {
-    state = {
-      ...state,
-      isFirstLaunch: bool,
-    };
-    subject.next(state);
-  },
-  updateNumberOfProduct: (number) => {
-    state = {
-      ...state,
-      numberOfProduct: number,
-    };
-    subject.next(state);
-  },
-  updatePositionScrollTop: (pos) => {
-    state = {
-      ...state,
-      positionScrollTop: pos,
-    };
-    subject.next(state);
-  },
-  updatePageSplitTopMovie: (page) => {
-    state = {
-      ...state,
-      pageSplitTopMovie: page,
-    };
-    subject.next(state);
-  },
-  updatePageSplit: (page) => {
-    state = {
-      ...state,
-      pageSplit: page,
-    };
-    subject.next(state);
-  },
   init: () => {
     state = {
       ...state,
       screenWidth: window.innerWidth,
-    };
-    subject.next(state);
-  },
-  updateIsStopFetchTopMovie: (bool) => {
-    state = {
-      ...state,
-      isStopFetchTopMovie: bool,
-    };
-    subject.next(state);
-  },
-  updateAllowIncreasePageTopMovie: (bool) => {
-    state = {
-      ...state,
-      allowFetchIncreasePageTopMovie: bool,
-    };
-    subject.next(state);
-  },
-  updateDataCarousel: (data) => {
-    state = {
-      ...state,
-      dataCarousel: [...data],
-    };
-    subject.next(state);
-  },
-  updatePageTopMovie: (num) => {
-    state = {
-      ...state,
-      pageTopMovie: num,
-    };
-    subject.next(state);
-  },
-
-  updateDate: (date) => {
-    state = {
-      ...state,
-      dateSchedule: [...date],
     };
     subject.next(state);
   },
@@ -190,14 +105,6 @@ const homeStore = {
         ...state.dataScheduleMovie,
         ...data,
       },
-    };
-    subject.next(state);
-  },
-
-  updateAnimeData: (data) => {
-    state = {
-      ...state,
-      dataDetail: [...data],
     };
     subject.next(state);
   },
@@ -253,60 +160,6 @@ const homeStore = {
     subject.next(state);
   },
 
-  updateDataFilter: (dataFilter) => {
-    state = {
-      ...state,
-      dataFilter: dataFilter,
-    };
-    subject.next(state);
-  },
-
-  updateTopMovie: (data) => {
-    state = {
-      ...state,
-      dataTopMovie: data,
-    };
-    subject.next(state);
-  },
-  updateUpdatedMovie: (data, lastPage) => {
-    state = {
-      ...state,
-      updatedMovie: [...data],
-      lastPageUpdatedMovie: lastPage,
-    };
-    subject.next(state);
-  },
-
-  updateCurrentPageUpdatedMovie: (page) => {
-    state = {
-      ...state,
-      currentPageUpdatedMovie: page,
-    };
-    subject.next(state);
-  },
-  updateCurrentPageBoxMovie: (page) => {
-    state = {
-      ...state,
-      currentPageBoxMovie: page,
-    };
-    subject.next(state);
-  },
-  updateBoxMovie: (data, lastPage) => {
-    state = {
-      ...state,
-      boxMovie: [...data],
-      lastPageBoxMovie: lastPage,
-    };
-    subject.next(state);
-  },
-
-  updateUpcomingAnimeList: (upcomingDataList) => {
-    state = {
-      ...state,
-      upcomingAnimeList: upcomingDataList,
-    };
-    subject.next(state);
-  },
   allowScrollToSeeMore: (bool) => {
     state = {
       ...state,

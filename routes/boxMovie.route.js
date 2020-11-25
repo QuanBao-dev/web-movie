@@ -14,6 +14,10 @@ router.get("/", verifyRole("Admin", "User"), async (req, res) => {
     res.send({
       message: {
         data: boxMovie
+          .sort(
+            (a, b) =>
+              -new Date(a.dateAdded).getTime() + new Date(b.dateAdded).getTime()
+          )
           .slice((parseInt(page) - 1) * 18, parseInt(page) * 18)
           .map((movie) => ignoreProps(["_id", "__v", "user"], movie.toJSON())),
         lastPage,
@@ -65,7 +69,7 @@ router.post("/", verifyRole("Admin", "User"), async (req, res) => {
         upsert: true,
         new: true,
       }
-    );
+    ).lean();
     res.send({
       message: ignoreProps(["_id", "__v", "user"], movie.toJSON()),
     });

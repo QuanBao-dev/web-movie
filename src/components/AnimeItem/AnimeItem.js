@@ -21,45 +21,9 @@ const AnimeItem = ({ anime, lazy = false }) => {
         };
         stream.updateHasMoved(false);
       }}
-      onMouseDown={() => {
-        animeItemRef.current.style.transform = "scale(1)";
-      }}
-      onMouseOut={() => {
-        animeItemRef.current.style.transform =
-          "perspective(500px) scale(1) rotateX(0) rotateY(0)";
-      }}
-      onMouseMove={(e) => {
-        let xVal;
-        let yVal;
-        if (
-          animeItemRef.current.parentElement.className.includes(
-            "list-anime-nowrap"
-          )
-        ) {
-          yVal = e.pageY - animeItemRef.current.parentElement.offsetTop;
-          xVal = e.pageX - e.target.getBoundingClientRect().x;
-        } else {
-          xVal = e.pageX - animeItemRef.current.offsetLeft;
-          yVal = e.pageY - animeItemRef.current.offsetTop;
-        }
-        const width = animeItemRef.current.clientWidth;
-        const height = animeItemRef.current.clientHeight;
-        const yRotation = 20 * ((xVal - width / 2) / width);
-
-        /* Calculate the rotation along the X-axis */
-        const xRotation = -20 * ((yVal - height / 2) / height);
-
-        /* Generate string for CSS transform property */
-        const string =
-          "perspective(500px) scale(1.1) rotateX(" +
-          xRotation +
-          "deg) rotateY(" +
-          yRotation +
-          "deg)";
-
-        /* Apply the calculated transformation */
-        animeItemRef.current.style.transform = string;
-      }}
+      onMouseDown={mouseDownAnimeItem(animeItemRef)}
+      onMouseOut={mouseOutAnimeItem(animeItemRef)}
+      onMouseMove={mouseMoveAnimeItem(animeItemRef)}
     >
       {anime.airing_start &&
         new Date(anime.airing_start).getTime() <=
@@ -217,3 +181,48 @@ const AnimeItem = ({ anime, lazy = false }) => {
 };
 
 export default AnimeItem;
+function mouseOutAnimeItem(animeItemRef) {
+  return () => {
+    animeItemRef.current.style.transform =
+      "perspective(500px) scale(1) rotateX(0) rotateY(0)";
+  };
+}
+
+function mouseDownAnimeItem(animeItemRef) {
+  return () => {
+    animeItemRef.current.style.transform = "scale(1)";
+  };
+}
+
+function mouseMoveAnimeItem(animeItemRef) {
+  return (e) => {
+    let xVal;
+    let yVal;
+    if (animeItemRef.current.parentElement.className.includes(
+      "list-anime-nowrap"
+    )) {
+      yVal = e.pageY - animeItemRef.current.parentElement.offsetTop;
+      xVal = e.pageX - e.target.getBoundingClientRect().x;
+    } else {
+      xVal = e.pageX - animeItemRef.current.offsetLeft;
+      yVal = e.pageY - animeItemRef.current.offsetTop;
+    }
+    const width = animeItemRef.current.clientWidth;
+    const height = animeItemRef.current.clientHeight;
+    const yRotation = 20 * ((xVal - width / 2) / width);
+
+    /* Calculate the rotation along the X-axis */
+    const xRotation = -20 * ((yVal - height / 2) / height);
+
+    /* Generate string for CSS transform property */
+    const string = "perspective(500px) scale(1.1) rotateX(" +
+      xRotation +
+      "deg) rotateY(" +
+      yRotation +
+      "deg)";
+
+    /* Apply the calculated transformation */
+    animeItemRef.current.style.transform = string;
+  };
+}
+

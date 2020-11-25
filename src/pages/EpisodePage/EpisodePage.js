@@ -48,9 +48,9 @@ const EpisodePage = (props) => {
   const [isDisplayEngDub, setIsDisplayEngDub] = useState(false);
 
   const user = userStream.currentState();
-  useEffect(()=>{
+  useEffect(() => {
     pageWatchStream.updateSwitchVideo(false);
-  },[episode,mode]);
+  }, [episode, mode]);
   useEffect(() => {
     const subscription = pageWatchStream.subscribe(setPageWatchState);
     pageWatchStream.init();
@@ -87,7 +87,11 @@ const EpisodePage = (props) => {
   useEffect(() => {
     if (pageWatchStream.currentState().malId !== malId) {
       pageWatchStream.resetState();
-      chatStream.resetComments();
+      chatStream.updateData({
+        messages: [],
+        currentPage: 1,
+        lastPageComment: 1,
+      });
     }
   }, [malId]);
   useEffect(() => {

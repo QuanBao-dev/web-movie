@@ -90,14 +90,17 @@ const Name = (props) => {
       tap((v) => {
         document.title = `Watch ${v.title}`;
         nameStream.updateIsLoading(false, "isLoadingInfoAnime");
-        nameStream.updateDataInfoAnime(v);
+        nameStream.updateData({
+          dataInformationAnime: v,
+        });
       })
     );
     const fetchDataVideoPromo$ = fetchDataVideo$(name).pipe(
       tap(({ promo }) => {
         if (promo) {
-          nameStream.updatePageVideo(1);
-          nameStream.updateDataVideoPromo(promo);
+          nameStream.updateData({
+            pageVideo: promo,
+          });
         }
         nameStream.updateIsLoading(false, "isLoadingVideoAnime");
       })
@@ -110,7 +113,9 @@ const Name = (props) => {
             const imageUrl = pictures[random(pictures.length - 1)]
               ? pictures[random(pictures.length - 1)].large
               : undefined;
-            nameStream.updateDataLargePicture(imageUrl);
+            nameStream.updateData({
+              dataLargePicture: imageUrl,
+            });
           }
         } catch (error) {
           nameStream.updateIsLoading(false, "isLoadingLargePicture");
@@ -125,10 +130,14 @@ const Name = (props) => {
             nameStream.updateIsLoading(false, "isLoadingEpisode");
             if (linkWatchingInputRef.current)
               linkWatchingInputRef.current.value = api.message.source;
-            nameStream.updateDataEpisodesAnime(api.message);
+            nameStream.updateData({
+              dataEpisodesAnime: api.message,
+            });
           } else {
             nameStream.updateIsLoading(false, "isLoadingEpisode");
-            nameStream.updateDataEpisodesAnime({});
+            nameStream.updateData({
+              dataEpisodesAnime: {},
+            });
           }
         })
       )
@@ -136,7 +145,9 @@ const Name = (props) => {
     const fetchAnimeAppears$ = fetchAnimeRecommendation$(name).pipe(
       tap((data) => {
         nameStream.updateIsLoading(false, "isLoadingRelated");
-        nameStream.updateDataRelatedAnime(data);
+        nameStream.updateData({
+          dataRelatedAnime: data
+        })
       })
     );
     const fetchCharacters$ = fetchDataCharacter$(name).pipe(
@@ -162,7 +173,9 @@ const Name = (props) => {
         .pipe(combineAll())
         .subscribe(() => {
           characterStream.updatePage(1);
-          nameStream.updateMalId(name);
+          nameStream.updateData({
+            malId: name,
+          });
         });
     }
     return () => {
@@ -177,7 +190,9 @@ const Name = (props) => {
       cookies.idCartoonUser
     ).subscribe((api) => {
       if (!api.error) {
-        nameStream.updateBoxMovie(api.message);
+        nameStream.updateData({
+          boxMovie: api.message === null ? null : { ...api.message },
+        });
         handleDeleteBoxMovie(
           addMovieRef,
           deleteMovieRef,
@@ -185,7 +200,9 @@ const Name = (props) => {
           name
         );
       } else {
-        nameStream.updateBoxMovie(null);
+        nameStream.updateData({
+          boxMovie: null,
+        });
         handleAddBoxMovie(
           addMovieRef,
           deleteMovieRef,
@@ -412,7 +429,9 @@ const Name = (props) => {
                           authorization: `Bearer ${cookies.idCartoonUser}`,
                         },
                       });
-                      nameStream.updateDataEpisodesAnime({});
+                      nameStream.updateData({
+                        dataEpisodesAnime: {},
+                      });
                       buttonDeleteCrawlInputRef.current.disabled = false;
                     } catch (error) {
                       buttonDeleteCrawlInputRef.current.disabled = false;
@@ -743,7 +762,9 @@ function FormSubmitCrawl({
                 },
               }
             );
-            nameStream.updateDataEpisodesAnime(updateMovie.data.message);
+            nameStream.updateData({
+              dataEpisodesAnime: updateMovie.data.message,
+            });
             setError(null);
             startEpisodeInputRef.current.value = "";
             endEpisodeInputRef.current.value = "";
@@ -846,21 +867,27 @@ function FormSubmit({
             );
             const data = episodeData;
             if (language === "vi") {
-              nameStream.updateDataEpisodesAnime({
-                ...data,
-                episodes: res.data,
+              nameStream.updateData({
+                dataEpisodesAnime: {
+                  ...data,
+                  episodes: res.data,
+                },
               });
             }
             if (language === "eng") {
               if (isDub) {
-                nameStream.updateDataEpisodesAnime({
-                  ...data,
-                  episodesEngDub: res.data,
+                nameStream.updateData({
+                  dataEpisodesAnime: {
+                    ...data,
+                    episodesEngDub: res.data,
+                  },
                 });
               } else {
-                nameStream.updateDataEpisodesAnime({
-                  ...data,
-                  episodesEng: res.data,
+                nameStream.updateData({
+                  dataEpisodesAnime: {
+                    ...data,
+                    episodesEng: res.data,
+                  },
                 });
               }
             }

@@ -27,63 +27,15 @@ const theaterStore = {
   currentState: () => {
     let temp;
     behaviorSubject.subscribe((v) => (temp = v));
-    return temp;
+    return temp || initialState;
   },
   init: () => {
     behaviorSubject.next(state);
   },
-
-  updateUnreadMessage: (number) => {
+  updateData: (object = initialState) => {
     state = {
       ...state,
-      unreadMessage: number,
-    };
-    behaviorSubject.next(state);
-  },
-
-  updateModeRoom: (num) => {
-    state = {
-      ...state,
-      modeRoom: num,
-    };
-    behaviorSubject.next(state);
-  },
-  updateRoomsTheater: (rooms) => {
-    state = {
-      ...state,
-      rooms: [...rooms],
-    };
-    behaviorSubject.next(state);
-  },
-
-  addRoomTheater: (room) => {
-    state = {
-      ...state,
-      rooms: [...state.rooms, room],
-    };
-    behaviorSubject.next(state);
-  },
-
-  updateCurrentRoomDetail: (room) => {
-    state = {
-      ...state,
-      currentRoomDetail: { ...room },
-    };
-    behaviorSubject.next(state);
-  },
-
-  updateRoomsLoginId: (groupId) => {
-    state = {
-      ...state,
-      roomsLoginId: [...state.roomsLoginId, groupId],
-    };
-    behaviorSubject.next(state);
-  },
-
-  updateUsersOnline: (users) => {
-    state = {
-      ...state,
-      usersOnline: [...users],
+      ...object,
     };
     behaviorSubject.next(state);
   },

@@ -42,27 +42,29 @@ const RelatedAnime = ({ isLoading }) => {
         {isLoading !== null && isLoading === true && (
           <CircularProgress color="secondary" size="4rem" />
         )}
-        {isLoading === false && <div>
-          <AnimeList
-            data={recommendationState.dataRelatedAnime.slice(
-              0,
-              8 * recommendationState.pageRelated
-            )}
-            error={null}
-            lazy={true}
-          />
-          <div
-            className="see-more-movie"
-            ref={buttonRef}
-            onClick={() => {
-              nameStream.updatePageRelated(
-                nameStream.currentState().pageRelated + 1
-              );
-            }}
-          >
-            See more
+        {isLoading === false && (
+          <div>
+            <AnimeList
+              data={recommendationState.dataRelatedAnime.slice(
+                0,
+                8 * recommendationState.pageRelated
+              )}
+              error={null}
+              lazy={true}
+            />
+            <div
+              className="see-more-movie"
+              ref={buttonRef}
+              onClick={() => {
+                nameStream.updateData({
+                  pageRelated: nameStream.currentState().pageRelated + 1,
+                });
+              }}
+            >
+              See more
+            </div>
           </div>
-        </div>}
+        )}
       </div>
     )
   );

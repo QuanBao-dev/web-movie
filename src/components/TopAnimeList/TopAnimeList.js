@@ -25,13 +25,16 @@ function TopAnimeList({ homeState = stream.initialState }) {
     }
     if (stream.currentState().dataTopMovie.length === 0) {
       updatePageTopMovieOnDestroy(null);
-      stream.updateIsStopFetchTopMovie(false);
+      stream.updateData({
+        isStopFetchTopMovie: false,
+      });
     }
     return () => {
       if (stream.currentState().screenWidth > 697) {
-        stream.updatePositionScrollTop(
-          document.querySelector(".top-anime-list-container").scrollTop
-        );
+        stream.updateData({
+          positionScrollTop: document.querySelector(".top-anime-list-container")
+            .scrollTop,
+        });
       }
     };
   }, []);
@@ -76,10 +79,14 @@ function TopAnimeList({ homeState = stream.initialState }) {
           updatedAnime.length / 50 + 1 !==
           parseInt(updatedAnime.length / 50 + 1)
         ) {
-          stream.updateIsStopFetchTopMovie(true);
+          stream.updateData({
+            isStopFetchTopMovie: true,
+          });
         }
 
-        stream.updateTopMovie(updatedAnime);
+        stream.updateData({
+          dataTopMovie: updatedAnime,
+        });
       });
     return () => {
       subscription7 && subscription7.unsubscribe();
@@ -102,7 +109,7 @@ function TopAnimeList({ homeState = stream.initialState }) {
           style={{
             display: homeState.isStopFetchTopMovie ? "none" : "block",
             height: "70px",
-            width:"100%"
+            width: "100%",
           }}
         >
           <CircularProgress color="secondary" />
@@ -114,7 +121,9 @@ function TopAnimeList({ homeState = stream.initialState }) {
 }
 
 function updateDataTopScrolling() {
-  stream.updatePageTopMovie(stream.currentState().dataTopMovie.length / 50 + 1);
+  stream.updateData({
+    pageTopMovie: stream.currentState().dataTopMovie.length / 50 + 1,
+  });
 }
 
 export default TopAnimeList;

@@ -40,20 +40,22 @@ const PaginationAnime = ({
           className="home__page-item-search"
           onClick={() => {
             if (subNavToggle === 0) {
-              stream.updateCurrentPageUpdatedMovie(1);
               if (stream.currentState().currentPageUpdatedMovie !== 1)
-                stream.updateUpdatedMovie(
-                  [],
-                  stream.currentState().lastPageUpdatedMovie
-                );
+                stream.updateData({
+                  updatedMovie: [],
+                });
+              stream.updateData({
+                currentPageUpdatedMovie: 1,
+              });
             } else {
               if (stream.currentState().currentPageBoxMovie !== 1) {
-                stream.updateBoxMovie(
-                  [],
-                  stream.currentState().lastPageBoxMovie
-                );
+                stream.updateData({
+                  boxMovie: [],
+                });
               }
-              stream.updateCurrentPageBoxMovie(1);
+              stream.updateData({
+                currentPageBoxMovie: 1,
+              });
             }
             const subNavBar = document.querySelector(".sub-nav-bar");
             window.scroll({
@@ -76,18 +78,20 @@ const PaginationAnime = ({
                   if (
                     stream.currentState().currentPageUpdatedMovie !== pageData
                   )
-                    stream.updateUpdatedMovie(
-                      [],
-                      stream.currentState().lastPageUpdatedMovie
-                    );
-                  stream.updateCurrentPageUpdatedMovie(pageData);
+                    stream.updateData({
+                      updatedMovie: [],
+                    });
+                  stream.updateData({
+                    currentPageUpdatedMovie: pageData,
+                  });
                 } else {
                   if (stream.currentState().currentPageBoxMovie !== pageData)
-                    stream.updateBoxMovie(
-                      [],
-                      stream.currentState().lastPageBoxMovie
-                    );
-                  stream.updateCurrentPageBoxMovie(pageData);
+                    stream.updateData({
+                      boxMovie: [],
+                    });
+                  stream.updateData({
+                    currentPageBoxMovie: pageData,
+                  });
                 }
                 const subNavBar = document.querySelector(".sub-nav-bar");
                 window.scroll({
@@ -103,18 +107,20 @@ const PaginationAnime = ({
           onClick={() => {
             if (subNavToggle === 0) {
               if (stream.currentState().currentPageUpdatedMovie !== lastPage)
-                stream.updateUpdatedMovie(
-                  [],
-                  stream.currentState().lastPageUpdatedMovie
-                );
-              stream.updateCurrentPageUpdatedMovie(lastPage);
+                stream.updateData({
+                  updatedMovie: [],
+                });
+              stream.updateData({
+                currentPageUpdatedMovie: lastPage,
+              });
             } else {
               if (stream.currentState().currentPageBoxMovie !== lastPage)
-                stream.updateBoxMovie(
-                  [],
-                  stream.currentState().lastPageBoxMovie
-                );
-              stream.updateCurrentPageBoxMovie(lastPage);
+                stream.updateData({
+                  boxMovie: [],
+                });
+              stream.updateData({
+                currentPageBoxMovie: lastPage,
+              });
             }
             const subNavBar = document.querySelector(".sub-nav-bar");
             window.scroll({

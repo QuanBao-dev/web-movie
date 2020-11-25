@@ -116,7 +116,9 @@ const AnimeListSeason = () => {
       (homeState.currentPage - 1) * homeState.numberOfProduct,
       homeState.currentPage * homeState.numberOfProduct
     );
-    stream.updateAnimeData(sortedArray);
+    stream.updateData({
+      dataDetail: sortedArray,
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     homeState.currentPage,
@@ -130,6 +132,7 @@ const AnimeListSeason = () => {
       stream.allowScrollToSeeMore(false);
       window.scroll({
         top: targetScroll.current.offsetTop - 170,
+        behavior: "smooth"
       });
     }
 
@@ -181,7 +184,9 @@ const AnimeListSeason = () => {
         homeState.numberOfProduct,
         homeState.score
       ).subscribe((v) => {
-        stream.updateAnimeData(v);
+        stream.updateData({
+          dataDetail: v,
+        });
       });
     return () => {
       subscription2 && subscription2.unsubscribe();

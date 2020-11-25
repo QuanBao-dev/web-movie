@@ -36,7 +36,6 @@ const movieSchema = new mongoose.Schema({
         author: String,
         textContent: String,
         marginLeft: String,
-        avatar:String,
         commentId:String
       },
     ],

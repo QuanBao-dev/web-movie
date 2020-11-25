@@ -1,8 +1,8 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-useless-escape */
-import orderBy from 'lodash/orderBy';
-import { asyncScheduler, from, fromEvent, interval, of, timer } from 'rxjs';
-import { ajax } from 'rxjs/ajax';
+import orderBy from "lodash/orderBy";
+import { asyncScheduler, from, fromEvent, interval, of, timer } from "rxjs";
+import { ajax } from "rxjs/ajax";
 import {
   catchError,
   combineAll,
@@ -19,7 +19,7 @@ import {
   takeWhile,
   tap,
   throttleTime,
-} from 'rxjs/operators';
+} from "rxjs/operators";
 
 import homeStore, {
   savingTextSearch,
@@ -27,7 +27,7 @@ import homeStore, {
   updateModeScrolling,
   updateOriginalData,
   updatePageTopMovieOnDestroy,
-} from '../store/home';
+} from "../store/home";
 
 export const stream = homeStore;
 
@@ -256,13 +256,13 @@ export const changeSearchInput$ = (searchInputElement) => {
           )
         : of([])
     ),
-    tap((data) => stream.updateDataFilter(data))
+    tap((data) => stream.updateData({ dataFilter: data }))
   );
 };
 
 export const fetchTopMovie$ = () => {
   return timer(0).pipe(
-    tap(() => stream.updateAllowIncreasePageTopMovie(false)),
+    tap(() => stream.updateData({ allowFetchIncreasePageTopMovie: false })),
     exhaustMap(() =>
       ajax({
         url: `https://api.jikan.moe/v3/top/anime/${
@@ -271,13 +271,15 @@ export const fetchTopMovie$ = () => {
       }).pipe(
         pluck("response", "top"),
         tap(() => {
-          stream.updateAllowIncreasePageTopMovie(true);
+          stream.updateData({ allowFetchIncreasePageTopMovie: true });
           updatePageTopMovieOnDestroy(stream.currentState().pageTopMovie);
         }),
         retry(5),
         catchError((err) => {
-          stream.updateIsStopFetchTopMovie(true);
-          stream.updateAllowIncreasePageTopMovie(false);
+          stream.updateData({
+            isStopFetchTopMovie: true,
+          });
+          stream.updateData({ allowFetchIncreasePageTopMovie: false });
           return of(stream.currentState().dataTopMovie);
         })
       )
@@ -363,9 +365,9 @@ export const topMovieUpdatedScrolling$ = (topAnimeElement) => {
         8 + (stream.currentState().pageSplitTopMovie - 1) * 5 <=
         stream.currentState().dataTopMovie.length
       )
-        stream.updatePageSplitTopMovie(
-          stream.currentState().pageSplitTopMovie + 1
-        );
+        stream.updateData({
+          pageSplitTopMovie: stream.currentState().pageSplitTopMovie + 1,
+        });
     })
   );
 };
@@ -437,7 +439,7 @@ export const scrollAnimeUser$ = (
         elementScroll.style.transform = `translateX(${
           stream.currentState().offsetLeft
         })`;
-        check = false
+        check = false;
       }
       if (
         elementScroll.childNodes[0] &&
@@ -451,7 +453,7 @@ export const scrollAnimeUser$ = (
         elementScroll.style.transform = `translateX(${
           stream.currentState().offsetLeft
         })`;
-        check = false
+        check = false;
       }
       if (check)
         elementScroll.style.transform = `translateX(${
@@ -459,13 +461,12 @@ export const scrollAnimeUser$ = (
         }px)`;
     }),
     filter(() => deltaDistance >= distance),
-    tap(() =>{
+    tap(() => {
       stream.updateOffsetLeft(
         stream.currentState().offsetLeft - deltaDistance * forward
       );
       stream.allowScrollLeft(true);
       updateModeScrolling("interval");
-    }
-    )
+    })
   );
 };

@@ -64,7 +64,7 @@ const AnimeSchedule = () => {
                   const showMovie = movieRefs.map((movie) => {
                     return movie.current.style.maxHeight !== "3px";
                   });
-                  stream.updateDate(showMovie);
+                  stream.updateData({ dateSchedule: showMovie });
                 }}
               >
                 {index === homeState.todayIndex ? "Today" : date}

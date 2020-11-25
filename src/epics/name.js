@@ -174,7 +174,9 @@ export function handleAddBoxMovie(
     )
     .subscribe((v) => {
       // console.log(v);
-      nameStream.updateBoxMovie(v);
+      nameStream.updateData({
+        boxMovie: v === null ? null : { ...v },
+      });
       handleDeleteBoxMovie(addMovieRef, deleteMovieRef, idCartoonUser, malId);
     });
 }
@@ -211,7 +213,9 @@ export function handleDeleteBoxMovie(
       })
     )
     .subscribe((v) => {
-      nameStream.updateBoxMovie(null);
+      nameStream.updateData({
+        boxMovie: null,
+      });
       handleAddBoxMovie(addMovieRef, deleteMovieRef, idCartoonUser, malId);
     });
 }

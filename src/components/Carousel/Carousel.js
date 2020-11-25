@@ -29,7 +29,9 @@ const Carousel = () => {
   const history = useHistory();
   useEffect(() => {
     const subscription = fetchData$().subscribe((v) => {
-      stream.updateDataCarousel(v);
+      stream.updateData({
+        dataCarousel: v,
+      });
     });
     return () => {
       subscription.unsubscribe();
@@ -122,7 +124,9 @@ const Carousel = () => {
                       },
                     }
                   );
-                  stream.updateDataCarousel(dataRes.data.message);
+                  stream.updateData({
+                    dataCarousel: dataRes.data.message,
+                  });
                 } catch (error) {
                   alert(error.response.data.error);
                 }
@@ -146,7 +150,9 @@ const Carousel = () => {
                       },
                     }
                   );
-                  stream.updateDataCarousel(dataRes.data.message);
+                  stream.updateData({
+                    dataCarousel: dataRes.data.message,
+                  });
                 } catch (error) {
                   alert(error.response.data.error);
                 }

@@ -6,6 +6,7 @@ const { verifyRole } = require("../middleware/verify-role");
 const { default: Axios } = require("axios");
 const puppeteer = require("@scaleleap/puppeteer");
 const CarouselMovie = require("../models/carouselMovie.model");
+const User = require("../models/user.model");
 const router = require("express").Router();
 
 router.get("/", verifyRole("Admin"), async (req, res) => {
@@ -131,7 +132,7 @@ router.get("/:malId", async (req, res) => {
   const page = parseInt(req.query.page || "1");
   const numberCommentOfEachPage = 5;
   try {
-    const movie = await Movie.findOne({ malId: req.params.malId });
+    const movie = await Movie.findOne({ malId: req.params.malId }).lean();
     const newMovie = new Movie({
       malId: req.params.malId,
     });
@@ -139,7 +140,7 @@ router.get("/:malId", async (req, res) => {
       const messages = newMovie.messages;
       return res.send({
         message: messages.map((message) => {
-          return ignoreProps(["_id", "__v"], message.toJSON());
+          return ignoreProps(["_id", "__v"], message);
         }),
       });
     }
@@ -163,23 +164,34 @@ router.get("/:malId", async (req, res) => {
     }
     res.send({
       message: {
-        data: messages
-          .slice(
-            allPos50pxMargin[(page - 1) * numberCommentOfEachPage]
-              ? allPos50pxMargin[(page - 1) * numberCommentOfEachPage].pos - 1
-              : 0,
-            allPos50pxMargin[page * numberCommentOfEachPage]
-              ? allPos50pxMargin[page * numberCommentOfEachPage].pos - 1
-              : messages.length
-          )
-          .map((message) => {
-            return ignoreProps(["_id", "__v"], message.toJSON());
-          }),
+        data: await Promise.all(
+          messages
+            .slice(
+              allPos50pxMargin[(page - 1) * numberCommentOfEachPage]
+                ? allPos50pxMargin[(page - 1) * numberCommentOfEachPage].pos - 1
+                : 0,
+              allPos50pxMargin[page * numberCommentOfEachPage]
+                ? allPos50pxMargin[page * numberCommentOfEachPage].pos - 1
+                : messages.length
+            )
+            .map(async (message) => {
+              const user = await User.findOne({
+                userId: message.userId,
+              })
+                .lean()
+                .select({ _id: 0, avatarImage: 1 });
+              return {
+                avatar: user.avatarImage,
+                ...ignoreProps(["_id", "__v"], message),
+              };
+            })
+        ),
         lastPage:
           Math.ceil(allPos50pxMargin.length / numberCommentOfEachPage) || 1,
       },
     });
   } catch (error) {
+    console.log(error);
     res.status(404).send({ error: "Something went wrong" });
   }
 });

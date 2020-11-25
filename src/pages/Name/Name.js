@@ -660,7 +660,8 @@ function ListInformation({ arrKeys, history, isLoading }) {
                             }
                             key={index}
                             onClick={() => {
-                              history.push("/anime/" + anime.mal_id);
+                              if (anime.type === "anime")
+                                history.push("/anime/" + anime.mal_id);
                             }}
                           >
                             {anime.name}{" "}

@@ -12,6 +12,7 @@ import {
   listenChangeFilter$,
 } from "../../epics/admin";
 import { allowShouldFetchAllUser } from "../../store/admin";
+import userStore from "../../store/user";
 
 const AdminManager = () => {
   const [cookies] = useCookies(["idCartoonUser"]);
@@ -29,16 +30,20 @@ const AdminManager = () => {
     let fetchUsersSub;
     if (adminState.shouldFetchAllUsers) {
       fetchUsersSub = fetchAllUsers$(cookies.idCartoonUser).subscribe((v) => {
-        adminStream.updateUsers(v);
-        allowShouldFetchAllUser(false);
-        const dataFilter = createDataFilter(
-          usernameRef.current,
-          roleRef.current,
-          dateStartRef.current,
-          dateEndRef.current
-        );
-        let userFilter = filterUsers(v, dataFilter);
-        adminStream.updateUsersFilter(userFilter);
+        if (!v.error) {
+          adminStream.updateUsers(v);
+          allowShouldFetchAllUser(false);
+          const dataFilter = createDataFilter(
+            usernameRef.current,
+            roleRef.current,
+            dateStartRef.current,
+            dateEndRef.current
+          );
+          let userFilter = filterUsers(v, dataFilter);
+          adminStream.updateUsersFilter(userFilter);
+        } else {
+          userStore.resetUser();
+        }
       });
     }
     let listenChangeFilterSub;

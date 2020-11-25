@@ -5,24 +5,28 @@ let state = initialState;
 
 const userStore = {
   initialState,
-  currentState:() => {
+  currentState: () => {
     let current;
-    behaviorSubject.subscribe(v => current = v);
+    behaviorSubject.subscribe((v) => (current = v));
     return current;
   },
-  subscribe:(setState) =>  behaviorSubject.subscribe((v) => setState(v)),
-  init:() => behaviorSubject.next(state),
-  updateUser: (user) =>{
+  subscribe: (setState) => behaviorSubject.subscribe((v) => setState(v)),
+  init: () => behaviorSubject.next(state),
+  updateUser: (user) => {
     state = user;
     behaviorSubject.next(state);
   },
-  updateAvatarUser:(image) => {
+  updateAvatarUser: (image) => {
     state = {
       ...state,
-      avatarImage:image
+      avatarImage: image,
     };
     behaviorSubject.next(state);
-  }
-}
+  },
+  resetUser: () => {
+    state = undefined;
+    behaviorSubject.next(state);
+  },
+};
 
 export default userStore;

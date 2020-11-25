@@ -1,13 +1,14 @@
-import "./PersonDetail.css";
+import './PersonDetail.css';
 
-import CircularProgress from "@material-ui/core/CircularProgress";
-import React, { useEffect, useState } from "react";
-import { useHistory } from "react-router-dom";
-import { BehaviorSubject, fromEvent, of } from "rxjs";
-import { ajax } from "rxjs/ajax";
-import { catchError, debounceTime, filter, pluck, retry } from "rxjs/operators";
-import loadable from "@loadable/component";
-import navBarStore from "../../store/navbar";
+import loadable from '@loadable/component';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import React, { useEffect, useState } from 'react';
+import { useHistory } from 'react-router-dom';
+import { BehaviorSubject, fromEvent, iif, of, timer } from 'rxjs';
+import { ajax } from 'rxjs/ajax';
+import { catchError, debounceTime, filter, mergeMapTo, pluck, retry } from 'rxjs/operators';
+
+import navBarStore from '../../store/navbar';
 
 const AnimeStaffPositions = loadable(
   () => import("../../components/AnimeStaffPositions/AnimeStaffPositions"),
@@ -84,7 +85,7 @@ const PersonDetail = (props) => {
   useEffect(() => {
     const subscription = personDetailStore.subscribe(setPersonDetailState);
     personDetailStore.init();
-    window.scroll({top:0})
+    window.scroll({ top: 0 });
     return () => {
       subscription.unsubscribe();
       navBarStore.updateIsShowBlockPopUp(false);
@@ -319,9 +320,19 @@ function ignoreKeys(keys, ignoreList) {
 }
 
 function updatePageLazyLoad$() {
-  return fromEvent(window, "scroll").pipe(
-    debounceTime(100),
-    filter(() => document.body.scrollHeight - (window.scrollY + 2000) < 0)
+  return timer(0).pipe(
+    mergeMapTo(
+      iif(
+        () => window.innerWidth < 770,
+        fromEvent(window, "scroll").pipe(
+          debounceTime(500),
+          filter(() => document.body.scrollHeight - (window.scrollY + 2000) < 0)
+        ),
+        fromEvent(window, "scroll").pipe(
+          filter(() => document.body.scrollHeight - (window.scrollY + 2000) < 0)
+        )
+      )
+    )
   );
 }
 

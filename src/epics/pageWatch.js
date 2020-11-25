@@ -1,6 +1,6 @@
-import { fromEvent, of, timer } from 'rxjs';
+import { fromEvent, iif, of, timer } from 'rxjs';
 import { ajax } from 'rxjs/ajax';
-import { catchError, debounceTime, filter, pluck, retry, switchMapTo, tap } from 'rxjs/operators';
+import { catchError, debounceTime, filter, mergeMapTo, pluck, retry, switchMapTo, tap } from 'rxjs/operators';
 
 import pageWatchStore from '../store/pageWatch';
 
@@ -38,17 +38,40 @@ export function fetchReviewsData$(malId, page) {
 }
 
 export function updatePageScrolling$() {
-  return fromEvent(window, "scroll").pipe(
-    debounceTime(500),
-    filter(() => document.body.scrollHeight - (window.scrollY + 1500) < 0),
-    tap(() => {
-      if (
-        pageWatchStream.currentState().pageSplit <=
-        pageWatchStream.currentState().reviewsData.length
+  return timer(0).pipe(
+    mergeMapTo(
+      iif(
+        () => window.innerWidth < 770,
+        fromEvent(window, "scroll").pipe(
+          debounceTime(500),
+          filter(
+            () => document.body.scrollHeight - (window.scrollY + 1500) < 0
+          ),
+          tap(() => {
+            if (
+              pageWatchStream.currentState().pageSplit <=
+              pageWatchStream.currentState().reviewsData.length
+            )
+              pageWatchStream.updatePageSplit(
+                pageWatchStream.currentState().pageSplit + 1
+              );
+          })
+        ),
+        fromEvent(window, "scroll").pipe(
+          filter(
+            () => document.body.scrollHeight - (window.scrollY + 1500) < 0
+          ),
+          tap(() => {
+            if (
+              pageWatchStream.currentState().pageSplit <=
+              pageWatchStream.currentState().reviewsData.length
+            )
+              pageWatchStream.updatePageSplit(
+                pageWatchStream.currentState().pageSplit + 1
+              );
+          })
+        )
       )
-        pageWatchStream.updatePageSplit(
-          pageWatchStream.currentState().pageSplit + 1
-        );
-    })
+    )
   );
 }

@@ -1,7 +1,15 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-useless-escape */
 import orderBy from "lodash/orderBy";
-import { asyncScheduler, from, fromEvent, interval, of, timer } from "rxjs";
+import {
+  asyncScheduler,
+  from,
+  fromEvent,
+  iif,
+  interval,
+  of,
+  timer,
+} from "rxjs";
 import { ajax } from "rxjs/ajax";
 import {
   catchError,
@@ -11,6 +19,7 @@ import {
   filter,
   map,
   mergeMap,
+  mergeMapTo,
   pluck,
   retry,
   startWith,
@@ -350,25 +359,55 @@ export const listenSearchInputPressEnter$ = (searchInputE) => {
 };
 
 export const topMovieUpdatedScrolling$ = (topAnimeElement) => {
-  return fromEvent(
-    stream.currentState().screenWidth > 1510 ? topAnimeElement : window,
-    "scroll"
-  ).pipe(
-    debounceTime(500),
-    filter(() =>
-      stream.currentState().screenWidth > 1510
-        ? topAnimeElement.scrollTop - (topAnimeElement.scrollHeight - 5000) > 0
-        : document.body.scrollHeight - (window.scrollY + 2000) < 0
-    ),
-    tap(() => {
-      if (
-        8 + (stream.currentState().pageSplitTopMovie - 1) * 5 <=
-        stream.currentState().dataTopMovie.length
+  return timer(0).pipe(
+    mergeMapTo(
+      iif(
+        () => window.innerWidth > 770,
+        fromEvent(
+          stream.currentState().screenWidth > 1510 ? topAnimeElement : window,
+          "scroll"
+        ).pipe(
+          filter(() =>
+            stream.currentState().screenWidth > 1510
+              ? topAnimeElement.scrollTop -
+                  (topAnimeElement.scrollHeight - 5000) >
+                0
+              : document.body.scrollHeight - (window.scrollY + 2000) < 0
+          ),
+          tap(() => {
+            if (
+              8 + (stream.currentState().pageSplitTopMovie - 1) * 5 <=
+              stream.currentState().dataTopMovie.length
+            )
+              stream.updateData({
+                pageSplitTopMovie: stream.currentState().pageSplitTopMovie + 1,
+              });
+          })
+        ),
+        fromEvent(
+          stream.currentState().screenWidth > 1510 ? topAnimeElement : window,
+          "scroll"
+        ).pipe(
+          debounceTime(500),
+          filter(() =>
+            stream.currentState().screenWidth > 1510
+              ? topAnimeElement.scrollTop -
+                  (topAnimeElement.scrollHeight - 5000) >
+                0
+              : document.body.scrollHeight - (window.scrollY + 2000) < 0
+          ),
+          tap(() => {
+            if (
+              8 + (stream.currentState().pageSplitTopMovie - 1) * 5 <=
+              stream.currentState().dataTopMovie.length
+            )
+              stream.updateData({
+                pageSplitTopMovie: stream.currentState().pageSplitTopMovie + 1,
+              });
+          })
+        )
       )
-        stream.updateData({
-          pageSplitTopMovie: stream.currentState().pageSplitTopMovie + 1,
-        });
-    })
+    )
   );
 };
 

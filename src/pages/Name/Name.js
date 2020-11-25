@@ -146,8 +146,8 @@ const Name = (props) => {
       tap((data) => {
         nameStream.updateIsLoading(false, "isLoadingRelated");
         nameStream.updateData({
-          dataRelatedAnime: data
-        })
+          dataRelatedAnime: data,
+        });
       })
     );
     const fetchCharacters$ = fetchDataCharacter$(name).pipe(
@@ -637,6 +637,84 @@ function ListInformation({ arrKeys, history, isLoading }) {
                   )}
                 </li>
               );
+            }
+            if (
+              nameStream.currentState().dataInformationAnime[v] &&
+              nameStream.currentState().dataInformationAnime[v].length !== 0
+            ) {
+              if (v === "related") {
+                const related = nameStream.currentState().dataInformationAnime[
+                  v
+                ];
+                return Object.keys(related).map((key) => (
+                  <li key={key}>
+                    <ul className="title-synonym-list">
+                      <span className="title-capitalize">
+                        {capitalizeString(key)}
+                      </span>
+                      {related[key].map((anime, index) => {
+                        return (
+                          <li
+                            className={
+                              anime.type === "anime" ? "click-able-info" : null
+                            }
+                            key={index}
+                            onClick={() => {
+                              history.push("/anime/" + anime.mal_id);
+                            }}
+                          >
+                            {anime.name}{" "}
+                            {anime.type !== "anime" && (
+                              <span>({capitalizeString(anime.type)})</span>
+                            )}
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  </li>
+                ));
+              }
+              if (v === "aired") {
+                const aired = nameStream.currentState().dataInformationAnime[v];
+                return (
+                  <li style={{ lineHeight: "2.3rem" }} key={index}>
+                    <span
+                      style={{
+                        fontFamily: "Arial",
+                        padding: "10px",
+                        backgroundColor: "rgb(53, 57, 64)",
+                        borderRadius: "10px",
+                        textTransform: "capitalize",
+                      }}
+                    >
+                      {v}
+                    </span>{" "}
+                    {aired.prop.from.month &&
+                      aired.prop.from.day &&
+                      aired.prop.from.year && (
+                        <span>
+                          {aired.prop.from.month}/{aired.prop.from.day}/
+                          {aired.prop.from.year}
+                        </span>
+                      )}
+                    {(!aired.prop.from.month ||
+                      !aired.prop.from.day ||
+                      !aired.prop.from.year) && <span>??</span>}{" "}
+                    -{" "}
+                    {aired.prop.to.month &&
+                      aired.prop.to.day &&
+                      aired.prop.to.year && (
+                        <span>
+                          {aired.prop.to.month}/{aired.prop.to.day}/
+                          {aired.prop.to.year}
+                        </span>
+                      )}
+                    {(!aired.prop.to.month ||
+                      !aired.prop.to.day ||
+                      !aired.prop.to.year) && <span>??</span>}
+                  </li>
+                );
+              }
             }
             return undefined;
           }

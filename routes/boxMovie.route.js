@@ -71,9 +71,10 @@ router.post("/", verifyRole("Admin", "User"), async (req, res) => {
       }
     ).lean();
     res.send({
-      message: ignoreProps(["_id", "__v", "user"], movie.toJSON()),
+      message: ignoreProps(["_id", "__v", "user"], movie),
     });
   } catch (error) {
+    console.log(error);
     res.status(404).send({ error: "Something went wrong" });
   }
 });

@@ -55,8 +55,8 @@ export const fetchAllUsers$ = (idCartoonUser) => {
         },
       }).pipe(
         pluck("response", "message"),
-        catchError((err) => {
-          return of([]);
+        catchError((error) => {
+          return of({ error });
         })
       )
     )

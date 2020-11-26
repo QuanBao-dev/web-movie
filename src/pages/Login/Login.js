@@ -6,6 +6,7 @@ import Axios from "axios";
 
 import Input from "../../components/Input/Input";
 import { validateFormSubmitLogin$ } from "../../epics/home";
+import { useHistory } from "react-router-dom";
 
 const Login = () => {
   // eslint-disable-next-line no-unused-vars
@@ -15,6 +16,7 @@ const Login = () => {
   const emailRef = useRef();
   const passwordRef = useRef();
   const submitRef = useRef();
+  const history = useHistory();
   useEffect(() => {
     const subscription = validateFormSubmitLogin$(
       emailRef.current,
@@ -44,14 +46,15 @@ const Login = () => {
           input={emailRef}
           error={emailError}
           onKeyDown={(e) => {
-            if(e.keyCode === 13)
-            submitForm(
-              emailRef.current,
-              passwordRef.current,
-              setCookie,
-              setEmailError,
-              setPasswordError
-            );
+            if (e.keyCode === 13)
+              submitForm(
+                emailRef.current,
+                passwordRef.current,
+                setCookie,
+                setEmailError,
+                setPasswordError,
+                history
+              );
           }}
         />
         <Input
@@ -62,7 +65,8 @@ const Login = () => {
                 passwordRef.current,
                 setCookie,
                 setEmailError,
-                setPasswordError
+                setPasswordError,
+                history
               );
           }}
           label="Password"
@@ -80,7 +84,8 @@ const Login = () => {
               passwordRef.current,
               setCookie,
               setEmailError,
-              setPasswordError
+              setPasswordError,
+              history
             );
           }}
         >
@@ -96,7 +101,8 @@ async function submitForm(
   password,
   setCookie,
   setEmailError,
-  setPasswordError
+  setPasswordError,
+  history
 ) {
   try {
     const res = await Axios.post("/api/users/login", {
@@ -109,16 +115,22 @@ async function submitForm(
       expires: new Date(Date.now() + 43200000),
       path: "/",
     });
-    window.location.replace("/");
+    history.replace("/");
     // history.push("/");
   } catch (error) {
     // console.log(email,password);
-    if (error.response.data.error.toLowerCase().includes("email")) {
+    if (
+      error.response &&
+      error.response.data.error.toLowerCase().includes("email")
+    ) {
       setEmailError(error.response.data.error);
     } else {
       setEmailError(null);
     }
-    if (error.response.data.error.toLowerCase().includes("password")) {
+    if (
+      error.response &&
+      error.response.data.error.toLowerCase().includes("password")
+    ) {
       setPasswordError(error.response.data.error);
     } else {
       setPasswordError(null);

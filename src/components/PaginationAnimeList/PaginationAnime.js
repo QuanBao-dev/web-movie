@@ -18,6 +18,7 @@ const PaginationAnime = ({
   updatedMovie,
   currentPage = 1,
   subNavToggle,
+  isEmpty = true
 }) => {
   const [maxPageDisplay, setMaxPageDisplay] = useState(
     lastPage < 7 ? lastPage : 7
@@ -34,7 +35,7 @@ const PaginationAnime = ({
   const pageList = narrowPageList(currentPage, lastPage, maxPageDisplay);
   return (
     <div>
-      <AnimeList empty={true} lazy={true} data={updatedMovie} />
+      <AnimeList empty={isEmpty} lazy={true} data={updatedMovie} />
       <div className="home__page-list">
         <div
           className="home__page-item-search"

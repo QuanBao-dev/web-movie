@@ -8,7 +8,7 @@ const userStore = {
   currentState: () => {
     let current;
     behaviorSubject.subscribe((v) => (current = v));
-    return current;
+    return current || initialState;
   },
   subscribe: (setState) => behaviorSubject.subscribe((v) => setState(v)),
   init: () => behaviorSubject.next(state),

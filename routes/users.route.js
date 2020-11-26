@@ -68,7 +68,9 @@ router.post("/login", verifyLogin, async (req, res) => {
     }
     res.cookie("idCartoonUser", token, options);
     res.send({ message: token });
-  } catch {
+  } catch (error) {
+    console.log(error);
+    if (error) return res.status(400).send(error);
     res.status(404).send({ error: "Something went wrong" });
   }
 });

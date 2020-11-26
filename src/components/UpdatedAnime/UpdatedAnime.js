@@ -19,6 +19,7 @@ const UpdatedAnime = () => {
   const [homeState, setHomeState] = useState(
     stream.currentState() || stream.initialState
   );
+  const [isEmpty, setIsEmpty] = useState(true);
   const [subNavToggle, setSubNavToggle] = useState(0);
   const [cookies] = useCookies(["idCartoonUser"]);
   const user = userStream.currentState();
@@ -31,20 +32,24 @@ const UpdatedAnime = () => {
   useEffect(() => {
     let subscription8, subscription9;
     if (subNavToggle === 0) {
+      setIsEmpty(true);
       subscription8 = fetchUpdatedMovie$().subscribe(({ data, lastPage }) => {
         stream.updateData({
           updatedMovie: data,
           lastPageUpdatedMovie: lastPage,
         });
+        setIsEmpty(false);
       });
     }
     if (subNavToggle === 1) {
+      setIsEmpty(true);
       subscription9 = fetchBoxMovie$(cookies.idCartoonUser).subscribe(
         ({ data, lastPage }) => {
           stream.updateData({
             boxMovie: data,
             lastPageBoxMovie: lastPage,
           });
+          setIsEmpty(false);
         }
       );
     }
@@ -80,6 +85,7 @@ const UpdatedAnime = () => {
             ? stream.currentState().currentPageUpdatedMovie
             : stream.currentState().currentPageBoxMovie
         }
+        isEmpty={isEmpty}
       />
     </div>
   );

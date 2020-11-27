@@ -1,7 +1,9 @@
-import userStore from "../store/user";
+import { asyncScheduler, of } from 'rxjs';
 import { ajax } from 'rxjs/ajax';
-import { throttleTime, tap, catchError } from "rxjs/operators";
-import { of, asyncScheduler } from "rxjs";
+import { catchError, throttleTime } from 'rxjs/operators';
+
+import userStore from '../store/user';
+
 export const userStream = userStore;
 
 export const fetchingUser$ = (idCartoonUser) => {
@@ -16,9 +18,6 @@ export const fetchingUser$ = (idCartoonUser) => {
       leading:true,
       trailing:true
     }),
-    tap(((v) => {
-      userStream.updateUser(v.response.message);
-    })),
     catchError((error) => {
       userStream.updateUser(userStream.initialState);
       return of({error})

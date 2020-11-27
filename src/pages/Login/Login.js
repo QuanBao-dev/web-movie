@@ -7,7 +7,8 @@ import Axios from "axios";
 import Input from "../../components/Input/Input";
 import { validateFormSubmitLogin$ } from "../../epics/home";
 import { useHistory } from "react-router-dom";
-
+import { fetchingUser$ } from "../../epics/user";
+import { userStream } from "../../epics/user";
 const Login = () => {
   // eslint-disable-next-line no-unused-vars
   const [cookies, setCookie, removeCookie] = useCookies(["idCartoonUser"]);
@@ -115,7 +116,12 @@ async function submitForm(
       expires: new Date(Date.now() + 43200000),
       path: "/",
     });
-    history.replace("/");
+    fetchingUser$(token).subscribe((v) => {
+      if (!v.error) {
+        history.replace("/");
+        userStream.updateUser(v.response.message);
+      }
+    });
     // history.push("/");
   } catch (error) {
     // console.log(email,password);

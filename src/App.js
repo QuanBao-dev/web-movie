@@ -5,7 +5,12 @@ import CircularProgress from "@material-ui/core/CircularProgress";
 import LinearProgress from "@material-ui/core/LinearProgress";
 import React, { useEffect, useState } from "react";
 import { useCookies } from "react-cookie";
-import { BrowserRouter as Router, Route, Switch, useHistory } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Route,
+  Switch,
+  useHistory,
+} from "react-router-dom";
 import { ReplaySubject } from "rxjs";
 
 import NavBar from "./components/NavBar/NavBar";
@@ -189,7 +194,13 @@ function App() {
     }
   }, [toggleNavBarState.isShowBlockPopUp]);
   useEffect(() => {
-    const fetchingUserSub = fetchingUser$(cookies.idCartoonUser).subscribe();
+    const fetchingUserSub = fetchingUser$(cookies.idCartoonUser).subscribe(
+      (v) => {
+        if (!v.error) {
+          userStream.updateUser(v.response.message);
+        }
+      }
+    );
     return () => {
       fetchingUserSub.unsubscribe();
     };
@@ -214,7 +225,11 @@ function App() {
       >
         <i className="fas fa-arrow-up fa-2x"></i>
       </div>
-      <NavBar userState={userState} removeCookie={removeCookie} cookies={cookies} />
+      <NavBar
+        userState={userState}
+        removeCookie={removeCookie}
+        cookies={cookies}
+      />
       <Switch>
         <Route path="/" component={Home} exact />
         {userState && userState.role === "Admin" && (

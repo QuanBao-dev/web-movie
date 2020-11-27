@@ -75,8 +75,8 @@ const NavBar = ({ userState, removeCookie, cookies }) => {
                   display: "inline",
                   padding: "10px",
                 }}
-                onClick={() => {
-                  logoutUser(removeCookie, cookies.idCartoonUser);
+                onClick={async() => {
+                  await logoutUser(removeCookie, cookies.idCartoonUser);
                   history.push("/auth/login");
                 }}
               >

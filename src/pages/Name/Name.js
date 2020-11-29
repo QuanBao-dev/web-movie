@@ -75,9 +75,6 @@ const Name = (props) => {
     pageWatchStream.init();
     nameStream.init();
     window.scroll({ top: 0 });
-    document.title = `Watch ${
-      nameStream.currentState().dataInformationAnime.title
-    }`;
     setShowThemeMusic(false);
     return () => {
       document.title = `My Anime Fun - Watch latest anime in high quality`;
@@ -88,7 +85,6 @@ const Name = (props) => {
   useEffect(() => {
     const fetchDataInfo$ = fetchData$(name).pipe(
       tap((v) => {
-        document.title = `Watch ${v.title}`;
         nameStream.updateIsLoading(false, "isLoadingInfoAnime");
         nameStream.updateData({
           dataInformationAnime: v,
@@ -99,7 +95,7 @@ const Name = (props) => {
       tap(({ promo }) => {
         if (promo) {
           nameStream.updateData({
-            pageVideo: promo,
+            dataVideoPromo: promo,
           });
         }
         nameStream.updateIsLoading(false, "isLoadingVideoAnime");

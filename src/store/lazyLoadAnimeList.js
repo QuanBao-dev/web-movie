@@ -8,8 +8,9 @@ const initialState = {
   currentPageOnDestroy: null,
   currentGenreId: null,
   genre: null,
-  pageGenre:1,
-  pageSplit:1
+  pageGenre: 1,
+  pageSplit: 1,
+  numberAnimeShowMore: 10,
 };
 
 const subject = new BehaviorSubject(initialState);
@@ -25,73 +26,19 @@ const lazyLoadAnimeListStore = {
   init: () => {
     subject.next(state);
   },
-  updatePageSplit:(page) => {
+  updateData: (data = initialState) => {
     state = {
       ...state,
-      pageSplit:page
+      ...data,
     };
     subject.next(state);
   },
-  resetAllGenrePage: () => {
-    state = {
-      ...state,
-      genreDetailData: [],
-      pageGenre: 1,
-      pageSplit:1,
-      genre:null,
-      pageOnDestroy:null
-    };
-    subject.next(state);
+  updateDataQuick: (data = initialState) => {
+    const keys = Object.keys(data);
+    keys.forEach((key) => {
+      state[key] = data[key];
+    });
   },
-  updateGenre: (genre) => {
-    state = {
-      ...state,
-      genre,
-    };
-    subject.next(state);
-  },
-  updateCurrentGenreId: (genreId) => {
-    state = {
-      ...state,
-      currentGenreId: genreId,
-    };
-    subject.next(state);
-  },
-  updateIsStopScrollingUpdated: (bool) => {
-    state = {
-      ...state,
-      isStopScrollingUpdated: bool,
-    };
-    subject.next(state);
-  },
-  updateAllowUpdatePageGenre: (bool) => {
-    state = {
-      ...state,
-      allowFetchIncreaseGenrePage: bool,
-    };
-    subject.next(state);
-  },
-  updatePageGenre: (page) => {
-    state = {
-      ...state,
-      pageGenre: page,
-    };
-    subject.next(state);
-  },
-  updateGenreDetailData: (genreDetail) => {
-    state = {
-      ...state, 
-      genreDetailData: genreDetail,
-    };
-    subject.next(state);
-  },
-  updatePageOnDestroy : (page) => {
-    state={
-      ...state,
-      pageOnDestroy:page
-    };
-    subject.next(state)
-  }
 };
 
 export default lazyLoadAnimeListStore;

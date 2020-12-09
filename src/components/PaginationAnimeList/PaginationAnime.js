@@ -3,8 +3,8 @@ import "./PaginationAnime.css";
 import React, { useEffect, useState } from "react";
 import { fromEvent } from "rxjs";
 
-import { stream } from "../../epics/home";
 import loadable from "@loadable/component";
+import { updatedAnimeStream } from "../../epics/updatedAnime";
 const AnimeList = loadable(() => import("../AnimeList/AnimeList"), {
   fallback: (
     <div>
@@ -18,7 +18,7 @@ const PaginationAnime = ({
   updatedMovie,
   currentPage = 1,
   subNavToggle,
-  isEmpty = true
+  isEmpty = true,
 }) => {
   const [maxPageDisplay, setMaxPageDisplay] = useState(
     lastPage < 7 ? lastPage : 7
@@ -41,20 +41,22 @@ const PaginationAnime = ({
           className="home__page-item-search"
           onClick={() => {
             if (subNavToggle === 0) {
-              if (stream.currentState().currentPageUpdatedMovie !== 1)
-                stream.updateData({
+              if (
+                updatedAnimeStream.currentState().currentPageUpdatedMovie !== 1
+              )
+                updatedAnimeStream.updateData({
                   updatedMovie: [],
                 });
-              stream.updateData({
+              updatedAnimeStream.updateData({
                 currentPageUpdatedMovie: 1,
               });
             } else {
-              if (stream.currentState().currentPageBoxMovie !== 1) {
-                stream.updateData({
+              if (updatedAnimeStream.currentState().currentPageBoxMovie !== 1) {
+                updatedAnimeStream.updateData({
                   boxMovie: [],
                 });
               }
-              stream.updateData({
+              updatedAnimeStream.updateData({
                 currentPageBoxMovie: 1,
               });
             }
@@ -77,20 +79,24 @@ const PaginationAnime = ({
               onClick={() => {
                 if (subNavToggle === 0) {
                   if (
-                    stream.currentState().currentPageUpdatedMovie !== pageData
+                    updatedAnimeStream.currentState()
+                      .currentPageUpdatedMovie !== pageData
                   )
-                    stream.updateData({
+                    updatedAnimeStream.updateData({
                       updatedMovie: [],
                     });
-                  stream.updateData({
+                  updatedAnimeStream.updateData({
                     currentPageUpdatedMovie: pageData,
                   });
                 } else {
-                  if (stream.currentState().currentPageBoxMovie !== pageData)
-                    stream.updateData({
+                  if (
+                    updatedAnimeStream.currentState().currentPageBoxMovie !==
+                    pageData
+                  )
+                    updatedAnimeStream.updateData({
                       boxMovie: [],
                     });
-                  stream.updateData({
+                  updatedAnimeStream.updateData({
                     currentPageBoxMovie: pageData,
                   });
                 }
@@ -107,19 +113,25 @@ const PaginationAnime = ({
           className="home__page-item-search"
           onClick={() => {
             if (subNavToggle === 0) {
-              if (stream.currentState().currentPageUpdatedMovie !== lastPage)
-                stream.updateData({
+              if (
+                updatedAnimeStream.currentState().currentPageUpdatedMovie !==
+                lastPage
+              )
+                updatedAnimeStream.updateData({
                   updatedMovie: [],
                 });
-              stream.updateData({
+              updatedAnimeStream.updateData({
                 currentPageUpdatedMovie: lastPage,
               });
             } else {
-              if (stream.currentState().currentPageBoxMovie !== lastPage)
-                stream.updateData({
+              if (
+                updatedAnimeStream.currentState().currentPageBoxMovie !==
+                lastPage
+              )
+                updatedAnimeStream.updateData({
                   boxMovie: [],
                 });
-              stream.updateData({
+              updatedAnimeStream.updateData({
                 currentPageBoxMovie: lastPage,
               });
             }

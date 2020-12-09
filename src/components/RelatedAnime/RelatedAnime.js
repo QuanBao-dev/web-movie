@@ -4,7 +4,7 @@ import "react-lazy-load-image-component/src/effects/opacity.css";
 
 import React, { useEffect, useRef, useState } from "react";
 
-import { nameStream } from "../../epics/name";
+import { nameStream } from "../../epics/animeDetail";
 import AnimeList from "../AnimeList/AnimeList";
 import CircularProgress from "@material-ui/core/CircularProgress";
 

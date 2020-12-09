@@ -2,28 +2,43 @@ import "./AnimeItem.css";
 import "react-lazy-load-image-component/src/effects/opacity.css";
 
 import React from "react";
+import { useRef } from "react";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import { useHistory } from "react-router-dom";
-import { limitAdultGenre, stream } from "../../epics/home";
-import { useRef } from "react";
 
-const AnimeItem = ({ anime, lazy = false }) => {
+import { upcomingAnimeListStream } from "../../epics/upcomingAnimeList";
+import { limitAdultGenre } from "../../Functions/animeListSeason";
+import { updateVirtualStyle } from "../../Functions/virtualAnimeList";
+import { useUpdateVirtualAnimeItem } from "../../Hook/virtualAnimeList";
+import { virtualAnimeListStream } from "../../epics/virtualAnimeList";
+
+const AnimeItem = ({ anime, lazy = false, virtual = false, index }) => {
   const history = useHistory();
   const animeItemRef = useRef();
-  // {!limitAdultGenre(anime.genres) ? "/18+" : ""}
+  useUpdateVirtualAnimeItem(
+    animeItemRef,
+    virtual,
+    virtualAnimeListStream.currentState()
+  );
+  let virtualStyle = updateVirtualStyle(virtual, index);
   return (
     <div
       ref={animeItemRef}
+      style={virtualStyle}
       className="anime-item"
       onClick={() => {
-        if (!stream.currentState().hasMoved) {
-          history.push(`/anime/${anime.malId || anime.mal_id}`);
-        };
-        stream.updateHasMoved(false);
+        if (!upcomingAnimeListStream.currentState().hasMoved) {
+          history.push(
+            `/anime/${anime.malId || anime.mal_id}-${anime.title
+              .replace(/[ /%^&*()]/g, "-")
+              .toLocaleLowerCase()}`
+          );
+        }
+        upcomingAnimeListStream.updateDataQuick({ hasMoved: false });
       }}
       onMouseDown={mouseDownAnimeItem(animeItemRef)}
-      onMouseOut={mouseOutAnimeItem(animeItemRef)}
-      onMouseMove={mouseMoveAnimeItem(animeItemRef)}
+      onMouseLeave={mouseLeaveAnimeItem(animeItemRef)}
+      onMouseMove={mouseMoveAnimeItem(animeItemRef, virtual)}
     >
       {anime.airing_start &&
         new Date(anime.airing_start).getTime() <=
@@ -181,28 +196,37 @@ const AnimeItem = ({ anime, lazy = false }) => {
 };
 
 export default AnimeItem;
-function mouseOutAnimeItem(animeItemRef) {
+function mouseLeaveAnimeItem(animeItemRef) {
   return () => {
     animeItemRef.current.style.transform =
       "perspective(500px) scale(1) rotateX(0) rotateY(0)";
+    animeItemRef.current.style.transition = "0s";
   };
 }
 
 function mouseDownAnimeItem(animeItemRef) {
   return () => {
+    animeItemRef.current.style.transition = "0.3s";
     animeItemRef.current.style.transform = "scale(1)";
   };
 }
 
-function mouseMoveAnimeItem(animeItemRef) {
+function mouseMoveAnimeItem(animeItemRef, virtual) {
   return (e) => {
     let xVal;
     let yVal;
-    if (animeItemRef.current.parentElement.className.includes(
-      "list-anime-nowrap"
-    )) {
-      yVal = e.pageY - animeItemRef.current.parentElement.offsetTop;
+    animeItemRef.current.style.transition = "0.3s";
+    if (
+      animeItemRef.current.parentElement.className.includes("list-anime-nowrap")
+    ) {
       xVal = e.pageX - e.target.getBoundingClientRect().x;
+      yVal = e.pageY - animeItemRef.current.parentElement.offsetTop;
+    } else if (virtual) {
+      xVal = e.pageX - e.target.getBoundingClientRect().x;
+      yVal =
+        e.pageY -
+        (animeItemRef.current.parentElement.offsetTop +
+          animeItemRef.current.offsetTop);
     } else {
       xVal = e.pageX - animeItemRef.current.offsetLeft;
       yVal = e.pageY - animeItemRef.current.offsetTop;
@@ -215,7 +239,8 @@ function mouseMoveAnimeItem(animeItemRef) {
     const xRotation = -20 * ((yVal - height / 2) / height);
 
     /* Generate string for CSS transform property */
-    const string = "perspective(500px) scale(1.1) rotateX(" +
+    const string =
+      "perspective(500px) scale(1.1) rotateX(" +
       xRotation +
       "deg) rotateY(" +
       yRotation +
@@ -225,4 +250,3 @@ function mouseMoveAnimeItem(animeItemRef) {
     animeItemRef.current.style.transform = string;
   };
 }
-

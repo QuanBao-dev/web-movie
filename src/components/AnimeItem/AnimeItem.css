@@ -1,6 +1,5 @@
 .anime-item{
   display:block;
-  margin: 30px 10px;
   height: 350px;
   width: 220px;
   border-radius: 10px;
@@ -8,7 +7,6 @@
   box-shadow: 0 0 10px 5px rgba(0, 0, 0, 0.329);
   cursor: pointer;
   border: 2px solid rgba(255, 255, 255, 0);
-  transition: 0.3s;
   position: relative;
   font-size: 0.87rem;
   overflow: hidden;
@@ -70,7 +68,6 @@
   object-position: center;
   border-radius: 10px;
 }
-
 
 .anime-info-display_summary{
   position: absolute;
@@ -154,10 +151,23 @@
   }
 }
 
+.container-genre-detail .anime-item{
+  margin: 0;
+}
+
+.anime-item{
+  margin: 30px 10px;
+}
+
 @media (max-width:365px){
   .upcoming-anime-container .anime-item{
     width: 145px;
   }
+
+  .container-genre-detail .anime-item{
+    width: 140px;
+  }
+
   .anime-item{
     font-size: 0.75rem;
     width: 40%;

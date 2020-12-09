@@ -1,18 +1,16 @@
 import capitalize from "lodash/capitalize";
-import orderBy from "lodash/orderBy";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 
+import { animeListSeasonStream } from "../../epics/animeListSeason";
 import {
-  changeCurrentPage$,
-  changeSeasonYear$,
-  fetchAnimeSeason$,
-  stream,
-  limitAdultGenre,
-  checkAnimeIncludeGenre,
-} from "../../epics/home";
-import { updateDataOnDestroy, updateMaxPage } from "../../store/home";
+  useFetchAnimeListSeason,
+  useFilterAnimeList,
+  useInitAnimeListSeason,
+  useListenWhenOptionChange,
+} from "../../Hook/animeListSeason";
 import AnimeList from "../AnimeList/AnimeList";
 import PageNavList from "../PageNavList/PageNavList";
+
 const genresData = [
   { genreId: "1", genre: "Action" },
   { genreId: "2", genre: "Adventure" },
@@ -60,8 +58,8 @@ const genresData = [
 ];
 
 const AnimeListSeason = () => {
-  const [homeState, setHomeState] = useState(
-    stream.currentState() || stream.initialState
+  const [animeListSeasonState, setAnimeListSeasonState] = useState(
+    animeListSeasonStream.currentState()
   );
   const selectYear = useRef(null);
   const selectSeason = useRef(null);
@@ -74,147 +72,49 @@ const AnimeListSeason = () => {
   const endYear = new Date(Date.now()).getFullYear() + 1;
   const numberOfYears = endYear - startYear + 1;
   let numberOfPagesDisplay;
-  if (stream.currentState().screenWidth > 354) {
-    numberOfPagesDisplay = homeState.maxPage < 4 ? homeState.maxPage : 4;
-  } else if (stream.currentState().screenWidth > 305) {
-    numberOfPagesDisplay = homeState.maxPage < 3 ? homeState.maxPage : 3;
+  if (animeListSeasonStream.currentState().screenWidth > 354) {
+    numberOfPagesDisplay =
+      animeListSeasonState.maxPage < 4 ? animeListSeasonState.maxPage : 4;
+  } else if (animeListSeasonStream.currentState().screenWidth > 305) {
+    numberOfPagesDisplay =
+      animeListSeasonState.maxPage < 3 ? animeListSeasonState.maxPage : 3;
   } else {
-    numberOfPagesDisplay = homeState.maxPage < 2 ? homeState.maxPage : 2;
+    numberOfPagesDisplay =
+      animeListSeasonState.maxPage < 2 ? animeListSeasonState.maxPage : 2;
   }
-  useEffect(() => {
-    const subscription = stream.subscribe(setHomeState);
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, []);
+  useInitAnimeListSeason(setAnimeListSeasonState);
+  useFilterAnimeList(animeListSeasonState);
 
-  useEffect(() => {
-    const filterAnime = homeState.dataDetailOriginal.filter((movie) => {
-      if (homeState.modeFilter === "all") {
-        return (
-          movie.airing_start &&
-          checkAnimeIncludeGenre(movie.genres, stream.currentState().genreId) &&
-          (movie.score > homeState.score || homeState.score === 0)
-        );
-      }
-      return (
-        movie.airing_start &&
-        limitAdultGenre(movie.genres) &&
-        checkAnimeIncludeGenre(movie.genres, stream.currentState().genreId) &&
-        (movie.score > homeState.score || homeState.score === 0)
-      );
-    });
-    updateMaxPage(
-      Math.ceil(filterAnime.length / stream.initialState.numberOfProduct)
-    );
-    if (
-      Math.ceil(filterAnime.length / stream.initialState.numberOfProduct) <
-      homeState.currentPage
-    )
-      stream.updateCurrentPage(1);
-    const sortedArray = orderBy(filterAnime, ["airing_start"], ["desc"]).slice(
-      (homeState.currentPage - 1) * homeState.numberOfProduct,
-      homeState.currentPage * homeState.numberOfProduct
-    );
-    stream.updateData({
-      dataDetail: sortedArray,
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    homeState.currentPage,
-    homeState.score,
-    homeState.modeFilter,
-    homeState.genreId,
-  ]);
-
-  useEffect(() => {
-    if (homeState.shouldScrollToSeeMore) {
-      stream.allowScrollToSeeMore(false);
-      window.scroll({
-        top: targetScroll.current.offsetTop - 170,
-        behavior: "smooth"
-      });
-    }
-
-    if (selectSeason.current && selectYear.current) {
-      selectSeason.current.value = homeState.season;
-      selectYear.current.value = homeState.year;
-    }
-    const input = document.querySelector(".wrapper-search-anime-list input");
-    if (input && input.value.trim() === "") input.value = homeState.textSearch;
-
-    const subscription3 = changeCurrentPage$().subscribe();
-    let subscription4;
-    if (
-      selectYear.current &&
-      selectSeason.current &&
-      selectScore.current &&
-      selectFilterMode.current &&
-      selectGenre.current
-    )
-      subscription4 = changeSeasonYear$(
-        selectYear.current,
-        selectSeason.current,
-        selectScore.current,
-        selectFilterMode.current,
-        selectGenre.current
-      ).subscribe(([year, season, score, modeFilter, genreId]) => {
-        stream.updateSeasonYear(season, year, score, modeFilter, genreId);
-      });
-
-    return () => {
-      subscription4 && subscription4.unsubscribe();
-      unsubscribeSubscription(subscription3);
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [homeState.shouldScrollToSeeMore, homeState.screenWidth]);
-  // console.log(homeState);
-
-  useEffect(() => {
-    let subscription2;
-    if (
-      homeState.currentPage !== homeState.currentPageOnDestroy ||
-      homeState.season !== homeState.currentSeasonOnDestroy ||
-      homeState.year !== homeState.currentYearOnDestroy
-    )
-      subscription2 = fetchAnimeSeason$(
-        homeState.year,
-        homeState.season,
-        1,
-        homeState.numberOfProduct,
-        homeState.score
-      ).subscribe((v) => {
-        stream.updateData({
-          dataDetail: v,
-        });
-      });
-    return () => {
-      subscription2 && subscription2.unsubscribe();
-      updateDataOnDestroy(
-        stream.currentState().currentPage,
-        homeState.season,
-        homeState.year
-      );
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [homeState.year, homeState.season, homeState.numberOfProduct]);
+  useListenWhenOptionChange(
+    animeListSeasonState,
+    targetScroll,
+    selectSeason,
+    selectYear,
+    selectScore,
+    selectFilterMode,
+    selectGenre
+  );
+  // console.log(animeListSeasonState);
+  useFetchAnimeListSeason(animeListSeasonState);
+  
   return (
     <div>
       <h1 style={{ textAlign: "center" }}>
-        {homeState.genreId !== "0"
-          ? genresData[parseInt(homeState.genreId) - 1].genre + " "
-          : homeState.modeFilter === "filter"
+        {animeListSeasonState.genreId !== "0"
+          ? genresData[parseInt(animeListSeasonState.genreId) - 1].genre + " "
+          : animeListSeasonState.modeFilter === "filter"
           ? ""
           : "All "}{" "}
         Anime
-        {homeState.score !== 0
-          ? " with score greater than " + homeState.score
+        {animeListSeasonState.score !== 0
+          ? " with score greater than " + animeListSeasonState.score
           : ""}{" "}
-        in {capitalize(homeState.season)}, {homeState.year}
+        in {capitalize(animeListSeasonState.season)},{" "}
+        {animeListSeasonState.year}
       </h1>
       <SelectFilterAnime
         targetScroll={targetScroll}
-        homeState={homeState}
+        animeListSeasonState={animeListSeasonState}
         selectSeason={selectSeason}
         selectYear={selectYear}
         selectScore={selectScore}
@@ -225,26 +125,27 @@ const AnimeListSeason = () => {
 
       <PageNavList
         numberOfPagesDisplay={numberOfPagesDisplay}
-        stream={stream}
-        homeState={homeState}
+        animeListSeasonState={animeListSeasonState}
       />
-      {homeState.dataDetail.length === 0 && (
+      {animeListSeasonState.dataDetail.length === 0 && (
         <h1 style={{ textAlign: "center" }}>Not updated yet...</h1>
       )}
       <AnimeList
         lazy={
-          homeState.currentPage !== homeState.currentPageOnDestroy ||
-          homeState.season !== homeState.currentSeasonOnDestroy ||
-          homeState.year !== homeState.currentYearOnDestroy
+          animeListSeasonState.currentPage !==
+            animeListSeasonState.currentPageOnDestroy ||
+          animeListSeasonState.season !==
+            animeListSeasonState.currentSeasonOnDestroy ||
+          animeListSeasonState.year !==
+            animeListSeasonState.currentYearOnDestroy
         }
-        data={homeState.dataDetail}
-        error={homeState.error || null}
+        data={animeListSeasonState.dataDetail}
+        error={animeListSeasonState.error || null}
         empty={false}
       />
       <PageNavList
         numberOfPagesDisplay={numberOfPagesDisplay}
-        stream={stream}
-        homeState={homeState}
+        animeListSeasonState={animeListSeasonState}
       />
     </div>
   );
@@ -252,7 +153,7 @@ const AnimeListSeason = () => {
 
 function SelectFilterAnime({
   targetScroll,
-  homeState,
+  animeListSeasonState = animeListSeasonStream.currentState(),
   selectSeason,
   selectYear,
   selectScore,
@@ -274,7 +175,7 @@ function SelectFilterAnime({
     >
       <select
         className="select-filter"
-        defaultValue={`${homeState.season}`}
+        defaultValue={`${animeListSeasonState.season}`}
         ref={selectSeason}
       >
         <option value="winter">winter</option>
@@ -284,7 +185,7 @@ function SelectFilterAnime({
       </select>
       <select
         className="select-filter"
-        defaultValue={`${homeState.year}`}
+        defaultValue={`${animeListSeasonState.year}`}
         ref={selectYear}
       >
         {elementOptions.map((v, index) => {
@@ -297,7 +198,7 @@ function SelectFilterAnime({
       </select>
       <select
         className="select-filter"
-        defaultValue={`${stream.currentState().score}`}
+        defaultValue={`${animeListSeasonStream.currentState().score}`}
         ref={selectScore}
       >
         {scoreOptions.map((score, key) => (
@@ -308,7 +209,7 @@ function SelectFilterAnime({
       </select>
       <select
         className="select-filter"
-        defaultValue={stream.currentState().modeFilter}
+        defaultValue={animeListSeasonStream.currentState().modeFilter}
         ref={selectFilterMode}
       >
         <option value={`all`}>All</option>
@@ -317,7 +218,7 @@ function SelectFilterAnime({
       <select
         className="select-filter"
         ref={selectGenre}
-        defaultValue={stream.currentState().genreId}
+        defaultValue={animeListSeasonStream.currentState().genreId}
       >
         <option value={0}>All</option>
         {genresData.map((data) => {
@@ -328,7 +229,7 @@ function SelectFilterAnime({
               </option>
             );
           }
-          if (stream.currentState().modeFilter === "all") {
+          if (animeListSeasonStream.currentState().modeFilter === "all") {
             return (
               <option key={data.genreId} value={data.genreId}>
                 {data.genre}
@@ -340,12 +241,6 @@ function SelectFilterAnime({
       </select>
     </div>
   );
-}
-
-function unsubscribeSubscription(...subscriptions) {
-  subscriptions.forEach((subscription) => {
-    subscription.unsubscribe();
-  });
 }
 
 export default AnimeListSeason;

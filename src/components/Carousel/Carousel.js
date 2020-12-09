@@ -3,15 +3,17 @@ import "./Carousel.css";
 
 import loadable from "@loadable/component";
 import Axios from "axios";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useCookies } from "react-cookie";
 import { useHistory } from "react-router-dom";
-import { interval } from "rxjs";
-import { ajax } from "rxjs/ajax";
-import { pluck } from "rxjs/operators";
 
-import { stream } from "../../epics/home";
+import { carouselStream } from "../../epics/carousel";
 import { userStream } from "../../epics/user";
+import {
+  useAutoSlidingNextPage,
+  useFetchCarousel,
+  useInitCarousel,
+} from "../../Hook/carousel";
 import navBarStore from "../../store/navbar";
 
 const CarouselItem = loadable(() => import("../CarouselItem/CarouselItem"), {
@@ -22,34 +24,18 @@ const CarouselItem = loadable(() => import("../CarouselItem/CarouselItem"), {
   ),
 });
 const Carousel = () => {
-  const { dataCarousel } = stream.currentState();
   const user = userStream.currentState();
   const [cookies] = useCookies(["idCartoonUser"]);
+  const [carouselState, setCarouselState] = useState(
+    carouselStream.currentState()
+  );
   const [pageCarousel, setPageCarousel] = useState(0);
   const history = useHistory();
-  useEffect(() => {
-    const subscription = fetchData$().subscribe((v) => {
-      stream.updateData({
-        dataCarousel: v,
-      });
-    });
-    return () => {
-      subscription.unsubscribe();
-      navBarStore.updateIsShowBlockPopUp(false);
-    };
-  }, []);
-  useEffect(() => {
-    const intervalSub = interval(3000).subscribe(() => {
-      const page = pageCarousel;
-      document.querySelector(".section-carousel-container").style.transition =
-        "0.4s";
-      setPageCarousel(page + 1);
-    });
-    return () => {
-      intervalSub.unsubscribe();
-    };
-  }, [pageCarousel]);
+  useInitCarousel(setCarouselState);
+  useFetchCarousel();
+  useAutoSlidingNextPage(pageCarousel, setPageCarousel);
   // console.log(pageCarousel);
+  const { dataCarousel } = carouselState;
   if (pageCarousel === dataCarousel.length) {
     setTimeout(() => {
       if (document.querySelector(".section-carousel-container")) {
@@ -124,7 +110,7 @@ const Carousel = () => {
                       },
                     }
                   );
-                  stream.updateData({
+                  carouselStream.updateData({
                     dataCarousel: dataRes.data.message,
                   });
                 } catch (error) {
@@ -150,7 +136,7 @@ const Carousel = () => {
                       },
                     }
                   );
-                  stream.updateData({
+                  carouselStream.updateData({
                     dataCarousel: dataRes.data.message,
                   });
                 } catch (error) {
@@ -211,7 +197,4 @@ const Carousel = () => {
   );
 };
 
-function fetchData$() {
-  return ajax("/api/movies/carousel").pipe(pluck("response", "message"));
-}
 export default Carousel;

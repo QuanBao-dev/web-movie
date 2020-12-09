@@ -12,7 +12,7 @@ const LazyLoadAnimeList = loadable(
 );
 
 const GenreDetail = (props) => {
-  const { genreId } = props.match.params;
+  const genreId = parseInt(props.match.params.genreId);
   return (
     <LazyLoadAnimeList
       genreId={genreId}

@@ -17,7 +17,7 @@ const AllAnimeRelated = loadable(() =>
 );
 
 const CharacterDetail = (props) => {
-  const { characterId } = props.match.params;
+  const characterId = parseInt(props.match.params.characterId);
   const history = useHistory();
   const [dataCharacterDetail, setDataCharacterDetail] = useState({});
   useEffect(() => {

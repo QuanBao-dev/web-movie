@@ -1,10 +1,11 @@
 import "./AnimeSchedule.css";
 
 import loadable from "@loadable/component";
-import React, { createRef, useEffect, useState } from "react";
+import React, { createRef, useState } from "react";
 
-import { fetchAnimeSchedule$, stream } from "../../epics/home";
-import { resetScheduleDate } from "../../store/home";
+import { animeScheduleStream } from "../../epics/animeSchedule";
+import { useFetchAnimeSchedule } from "../../Functions/animeSchedule";
+import { resetScheduleDate } from "../../store/animeSchedule";
 
 const AnimeList = loadable(() => import("../AnimeList/AnimeList"));
 resetScheduleDate();
@@ -21,29 +22,10 @@ const AnimeSchedule = () => {
   const movieRefs = Array.from(Array(7).keys()).map(() => {
     return createRef();
   });
-  const [homeState, setHomeState] = useState(
-    stream.currentState() || stream.initialState
+  const [animeScheduleState, setAnimeScheduleState] = useState(
+    animeScheduleStream.currentState()
   );
-  useEffect(() => {
-    const subscription = stream.subscribe(setHomeState);
-    stream.init();
-    const week = [
-      "monday",
-      "tuesday",
-      "wednesday",
-      "thursday",
-      "friday",
-      "saturday",
-      "sunday",
-    ];
-    const filterWeek = week.filter((v, index) => homeState.dateSchedule[index]);
-    // console.log(filterWeek);
-    const fetchDataScheduleSub = fetchAnimeSchedule$(filterWeek).subscribe();
-    return () => {
-      subscription.unsubscribe();
-      fetchDataScheduleSub.unsubscribe();
-    };
-  }, [homeState.dateSchedule]);
+  useFetchAnimeSchedule(animeScheduleState, setAnimeScheduleState);
   return (
     <div className="container-week-schedule-movie">
       <ul className="week-schedule-movie">
@@ -53,34 +35,28 @@ const AnimeSchedule = () => {
             <li key={index} className="day-schedule-movie">
               <div
                 className="title"
-                onClick={() => {
-                  homeState.dateSchedule[index] = !homeState.dateSchedule[
-                    index
-                  ];
-                  const maxHeight = homeState.dateSchedule[index]
-                    ? "5000px"
-                    : "3px";
-                  movieRefs[index].current.style.maxHeight = maxHeight;
-                  const showMovie = movieRefs.map((movie) => {
-                    return movie.current.style.maxHeight !== "3px";
-                  });
-                  stream.updateData({ dateSchedule: showMovie });
-                }}
+                onClick={toggleShowHideAnimeSchedule(
+                  animeScheduleState,
+                  index,
+                  movieRefs
+                )}
               >
-                {index === homeState.todayIndex ? "Today" : date}
+                {index === animeScheduleState.todayIndex ? "Today" : date}
               </div>
               <div
                 style={{
-                  maxHeight: homeState.dateSchedule[index] ? "5000px" : "3px",
+                  maxHeight: animeScheduleState.dateSchedule[index]
+                    ? "5000px"
+                    : "3px",
                   transition: "0.4s",
                 }}
                 ref={movieRefs[index]}
               >
-                {homeState.dataScheduleMovie[date] && (
+                {animeScheduleState.dataScheduleMovie[date] && (
                   <AnimeList
                     empty={true}
-                    data={homeState.dataScheduleMovie[date]}
-                    lazy={stream.currentState().isFirstLaunch}
+                    data={animeScheduleState.dataScheduleMovie[date]}
+                    lazy={true}
                   />
                 )}
               </div>
@@ -93,3 +69,16 @@ const AnimeSchedule = () => {
 };
 
 export default AnimeSchedule;
+function toggleShowHideAnimeSchedule(animeScheduleState, index, movieRefs) {
+  return () => {
+    animeScheduleState.dateSchedule[index] = !animeScheduleState.dateSchedule[
+      index
+    ];
+    const maxHeight = animeScheduleState.dateSchedule[index] ? "5000px" : "3px";
+    movieRefs[index].current.style.maxHeight = maxHeight;
+    const showMovie = movieRefs.map((movie) => {
+      return movie.current.style.maxHeight !== "3px";
+    });
+    animeScheduleStream.updateData({ dateSchedule: showMovie });
+  };
+}

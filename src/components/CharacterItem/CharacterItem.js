@@ -13,7 +13,13 @@ function CharacterItem({ characterData, history, lazy }) {
       }`}
       onClick={() => {
         characterStream.updateRole(characterData.role);
-        history.push(`/anime/character/${characterData.mal_id}`);
+        history.push(
+          `/anime/character/${
+            characterData.mal_id
+          }-${characterData.name
+            .replace(/[ /%^&*(),]/g, "-")
+            .toLocaleLowerCase()}`
+        );
       }}
     >
       {!lazy && (

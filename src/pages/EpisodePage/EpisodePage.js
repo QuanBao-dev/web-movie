@@ -12,7 +12,7 @@ import { userStream } from "../../epics/user";
 import { ajax } from "rxjs/ajax";
 import { catchError, pluck, retry } from "rxjs/operators";
 import { of } from "rxjs";
-import { nameStream } from "../../epics/name";
+import { nameStream } from "../../epics/animeDetail";
 import { chatStream } from "../../epics/comment";
 const Comment = loadable(() => import("../../components/Comment/Comment"));
 const Chat = loadable(() => import("../../components/Chat/Chat"), {

@@ -7,39 +7,33 @@ import { useRef } from "react";
 
 const SearchedAnime = loadable(() => import("../SearchedAnime/SearchedAnime"));
 
-const SearchedAnimeList = ({ homeState }) => {
+const SearchedAnimeList = ({ textSearch, dataSearch }) => {
   const searchListAnimeRef = useRef();
-  if (homeState.textSearch && homeState.dataFilter.length === 0) {
-    homeState.textSearch = "";
-  }
   useEffect(() => {
     if (searchListAnimeRef.current.scroll)
       searchListAnimeRef.current.scroll({
         left: 0,
       });
-  }, [homeState.textSearch]);
+  }, [textSearch]);
   return (
     <>
-      {homeState.dataFilter && homeState.dataFilter.length !== 0 && (
-        <h3 style={{ color: "white" }}>
-          {homeState.dataFilter.length} results
+      {dataSearch && dataSearch.length !== 0 && (
+        <h3 style={{ color: "white", textAlign: "center" }}>
+          {dataSearch.length} results
         </h3>
       )}
-      {homeState.textSearch && homeState.dataFilter.length === 0 && (
-        <h3 style={{ color: "white" }}>0 results</h3>
+      {textSearch && dataSearch.length === 0 && (
+        <h3 style={{ color: "white", textAlign: "center" }}>0 results</h3>
       )}
       <div
         className="search-list-anime"
         ref={searchListAnimeRef}
         style={{
-          display:
-            homeState.dataFilter && homeState.dataFilter.length > 0
-              ? "block"
-              : "none",
+          display: dataSearch && dataSearch.length > 0 ? "block" : "none",
         }}
       >
-        {homeState.dataFilter.length > 0 &&
-          homeState.dataFilter.slice(0,7).map((anime, index) => {
+        {dataSearch.length > 0 &&
+          dataSearch.map((anime, index) => {
             return (
               <SearchedAnime
                 key={index}

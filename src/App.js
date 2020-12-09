@@ -16,6 +16,8 @@ import { ReplaySubject } from "rxjs";
 import NavBar from "./components/NavBar/NavBar";
 import { fetchingUser$, userStream } from "./epics/user";
 import navBarStore from "./store/navbar";
+import { virtualAnimeListStream } from "./epics/virtualAnimeList";
+import { lazyLoadAnimeListStream } from "./epics/lazyLoadAnimeList";
 
 const Login = loadable(() => import("./pages/Login/Login"), {
   fallback: (
@@ -80,7 +82,7 @@ const Home = loadable(() => import("./pages/Home/Home"), {
     </section>
   ),
 });
-const Name = loadable(() => import("./pages/Name/Name"), {
+const AnimeDetail = loadable(() => import("./pages/AnimeDetail/AnimeDetail"), {
   fallback: (
     <section style={{ position: "fixed", width: "100%", zIndex: "2000" }}>
       <LinearProgress color="secondary" />
@@ -217,9 +219,21 @@ function App() {
       <div
         className="button-scroll-top"
         onClick={() => {
+          const {
+            genreDetailData,
+            numberAnimeShowMore,
+          } = lazyLoadAnimeListStream.currentState();
+          virtualAnimeListStream.updateData({
+            numberShowMorePreviousAnime: Math.ceil(
+              genreDetailData.length / numberAnimeShowMore - 1
+            ),
+            numberShowMoreLaterAnime: 0,
+          });
           window.scroll({
             top: 0,
-            behavior: "smooth",
+            behavior: !virtualAnimeListStream.currentState().isVirtual
+              ? "smooth"
+              : "auto",
           });
         }}
       >
@@ -246,7 +260,7 @@ function App() {
           path="/anime/character/:characterId"
           component={CharacterDetail}
         />
-        <Route path="/anime/:name" component={Name} />
+        <Route path="/anime/:name" component={AnimeDetail} />
         <Route path="/genre/:genreId" component={GenreDetail} />
         <Route path="/producer/:producerId" component={ProducerDetail} />
         <Route path="/studio/:producerId" component={ProducerDetail} />

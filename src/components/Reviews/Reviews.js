@@ -1,100 +1,25 @@
 import "./Reviews.css";
 
 import loadable from "@loadable/component";
-import React, { useEffect, useState } from "react";
 import CircularProgress from "@material-ui/core/CircularProgress";
+import React, { useState } from "react";
+
+import { reviewsStream } from "../../epics/reviews";
 import {
-  fetchReviewsData$,
-  pageWatchStream,
-  updatePageScrolling$,
-} from "../../epics/pageWatch";
+  useInitReviewsState,
+  useResetReviewsState,
+  useUpdatePageScrolling,
+  useFetchReviewsData,
+} from "../../Hook/reviews";
 
 const ReviewItem = loadable(() => import("../ReviewItem/ReviewItem"));
 
 const Reviews = ({ malId }) => {
-  const [reviewState, setReviewState] = useState(pageWatchStream.initialState);
-  useEffect(() => {
-    const subscription = pageWatchStream.subscribe(setReviewState);
-    pageWatchStream.init();
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, []);
-  useEffect(() => {
-    if (
-      pageWatchStream.currentState().reviewsData.length === 0 ||
-      pageWatchStream.currentState().previousMalId !== malId
-    ) {
-      pageWatchStream.allowUpdatePageReviewsData(true);
-      pageWatchStream.resetReviewsData();
-      pageWatchStream.updatePageReviewsOnDestroy(null);
-    }
-  }, [malId, reviewState.previousMalId]);
-  useEffect(() => {
-    const subscription = updatePageScrolling$().subscribe(() => {
-      if (
-        reviewState.shouldUpdatePageReviewData &&
-        pageWatchStream.currentState().pageSplit >
-          pageWatchStream.currentState().reviewsData.length
-      )
-        pageWatchStream.updatePageReview(
-          pageWatchStream.currentState().reviewsData.length / 20 + 1
-        );
-    });
-    if (pageWatchStream.currentState().isStopFetchingReviews) {
-      subscription && subscription.unsubscribe();
-    }
-    return () => {
-      subscription && subscription.unsubscribe();
-    };
-  }, [reviewState.pageReviewsData, reviewState.shouldUpdatePageReviewData]);
-  useEffect(() => {
-    let subscription;
-    if (
-      pageWatchStream.currentState().pageReviewsOnDestroy !==
-        reviewState.pageReviewsData &&
-      pageWatchStream.currentState().isStopFetchingReviews === false
-    )
-      subscription = fetchReviewsData$(
-        malId,
-        pageWatchStream.currentState().pageReviewsData
-      ).subscribe((v) => {
-        if (!v.error) {
-          let updatedAnime;
-          if (
-            pageWatchStream.currentState().reviewsData.length === 0 ||
-            pageWatchStream.currentState().previousMalId !== malId
-          ) {
-            updatedAnime = [...v];
-          } else {
-            updatedAnime = [...reviewState.reviewsData, ...v];
-          }
-          if (
-            pageWatchStream.currentState().reviewsData.length / 20 + 1 !==
-            parseInt(pageWatchStream.currentState().reviewsData.length / 20 + 1)
-          ) {
-            pageWatchStream.updateIsStopFetching(true);
-          }
-          if (updatedAnime.length === 0) {
-            pageWatchStream.updateIsStopFetching(true);
-            return;
-          }
-          pageWatchStream.updateReviewsData(updatedAnime);
-          pageWatchStream.updatePreviousMalId(malId);
-          pageWatchStream.updatePageReviewsOnDestroy(
-            pageWatchStream.currentState().pageReviewsData
-          );
-          pageWatchStream.allowUpdatePageReviewsData(true);
-        } else {
-          pageWatchStream.updateIsStopFetching(true);
-          pageWatchStream.allowUpdatePageReviewsData(false);
-        }
-      });
-    return () => {
-      subscription && subscription.unsubscribe();
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [malId, reviewState.pageReviewsData]);
+  const [reviewState, setReviewState] = useState(reviewsStream.currentState());
+  useInitReviewsState(setReviewState);
+  useResetReviewsState(malId, reviewState);
+  useUpdatePageScrolling(reviewState, malId);
+  useFetchReviewsData(reviewState, malId);
   return (
     reviewState && (
       <div className="container-reviews">

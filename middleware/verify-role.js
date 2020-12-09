@@ -4,24 +4,26 @@ module.exports.verifyRole = (...roles) => {
     const authHeader = req.headers["authorization"];
     // console.log(req.signedCookies.idCartoonUser);
     let token = authHeader && authHeader.split(" ")[1];
-    if(token === "undefined"){
+    if (token === "undefined") {
       token = null;
     }
-    if(!token){
+    if (!token || process.env.NODE_ENV === "production") {
       token = req.signedCookies.idCartoonUser;
     }
-    if(!token){
-      return res.status(401).send({error:"Access Denied"});
+    if (!token) {
+      return res.status(401).send({ error: "Access Denied" });
     }
     try {
       const decode = jwt.verify(token, process.env.JWT_KEY);
       req.user = decode;
-      if(!roles.includes(req.user.role)){
-        return res.status(401).send({error:"You don't have permission (role)"});
+      if (!roles.includes(req.user.role)) {
+        return res
+          .status(401)
+          .send({ error: "You don't have permission (role)" });
       }
-      return next()
+      return next();
     } catch (error) {
       res.status(400).send({ error: "Invalid token" });
     }
-  }
-}
+  };
+};

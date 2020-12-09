@@ -4,9 +4,8 @@ import loadable from "@loadable/component";
 import React, { useEffect, useState } from "react";
 
 import { stream } from "../../epics/home";
-
-const SearchInput = loadable(
-  () => import("../../components/SearchInput/SearchInput"),
+const SearchTool = loadable(
+  () => import("../../components/SearchTool/SearchTool"),
   {
     fallback: (
       <div style={{ textAlign: "center" }}>
@@ -50,9 +49,6 @@ const AnimeSchedule = loadable(
 
 const Genres = loadable(() => import("../../components/Genres/Genres"));
 
-const SearchedAnimeList = loadable(() =>
-  import("../../components/SearchedAnimeList/SearchedAnimeList")
-);
 const UpcomingAnimeList = loadable(
   () =>
     /* webpackPrefetch: true */ import(
@@ -116,8 +112,7 @@ function Home() {
         stream.currentState().screenWidth >= 450 && <Carousel />}
       <div className="recently-updated-movie">
         <div className="wrapper-search-anime-list">
-          <SearchInput />
-          <SearchedAnimeList homeState={homeState} />
+          <SearchTool />
         </div>
         <UpcomingAnimeList />
         <UpdatedAnime />

@@ -1,15 +1,20 @@
-import './AnimeRelatedItem.css';
-import 'react-lazy-load-image-component/src/effects/opacity.css';
+import "./AnimeRelatedItem.css";
+import "react-lazy-load-image-component/src/effects/opacity.css";
 
-import React from 'react';
-import { LazyLoadImage } from 'react-lazy-load-image-component';
+import React from "react";
+import { LazyLoadImage } from "react-lazy-load-image-component";
 
 function AnimeRelatedItem({ anime, history, lazy = false }) {
   return (
     <div
       className={anime.role === "Main" ? "anime-main-role" : ""}
       onClick={() => {
-        history.push("/anime/" + anime.mal_id);
+        history.push(
+          "/anime/" +
+            anime.mal_id +
+            "-" +
+            anime.name.replace(/[ /%^&*()]/g, "-").toLocaleLowerCase()
+        );
       }}
     >
       {lazy && (

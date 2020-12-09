@@ -14,9 +14,14 @@
   transform:scale(1.2,1.2) ;
 }
 
+.search-item-anime span{
+  height: 100%;
+}
+
 .search-item-anime img{
   position: absolute;
   width: 100%;
+  object-fit: cover;
   height: 100%;
   border-radius: 10px;
 }

@@ -1,22 +1,20 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import { useHistory } from "react-router-dom";
-import { changeSearchInput$, listenSearchInputPressEnter$, stream } from "../../epics/home";
+import {
+  changeSearchInput$,
+  listenSearchInputPressEnter$,
+  searchToolStream,
+} from "../../epics/searchTool";
 import Input from "../Input/Input";
-const SearchInput = () => {
+const SearchInput = ({ textSearch }) => {
   const history = useHistory();
   const searchInput = useRef(null);
-  const [homeState, setHomeState] = useState(
-    stream.currentState() ? stream.currentState() : stream.initialState
-  );
   useEffect(() => {
-    const subscription = stream.subscribe(setHomeState);
-    window.scroll({ top: 0 });
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, []);
-  useEffect(() => {
-    const subscription6 = changeSearchInput$(searchInput.current).subscribe();
+    const subscription6 = changeSearchInput$(searchInput.current).subscribe(
+      (v) => {
+        searchToolStream.updateData({ dataSearch: v });
+      }
+    );
     const subscription10 = listenSearchInputPressEnter$(
       searchInput.current
     ).subscribe((v) => {
@@ -26,9 +24,9 @@ const SearchInput = () => {
       unsubscribeSubscription(subscription6, subscription10);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [homeState.textSearch]);
+  }, [textSearch]);
   return (
-    <div style={{ width: "90%" }}>
+    <div style={{ width: "90%", margin: "auto" }}>
       <Input label="Search Anime" input={searchInput} />
     </div>
   );

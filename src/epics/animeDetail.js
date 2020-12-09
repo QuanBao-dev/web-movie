@@ -14,7 +14,7 @@ import {
   tap,
 } from "rxjs/operators";
 
-import nameStore from "../store/name";
+import nameStore from "../store/animeDetail";
 
 export const nameStream = nameStore;
 

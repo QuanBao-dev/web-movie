@@ -4,18 +4,18 @@ import "react-lazy-load-image-component/src/effects/opacity.css";
 
 import React, { useEffect, useRef, useState } from "react";
 
-import { nameStream } from "../../epics/animeDetail";
+import { animeDetailStream } from "../../epics/animeDetail";
 import AnimeList from "../AnimeList/AnimeList";
 import CircularProgress from "@material-ui/core/CircularProgress";
 
 const RelatedAnime = ({ isLoading }) => {
   const [recommendationState, setRecommendationState] = useState(
-    nameStream.currentState() || nameStream.initialState
+    animeDetailStream.currentState() || animeDetailStream.initialState
   );
   const buttonRef = useRef();
   useEffect(() => {
-    const subscription = nameStream.subscribe(setRecommendationState);
-    nameStream.init();
+    const subscription = animeDetailStream.subscribe(setRecommendationState);
+    animeDetailStream.init();
     return () => {
       subscription.unsubscribe();
     };
@@ -56,8 +56,8 @@ const RelatedAnime = ({ isLoading }) => {
               className="see-more-movie"
               ref={buttonRef}
               onClick={() => {
-                nameStream.updateData({
-                  pageRelated: nameStream.currentState().pageRelated + 1,
+                animeDetailStream.updateData({
+                  pageRelated: animeDetailStream.currentState().pageRelated + 1,
                 });
               }}
             >

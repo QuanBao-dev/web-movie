@@ -12,7 +12,7 @@ import { userStream } from "../../epics/user";
 import { ajax } from "rxjs/ajax";
 import { catchError, pluck, retry } from "rxjs/operators";
 import { of } from "rxjs";
-import { nameStream } from "../../epics/animeDetail";
+import { animeDetailStream } from "../../epics/animeDetail";
 import { chatStream } from "../../epics/comment";
 const Comment = loadable(() => import("../../components/Comment/Comment"));
 const Chat = loadable(() => import("../../components/Chat/Chat"), {
@@ -99,17 +99,17 @@ const EpisodePage = (props) => {
       theaterStream.socket.emit("user-join-watch", malId, user.username);
     let fetchEpisodesSub, fetchTitleAnimeSub;
     if (
-      nameStream.currentState().malId === malId &&
-      !!nameStream.currentState().dataLargePicture
+      animeDetailStream.currentState().malId === malId &&
+      !!animeDetailStream.currentState().dataLargePicture
     ) {
       pageWatchStream.updateEpisodes(
-        nameStream.currentState().dataEpisodesAnime
+        animeDetailStream.currentState().dataEpisodesAnime
       );
       pageWatchStream.updateTitle(
-        nameStream.currentState().dataInformationAnime.title
+        animeDetailStream.currentState().dataInformationAnime.title
       );
       pageWatchStream.updateImageUrl(
-        nameStream.currentState().dataLargePicture
+        animeDetailStream.currentState().dataLargePicture
       );
       pageWatchStream.updateInfoPageWatch(malId);
     } else {

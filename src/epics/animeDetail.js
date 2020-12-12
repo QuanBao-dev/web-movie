@@ -14,14 +14,14 @@ import {
   tap,
 } from "rxjs/operators";
 
-import nameStore from "../store/animeDetail";
+import animeDetailStore from "../store/animeDetail";
 
-export const nameStream = nameStore;
+export const animeDetailStream = animeDetailStore;
 
 export const fetchData$ = (name) => {
   return timer(0).pipe(
     tap(() => {
-      nameStream.updateIsLoading(true, "isLoadingInfoAnime");
+      animeDetailStream.updateIsLoading(true, "isLoadingInfoAnime");
     }),
     mergeMapTo(
       ajax(`https://api.jikan.moe/v3/anime/${name}`).pipe(
@@ -35,7 +35,7 @@ export const fetchData$ = (name) => {
 export const fetchDataVideo$ = (malId) => {
   return timer(0).pipe(
     tap(() => {
-      nameStream.updateIsLoading(true, "isLoadingVideoAnime");
+      animeDetailStream.updateIsLoading(true, "isLoadingVideoAnime");
     }),
     mergeMapTo(
       ajax(`https://api.jikan.moe/v3/anime/${malId}/videos`).pipe(
@@ -50,7 +50,7 @@ export const fetchDataVideo$ = (malId) => {
 export const fetchEpisodeDataVideo$ = (malId) => {
   return timer(0).pipe(
     tap(() => {
-      nameStream.updateIsLoading(true, "isLoadingEpisode");
+      animeDetailStream.updateIsLoading(true, "isLoadingEpisode");
     }),
     mergeMapTo(
       ajax(`/api/movies/${malId}/episodes`).pipe(
@@ -67,7 +67,7 @@ export const fetchEpisodeDataVideo$ = (malId) => {
 export function fetchLargePicture$(name) {
   return timer(0).pipe(
     tap(() => {
-      nameStream.updateIsLoading(true, "isLoadingLargePicture");
+      animeDetailStream.updateIsLoading(true, "isLoadingLargePicture");
     }),
     mergeMapTo(
       ajax(`https://api.jikan.moe/v3/anime/${name}/pictures`).pipe(
@@ -100,7 +100,7 @@ export function capitalizeString(string) {
 export function fetchAnimeRecommendation$(malId) {
   return timer(0).pipe(
     tap(() => {
-      nameStream.updateIsLoading(true, "isLoadingRelated");
+      animeDetailStream.updateIsLoading(true, "isLoadingRelated");
     }),
     mergeMapTo(
       ajax({
@@ -117,7 +117,7 @@ export function fetchAnimeRecommendation$(malId) {
 export function fetchDataCharacter$(malId) {
   return timer(0).pipe(
     tap(() => {
-      nameStream.updateIsLoading(true, "isLoadingCharacter");
+      animeDetailStream.updateIsLoading(true, "isLoadingCharacter");
     }),
     mergeMapTo(
       ajax(`https://api.jikan.moe/v3/anime/${malId}/characters_staff`).pipe(
@@ -142,7 +142,7 @@ export function handleAddBoxMovie(
       map(() => addMovieRef.current),
       switchMap((target) => {
         return fromEvent(target, "click").pipe(
-          filter(() => nameStream.currentState().dataInformationAnime),
+          filter(() => animeDetailStream.currentState().dataInformationAnime),
           exhaustMap(() =>
             ajax({
               method: "POST",
@@ -151,15 +151,15 @@ export function handleAddBoxMovie(
                 authorization: `Bearer ${idCartoonUser}`,
               },
               body: {
-                malId: nameStream.currentState().dataInformationAnime.mal_id,
-                title: nameStream.currentState().dataInformationAnime.title,
-                imageUrl: nameStream.currentState().dataLargePicture,
+                malId: animeDetailStream.currentState().dataInformationAnime.mal_id,
+                title: animeDetailStream.currentState().dataInformationAnime.title,
+                imageUrl: animeDetailStream.currentState().dataLargePicture,
                 episodes:
-                  nameStream.currentState().dataInformationAnime.episodes ||
+                  animeDetailStream.currentState().dataInformationAnime.episodes ||
                   "??",
-                score: nameStream.currentState().dataInformationAnime.score,
-                airing: nameStream.currentState().dataInformationAnime.airing,
-                synopsis: nameStream.currentState().dataInformationAnime
+                score: animeDetailStream.currentState().dataInformationAnime.score,
+                airing: animeDetailStream.currentState().dataInformationAnime.airing,
+                synopsis: animeDetailStream.currentState().dataInformationAnime
                   .synopsis,
               },
             }).pipe(
@@ -174,7 +174,7 @@ export function handleAddBoxMovie(
     )
     .subscribe((v) => {
       // console.log(v);
-      nameStream.updateData({
+      animeDetailStream.updateData({
         boxMovie: v === null ? null : { ...v },
       });
       handleDeleteBoxMovie(addMovieRef, deleteMovieRef, idCartoonUser, malId);
@@ -194,7 +194,7 @@ export function handleDeleteBoxMovie(
       map(() => deleteMovieRef.current),
       switchMap((target) => {
         return fromEvent(target, "click").pipe(
-          filter(() => nameStream.currentState().dataInformationAnime),
+          filter(() => animeDetailStream.currentState().dataInformationAnime),
           exhaustMap(() =>
             ajax({
               method: "DELETE",
@@ -213,7 +213,7 @@ export function handleDeleteBoxMovie(
       })
     )
     .subscribe((v) => {
-      nameStream.updateData({
+      animeDetailStream.updateData({
         boxMovie: null,
       });
       handleAddBoxMovie(addMovieRef, deleteMovieRef, idCartoonUser, malId);

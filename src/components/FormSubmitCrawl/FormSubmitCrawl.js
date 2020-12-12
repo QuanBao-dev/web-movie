@@ -1,7 +1,7 @@
-import { Input } from "@material-ui/core";
 import Axios from "axios";
 import React, { useState } from "react";
 import { animeDetailStream } from "../../epics/animeDetail";
+import Input from "../Input/Input";
 
 function FormSubmitCrawl({
   startEpisodeInputRef,
@@ -120,16 +120,24 @@ function FormSubmitCrawl({
                 },
               }
             );
-            animeDetailStream.updateData({
-              dataEpisodesAnime: updateMovie.data.message,
-            });
-            setError(null);
-            startEpisodeInputRef.current.value = "";
-            endEpisodeInputRef.current.value = "";
-            buttonSubmitCrawlInputRef.current.disabled = false;
-            linkWatchingInputRef.current &&
-              (linkWatchingInputRef.current.value =
-                updateMovie.data.message.source || "");
+
+            if (
+              startEpisodeInputRef.current &&
+              endEpisodeInputRef.current &&
+              buttonSubmitCrawlInputRef.current &&
+              linkWatchingInputRef.current
+            ) {
+              animeDetailStream.updateData({
+                dataEpisodesAnime: updateMovie.data.message,
+              });
+              setError(null);
+              startEpisodeInputRef.current.value = "";
+              endEpisodeInputRef.current.value = "";
+              buttonSubmitCrawlInputRef.current.disabled = false;
+              linkWatchingInputRef.current &&
+                (linkWatchingInputRef.current.value =
+                  updateMovie.data.message.source || "");
+            }
           } catch (error) {
             if (
               error &&
@@ -139,10 +147,16 @@ function FormSubmitCrawl({
             ) {
               setError(error.response.data.error);
             }
-            startEpisodeInputRef.current.value = "";
-            endEpisodeInputRef.current.value = "";
-            linkWatchingInputRef.current &&
-              (buttonSubmitCrawlInputRef.current.disabled = false);
+            if (
+              startEpisodeInputRef.current &&
+              endEpisodeInputRef.current &&
+              linkWatchingInputRef.current
+            ) {
+              startEpisodeInputRef.current.value = "";
+              endEpisodeInputRef.current.value = "";
+              linkWatchingInputRef.current &&
+                (buttonSubmitCrawlInputRef.current.disabled = false);
+            }
           }
         }}
       >

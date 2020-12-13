@@ -31,7 +31,7 @@ router.get("/anime/character/:characterId", async (req, res) => {
   const descriptionReg = new RegExp(descriptionHTML, "g");
   const imageReg = new RegExp(imageHTML, "g");
   const { data } = await Axios(
-    "https://api.jikan.moe/v3/character/" + req.params.characterId
+    "https://api.jikan.moe/v3/character/" + parseInt(req.params.characterId)
   );
   const { name, image_url } = data;
   const filePath = path.join(__dirname, "../build", "index.html");
@@ -57,7 +57,7 @@ router.get("/anime/person/:personId", async (req, res) => {
   const descriptionReg = new RegExp(descriptionHTML, "g");
   const imageReg = new RegExp(imageHTML, "g");
   const { data } = await Axios(
-    "https://api.jikan.moe/v3/person/" + req.params.personId
+    "https://api.jikan.moe/v3/person/" + parseInt(req.params.personId)
   );
   const { name, image_url } = data;
   const filePath = path.join(__dirname, "../build", "index.html");
@@ -86,7 +86,7 @@ router.get("/anime/:id", async (req, res) => {
   const descriptionReg = new RegExp(descriptionHTML, "g");
   const imageReg = new RegExp(imageHTML, "g");
   const { data } = await Axios(
-    "https://api.jikan.moe/v3/anime/" + req.params.id
+    "https://api.jikan.moe/v3/anime/" + parseInt(req.params.id)
   );
   const { title, synopsis, image_url } = data;
   const filePath = path.join(__dirname, "../build", "index.html");

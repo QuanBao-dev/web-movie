@@ -41,6 +41,7 @@ export const useFetchDataGenreAnimeList = (
     pageGenre,
     isStopScrollingUpdated,
     genreDetailData,
+    currentGenreId,
   } = lazyLoadAnimeListStream.currentState(),
   genreId,
   url,
@@ -55,6 +56,6 @@ export const useFetchDataGenreAnimeList = (
       url,
       virtual
     ),
-    [pageGenre, genreId]
+    [pageGenre, genreId, currentGenreId]
   );
 };

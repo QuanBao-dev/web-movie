@@ -44,6 +44,7 @@ export const genreIdChange = (genreId, virtual, currentGenreId) => {
         genre: null,
         pageOnDestroy: null,
         isStopScrollingUpdated: false,
+        currentGenreId:null
       });
       if (virtual)
         virtualAnimeListStream.updateDataQuick({

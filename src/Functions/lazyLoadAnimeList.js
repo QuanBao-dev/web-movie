@@ -120,7 +120,8 @@ export const fetchDataGenreAnimeList = (
   return () => {
     let subscription;
     if (
-      pageGenre !== lazyLoadAnimeListStream.currentState().pageOnDestroy &&
+      (pageGenre !== lazyLoadAnimeListStream.currentState().pageOnDestroy ||
+        lazyLoadAnimeListStream.currentState().genreDetailData.length === 0) &&
       isStopScrollingUpdated === false
     ) {
       subscription = fetchDataGenreAnimeList$(

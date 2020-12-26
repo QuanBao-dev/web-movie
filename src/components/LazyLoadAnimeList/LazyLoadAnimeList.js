@@ -26,7 +26,6 @@ const LazyLoadAnimeList = ({ genreId, url }) => {
   useGenreIdChange(parseInt(genreId), virtual, lazyLoadState);
   useUpdatePageScrollingWindow(virtual, lazyLoadState);
   useFetchDataGenreAnimeList(lazyLoadState, parseInt(genreId), url, virtual);
-
   return (
     <div className="container-genre-detail">
       <h1>

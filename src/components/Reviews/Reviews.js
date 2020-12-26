@@ -20,7 +20,6 @@ const Reviews = ({ malId }) => {
   useResetReviewsState(malId, reviewState);
   useUpdatePageScrolling(reviewState);
   useFetchReviewsData(reviewState, malId);
-  console.log(reviewState);
   return (
     reviewState && (
       <div className="container-reviews">

@@ -27,5 +27,8 @@ export const useFetchReviewsData = (
   { pageReviewsData, reviewsData },
   malId
 ) => {
-  useEffect(fetchReviewsData(pageReviewsData, reviewsData, malId), [malId]);
+  useEffect(fetchReviewsData(pageReviewsData, reviewsData, malId), [
+    malId,
+    pageReviewsData,
+  ]);
 };

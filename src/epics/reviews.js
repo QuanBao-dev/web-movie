@@ -9,6 +9,7 @@ import {
   retry,
   switchMapTo,
   filter,
+  takeWhile,
 } from "rxjs/operators";
 import reviewsStore from "../store/reviews";
 
@@ -20,7 +21,7 @@ export function fetchReviewsData$(malId, page) {
     switchMapTo(
       ajax(`https://api.jikan.moe/v3/anime/${malId}/reviews/${page}`).pipe(
         pluck("response", "reviews"),
-        retry(5),
+        retry(3),
         tap(() => reviewsStream.updateData({ pageReviewsOnDestroy: page })),
         catchError((error) => {
           return of({ error });
@@ -37,6 +38,7 @@ export function updatePageScrolling$() {
         () => window.innerWidth < 770,
         fromEvent(window, "scroll").pipe(
           debounceTime(500),
+          takeWhile(() => !reviewsStream.currentState().isStopFetchingReviews),
           filter(
             () => document.body.scrollHeight - (window.scrollY + 1500) < 0
           ),
@@ -51,6 +53,7 @@ export function updatePageScrolling$() {
           })
         ),
         fromEvent(window, "scroll").pipe(
+          takeWhile(() => !reviewsStream.currentState().isStopFetchingReviews),
           filter(
             () => document.body.scrollHeight - (window.scrollY + 1500) < 0
           ),

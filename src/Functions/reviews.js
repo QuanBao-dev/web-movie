@@ -1,4 +1,8 @@
-import { reviewsStream, updatePageScrolling$, fetchReviewsData$ } from "../epics/reviews";
+import {
+  reviewsStream,
+  updatePageScrolling$,
+  fetchReviewsData$,
+} from "../epics/reviews";
 
 export const initReviewState = (setReviewState) => {
   return () => {
@@ -7,8 +11,8 @@ export const initReviewState = (setReviewState) => {
     return () => {
       subscription.unsubscribe();
     };
-  }
-}
+  };
+};
 
 export const resetReviewsState = (malId) => {
   return () => {
@@ -25,37 +29,44 @@ export const resetReviewsState = (malId) => {
         pageReviewsOnDestroy: null,
       });
     }
-  }
-}
+  };
+};
 
 export const updatePageScrolling = (shouldUpdatePageReviewData) => {
   return () => {
     const subscription = updatePageScrolling$().subscribe(() => {
+      console.log(shouldUpdatePageReviewData);
       if (
         shouldUpdatePageReviewData &&
         reviewsStream.currentState().pageSplit >
           reviewsStream.currentState().reviewsData.length
-      )
-        reviewsStream.updateData({
-          pageReviewsData:
-            reviewsStream.currentState().reviewsData.length / 20 + 1,
-        });
+      ) {
+        if (
+          parseInt(reviewsStream.currentState().reviewsData.length / 20 + 1) !==
+          reviewsStream.currentState().reviewsData.length / 20 + 1
+        ) {
+          reviewsStream.updateData({
+            isStopFetchingReviews: true,
+          });
+        } else {
+          reviewsStream.updateData({
+            pageReviewsData:
+              reviewsStream.currentState().reviewsData.length / 20 + 1,
+          });
+        }
+      }
     });
-    if (reviewsStream.currentState().isStopFetchingReviews) {
-      subscription && subscription.unsubscribe();
-    }
     return () => {
       subscription && subscription.unsubscribe();
     };
-  }
-}
+  };
+};
 
 export const fetchReviewsData = (pageReviewsData, reviewsData, malId) => {
   return () => {
     let subscription;
     if (
-      reviewsStream.currentState().pageReviewsOnDestroy !==
-        pageReviewsData &&
+      reviewsStream.currentState().pageReviewsOnDestroy !== pageReviewsData &&
       reviewsStream.currentState().isStopFetchingReviews === false
     )
       subscription = fetchReviewsData$(
@@ -72,13 +83,7 @@ export const fetchReviewsData = (pageReviewsData, reviewsData, malId) => {
           } else {
             updatedAnime = [...reviewsData, ...v];
           }
-          if (
-            reviewsStream.currentState().reviewsData.length / 20 + 1 !==
-            parseInt(reviewsStream.currentState().reviewsData.length / 20 + 1)
-          ) {
-            reviewsStream.updateData({ isStopFetchingReviews: true });
-          }
-          if (updatedAnime.length === 0) {
+          if (v.length === 0) {
             reviewsStream.updateData({ isStopFetchingReviews: true });
             return;
           }
@@ -99,5 +104,5 @@ export const fetchReviewsData = (pageReviewsData, reviewsData, malId) => {
       subscription && subscription.unsubscribe();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }
-}
+  };
+};

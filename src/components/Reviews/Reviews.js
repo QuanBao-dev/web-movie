@@ -18,8 +18,9 @@ const Reviews = ({ malId }) => {
   const [reviewState, setReviewState] = useState(reviewsStream.currentState());
   useInitReviewsState(setReviewState);
   useResetReviewsState(malId, reviewState);
-  useUpdatePageScrolling(reviewState, malId);
+  useUpdatePageScrolling(reviewState);
   useFetchReviewsData(reviewState, malId);
+  console.log(reviewState);
   return (
     reviewState && (
       <div className="container-reviews">

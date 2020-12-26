@@ -64,7 +64,7 @@ export const keepDragMoveAnimeList = (elementScroll, length, numberList) => {
             }
             posX1 = e.touches[0].clientX;
             const offsetLeft =
-              upcomingAnimeListStream.currentState().offsetLeft + delta * 0.5;
+              upcomingAnimeListStream.currentState().offsetLeft + delta * 0.1;
             elementScroll.style.transform = `translateX(${offsetLeft}px)`;
             // stream.updateOffsetLeft(offsetLeft);
             upcomingAnimeListStream.updateDataQuick({

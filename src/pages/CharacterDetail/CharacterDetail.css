@@ -108,3 +108,14 @@ pre{
 .character-appear-container{
   text-align: center;
 }
+
+@media(max-width:600px){
+  .character-detail-container{
+    padding: 0;
+    width: 100%;
+  }
+
+  .character-information{
+    width: 80%;
+  }
+}

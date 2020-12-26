@@ -116,6 +116,11 @@ pre{
     object-fit: contain;
     width: 120px;
   }
+
+  .person-detail-container{
+    padding: 0;
+    width: 100%;
+  }
 }
 
 .pop-up-hover-character{

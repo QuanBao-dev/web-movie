@@ -21,6 +21,9 @@ const CharacterDetail = (props) => {
   const history = useHistory();
   const [dataCharacterDetail, setDataCharacterDetail] = useState({});
   useEffect(() => {
+    window.scroll({
+      top: 0,
+    });
     return () => {
       navBarStore.updateIsShowBlockPopUp(false);
     };

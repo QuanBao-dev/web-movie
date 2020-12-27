@@ -220,7 +220,8 @@ function mouseMoveAnimeItem(animeItemRef, virtual) {
       animeItemRef.current.parentElement.className.includes("list-anime-nowrap")
     ) {
       xVal = e.pageX - e.target.getBoundingClientRect().x;
-      yVal = e.pageY - animeItemRef.current.parentElement.offsetTop;
+      yVal =
+        e.pageY - animeItemRef.current.parentElement.parentElement.offsetTop;
     } else if (virtual) {
       xVal = e.pageX - e.target.getBoundingClientRect().x;
       yVal =

@@ -55,10 +55,18 @@ export const updateVirtualAnimeList = (virtual, data) => {
         virtualAnimeListStream.currentState().quantityAnimePerRow *
         virtualAnimeListStream.currentState().offsetWidthAnime
       }px`;
-      listAnimeE.style.height = `${
-        virtualAnimeListStream.currentState().screenHeight +
-        virtualAnimeListStream.currentState().offsetHeightAnime
-      }px`;
+      if (lazyLoadAnimeListStream.currentState().genreDetailData.length < 10) {
+        listAnimeE.style.height = `${
+          virtualAnimeListStream.currentState().screenHeight +
+          virtualAnimeListStream.currentState().offsetHeightAnime +
+          virtualAnimeListStream.currentState().offsetHeightAnime / 1.5
+        }px`;
+      } else {
+        listAnimeE.style.height = `${
+          virtualAnimeListStream.currentState().screenHeight +
+          virtualAnimeListStream.currentState().offsetHeightAnime
+        }px`;
+      }
     }
   };
 };

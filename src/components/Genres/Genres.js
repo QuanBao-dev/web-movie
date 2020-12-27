@@ -53,7 +53,9 @@ const Genres = () => {
       <div className="container-genre-list">
         {genresData.map((data) => (
           <Link
-            to={`/genre/${data.genreId}`}
+            to={`/genre/${data.genreId}-${data.genre
+              .replace(" ", "-")
+              .toLowerCase()}`}
             key={data.genreId}
             onClick={() => {
               window.scroll({

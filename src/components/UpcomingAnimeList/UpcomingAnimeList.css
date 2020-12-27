@@ -12,6 +12,31 @@
   animation: colorChanging 1s infinite forwards;
 }
 
+.container-upcoming-anime-main{
+  position: relative;
+}
+
+.button-scrolling{
+  position: absolute;
+  top: 0;
+  z-index: 3;
+  cursor: pointer;
+  height: 100%;
+  opacity: 0;
+}
+
+.button-scrolling:hover{
+  opacity: 1;
+}
+
+.button-scrolling.left{
+  left: 0;
+}
+
+.button-scrolling.right{
+  right: 0;
+}
+
 .upcoming-anime-container{
   height: 560px;
 }

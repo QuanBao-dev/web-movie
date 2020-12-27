@@ -6,6 +6,7 @@ const initialState = {
   modeScrolling: "interval",
   upcomingAnimeList: [],
   shouldScrollLeft: true,
+  screenWidth: null
 };
 const behaviorSubject = new BehaviorSubject(initialState);
 

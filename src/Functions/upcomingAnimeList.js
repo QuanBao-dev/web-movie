@@ -176,9 +176,12 @@ export const keepDragMoveAnimeList = (elementScroll, length, numberList) => {
           delta = 0;
           posX1 = 0;
           posX2 = 0;
-          upcomingAnimeListStream.updateDataQuick({
-            mouseStartX: null,
-          });
+          upcomingAnimeListStream.updateDataQuick({ mouseStartX: null });
+          setTimeout(() => {
+            upcomingAnimeListStream.updateDataQuick({
+              hasMoved: false,
+            });
+          }, 100);
         });
         fromEvent(elementScroll, "mouseleave").subscribe(() => {
           // stream.updateMouseStartX(null);

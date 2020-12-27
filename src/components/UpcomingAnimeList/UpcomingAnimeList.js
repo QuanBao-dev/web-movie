@@ -1,6 +1,6 @@
 import "./UpcomingAnimeList.css";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import { scrollAnimeUser$ } from "../../epics/upcomingAnimeList";
 import { upcomingAnimeListStream } from "../../epics/upcomingAnimeList";
@@ -10,6 +10,8 @@ import {
   useInitUpcomingAnimeList,
 } from "../../Hook/upcomingAnimeList";
 import AnimeList from "../AnimeList/AnimeList";
+import { fromEvent } from "rxjs";
+import { debounceTime } from "rxjs/operators";
 
 let numberList = 50;
 let numberCloneList = 8;
@@ -22,6 +24,16 @@ const UpcomingAnimeList = () => {
   useInitUpcomingAnimeList(setUpcomingAnimeListState);
   useKeepDragMoveAnimeList(length, numberList);
   useFetchUpcomingAnimeList(numberList, numberCloneList);
+  useEffect(() => {
+    const subscription = fromEvent(window, "resize")
+      .pipe(debounceTime(200))
+      .subscribe(() => {
+        upcomingAnimeListStream.updateData({ screenWidth: window.innerWidth });
+      });
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
   return (
     <section
       className="upcoming-anime-container"
@@ -51,10 +63,10 @@ const UpcomingAnimeList = () => {
       }}
     >
       <h1 className="title-upcoming-anime">Upcoming anime</h1>
-      <div className="control-scrolling">
-        <div className="wrapper-control">
+      <div className="container-upcoming-anime-main">
+        {upcomingAnimeListState.screenWidth >= 700 && (
           <i
-            className="fas fa-arrow-alt-circle-left fa-3x"
+            className="button-scrolling left fas fa-arrow-alt-circle-left fa-3x"
             onClick={() => {
               const elementScroll = document.querySelector(
                 ".list-anime-nowrap"
@@ -66,8 +78,10 @@ const UpcomingAnimeList = () => {
               );
             }}
           ></i>
+        )}
+        {upcomingAnimeListState.screenWidth >= 700 && (
           <i
-            className="fas fa-arrow-alt-circle-right fa-3x"
+            className="button-scrolling right fas fa-arrow-alt-circle-right fa-3x"
             onClick={() => {
               const elementScroll = document.querySelector(
                 ".list-anime-nowrap"
@@ -79,15 +93,15 @@ const UpcomingAnimeList = () => {
               );
             }}
           ></i>
-        </div>
-      </div>
+        )}
 
-      <AnimeList
-        lazy={true}
-        empty={true}
-        data={upcomingAnimeListState.upcomingAnimeList}
-        isWrap={false}
-      />
+        <AnimeList
+          lazy={true}
+          empty={true}
+          data={upcomingAnimeListState.upcomingAnimeList}
+          isWrap={false}
+        />
+      </div>
     </section>
   );
 };

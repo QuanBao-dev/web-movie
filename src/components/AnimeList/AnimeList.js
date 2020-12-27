@@ -1,13 +1,17 @@
-import './AnimeList.css';
+import "./AnimeList.css";
 
-import loadable from '@loadable/component';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import React, { useRef } from 'react';
-import { useState } from 'react';
+import loadable from "@loadable/component";
+import CircularProgress from "@material-ui/core/CircularProgress";
+import React, { useRef } from "react";
+import { useState } from "react";
 
-import { lazyLoadAnimeListStream } from '../../epics/lazyLoadAnimeList';
-import { virtualAnimeListStream } from '../../epics/virtualAnimeList';
-import { useInitVirtualAnimeList, useUpdateVirtualAnimeList, useVirtualizeListAnime } from '../../Hook/virtualAnimeList';
+import { lazyLoadAnimeListStream } from "../../epics/lazyLoadAnimeList";
+import { virtualAnimeListStream } from "../../epics/virtualAnimeList";
+import {
+  useInitVirtualAnimeList,
+  useUpdateVirtualAnimeList,
+  useVirtualizeListAnime,
+} from "../../Hook/virtualAnimeList";
 
 const AnimeItem = loadable(() => import("../AnimeItem/AnimeItem"));
 const AnimeList = ({
@@ -29,17 +33,20 @@ const AnimeList = ({
   const {
     numberShowMorePreviousAnime,
     numberShowMoreLaterAnime,
+    quantityAnimePerRow,
   } = virtualAnimeListStream.currentState();
   const newIndexStartValue =
     data.length -
-    numberAnimeShowMore -
-    numberAnimeShowMore * (numberShowMorePreviousAnime + 2);
+    numberAnimeShowMore * (numberShowMorePreviousAnime + 1) -
+    quantityAnimePerRow;
   // console.log(virtualAnimeListStream.currentState());
-  const indexStart = newIndexStartValue < 0 ? 0 : newIndexStartValue;
+  const indexStart =
+    newIndexStartValue < quantityAnimePerRow ? 0 : newIndexStartValue;
   const newIndexEndValue =
     indexStart +
     (numberAnimeShowMore - 1) +
-    numberAnimeShowMore * (numberShowMoreLaterAnime + 2);
+    numberAnimeShowMore * (numberShowMoreLaterAnime + 1) +
+    quantityAnimePerRow * 2;
   const indexEnd =
     newIndexEndValue < data.length ? newIndexEndValue : data.length - 1;
   virtualAnimeListStream.updateDataQuick({ indexStart, indexEnd });

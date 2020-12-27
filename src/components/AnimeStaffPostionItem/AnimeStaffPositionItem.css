@@ -3,6 +3,10 @@
   animation: victoryEnlighten 2s forwards infinite;
   border-radius: 10px;
 }
+
+.anime-theme-song-performance-role span{
+  width: 100%;
+}
 .pop-up-hover{
   transition: 0.2s;
   transform: scale(0);
@@ -27,7 +31,7 @@
 @media (max-width:655px){
   .container-staff-position > div{
     width: 100px;
-    height: 150px;  
+    flex:1 1 auto;
   }
 }
 

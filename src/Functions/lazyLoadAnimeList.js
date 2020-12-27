@@ -152,14 +152,6 @@ export const fetchDataGenreAnimeList = (
           if (v.meta) {
             lazyLoadAnimeListStream.updateData({ genre: v.meta.name });
           }
-          if (
-            updatedAnime.length / 100 + 1 !==
-            parseInt(updatedAnime.length / 100 + 1)
-          ) {
-            lazyLoadAnimeListStream.updateData({
-              isStopScrollingUpdated: true,
-            });
-          }
           lazyLoadAnimeListStream.updateData({
             genreDetailData: updatedAnime,
             pageOnDestroy: lazyLoadAnimeListStream.currentState().pageGenre,

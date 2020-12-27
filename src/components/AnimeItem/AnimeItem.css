@@ -137,7 +137,7 @@
     width: 150px;
   }
   .anime-info-display_summary{
-    font-size: 0.5rem;
+    font-size: 0.7rem;
   }
   .anime-item-info{
     display: flex;
@@ -172,6 +172,7 @@
 
   .container-genre-detail .anime-item{
     width: 140px;
+    flex-direction: 1 1 auto;
   }
 
   .anime-item{

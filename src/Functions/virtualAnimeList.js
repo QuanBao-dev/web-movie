@@ -30,6 +30,8 @@ export function updateVirtualStyle(virtual, index) {
         parseInt(
           index % virtualAnimeListStream.currentState().quantityAnimePerRow
         ) * virtualAnimeListStream.currentState().offsetWidthAnime || 0,
+      width: virtualAnimeListStream.currentState().offsetWidthAnime - 20,
+      height: virtualAnimeListStream.currentState().offsetHeightAnime - 20,
     };
   else virtualStyle = {};
   return virtualStyle;
@@ -55,7 +57,10 @@ export const updateVirtualAnimeList = (virtual, data) => {
         virtualAnimeListStream.currentState().quantityAnimePerRow *
         virtualAnimeListStream.currentState().offsetWidthAnime
       }px`;
-      if (lazyLoadAnimeListStream.currentState().genreDetailData.length < 10) {
+      const numberRow =
+        lazyLoadAnimeListStream.currentState().genreDetailData.length /
+        virtualAnimeListStream.currentState().quantityAnimePerRow;
+      if (parseInt(numberRow) !== numberRow) {
         listAnimeE.style.height = `${
           virtualAnimeListStream.currentState().screenHeight +
           virtualAnimeListStream.currentState().offsetHeightAnime +
@@ -78,16 +83,35 @@ export const updateVirtualAnimeItem = (animeItemRef, virtual) => {
         virtualAnimeListStream.currentState().screenWidth /
           virtualAnimeListStream.currentState().offsetWidthAnime
       );
-      const margin = window.innerWidth < 365 ? 10 : 20;
-      virtualAnimeListStream.updateDataQuick({ margin });
+      let width, height;
+      if (virtualAnimeListStream.currentState().screenWidth > 1260) {
+        width =
+          document.querySelector(".container-genre-detail").offsetWidth / 5;
+        height = (width * 340) / 224;
+      } else if (virtualAnimeListStream.currentState().screenWidth > 900) {
+        width =
+          document.querySelector(".container-genre-detail").offsetWidth / 4;
+        height = (width * 340) / 224;
+      } else if (virtualAnimeListStream.currentState().screenWidth > 670) {
+        width =
+          document.querySelector(".container-genre-detail").offsetWidth / 3;
+        height = (width * 340) / 224;
+      } else {
+        width =
+          document.querySelector(".container-genre-detail").offsetWidth / 2;
+        height = (width * 340) / 224;
+      }
+
       if (
         quantityAnimePerRow !==
-        virtualAnimeListStream.currentState().quantityAnimePerRow
+          virtualAnimeListStream.currentState().quantityAnimePerRow &&
+        width &&
+        height
       )
         virtualAnimeListStream.updateData({
           quantityAnimePerRow: quantityAnimePerRow || 0,
-          offsetWidthAnime: animeItemRef.current.offsetWidth + margin,
-          offsetHeightAnime: animeItemRef.current.offsetHeight + margin,
+          offsetWidthAnime: width,
+          offsetHeightAnime: height,
         });
     }
   };
@@ -162,7 +186,6 @@ export const virtualizeListAnime = (virtual, listAnimeElement) => {
       });
     }
     return () => {
-      console.log("out");
       scrollingSub && scrollingSub.unsubscribe();
       subscription && subscription.unsubscribe();
     };

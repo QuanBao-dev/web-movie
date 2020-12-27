@@ -99,7 +99,6 @@ function ListInformation({ arrKeys, history, isLoading }) {
                             }
                             key={index}
                             onClick={() => {
-                              console.log(anime);
                               if (v === "genres") {
                                 history.push(
                                   "/genre/" +

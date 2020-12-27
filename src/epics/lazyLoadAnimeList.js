@@ -43,6 +43,6 @@ export function updatePageScrollingWindow$() {
         lazyLoadAnimeListStream.updateData({
           pageSplit: lazyLoadAnimeListStream.currentState().pageSplit + 1,
         });
-    })
+    }),
   );
 }

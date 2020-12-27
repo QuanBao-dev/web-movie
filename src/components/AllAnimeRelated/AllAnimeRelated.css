@@ -23,8 +23,8 @@
   }
   @media (max-width:655px){
     .all-anime-related > div{
-      width: 100px;
-      height: 150px;  
+      width: 200px;
+      flex: 1 1 auto;
     }
 
     .pop-up-hover h3{

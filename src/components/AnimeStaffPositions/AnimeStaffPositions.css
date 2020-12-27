@@ -17,7 +17,6 @@
   position: relative;
   transition: 0.1s;
   width: 200px;
-  height: 300px;
 }
 
 .container-staff-position > div:hover{

@@ -198,9 +198,12 @@ const AnimeItem = ({ anime, lazy = false, virtual = false, index }) => {
 export default AnimeItem;
 function mouseLeaveAnimeItem(animeItemRef) {
   return () => {
+    animeItemRef.current.style.transition = "0.3s";
     animeItemRef.current.style.transform =
       "perspective(500px) scale(1) rotateX(0) rotateY(0)";
-    animeItemRef.current.style.transition = "0s";
+    setTimeout(() => {
+      if (animeItemRef.current) animeItemRef.current.style.transition = "0s";
+    }, 300);
   };
 }
 

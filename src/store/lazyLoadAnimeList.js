@@ -10,7 +10,7 @@ const initialState = {
   genre: null,
   pageGenre: 1,
   pageSplit: 1,
-  numberAnimeShowMore: 20,
+  numberAnimeShowMore: 10,
 };
 
 const subject = new BehaviorSubject(initialState);

@@ -84,6 +84,7 @@ export const updateVirtualAnimeItem = (animeItemRef, virtual) => {
           virtualAnimeListStream.currentState().offsetWidthAnime
       );
       let width, height;
+      console.log(virtualAnimeListStream.currentState().screenWidth);
       if (virtualAnimeListStream.currentState().screenWidth > 1260) {
         width =
           document.querySelector(".container-genre-detail").offsetWidth / 5;
@@ -96,18 +97,17 @@ export const updateVirtualAnimeItem = (animeItemRef, virtual) => {
         width =
           document.querySelector(".container-genre-detail").offsetWidth / 3;
         height = (width * 340) / 224;
+        console.log(
+          "**",
+          document.querySelector(".container-genre-detail").offsetWidth
+        );
       } else {
         width =
           document.querySelector(".container-genre-detail").offsetWidth / 2;
         height = (width * 340) / 224;
       }
 
-      if (
-        quantityAnimePerRow !==
-          virtualAnimeListStream.currentState().quantityAnimePerRow &&
-        width &&
-        height
-      )
+      if (width && height)
         virtualAnimeListStream.updateData({
           quantityAnimePerRow: quantityAnimePerRow || 0,
           offsetWidthAnime: width,

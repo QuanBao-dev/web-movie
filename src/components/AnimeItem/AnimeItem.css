@@ -10,6 +10,8 @@
   position: relative;
   font-size: 0.87rem;
   overflow: hidden;
+  flex: 1 1 auto;
+  background-color: black;
 }
 
 .anime-item:hover .anime-item-info{
@@ -125,9 +127,13 @@
 }
 
 @media (max-width:700px){
+  .list-anime-nowrap .anime-item{
+    height: 300px;
+    width:200px!important;
+  }
   .anime-item{
     font-size: 0.8rem;
-    height: 200px;
+    height: 260px;
     width: 150px;
   }
   .anime-info-display_summary{

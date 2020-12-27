@@ -62,6 +62,7 @@
 .sub-nav-bar{
   position: relative;
   padding-top: 1rem;
+  margin-top: 2rem;
   display: flex;
 }
 

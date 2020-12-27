@@ -13,6 +13,7 @@ export const initUpcomingAnimeList = (setUpcomingAnimeListState) => {
       setUpcomingAnimeListState
     );
     upcomingAnimeListStream.init();
+    upcomingAnimeListStream.updateData({ screenWidth: window.innerWidth });
     return () => {
       subscription.unsubscribe();
     };

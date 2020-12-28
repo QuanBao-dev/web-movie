@@ -154,7 +154,7 @@ window.addEventListener("scroll", () => {
     const navBarE = document.querySelector(".nav-bar__app");
     const buttonScrollTopE = document.querySelector(".button-scroll-top");
     if (navBarE)
-      if (window.scrollY < 70) {
+      if (window.scrollY < 50) {
         navBarE.style.transform = "translateY(0)";
         buttonScrollTopE.style.transform = "translateY(500px)";
       } else if (v - window.scrollY < -1) {

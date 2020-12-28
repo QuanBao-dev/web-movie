@@ -32,3 +32,10 @@
 .btn-primary{
   background-color: #1838c5;
 }
+
+@media(max-width: 550px){
+  .form-login{
+    width: 100%;
+    padding: 3rem 0;
+  };
+}

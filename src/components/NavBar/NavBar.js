@@ -1,9 +1,11 @@
-import Axios from "axios";
-import React from "react";
-import { useRef } from "react";
-import { NavLink as Link, useHistory, withRouter } from "react-router-dom";
+import './NavBar.css';
 
-import { userStream } from "../../epics/user";
+import Axios from 'axios';
+import React from 'react';
+import { useRef } from 'react';
+import { NavLink as Link, useHistory, withRouter } from 'react-router-dom';
+
+import { userStream } from '../../epics/user';
 
 const NavBar = ({ userState, removeCookie, cookies }) => {
   const navLoginRef = useRef();
@@ -25,7 +27,7 @@ const NavBar = ({ userState, removeCookie, cookies }) => {
             }
           }}
         >
-          <i className="fas fa-bars fa-3x"></i>
+          <i className="fas fa-bars fa-2x"></i>
         </div>
         <ul className="child-nav-bar__app">
           <li className="nav-bar__item">

@@ -25,6 +25,7 @@
     .all-anime-related > div{
       width: 200px;
       flex: 1 1 auto;
+      height: auto;
     }
 
     .pop-up-hover h3{

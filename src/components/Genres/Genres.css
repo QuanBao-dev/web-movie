@@ -36,6 +36,8 @@
   background-color:black;
   border-radius: 10px;
   font-weight: bolder;
+  flex: 1 1 auto;
+  text-align: center;
   transition: 0.2s;
 }
 

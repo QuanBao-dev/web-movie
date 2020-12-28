@@ -94,7 +94,6 @@ const AnimeListSeason = () => {
     selectFilterMode,
     selectGenre
   );
-  // console.log(animeListSeasonState);
   useFetchAnimeListSeason(animeListSeasonState);
   
   return (

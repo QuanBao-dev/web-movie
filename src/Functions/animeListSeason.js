@@ -71,14 +71,14 @@ export const fetchAnimeListSeason = (
 ) => {
   return () => {
     let subscription2;
-    animeListSeasonStream.updateData({ currentPage: 1 });
     if (
       animeListSeasonState.currentPage !==
         animeListSeasonState.currentPageOnDestroy ||
       animeListSeasonState.season !==
         animeListSeasonState.currentSeasonOnDestroy ||
       animeListSeasonState.year !== animeListSeasonState.currentYearOnDestroy
-    )
+    ) {
+      animeListSeasonStream.updateData({ currentPage: 1 });
       subscription2 = fetchAnimeSeason$(
         animeListSeasonState.year,
         animeListSeasonState.season,
@@ -90,6 +90,7 @@ export const fetchAnimeListSeason = (
           dataDetail: v,
         });
       });
+    }
     return () => {
       subscription2 && subscription2.unsubscribe();
       // updateDataOnDestroy(

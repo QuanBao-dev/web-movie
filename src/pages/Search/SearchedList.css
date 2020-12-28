@@ -34,8 +34,10 @@
   box-shadow: 0 0 2px 1px black;
 }
 
-@media(max-width:463px){
+@media(max-width:882px){
   .container-search-anime{
     width: 100%;
+    padding: 0;
+    padding-top: 0.2rem;
   }
 }

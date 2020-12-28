@@ -37,7 +37,7 @@ const AnimeList = ({
   } = virtualAnimeListStream.currentState();
   const newIndexStartValue =
     data.length -
-    numberAnimeShowMore * (numberShowMorePreviousAnime + 1) -
+    numberAnimeShowMore * (numberShowMorePreviousAnime + 2) -
     quantityAnimePerRow;
   // console.log(virtualAnimeListStream.currentState());
   const indexStart =

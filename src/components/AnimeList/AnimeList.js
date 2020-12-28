@@ -41,7 +41,7 @@ const AnimeList = ({
     quantityAnimePerRow;
   // console.log(virtualAnimeListStream.currentState());
   const indexStart =
-    newIndexStartValue < quantityAnimePerRow ? 0 : newIndexStartValue;
+    newIndexStartValue <= quantityAnimePerRow ? 0 : newIndexStartValue;
   const newIndexEndValue =
     indexStart +
     (numberAnimeShowMore - 1) +
@@ -50,7 +50,6 @@ const AnimeList = ({
   const indexEnd =
     newIndexEndValue < data.length ? newIndexEndValue : data.length - 1;
   virtualAnimeListStream.updateDataQuick({ indexStart, indexEnd });
-  // console.log(virtualAnimeListStream.currentState());
   return (
     <div
       ref={listAnimeRef}

@@ -96,10 +96,6 @@ export const updateVirtualAnimeItem = (animeItemRef, virtual) => {
         width =
           document.querySelector(".container-genre-detail").offsetWidth / 3;
         height = (width * 340) / 224;
-        console.log(
-          "**",
-          document.querySelector(".container-genre-detail").offsetWidth
-        );
       } else {
         width =
           document.querySelector(".container-genre-detail").offsetWidth / 2;

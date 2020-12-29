@@ -30,7 +30,7 @@
 
 @media (max-width:655px){
   .container-staff-position > div{
-    flex:1 1 auto;
+    width: 30%;
   }
 }
 

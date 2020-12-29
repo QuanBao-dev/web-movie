@@ -121,6 +121,14 @@
   }  
 }
 
+@media(max-width:1200px){
+  .anime-name-info{
+    margin: auto;
+    width: 100%;
+    padding: 0;
+  }
+}
+
 @media (max-width:950px){
   .layout{
     padding:0

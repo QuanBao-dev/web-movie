@@ -19,11 +19,10 @@
     transition: 0.1s;
     max-width: 225px;
     flex: 1 1 auto;
-    height: 322px;
   }
   @media (max-width:655px){
     .all-anime-related > div{
-      width: 100%;
+      width: 40%;
       height: auto;
     }
 

@@ -9,7 +9,7 @@
 
 .container-staff-position > div{
   cursor: pointer; 
-  margin: 1rem;
+  margin: 0.6rem;
   display: flex;
   align-items: center;
   box-shadow: 0 0 10px 1px black;
@@ -18,7 +18,7 @@
   overflow: hidden;
   flex: 1 1 auto;
   background-color: black;
-  max-width: 400px;
+  max-width: 223px;
 }
 
 .container-staff-position > div:hover{

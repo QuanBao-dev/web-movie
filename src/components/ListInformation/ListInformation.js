@@ -172,7 +172,7 @@ function ListInformation({ arrKeys, history, isLoading }) {
                           fontSize: "2rem",
                         }}
                       >
-                        {v}
+                        {v.replace("_"," ")}
                       </div>
                       {animeDetailStream
                         .currentState()

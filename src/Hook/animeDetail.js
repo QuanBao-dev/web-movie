@@ -5,8 +5,8 @@ import {
   initAnimeDetailState,
 } from "../Functions/animeDetail";
 
-export const useInitAnimeDetailState = (setNameState, setShowThemeMusic) => {
-  useEffect(initAnimeDetailState(setNameState, setShowThemeMusic), []);
+export const useInitAnimeDetailState = (setNameState) => {
+  useEffect(initAnimeDetailState(setNameState), []);
 };
 
 export const useFetchData = (

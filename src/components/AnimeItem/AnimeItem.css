@@ -11,6 +11,7 @@
   font-size: 0.87rem;
   overflow: hidden;
   flex: 1 1 auto;
+  max-width: 250px;
   background-color: black;
 }
 

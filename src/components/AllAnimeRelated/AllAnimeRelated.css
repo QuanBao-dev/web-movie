@@ -10,15 +10,16 @@
 
   .all-anime-related > div{
     cursor: pointer;
-    margin: 1rem;
+    margin: 0.9rem;
     display: flex;
     align-items: center;
     box-shadow: 0 0 10px 1px black;
     position: relative;
     border-radius: 10px;
     transition: 0.1s;
-    max-width: 290px;
+    max-width: 225px;
     flex: 1 1 auto;
+    height: 322px;
   }
   @media (max-width:655px){
     .all-anime-related > div{
@@ -47,5 +48,7 @@
     .all-anime-related div img{
       border-radius: 10px;
       width: 100%;
+      object-fit: contain;
+      background-color: black;
       height: 100%;
     }

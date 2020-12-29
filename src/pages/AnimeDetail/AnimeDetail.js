@@ -55,7 +55,7 @@ const AnimeDetail = (props) => {
   const buttonDeleteCrawlInputRef = useRef();
   const typeVideoSelectRef = useRef();
   const selectCrawlServerVideo = useRef();
-  useInitAnimeDetailState(setAnimeDetailState, setShowThemeMusic);
+  useInitAnimeDetailState(setAnimeDetailState);
   useFetchData(setShowThemeMusic, linkWatchingInputRef, malId);
   useFetchBoxMovieOneMovie(
     cookies,

@@ -15,12 +15,11 @@ import {
 } from "../epics/animeDetail";
 import { characterStream } from "../epics/character";
 
-export const initAnimeDetailState = (setNameState, setShowThemeMusic) => {
+export const initAnimeDetailState = (setNameState) => {
   return () => {
     const subscription2 = animeDetailStream.subscribe(setNameState);
     animeDetailStream.init();
     window.scroll({ top: 0 });
-    setShowThemeMusic(false);
     return () => {
       document.title = `My Anime Fun - Watch latest anime in high quality`;
       subscription2.unsubscribe();
@@ -40,6 +39,14 @@ export const fetchData = (
         animeDetailStream.updateData({
           dataInformationAnime: v,
         });
+        if (
+          (v.ending_themes && v.ending_themes.length > 3) ||
+          (v.opening_themes && v.opening_themes.length > 3)
+        ) {
+          setShowThemeMusic(false);
+        } else {
+          setShowThemeMusic(true);
+        }
         document.title =
           v.title || `My Anime Fun - Watch latest anime in high quality`;
       })

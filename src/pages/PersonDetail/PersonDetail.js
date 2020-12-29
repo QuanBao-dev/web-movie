@@ -1,14 +1,14 @@
-import './PersonDetail.css';
+import "./PersonDetail.css";
 
-import loadable from '@loadable/component';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import React, { useEffect, useState } from 'react';
-import { useHistory } from 'react-router-dom';
-import { BehaviorSubject, fromEvent, iif, of, timer } from 'rxjs';
-import { ajax } from 'rxjs/ajax';
-import { catchError, debounceTime, filter, mergeMapTo, pluck, retry } from 'rxjs/operators';
+import loadable from "@loadable/component";
+import CircularProgress from "@material-ui/core/CircularProgress";
+import React, { useEffect, useState } from "react";
+import { useHistory } from "react-router-dom";
+import { BehaviorSubject, fromEvent, of, timer } from "rxjs";
+import { ajax } from "rxjs/ajax";
+import { catchError, filter, mergeMapTo, pluck, retry } from "rxjs/operators";
 
-import navBarStore from '../../store/navbar';
+import navBarStore from "../../store/navbar";
 
 const AnimeStaffPositions = loadable(
   () => import("../../components/AnimeStaffPositions/AnimeStaffPositions"),
@@ -30,6 +30,7 @@ const initialState = {
   pageSplit: 1,
   dataPersonDetail: {},
   malId: null,
+  lazy: true,
 };
 let state = initialState;
 const behaviorSubject = new BehaviorSubject();
@@ -37,6 +38,13 @@ const personDetailStore = {
   initialState: initialState,
   subscribe: (setState) => behaviorSubject.subscribe(setState),
   init: () => {
+    behaviorSubject.next(state);
+  },
+  updateData: (object = initialState) => {
+    state = {
+      ...state,
+      ...object,
+    };
     behaviorSubject.next(state);
   },
   updatePageSplit: (page) => {
@@ -87,6 +95,7 @@ const PersonDetail = (props) => {
     personDetailStore.init();
     window.scroll({ top: 0 });
     return () => {
+      personDetailStore.updateData({ lazy: false });
       subscription.unsubscribe();
       navBarStore.updateIsShowBlockPopUp(false);
     };
@@ -94,6 +103,7 @@ const PersonDetail = (props) => {
   useEffect(() => {
     let subscription;
     if (personDetailState.malId !== personId) {
+      personDetailStore.updateData({ lazy: true });
       personDetailStore.resetData();
       subscription = fetchDataPerson(personId).subscribe((v) => {
         navBarStore.updateIsShowBlockPopUp(false);
@@ -220,7 +230,7 @@ const PersonDetail = (props) => {
             <h1 className="text-capitalize">Anime Staff Positions</h1>
             <AnimeStaffPositions
               history={history}
-              lazy={true}
+              lazy={personDetailState.lazy}
               updateStaffPosition={updateStaffPosition}
             />
           </div>
@@ -256,9 +266,9 @@ const PersonDetail = (props) => {
                         </div>
                       </div>
                       <AllAnimeRelated
-                        lazy={true}
                         animeList={updateVoiceActingRoles[key].animeList}
                         history={history}
+                        lazy={personDetailState.lazy}
                       />
                     </div>
                   ))}
@@ -322,15 +332,8 @@ function ignoreKeys(keys, ignoreList) {
 function updatePageLazyLoad$() {
   return timer(0).pipe(
     mergeMapTo(
-      iif(
-        () => window.innerWidth < 770,
-        fromEvent(window, "scroll").pipe(
-          debounceTime(500),
-          filter(() => document.body.scrollHeight - (window.scrollY + 2000) < 0)
-        ),
-        fromEvent(window, "scroll").pipe(
-          filter(() => document.body.scrollHeight - (window.scrollY + 2000) < 0)
-        )
+      fromEvent(window, "scroll").pipe(
+        filter(() => document.body.scrollHeight - (window.scrollY + 900) < 0)
       )
     )
   );

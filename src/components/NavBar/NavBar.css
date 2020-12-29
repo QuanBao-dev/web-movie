@@ -13,7 +13,7 @@
 }
 
 .nav-bar + div{
-  margin-top: 54px;
+  margin-top: 80px;
 }
 
 .active{
@@ -87,6 +87,9 @@
     flex-direction: column;
     padding: 11px 0;
   }
+  .nav-bar + div{
+    margin-top: 54px;
+  }  
   .child-nav-bar__app{
     display: none;
   }

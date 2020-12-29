@@ -10,17 +10,23 @@
 .container-staff-position > div{
   cursor: pointer; 
   margin: 1rem;
-  max-width: 410px;
   display: flex;
   align-items: center;
   box-shadow: 0 0 10px 1px black;
   position: relative;
   transition: 0.1s;
-  width: 200px;
+  overflow: hidden;
+  flex: 1 1 auto;
+  background-color: black;
+  max-width: 400px;
 }
 
 .container-staff-position > div:hover{
   transform: scale(1.1);
+}
+
+.container-staff-position div span{
+  width: 100%;
 }
 
 .container-staff-position div img{

@@ -1,6 +1,6 @@
 import "./EditUser.css";
 
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useCookies } from "react-cookie";
 import { from, timer } from "rxjs";
 import { ajax } from "rxjs/ajax";
@@ -19,59 +19,61 @@ const EditUser = () => {
   const [newEmailError, setNewEmailError] = useState(null);
   const [newUsernameError, setNewUsernameError] = useState(null);
   const [newPasswordError, setNewPasswordError] = useState(null);
+  useEffect(() => {
+    const buttonScrollTopE = document.querySelector(".button-scroll-top");
+    buttonScrollTopE.style.transform = "translateY(500px)";
+    return () => {
+      if (window.scrollY === 0)
+        buttonScrollTopE.style.transform = "translateY(0)";
+    };
+  }, []);
   return (
-    <div style={{ margin: "100px" }}>
-      <div className="container-edit-user">
-        <h1>Change information your account</h1>
-        <Input
-          label="New Username"
-          defaultValue={user.username}
-          input={inputNewUsernameRef}
-          error={newUsernameError}
-        />
-        <Input
-          label="New Email"
-          input={inputNewEmailRef}
-          error={newEmailError}
-        />
-        <Input
-          label="Current Password"
-          type="password"
-          input={inputCurrentPasswordRef}
-          error={currentPasswordError}
-        />
-        <Input
-          label={"New Password"}
-          type="password"
-          input={inputNewPasswordRef}
-          error={newPasswordError}
-        />
-        <button
-          className="btn btn-primary button-submit-edit"
-          onClick={() =>
-            submitForm$(
-              inputNewUsernameRef.current,
-              inputNewEmailRef.current,
-              inputCurrentPasswordRef.current,
-              inputNewPasswordRef.current,
-              cookies.idCartoonUser,
-              setCurrentPasswordError,
-              setNewEmailError,
-              setNewUsernameError,
-              setNewPasswordError
-            ).subscribe((response) => {
-              setCookie("idCartoonUser", response, {
-                expires: new Date(Date.now() + 43200000),
-                path: "/",
-              });
-              alert("Success changing your account");
-              window.location.replace("/");
-            })
-          }
-        >
-          Submit
-        </button>
-      </div>
+    <div className="container-edit-user">
+      <h1>Change information your account</h1>
+      <Input
+        label="New Username"
+        defaultValue={user.username}
+        input={inputNewUsernameRef}
+        error={newUsernameError}
+      />
+      <Input label="New Email" input={inputNewEmailRef} error={newEmailError} />
+      <Input
+        label="Current Password"
+        type="password"
+        input={inputCurrentPasswordRef}
+        error={currentPasswordError}
+      />
+      <Input
+        label={"New Password"}
+        type="password"
+        input={inputNewPasswordRef}
+        error={newPasswordError}
+      />
+      <button
+        className="btn btn-primary button-submit-edit"
+        onClick={() =>
+          submitForm$(
+            inputNewUsernameRef.current,
+            inputNewEmailRef.current,
+            inputCurrentPasswordRef.current,
+            inputNewPasswordRef.current,
+            cookies.idCartoonUser,
+            setCurrentPasswordError,
+            setNewEmailError,
+            setNewUsernameError,
+            setNewPasswordError
+          ).subscribe((response) => {
+            setCookie("idCartoonUser", response, {
+              expires: new Date(Date.now() + 43200000),
+              path: "/",
+            });
+            alert("Success changing your account");
+            window.location.replace("/");
+          })
+        }
+      >
+        Submit
+      </button>
     </div>
   );
 };

@@ -1,20 +1,24 @@
-import './AnimeDetail.css';
+import "./AnimeDetail.css";
 
-import loadable from '@loadable/component';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import Axios from 'axios';
-import React, { useEffect, useRef, useState } from 'react';
-import { useCookies } from 'react-cookie';
-import { Link, useHistory } from 'react-router-dom';
+import loadable from "@loadable/component";
+import CircularProgress from "@material-ui/core/CircularProgress";
+import Axios from "axios";
+import React, { useEffect, useRef, useState } from "react";
+import { useCookies } from "react-cookie";
+import { Link, useHistory } from "react-router-dom";
 
-import FormSubmit from '../../components/FormSubmit/FormSubmit';
-import FormSubmitCrawl from '../../components/FormSubmitCrawl/FormSubmitCrawl';
-import ListInformation from '../../components/ListInformation/ListInformation';
-import MenuTable from '../../components/MenuTable/MenuTable';
-import { animeDetailStream } from '../../epics/animeDetail';
-import { userStream } from '../../epics/user';
-import { useFetchBoxMovieOneMovie, useFetchData, useInitAnimeDetailState } from '../../Hook/animeDetail';
-import ListVideoUrl from '../../components/ListVideoUrl/ListVideoUrl';
+import FormSubmit from "../../components/FormSubmit/FormSubmit";
+import FormSubmitCrawl from "../../components/FormSubmitCrawl/FormSubmitCrawl";
+import ListInformation from "../../components/ListInformation/ListInformation";
+import MenuTable from "../../components/MenuTable/MenuTable";
+import { animeDetailStream } from "../../epics/animeDetail";
+import { userStream } from "../../epics/user";
+import {
+  useFetchBoxMovieOneMovie,
+  useFetchData,
+  useInitAnimeDetailState,
+} from "../../Hook/animeDetail";
+import ListVideoUrl from "../../components/ListVideoUrl/ListVideoUrl";
 
 const Characters = loadable(() =>
   import("../../components/Characters/Characters")
@@ -64,6 +68,24 @@ const AnimeDetail = (props) => {
     deleteMovieRef,
     linkWatchingInputRef
   );
+  useEffect(() => {
+    if (
+      animeDetailState.dataInformationAnime.ending_themes &&
+      animeDetailState.dataInformationAnime.opening_themes
+    )
+      if (
+        animeDetailState.dataInformationAnime.ending_themes.length > 3 ||
+        animeDetailState.dataInformationAnime.opening_themes.length > 3
+      ) {
+        setShowThemeMusic(false);
+      } else {
+        setShowThemeMusic(true);
+      }
+  }, [
+    animeDetailState.dataInformationAnime.ending_themes,
+    animeDetailState.dataInformationAnime.opening_themes,
+    malId,
+  ]);
   const arrayTagTitle = document.querySelectorAll(".title") || [];
   const a = [...arrayTagTitle];
   useEffect(() => {
@@ -317,6 +339,5 @@ function deformData(animeDetailState, showThemeMusic) {
     );
   return { episodeDataDisplay, arrKeys, sourceFilmList };
 }
-
 
 export default AnimeDetail;

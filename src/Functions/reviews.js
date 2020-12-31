@@ -35,7 +35,6 @@ export const resetReviewsState = (malId) => {
 export const updatePageScrolling = (shouldUpdatePageReviewData) => {
   return () => {
     const subscription = updatePageScrolling$().subscribe(() => {
-      console.log(shouldUpdatePageReviewData);
       if (
         shouldUpdatePageReviewData &&
         reviewsStream.currentState().pageSplit >

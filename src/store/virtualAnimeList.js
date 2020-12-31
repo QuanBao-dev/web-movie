@@ -8,8 +8,6 @@ const initialState = {
   numberShowMorePreviousAnime: 0,
   numberShowMoreLaterAnime: 0,
   scrollY: 0,
-  indexStart: 0,
-  indexEnd: 0,
   isVirtual: false,
   margin: 0,
   isExceed: false,

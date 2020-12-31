@@ -44,7 +44,7 @@ export const genreIdChange = (genreId, virtual, currentGenreId) => {
         genre: null,
         pageOnDestroy: null,
         isStopScrollingUpdated: false,
-        currentGenreId:null
+        currentGenreId: null,
       });
       if (virtual)
         virtualAnimeListStream.updateDataQuick({
@@ -94,9 +94,6 @@ export const updatePageScrollingWindow = (
           lazyLoadAnimeListStream.currentState().numberAnimeShowMore >
           genreDetailData.length
       )
-        // lazyLoadAnimeListStream.updatePageGenre(
-        //   genreDetailData.length / 100 + 1
-        // );
         lazyLoadAnimeListStream.updateData({
           pageGenre: genreDetailData.length / 100 + 1,
         });

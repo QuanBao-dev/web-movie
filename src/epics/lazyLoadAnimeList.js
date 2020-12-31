@@ -19,7 +19,11 @@ export function fetchDataGenreAnimeList$(genreId, page, url) {
       lazyLoadAnimeListStream.updateDataQuick({
         allowFetchIncreaseGenrePage: false,
       });
+      if (page !== parseInt(page)) {
+        lazyLoadAnimeListStream.updateData({ isStopScrollingUpdated: true });
+      }
     }),
+    filter(() => page === parseInt(page)),
     mergeMap(() =>
       ajax(url.replace("{genreId}", genreId).replace("{page}", page)).pipe(
         retry(5),
@@ -43,6 +47,6 @@ export function updatePageScrollingWindow$() {
         lazyLoadAnimeListStream.updateData({
           pageSplit: lazyLoadAnimeListStream.currentState().pageSplit + 1,
         });
-    }),
+    })
   );
 }

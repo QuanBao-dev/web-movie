@@ -62,6 +62,12 @@ export const filterAnimeList = (
     animeListSeasonStream.updateData({
       dataDetail: sortedArray,
     });
+    if (
+      animeListSeasonStream.currentState().maxPage <
+      animeListSeasonStream.currentState().currentPage
+    ) {
+      animeListSeasonStream.updateData({ currentPage: 1 });
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   };
 };

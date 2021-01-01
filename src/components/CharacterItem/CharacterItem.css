@@ -44,6 +44,7 @@
 @media (max-width:950px){
   .character-item{
     width: 100px;
+    flex: 1 1 auto;
   }
 }
 

@@ -172,15 +172,6 @@ const AnimeItem = ({ anime, lazy = false, virtual = false, index }) => {
           alt="NOT_FOUND"
         />
       )}
-      {anime.synopsis && (
-        <div className="anime-item-synopsis">
-          <p className="text-synopsis">
-            {anime.synopsis === " " || !anime.synopsis
-              ? "No content."
-              : anime.synopsis}
-          </p>
-        </div>
-      )}
       <div className="anime-item-info">
         <h3 style={{ margin: "5px" }} title="title_anime">
           {anime.title}
@@ -198,7 +189,7 @@ const AnimeItem = ({ anime, lazy = false, virtual = false, index }) => {
 export default AnimeItem;
 function mouseLeaveAnimeItem(animeItemRef) {
   return () => {
-    animeItemRef.current.style.transition = "0.3s";
+    animeItemRef.current.style.transition = "0.1s";
     animeItemRef.current.style.transform =
       "perspective(500px) scale(1) rotateX(0) rotateY(0)";
     setTimeout(() => {

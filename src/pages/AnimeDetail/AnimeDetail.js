@@ -70,12 +70,14 @@ const AnimeDetail = (props) => {
   );
   useEffect(() => {
     if (
-      animeDetailState.dataInformationAnime.ending_themes &&
-      animeDetailState.dataInformationAnime.opening_themes
+      animeDetailStream.currentState().dataInformationAnime.ending_themes &&
+      animeDetailStream.currentState().dataInformationAnime.opening_themes
     )
       if (
-        animeDetailState.dataInformationAnime.ending_themes.length > 3 ||
-        animeDetailState.dataInformationAnime.opening_themes.length > 3
+        animeDetailStream.currentState().dataInformationAnime.ending_themes
+          .length > 3 ||
+        animeDetailStream.currentState().dataInformationAnime.opening_themes
+          .length > 3
       ) {
         setShowThemeMusic(false);
       } else {

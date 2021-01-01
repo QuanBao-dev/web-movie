@@ -1,8 +1,9 @@
-import './VideoPlayerSection.css';
+import "./VideoPlayerSection.css";
 
-import React from 'react';
+import React from "react";
 
-import { pageWatchStream } from '../../epics/pageWatch';
+import { pageWatchStream } from "../../epics/pageWatch";
+import { animeDetailStream } from "../../epics/animeDetail";
 
 function VideoPlayerSection({ currentEpisode, user }) {
   const { imageUrl, switchVideo } = pageWatchStream.currentState();
@@ -18,7 +19,13 @@ function VideoPlayerSection({ currentEpisode, user }) {
       >
         {!switchVideo && (
           <div>
-            <img className="image-video-player" src={imageUrl} alt="image_video"></img>
+            <img
+              className="image-video-player"
+              src={
+                animeDetailStream.currentState().dataLargePicture || imageUrl
+              }
+              alt="image_video"
+            ></img>
             <div className="play-video-button-container">
               <span className="play-video-button">▶</span>
             </div>

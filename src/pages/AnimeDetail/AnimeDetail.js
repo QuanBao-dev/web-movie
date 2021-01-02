@@ -69,25 +69,16 @@ const AnimeDetail = (props) => {
     linkWatchingInputRef
   );
   useEffect(() => {
+    const { dataInformationAnime } = animeDetailStream.currentState();
+    const { opening_themes, ending_themes } = dataInformationAnime;
     if (
-      animeDetailStream.currentState().dataInformationAnime.ending_themes &&
-      animeDetailStream.currentState().dataInformationAnime.opening_themes
+      ending_themes &&
+      opening_themes &&
+      ending_themes.length <= 3 &&
+      opening_themes.length <= 3
     )
-      if (
-        animeDetailStream.currentState().dataInformationAnime.ending_themes
-          .length > 3 ||
-        animeDetailStream.currentState().dataInformationAnime.opening_themes
-          .length > 3
-      ) {
-        setShowThemeMusic(false);
-      } else {
-        setShowThemeMusic(true);
-      }
-  }, [
-    animeDetailState.dataInformationAnime.ending_themes,
-    animeDetailState.dataInformationAnime.opening_themes,
-    malId,
-  ]);
+      setShowThemeMusic(true);
+  }, [malId]);
   const arrayTagTitle = document.querySelectorAll(".title") || [];
   const a = [...arrayTagTitle];
   useEffect(() => {

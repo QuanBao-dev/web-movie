@@ -36,9 +36,7 @@ const AnimeList = ({
     quantityAnimePerRow,
   } = virtualAnimeListStream.currentState();
   const newIndexStartValue =
-    data.length -
-    numberAnimeShowMore * (numberShowMorePreviousAnime + 2) -
-    quantityAnimePerRow;
+    data.length - numberAnimeShowMore * (numberShowMorePreviousAnime + 3);
   let indexStart =
     parseInt(
       newIndexStartValue <= quantityAnimePerRow
@@ -48,8 +46,7 @@ const AnimeList = ({
   const newIndexEndValue =
     indexStart +
     (numberAnimeShowMore - 1) +
-  numberAnimeShowMore * (numberShowMoreLaterAnime + 1) +
-    quantityAnimePerRow * 2;
+    numberAnimeShowMore * (numberShowMoreLaterAnime + 2);
   const indexEnd =
     newIndexEndValue < data.length ? newIndexEndValue : data.length - 1;
   indexStart = indexStart <= quantityAnimePerRow ? 0 : indexStart;

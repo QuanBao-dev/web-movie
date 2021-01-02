@@ -1,3 +1,4 @@
+import { animeDetailStream } from "../epics/animeDetail";
 import {
   reviewsStream,
   updatePageScrolling$,
@@ -78,9 +79,9 @@ export const fetchReviewsData = (pageReviewsData, reviewsData, malId) => {
             reviewsStream.currentState().reviewsData.length === 0 ||
             reviewsStream.currentState().previousMalId !== malId
           ) {
-            updatedAnime = [...v];
+            updatedAnime = v;
           } else {
-            updatedAnime = [...reviewsData, ...v];
+            updatedAnime = reviewsData.concat(v);
           }
           if (v.length === 0) {
             reviewsStream.updateData({ isStopFetchingReviews: true });
@@ -92,6 +93,10 @@ export const fetchReviewsData = (pageReviewsData, reviewsData, malId) => {
             pageReviewsOnDestroy: reviewsStream.currentState().pageReviewsData,
             shouldUpdatePageReviewData: true,
           });
+          if (updatedAnime.length > 0)
+            animeDetailStream.updateData({
+              malId: animeDetailStream.currentState().malId,
+            });
         } else {
           reviewsStream.updateData({
             isStopFetchingReviews: true,

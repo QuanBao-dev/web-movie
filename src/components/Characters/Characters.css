@@ -30,6 +30,10 @@
   cursor: pointer;
 }
 
+.see-more-character:active{
+  background-color: rgb(44, 70, 104);
+}
+
 
 @media (max-width:950px){
   .character-list{

@@ -1,11 +1,7 @@
-import { fromEvent } from "rxjs";
+import { fromEvent } from 'rxjs';
 
-import { stream } from "../epics/home";
-import {
-  scrollAnimeInterval$,
-  upcomingAnimeListStream,
-  upcomingAnimeListUpdated$,
-} from "../epics/upcomingAnimeList";
+import { stream } from '../epics/home';
+import { scrollAnimeInterval$, upcomingAnimeListStream, upcomingAnimeListUpdated$ } from '../epics/upcomingAnimeList';
 
 export const initUpcomingAnimeList = (setUpcomingAnimeListState) => {
   return () => {
@@ -14,6 +10,10 @@ export const initUpcomingAnimeList = (setUpcomingAnimeListState) => {
     );
     upcomingAnimeListStream.init();
     upcomingAnimeListStream.updateData({ screenWidth: window.innerWidth });
+    const elementScroll = document.querySelector(".list-anime-nowrap");
+    elementScroll.style.transform = `translateX(${
+      upcomingAnimeListStream.currentState().offsetLeft
+    }px)`;
     return () => {
       subscription.unsubscribe();
     };
@@ -26,11 +26,20 @@ let delta = 0;
 let isLeft = false;
 export const keepDragMoveAnimeList = (elementScroll, length, numberList) => {
   return () => {
-    let subscription2;
+    let subscription2,
+      subscriptionMouseEnter,
+      subscriptionMouseLeave,
+      subscriptionMouseMove,
+      subscriptionMouseUp,
+      subscriptionMouseDown;
+    let subscriptionTouchStart, subscriptionTouchMove, subscriptionTouchEnd;
     if (length !== 0) {
       if (elementScroll) {
         const end = length - 7;
-        fromEvent(elementScroll, "touchstart").subscribe((e) => {
+        subscriptionTouchStart = fromEvent(
+          elementScroll,
+          "touchstart"
+        ).subscribe((e) => {
           // stream.updateHasMoved(false);
           // stream.updateMouseStartX(e.touches[0].clientX);
           upcomingAnimeListStream.updateDataQuick({
@@ -38,164 +47,182 @@ export const keepDragMoveAnimeList = (elementScroll, length, numberList) => {
             mouseStartX: e.touches[0].clientX,
           });
         });
-        fromEvent(elementScroll, "touchmove").subscribe((e) => {
-          // stream.updateHasMoved(false);
-          upcomingAnimeListStream.updateDataQuick({
-            hasMoved: false,
-          });
-          if (upcomingAnimeListStream.currentState().mouseStartX) {
-            posX2 = posX1 - e.touches[0].clientX;
-            if (posX2 < 0) {
-              if (isLeft === false) {
-                delta = 0;
-                posX1 = 0;
-                posX2 = 0;
-              }
-              isLeft = true;
-            } else {
-              if (isLeft === true) {
-                delta = 0;
-                posX1 = 0;
-                posX2 = 0;
-              }
-              isLeft = false;
-            }
-            if (posX1 !== 0) {
-              delta -= posX2;
-            }
-            posX1 = e.touches[0].clientX;
-            const offsetLeft =
-              upcomingAnimeListStream.currentState().offsetLeft + delta * 0.1;
-            elementScroll.style.transform = `translateX(${offsetLeft}px)`;
-            // stream.updateOffsetLeft(offsetLeft);
-            upcomingAnimeListStream.updateDataQuick({
-              offsetLeft,
-            });
-            if (
-              elementScroll.childNodes[0] &&
-              offsetLeft - elementScroll.childNodes[0].offsetLeft > 0
-            ) {
-              upcomingAnimeListStream.updateDataQuick({
-                offsetLeft: -elementScroll.childNodes[numberList].offsetLeft,
-              });
-              elementScroll.style.transition = "0s";
-              elementScroll.style.transform = `translateX(${-elementScroll
-                .childNodes[numberList].offsetLeft})`;
-            }
-
-            if (
-              elementScroll.childNodes[end] &&
-              Math.abs(offsetLeft) >= elementScroll.childNodes[end].offsetLeft
-            ) {
-              upcomingAnimeListStream.updateDataQuick({
-                offsetLeft: -elementScroll.childNodes[end - numberList]
-                  .offsetLeft,
-              });
-              elementScroll.style.transition = "0s";
-              elementScroll.style.transform = `translateX(${
-                upcomingAnimeListStream.currentState().offsetLeft
-              })`;
-            }
-          }
-        });
-        fromEvent(elementScroll, "touchend").subscribe(() => {
-          // stream.updateMouseStartX(null);
-          delta = 0;
-          posX1 = 0;
-          posX2 = 0;
-          upcomingAnimeListStream.updateDataQuick({
-            mouseStartX: null,
-          });
-        });
-
-        fromEvent(elementScroll, "mousedown").subscribe((e) => {
-          e.preventDefault();
-          // stream.updateMouseStartX(e.clientX);
-          upcomingAnimeListStream.updateDataQuick({
-            mouseStartX: e.clientX,
-          });
-        });
-        fromEvent(elementScroll, "mousemove").subscribe((e) => {
-          if (upcomingAnimeListStream.currentState().mouseStartX) {
-            upcomingAnimeListStream.updateDataQuick({
-              hasMoved: true,
-            });
-            posX2 = posX1 - e.clientX;
-
-            if (posX2 < 0) {
-              if (isLeft === false) {
-                delta = 0;
-                posX1 = 0;
-                posX2 = 0;
-              }
-              isLeft = true;
-            } else {
-              if (isLeft === true) {
-                delta = 0;
-                posX1 = 0;
-                posX2 = 0;
-              }
-              isLeft = false;
-            }
-            if (posX1 !== 0) {
-              delta -= posX2;
-            }
-            posX1 = e.clientX;
-            const offsetLeft =
-              upcomingAnimeListStream.currentState().offsetLeft + delta * 0.2;
-            elementScroll.style.transform = `translateX(${offsetLeft}px)`;
-            upcomingAnimeListStream.updateDataQuick({ offsetLeft });
-            if (
-              elementScroll.childNodes[0] &&
-              offsetLeft - elementScroll.childNodes[0].offsetLeft > 0
-            ) {
-              upcomingAnimeListStream.updateDataQuick({
-                offsetLeft: -elementScroll.childNodes[numberList].offsetLeft,
-              });
-              elementScroll.style.transition = "0s";
-              elementScroll.style.transform = `translateX(${-elementScroll
-                .childNodes[numberList].offsetLeft})`;
-            }
-
-            if (
-              elementScroll.childNodes[end] &&
-              Math.abs(offsetLeft) >= elementScroll.childNodes[end].offsetLeft
-            ) {
-              upcomingAnimeListStream.updateDataQuick({
-                offsetLeft: -elementScroll.childNodes[end - numberList]
-                  .offsetLeft,
-              });
-              elementScroll.style.transition = "0s";
-              elementScroll.style.transform = `translateX(${
-                upcomingAnimeListStream.currentState().offsetLeft
-              })`;
-            }
-          }
-        });
-        fromEvent(elementScroll, "mouseup").subscribe(() => {
-          // stream.updateMouseStartX(null);
-          delta = 0;
-          posX1 = 0;
-          posX2 = 0;
-          upcomingAnimeListStream.updateDataQuick({ mouseStartX: null });
-          setTimeout(() => {
+        subscriptionTouchMove = fromEvent(elementScroll, "touchmove").subscribe(
+          (e) => {
+            // stream.updateHasMoved(false);
             upcomingAnimeListStream.updateDataQuick({
               hasMoved: false,
             });
-          }, 100);
+            if (upcomingAnimeListStream.currentState().mouseStartX) {
+              posX2 = posX1 - e.touches[0].clientX;
+              if (posX2 < 0) {
+                if (isLeft === false) {
+                  delta = 0;
+                  posX1 = 0;
+                  posX2 = 0;
+                }
+                isLeft = true;
+              } else {
+                if (isLeft === true) {
+                  delta = 0;
+                  posX1 = 0;
+                  posX2 = 0;
+                }
+                isLeft = false;
+              }
+              if (posX1 !== 0) {
+                delta -= posX2;
+              }
+              posX1 = e.touches[0].clientX;
+              const offsetLeft =
+                upcomingAnimeListStream.currentState().offsetLeft + delta * 0.1;
+              elementScroll.style.transform = `translateX(${offsetLeft}px)`;
+              // stream.updateOffsetLeft(offsetLeft);
+              upcomingAnimeListStream.updateDataQuick({
+                offsetLeft,
+              });
+              if (
+                elementScroll.childNodes[0] &&
+                offsetLeft - elementScroll.childNodes[0].offsetLeft > 0
+              ) {
+                upcomingAnimeListStream.updateDataQuick({
+                  offsetLeft: -elementScroll.childNodes[numberList].offsetLeft,
+                });
+                elementScroll.style.transition = "0s";
+                elementScroll.style.transform = `translateX(${-elementScroll
+                  .childNodes[numberList].offsetLeft}px)`;
+              }
+
+              if (
+                elementScroll.childNodes[end] &&
+                Math.abs(offsetLeft) >= elementScroll.childNodes[end].offsetLeft
+              ) {
+                upcomingAnimeListStream.updateDataQuick({
+                  offsetLeft: -elementScroll.childNodes[end - numberList]
+                    .offsetLeft,
+                });
+                elementScroll.style.transition = "0s";
+                elementScroll.style.transform = `translateX(${
+                  upcomingAnimeListStream.currentState().offsetLeft
+                }px)`;
+              }
+            }
+          }
+        );
+        subscriptionTouchEnd = fromEvent(elementScroll, "touchend").subscribe(
+          () => {
+            // stream.updateMouseStartX(null);
+            delta = 0;
+            posX1 = 0;
+            posX2 = 0;
+            upcomingAnimeListStream.updateDataQuick({
+              mouseStartX: null,
+            });
+          }
+        );
+        subscriptionMouseMove = fromEvent(elementScroll, "mousemove").subscribe(
+          (e) => {
+            if (upcomingAnimeListStream.currentState().mouseStartX) {
+              upcomingAnimeListStream.updateDataQuick({
+                hasMoved: true,
+              });
+              posX2 = posX1 - e.clientX;
+
+              if (posX2 < 0) {
+                if (isLeft === false) {
+                  delta = 0;
+                  posX1 = 0;
+                  posX2 = 0;
+                }
+                isLeft = true;
+              } else {
+                if (isLeft === true) {
+                  delta = 0;
+                  posX1 = 0;
+                  posX2 = 0;
+                }
+                isLeft = false;
+              }
+              if (posX1 !== 0) {
+                delta -= posX2;
+              }
+              posX1 = e.clientX;
+              const offsetLeft =
+                upcomingAnimeListStream.currentState().offsetLeft + delta * 0.2;
+              elementScroll.style.transform = `translateX(${offsetLeft}px)`;
+              upcomingAnimeListStream.updateDataQuick({ offsetLeft });
+              if (
+                elementScroll.childNodes[0] &&
+                offsetLeft - elementScroll.childNodes[0].offsetLeft > 0
+              ) {
+                upcomingAnimeListStream.updateDataQuick({
+                  offsetLeft: -elementScroll.childNodes[numberList].offsetLeft,
+                });
+                elementScroll.style.transition = "0s";
+                elementScroll.style.transform = `translateX(${-elementScroll
+                  .childNodes[numberList].offsetLeft})`;
+              }
+
+              if (
+                elementScroll.childNodes[end] &&
+                Math.abs(offsetLeft) >= elementScroll.childNodes[end].offsetLeft
+              ) {
+                upcomingAnimeListStream.updateDataQuick({
+                  offsetLeft: -elementScroll.childNodes[end - numberList]
+                    .offsetLeft,
+                });
+                elementScroll.style.transition = "0s";
+                elementScroll.style.transform = `translateX(${
+                  upcomingAnimeListStream.currentState().offsetLeft
+                }px)`;
+              }
+            }
+          }
+        );
+        subscriptionMouseUp = fromEvent(elementScroll, "mouseup").subscribe(
+          () => {
+            // stream.updateMouseStartX(null);
+            delta = 0;
+            posX1 = 0;
+            posX2 = 0;
+            upcomingAnimeListStream.updateDataQuick({ mouseStartX: null });
+            setTimeout(() => {
+              upcomingAnimeListStream.updateDataQuick({
+                hasMoved: false,
+              });
+            }, 100);
+          }
+        );
+        subscriptionMouseEnter = fromEvent(
+          elementScroll,
+          "mouseenter"
+        ).subscribe(() => {
+          upcomingAnimeListStream.updateDataQuick({
+            modeScrolling: "enter",
+          });
         });
-        fromEvent(elementScroll, "mouseleave").subscribe(() => {
-          // stream.updateMouseStartX(null);
-          // stream.updateHasMoved(false);
+        subscriptionMouseLeave = fromEvent(
+          elementScroll,
+          "mouseleave"
+        ).subscribe(() => {
           delta = 0;
           posX1 = 0;
           posX2 = 0;
           upcomingAnimeListStream.updateDataQuick({
             mouseStartX: null,
             hasMoved: false,
+            modeScrolling: "interval",
           });
         });
-
+        subscriptionMouseDown = fromEvent(elementScroll, "mousedown").subscribe(
+          (e) => {
+            e.preventDefault();
+            // stream.updateMouseStartX(e.clientX);
+            upcomingAnimeListStream.updateDataQuick({
+              mouseStartX: e.clientX,
+            });
+          }
+        );
         subscription2 = scrollAnimeInterval$(
           elementScroll,
           end,
@@ -207,12 +234,20 @@ export const keepDragMoveAnimeList = (elementScroll, length, numberList) => {
           elementScroll.style.transition = "0s";
           elementScroll.style.transform = `translateX(${
             upcomingAnimeListStream.currentState().offsetLeft
-          })`;
+          }px)`;
         });
       }
     }
     return () => {
       subscription2 && subscription2.unsubscribe();
+      subscriptionMouseEnter && subscriptionMouseEnter.unsubscribe();
+      subscriptionMouseLeave && subscriptionMouseLeave.unsubscribe();
+      subscriptionMouseUp && subscriptionMouseUp.unsubscribe();
+      subscriptionMouseMove && subscriptionMouseMove.unsubscribe();
+      subscriptionMouseDown && subscriptionMouseDown.unsubscribe();
+      subscriptionTouchStart && subscriptionTouchStart.unsubscribe();
+      subscriptionTouchMove && subscriptionTouchMove.unsubscribe();
+      subscriptionTouchEnd && subscriptionTouchEnd.unsubscribe();
     };
   };
 };

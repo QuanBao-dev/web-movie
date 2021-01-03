@@ -26,7 +26,7 @@ const Characters = ({ lazy = false, isLoading }) => {
     if (buttonSeemore) {
       if (
         characterStream.currentState().page *
-          characterStream.currentState().numberDisplay >=
+          characterStream.currentState().numberDisplay >
         charactersState.dataCharacter.length
       )
         buttonSeemore.style.display = "none";

@@ -1,20 +1,31 @@
 import "./AnimeItem.css";
 import "react-lazy-load-image-component/src/effects/opacity.css";
 
+import Axios from "axios";
 import React from "react";
 import { useRef } from "react";
+import { useCookies } from "react-cookie";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import { useHistory } from "react-router-dom";
 
 import { upcomingAnimeListStream } from "../../epics/upcomingAnimeList";
+import { updatedAnimeStream } from "../../epics/updatedAnime";
+import { virtualAnimeListStream } from "../../epics/virtualAnimeList";
 import { limitAdultGenre } from "../../Functions/animeListSeason";
 import { updateVirtualStyle } from "../../Functions/virtualAnimeList";
 import { useUpdateVirtualAnimeItem } from "../../Hook/virtualAnimeList";
-import { virtualAnimeListStream } from "../../epics/virtualAnimeList";
+import navBarStore from "../../store/navbar";
 
-const AnimeItem = ({ anime, lazy = false, virtual = false, index }) => {
+const AnimeItem = ({
+  anime,
+  lazy = false,
+  virtual = false,
+  index,
+  isAllowDelete,
+}) => {
   const history = useHistory();
   const animeItemRef = useRef();
+  const [cookies] = useCookies(["idCartoonUser"]);
   useUpdateVirtualAnimeItem(
     animeItemRef,
     virtual,
@@ -26,8 +37,11 @@ const AnimeItem = ({ anime, lazy = false, virtual = false, index }) => {
       ref={animeItemRef}
       style={virtualStyle}
       className="anime-item"
-      onClick={() => {
-        if (!upcomingAnimeListStream.currentState().hasMoved) {
+      onClick={(e) => {
+        if (
+          !upcomingAnimeListStream.currentState().hasMoved &&
+          e.target.className !== "fas fa-times"
+        ) {
           history.push(
             `/anime/${anime.malId || anime.mal_id}-${anime.title
               .replace(/[ /%^&*()]/g, "-")
@@ -40,6 +54,26 @@ const AnimeItem = ({ anime, lazy = false, virtual = false, index }) => {
       onMouseLeave={mouseLeaveAnimeItem(animeItemRef)}
       onMouseMove={mouseMoveAnimeItem(animeItemRef, virtual)}
     >
+      {isAllowDelete && (
+        <div className="anime-delete-button top-left_summary">
+          <i
+            className="fas fa-times"
+            onClick={async () => {
+              try {
+                navBarStore.updateIsShowBlockPopUp(true);
+                await Axios.delete(`/api/movies/box/${anime.malId}`, {
+                  headers: {
+                    authorization: `Bearer ${cookies.idCartoonUser}`,
+                  },
+                });
+                updatedAnimeStream.updateData({
+                  triggerFetch: !updatedAnimeStream.currentState().triggerFetch,
+                });
+              } catch (error) {}
+            }}
+          ></i>
+        </div>
+      )}
       {anime.airing_start &&
         new Date(anime.airing_start).getTime() <=
           new Date(Date.now()).getTime() && (
@@ -192,6 +226,7 @@ function mouseLeaveAnimeItem(animeItemRef) {
     animeItemRef.current.style.transition = "0.1s";
     animeItemRef.current.style.transform =
       "perspective(500px) scale(1) rotateX(0) rotateY(0)";
+    animeItemRef.current.style.zIndex = 1;
     setTimeout(() => {
       if (animeItemRef.current) animeItemRef.current.style.transition = "0s";
     }, 300);
@@ -243,5 +278,6 @@ function mouseMoveAnimeItem(animeItemRef, virtual) {
 
     /* Apply the calculated transformation */
     animeItemRef.current.style.transform = string;
+    animeItemRef.current.style.zIndex = 2;
   };
 }

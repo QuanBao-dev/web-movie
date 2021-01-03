@@ -6,7 +6,8 @@ const initialState = {
   boxMovie: [],
   lastPageUpdatedMovie: 1,
   lastPageBoxMovie: 1,
-  subNavToggle: null
+  subNavToggle: null,
+  triggerFetch:false
 };
 const behaviorSubject = new BehaviorSubject(initialState);
 

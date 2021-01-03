@@ -43,7 +43,7 @@ function ReviewItem({ review }) {
       </div>
       <pre>
         {review.content.replace(/\\n/g, "").split(" ").slice(0, 100).join(" ")}
-        {review.content.replace(/\\n/g, "").split(" ").length >= 100 ? (
+        {review.content.replace(/\\n/g, "").split(" ").length > 100 ? (
           <span
             className="show-more-text"
             onClick={(e) => {

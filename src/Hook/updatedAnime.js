@@ -5,6 +5,7 @@ import {
   updatedAnimeStream,
 } from "../epics/updatedAnime";
 import { initUpdatedAnime } from "../Functions/updatedAnime";
+import navBarStore from "../store/navbar";
 
 export const useInitUpdatedAnime = (setUpdatedAnime) => {
   useEffect(initUpdatedAnime(setUpdatedAnime), []);
@@ -26,6 +27,7 @@ export const useFetchAnimeList = (
           lastPageUpdatedMovie: lastPage,
         });
         setIsEmpty(false);
+        navBarStore.updateIsShowBlockPopUp(false);
       });
     }
     if (subNavToggle === 1) {
@@ -37,6 +39,7 @@ export const useFetchAnimeList = (
             lastPageBoxMovie: lastPage,
           });
           setIsEmpty(false);
+          navBarStore.updateIsShowBlockPopUp(false);
         }
       );
     }
@@ -49,5 +52,6 @@ export const useFetchAnimeList = (
     subNavToggle,
     updatedAnimeState.currentPageBoxMovie,
     updatedAnimeState.currentPageUpdatedMovie,
+    updatedAnimeState.triggerFetch,
   ]);
 };

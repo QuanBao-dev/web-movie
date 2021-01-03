@@ -35,40 +35,50 @@ const PaginationAnime = ({
   const pageList = narrowPageList(currentPage, lastPage, maxPageDisplay);
   return (
     <div>
-      <AnimeList empty={isEmpty} lazy={true} data={updatedMovie} />
+      <AnimeList
+        empty={isEmpty}
+        lazy={true}
+        data={updatedMovie}
+        isAllowDelete={subNavToggle === 1 ? true : false}
+      />
       <div className="home__page-list">
-        <div
-          className="home__page-item-search"
-          onClick={() => {
-            if (subNavToggle === 0) {
-              if (
-                updatedAnimeStream.currentState().currentPageUpdatedMovie !== 1
-              )
+        {pageList.length > 0 && (
+          <div
+            className="home__page-item-search"
+            onClick={() => {
+              if (subNavToggle === 0) {
+                if (
+                  updatedAnimeStream.currentState().currentPageUpdatedMovie !==
+                  1
+                )
+                  updatedAnimeStream.updateData({
+                    updatedMovie: [],
+                  });
                 updatedAnimeStream.updateData({
-                  updatedMovie: [],
+                  currentPageUpdatedMovie: 1,
                 });
-              updatedAnimeStream.updateData({
-                currentPageUpdatedMovie: 1,
-              });
-            } else {
-              if (updatedAnimeStream.currentState().currentPageBoxMovie !== 1) {
+              } else {
+                if (
+                  updatedAnimeStream.currentState().currentPageBoxMovie !== 1
+                ) {
+                  updatedAnimeStream.updateData({
+                    boxMovie: [],
+                  });
+                }
                 updatedAnimeStream.updateData({
-                  boxMovie: [],
+                  currentPageBoxMovie: 1,
                 });
               }
-              updatedAnimeStream.updateData({
-                currentPageBoxMovie: 1,
+              const subNavBar = document.querySelector(".sub-nav-bar");
+              window.scroll({
+                top: subNavBar.offsetTop - 90,
               });
-            }
-            const subNavBar = document.querySelector(".sub-nav-bar");
-            window.scroll({
-              top: subNavBar.offsetTop - 90,
-            });
-          }}
-        >
-          <i className="fas fa-chevron-left"></i>
-          <i className="fas fa-chevron-left"></i>
-        </div>
+            }}
+          >
+            <i className="fas fa-chevron-left"></i>
+            <i className="fas fa-chevron-left"></i>
+          </div>
+        )}
         {pageList &&
           pageList.map((pageData, index) => (
             <div
@@ -109,41 +119,43 @@ const PaginationAnime = ({
               {pageData}
             </div>
           ))}
-        <div
-          className="home__page-item-search"
-          onClick={() => {
-            if (subNavToggle === 0) {
-              if (
-                updatedAnimeStream.currentState().currentPageUpdatedMovie !==
-                lastPage
-              )
+        {pageList.length > 0 && (
+          <div
+            className="home__page-item-search"
+            onClick={() => {
+              if (subNavToggle === 0) {
+                if (
+                  updatedAnimeStream.currentState().currentPageUpdatedMovie !==
+                  lastPage
+                )
+                  updatedAnimeStream.updateData({
+                    updatedMovie: [],
+                  });
                 updatedAnimeStream.updateData({
-                  updatedMovie: [],
+                  currentPageUpdatedMovie: lastPage,
                 });
-              updatedAnimeStream.updateData({
-                currentPageUpdatedMovie: lastPage,
-              });
-            } else {
-              if (
-                updatedAnimeStream.currentState().currentPageBoxMovie !==
-                lastPage
-              )
+              } else {
+                if (
+                  updatedAnimeStream.currentState().currentPageBoxMovie !==
+                  lastPage
+                )
+                  updatedAnimeStream.updateData({
+                    boxMovie: [],
+                  });
                 updatedAnimeStream.updateData({
-                  boxMovie: [],
+                  currentPageBoxMovie: lastPage,
                 });
-              updatedAnimeStream.updateData({
-                currentPageBoxMovie: lastPage,
+              }
+              const subNavBar = document.querySelector(".sub-nav-bar");
+              window.scroll({
+                top: subNavBar.offsetTop - 90,
               });
-            }
-            const subNavBar = document.querySelector(".sub-nav-bar");
-            window.scroll({
-              top: subNavBar.offsetTop - 90,
-            });
-          }}
-        >
-          <i className="fas fa-chevron-right"></i>
-          <i className="fas fa-chevron-right"></i>
-        </div>
+            }}
+          >
+            <i className="fas fa-chevron-right"></i>
+            <i className="fas fa-chevron-right"></i>
+          </div>
+        )}
       </div>
     </div>
   );

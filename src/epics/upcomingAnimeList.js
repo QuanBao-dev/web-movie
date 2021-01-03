@@ -1,17 +1,8 @@
-import { asyncScheduler, fromEvent, interval, of, timer } from "rxjs";
-import { ajax } from "rxjs/ajax";
-import {
-  catchError,
-  pluck,
-  switchMap,
-  throttleTime,
-  retry,
-  filter,
-  takeWhile,
-  tap,
-} from "rxjs/operators";
+import { asyncScheduler, interval, of, timer } from 'rxjs';
+import { ajax } from 'rxjs/ajax';
+import { catchError, filter, pluck, retry, switchMap, takeWhile, tap, throttleTime } from 'rxjs/operators';
 
-import upcomingAnimeListStore from "../store/upcomingAnimeList";
+import upcomingAnimeListStore from '../store/upcomingAnimeList';
 
 export const upcomingAnimeListStream = upcomingAnimeListStore;
 
@@ -85,16 +76,6 @@ export const scrollAnimeUser$ = (
 };
 
 export const scrollAnimeInterval$ = (scrollE, end) => {
-  fromEvent(scrollE, "mouseenter").subscribe(() => {
-    upcomingAnimeListStream.updateDataQuick({
-      modeScrolling: "enter",
-    });
-  });
-  fromEvent(scrollE, "mouseleave").subscribe(() => {
-    upcomingAnimeListStream.updateDataQuick({
-      modeScrolling: "interval",
-    });
-  });
   return interval(20).pipe(
     filter(
       () => upcomingAnimeListStream.currentState().modeScrolling === "interval"

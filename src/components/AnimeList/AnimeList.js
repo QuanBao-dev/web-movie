@@ -21,6 +21,7 @@ const AnimeList = ({
   lazy = false,
   empty = false,
   virtual = false,
+  isAllowDelete = false,
 }) => {
   const listAnimeRef = useRef();
   const [virtualAnimeListState, setVirtualAnimeListState] = useState(
@@ -67,6 +68,7 @@ const AnimeList = ({
               lazy={lazy}
               virtual={virtual}
               index={index}
+              isAllowDelete={isAllowDelete}
             />
           );
         })}
@@ -82,6 +84,7 @@ const AnimeList = ({
               lazy={lazy}
               virtual={virtual}
               index={index + indexStart}
+              isAllowDelete={isAllowDelete}
             />
           );
         })}

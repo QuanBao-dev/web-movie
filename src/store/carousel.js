@@ -1,6 +1,7 @@
 import { BehaviorSubject } from "rxjs";
 const initialState = {
   dataCarousel: [],
+  isShowFormEditCarousel: false,
 };
 const behaviorSubject = new BehaviorSubject(initialState);
 
@@ -33,6 +34,5 @@ const carouselStore = {
     });
   },
 };
-
 
 export default carouselStore;

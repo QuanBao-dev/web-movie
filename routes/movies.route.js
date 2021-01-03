@@ -64,14 +64,29 @@ router.get("/carousel", async (req, res) => {
   }
 });
 
-router.post("/carousel/crawl", verifyRole("Admin"), async (req, res) => {
+router.put("/carousel/:id", verifyRole("Admin"), async (req, res) => {
+  const id = parseInt(req.params.id);
+  const { malId, url } = req.body;
   try {
-    const dataCrawl = await crawlCarousel("https://animetvn.tv/");
-    await extractMalId(dataCrawl);
+    const [carouselList, dataAnime] = await Promise.all([
+      CarouselMovie.findOne({ name: "data" }),
+      Axios.get("https://api.jikan.moe/v3/anime/" + malId),
+    ]);
+    const { title } = dataAnime.data;
+    const dataList = carouselList.data.map((data, index) => {
+      if (index === id) {
+        return {
+          title,
+          malId,
+          url,
+        };
+      }
+      return data;
+    });
     const data = await CarouselMovie.findOneAndUpdate(
       { name: "data" },
       {
-        data: dataCrawl,
+        data: dataList,
       },
       {
         new: true,
@@ -82,19 +97,7 @@ router.post("/carousel/crawl", verifyRole("Admin"), async (req, res) => {
       message: data.data,
     });
   } catch (error) {
-    res.status(404).send({ error: "Something went wrong" });
-  }
-});
-
-router.post("/carousel/crawl/trial", verifyRole("Admin"), async (req, res) => {
-  try {
-    let dataCrawl = await crawlCarousel("https://animetvn.tv/");
-    await extractMalId(dataCrawl);
-    res.send({
-      message: dataCrawl,
-    });
-  } catch (error) {
-    console.log(error);
+    if (error) return res.status(400).send({ error });
     res.status(404).send({ error: "Something went wrong" });
   }
 });
@@ -475,48 +478,6 @@ function updateSourceFilmList(movie, serverWeb, isDub, url) {
   movie.sourceFilmList[keySourceFilm] = url;
 }
 
-async function extractMalId(dataCrawl) {
-  await Promise.all(
-    dataCrawl.slice(0, 2).map((data) => {
-      console.log(data);
-      return Axios(
-        `https://api.jikan.moe/v3/search/anime?q=${data.title}&limit=1`
-      )
-        .then((response) => response.data)
-        .then((res) => (data.malId = res.results[0].mal_id))
-        .catch((err) => {
-          console.log(err);
-        });
-    })
-  );
-  await Promise.all(
-    dataCrawl.slice(2, 4).map((data) => {
-      console.log(data);
-      return Axios(
-        `https://api.jikan.moe/v3/search/anime?q=${data.title}&limit=1`
-      )
-        .then((response) => response.data)
-        .then((res) => (data.malId = res.results[0].mal_id))
-        .catch((err) => {
-          console.log(err);
-        });
-    })
-  );
-  await Promise.all(
-    dataCrawl.slice(4, dataCrawl.length).map((data) => {
-      console.log(data);
-      return Axios(
-        `https://api.jikan.moe/v3/search/anime?q=${data.title}&limit=1`
-      )
-        .then((response) => response.data)
-        .then((res) => (data.malId = res.results[0].mal_id))
-        .catch((err) => {
-          console.log(err);
-        });
-    })
-  );
-}
-
 function updateComment(movie, newMessage, index, isPush = true) {
   let suitablePositionToAdd = movie.messages.length;
   if (index !== null) {
@@ -594,43 +555,6 @@ async function addMovieUpdated(malId) {
     return movie;
   } catch (error) {
     throw Error("Can't add updated movie");
-  }
-}
-
-async function crawlCarousel(url) {
-  const browser = await puppeteer.launch({
-    extra: {
-      stealth: true,
-    },
-    headless: true,
-    args: ["--start-maximized", "--no-sandbox"],
-    defaultViewport: null,
-    timeout: 0,
-  });
-  try {
-    const context = await browser.createIncognitoBrowserContext();
-    const page = await context.newPage();
-    await page.setDefaultNavigationTimeout(0);
-    const options = {
-      waitUntil: "networkidle2",
-      timeout: 0,
-    };
-    await page.goto(url, options);
-    const data = await page.evaluate(() => {
-      return [...document.querySelectorAll(".row .carousel-inner .item")].map(
-        (anime) => {
-          return {
-            url: anime.style.backgroundImage
-              .replace("url", "")
-              .replace(/[\"()]/g, ""),
-            title: anime.querySelector(".main-link").innerText,
-          };
-        }
-      );
-    });
-    return data;
-  } catch (error) {
-    console.log(error);
   }
 }
 

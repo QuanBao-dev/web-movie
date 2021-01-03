@@ -202,7 +202,7 @@ function SelectFilterAnime({
       >
         {scoreOptions.map((score, key) => (
           <option key={key} value={`${score}`}>
-            {score !== 0 ? score : "All"}
+            {score !== 0 ? score : "Score"}
           </option>
         ))}
       </select>
@@ -219,7 +219,7 @@ function SelectFilterAnime({
         ref={selectGenre}
         defaultValue={animeListSeasonStream.currentState().genreId}
       >
-        <option value={0}>All</option>
+        <option value={0}>Genre</option>
         {genresData.map((data) => {
           if (data.genreId !== "12") {
             return (

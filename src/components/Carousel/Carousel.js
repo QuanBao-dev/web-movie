@@ -2,9 +2,7 @@
 import "./Carousel.css";
 
 import loadable from "@loadable/component";
-import Axios from "axios";
 import React, { useState } from "react";
-import { useCookies } from "react-cookie";
 import { useHistory } from "react-router-dom";
 
 import { carouselStream } from "../../epics/carousel";
@@ -14,7 +12,7 @@ import {
   useFetchCarousel,
   useInitCarousel,
 } from "../../Hook/carousel";
-import navBarStore from "../../store/navbar";
+import FormEditCarousel from "../FormEditCarousel/FormEditCarousel";
 
 const CarouselItem = loadable(() => import("../CarouselItem/CarouselItem"), {
   fallback: (
@@ -25,7 +23,6 @@ const CarouselItem = loadable(() => import("../CarouselItem/CarouselItem"), {
 });
 const Carousel = () => {
   const user = userStream.currentState();
-  const [cookies] = useCookies(["idCartoonUser"]);
   const [carouselState, setCarouselState] = useState(
     carouselStream.currentState()
   );
@@ -63,6 +60,7 @@ const Carousel = () => {
   // console.log(stream.currentState());
   return (
     <div>
+      <FormEditCarousel  />
       <div className="background">
         <div className="container-menu-control">
           <div
@@ -98,54 +96,11 @@ const Carousel = () => {
           <div className="button-update-carousel-container">
             <button
               className="btn btn-success"
-              onClick={async () => {
-                navBarStore.updateIsShowBlockPopUp(true);
-                try {
-                  const dataRes = await Axios.post(
-                    "/api/movies/carousel/crawl",
-                    {},
-                    {
-                      headers: {
-                        authorization: `Bearer ${cookies.idCartoonUser}`,
-                      },
-                    }
-                  );
-                  carouselStream.updateData({
-                    dataCarousel: dataRes.data.message,
-                  });
-                } catch (error) {
-                  alert(error.response.data.error);
-                }
-                navBarStore.updateIsShowBlockPopUp(false);
+              onClick={() => {
+                carouselStream.updateData({ isShowFormEditCarousel: true });
               }}
             >
               Update
-            </button>
-
-            <button
-              className="btn btn-primary"
-              onClick={async () => {
-                navBarStore.updateIsShowBlockPopUp(true);
-                try {
-                  const dataRes = await Axios.post(
-                    "/api/movies/carousel/crawl/trial",
-                    {},
-                    {
-                      headers: {
-                        authorization: `Bearer ${cookies.idCartoonUser}`,
-                      },
-                    }
-                  );
-                  carouselStream.updateData({
-                    dataCarousel: dataRes.data.message,
-                  });
-                } catch (error) {
-                  alert(error.response.data.error);
-                }
-                navBarStore.updateIsShowBlockPopUp(false);
-              }}
-            >
-              Trial
             </button>
           </div>
         )}

@@ -47,18 +47,6 @@
   box-shadow: 0 10px 5px 10px black;
 }
 
-.top-movie-score__home{
-  position: absolute;
-  top:0;
-  right: 0;
-  font-weight: 10px;
-  font-size: larger;
-  color: yellow;
-  padding: 5px;
-  background-color: #3a417591;
-  border-radius: 10px;
-}
-
 .sub-nav-bar{
   position: relative;
   padding-top: 1rem;

@@ -21,15 +21,34 @@
 
 .top-anime-list-info .title{
   font-size: 140%;
-  padding: 10px;
   margin-top: 2rem;
+  padding: 3px 10px;
   box-shadow: 0 0px 1px 1px rgb(107, 106, 106);
   border: 10px double black;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  text-overflow: ellipsis;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.top-movie-score__home{
+  position: absolute;
+  top:0;
+  right: 0;
+  font-weight: 10px;
+  font-size: larger;
+  color: yellow;
+  padding: 5px;
+  background-color: #3a417591;
+  border-radius: 10px;
+  z-index: 4;
 }
 
 .top-anime-list li img{
-  width: auto;
-  height: 260px;
+  width: 90%;
+  height: 380px;
+  background-color: black;
   display: block;
   cursor: pointer;
   margin: 15px auto 10px auto;
@@ -40,10 +59,6 @@
   animation: none;
   transition: 0.4s;
   opacity: 1;
-}
-
-.top-anime-list-info span{
-  height: 260px!important;
 }
 
 .top-anime-list-info span img{

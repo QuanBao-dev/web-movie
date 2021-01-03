@@ -78,7 +78,7 @@ const AnimeDetail = (props) => {
       opening_themes.length <= 3
     )
       setShowThemeMusic(true);
-  }, [malId]);
+  }, [malId, showThemeMusic]);
   const arrayTagTitle = document.querySelectorAll(".title") || [];
   const a = [...arrayTagTitle];
   useEffect(() => {

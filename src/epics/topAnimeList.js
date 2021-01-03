@@ -84,7 +84,7 @@ export const fetchTopMovie$ = () => {
       ajax({
         url: `https://api.jikan.moe/v3/top/anime/${
           topAnimeListStream.currentState().pageTopMovie
-        }`,
+        }/bypopularity`,
       }).pipe(
         pluck("response", "top"),
         tap(() => {

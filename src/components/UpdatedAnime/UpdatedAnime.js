@@ -25,7 +25,9 @@ const UpdatedAnime = () => {
     updatedAnimeStream.currentState()
   );
   const [isEmpty, setIsEmpty] = useState(true);
-  const [subNavToggle, setSubNavToggle] = useState(0);
+  const [subNavToggle, setSubNavToggle] = useState(
+    updatedAnimeStream.currentState().subNavToggle || 0
+  );
   const [cookies] = useCookies(["idCartoonUser"]);
   const user = userStream.currentState();
   useInitUpdatedAnime(setUpdatedAnimeState);
@@ -67,6 +69,7 @@ function SubNavBar({ subNavToggle, setSubNavToggle, user }) {
         className={`sub-nav-item${subNavToggle === 0 ? " sub-nav-active" : ""}`}
         onClick={() => {
           setSubNavToggle(0);
+          updatedAnimeStream.updateDataQuick({ subNavToggle: 0 });
         }}
       >
         Updated Anime
@@ -78,6 +81,7 @@ function SubNavBar({ subNavToggle, setSubNavToggle, user }) {
           }`}
           onClick={() => {
             setSubNavToggle(1);
+            updatedAnimeStream.updateDataQuick({ subNavToggle: 1 });
           }}
         >
           Box Anime

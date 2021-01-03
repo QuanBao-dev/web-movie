@@ -7,5 +7,5 @@ export const initUpdatedAnime = (setUpdatedAnime) => {
     return () => {
       subscription.unsubscribe();
     };
-  }
-}
+  };
+};

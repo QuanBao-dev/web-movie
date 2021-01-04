@@ -156,10 +156,14 @@ window.addEventListener("scroll", () => {
     if (navBarE)
       if (window.scrollY < 50) {
         navBarE.style.transform = "translateY(0)";
+        navBarE.style.backgroundColor = "rgba(2, 2, 2)";
         buttonScrollTopE.style.transform = "translateY(500px)";
       } else if (v - window.scrollY < -1) {
         navBarE.style.transform = "translateY(-500px)";
+        navBarE.style.backgroundColor = "rgba(2, 2, 2, 0.3)";
         buttonScrollTopE.style.transform = "translateY(500px)";
+        const e = document.getElementsByClassName("child-nav-bar__app").item(0);
+        e.style.display = "none";
       } else if (v - window.scrollY > 1) {
         navBarE.style.transform = "translateY(0)";
         buttonScrollTopE.style.transform = "translateY(0)";

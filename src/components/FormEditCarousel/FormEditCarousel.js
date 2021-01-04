@@ -42,25 +42,41 @@ const FormEditCarousel = () => {
         <Input label={"Mal Id"} input={malIdInputRef} />
         <Input label={"Id (0 - 4)"} input={idInputRef} type="number" />
         <Input label={"Image Url"} input={imageUrlInputRef} />
+        <input
+          className="file-upload-carousel"
+          type="file"
+          style={{ width: "100%", marginTop: "1rem" }}
+        />
         <button
           className="button-submit-carousel"
-          onClick={async () => {
+          onClick={async (e) => {
+            e.preventDefault();
             const $ = document.querySelector.bind(document);
-            $(".button-submit-carousel").disabled = true;
-            navBarStore.updateIsShowBlockPopUp(true);
             if (
               ![
                 malIdInputRef.current.value.trim(),
                 imageUrlInputRef.current.value.trim(),
                 idInputRef.current.value.trim(),
+              ].includes("") ||
+              ![
+                malIdInputRef.current.value.trim(),
+                idInputRef.current.value.trim(),
+                $(".file-upload-carousel").value.trim(),
               ].includes("")
             )
               try {
+                navBarStore.updateIsShowBlockPopUp(true);
+                let url = "";
+                if ($(".file-upload-carousel").value.trim() !== "") {
+                  url = await base64DataUrl($(".file-upload-carousel").files[0]);
+                } else {
+                  url = imageUrlInputRef.current.value;
+                }
                 const { data } = await Axios.put(
                   "/api/movies/carousel/" + idInputRef.current.value,
                   {
                     malId: malIdInputRef.current.value,
-                    url: imageUrlInputRef.current.value,
+                    url,
                   },
                   {
                     headers: {
@@ -72,8 +88,8 @@ const FormEditCarousel = () => {
                   dataCarousel: data.message,
                   isShowFormEditCarousel: false,
                 });
-                navBarStore.updateIsShowBlockPopUp(false);
               } catch (error) {}
+            navBarStore.updateIsShowBlockPopUp(false);
           }}
         >
           Submit
@@ -82,5 +98,19 @@ const FormEditCarousel = () => {
     </div>
   );
 };
+
+function base64DataUrl(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onerror = function () {
+      reject("Your file is too big");
+    };
+    reader.onload = function (ev) {
+      reader.error && reject(reader.error);
+      resolve(ev.target.result);
+    };
+    reader.readAsDataURL(file);
+  });
+}
 
 export default FormEditCarousel;

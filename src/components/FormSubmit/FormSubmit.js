@@ -8,7 +8,7 @@ function FormSubmit({
   inputEpisodeRef,
   inputVideoUrlRef,
   cookies,
-  name,
+  malId,
   episodeData,
   typeVideoSelectRef,
 }) {
@@ -64,7 +64,7 @@ function FormSubmit({
           }
           try {
             const res = await Axios.put(
-              `/api/movies/${name}/episode/${episode}/${language}/${isDub}`,
+              `/api/movies/${malId}/episode/${episode}/${language}/${isDub}`,
               {
                 embedUrl,
                 typeVideo,

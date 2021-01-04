@@ -10,8 +10,7 @@ import { useHistory } from "react-router-dom";
 import { fetchingUser$ } from "../../epics/user";
 import { userStream } from "../../epics/user";
 const Login = () => {
-  // eslint-disable-next-line no-unused-vars
-  const [cookies, setCookie, removeCookie] = useCookies(["idCartoonUser"]);
+  const [, setCookie] = useCookies(["idCartoonUser"]);
   const [emailError, setEmailError] = useState(null);
   const [passwordError, setPasswordError] = useState(null);
   const emailRef = useRef();

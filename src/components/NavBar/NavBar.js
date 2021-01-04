@@ -1,11 +1,11 @@
-import './NavBar.css';
+import "./NavBar.css";
 
-import Axios from 'axios';
-import React from 'react';
-import { useRef } from 'react';
-import { NavLink as Link, useHistory, withRouter } from 'react-router-dom';
+import Axios from "axios";
+import React from "react";
+import { useRef } from "react";
+import { NavLink as Link, useHistory, withRouter } from "react-router-dom";
 
-import { userStream } from '../../epics/user';
+import { userStream } from "../../epics/user";
 
 const NavBar = ({ userState, removeCookie, cookies }) => {
   const navLoginRef = useRef();
@@ -20,10 +20,14 @@ const NavBar = ({ userState, removeCookie, cookies }) => {
             const e = document
               .getElementsByClassName("child-nav-bar__app")
               .item(0);
+            const navBarApp = document.querySelector(".nav-bar__app");
             if (e.style.display === "none") {
               e.style.display = "flex";
+              navBarApp.style.backgroundColor = "rgb(2,2,2)";
             } else {
               e.style.display = "none";
+              if (window.scrollY >= 50)
+                navBarApp.style.backgroundColor = "rgb(2,2,2,0.3)";
             }
           }}
         >
@@ -77,7 +81,7 @@ const NavBar = ({ userState, removeCookie, cookies }) => {
                   display: "inline",
                   padding: "10px",
                 }}
-                onClick={async() => {
+                onClick={async () => {
                   await logoutUser(removeCookie, cookies.idCartoonUser);
                   history.push("/auth/login");
                 }}

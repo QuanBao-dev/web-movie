@@ -153,6 +153,7 @@ window.addEventListener("scroll", () => {
   scrollSaveSubject.subscribe((v) => {
     const navBarE = document.querySelector(".nav-bar__app");
     const buttonScrollTopE = document.querySelector(".button-scroll-top");
+    const e = document.getElementsByClassName("child-nav-bar__app").item(0);
     if (navBarE)
       if (window.scrollY < 50) {
         navBarE.style.transform = "translateY(0)";
@@ -160,13 +161,13 @@ window.addEventListener("scroll", () => {
         buttonScrollTopE.style.transform = "translateY(500px)";
       } else if (v - window.scrollY < -1) {
         navBarE.style.transform = "translateY(-500px)";
-        navBarE.style.backgroundColor = "rgba(2, 2, 2, 0.3)";
+        if (e.style.display === "none")
+          navBarE.style.backgroundColor = "rgba(2, 2, 2, 0.3)";
         buttonScrollTopE.style.transform = "translateY(500px)";
-        const e = document.getElementsByClassName("child-nav-bar__app").item(0);
-        e.style.display = "none";
       } else if (v - window.scrollY > 1) {
         navBarE.style.transform = "translateY(0)";
         buttonScrollTopE.style.transform = "translateY(0)";
+        navBarE.style.backgroundColor = "rgba(2, 2, 2, 0.3)";
       }
   });
 });

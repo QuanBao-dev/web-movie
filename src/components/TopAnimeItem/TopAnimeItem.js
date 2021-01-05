@@ -24,7 +24,9 @@ function TopAnimeItem({ movie, lazy = false }) {
             )}
             {!lazy && <img src={movie.image_url} alt="Preview" />}
           </Link>
-          <div className="title">{movie.title}</div>
+          <div className="title">
+            <span>{movie.title}</span>
+          </div>
         </div>
       </div>
     </li>

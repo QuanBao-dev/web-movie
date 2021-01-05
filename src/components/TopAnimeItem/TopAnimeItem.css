@@ -30,6 +30,16 @@
   text-overflow: ellipsis;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  transition: 0.3s;
+}
+
+.top-anime-list-info .title span{
+  display: inline;
+  background-image: linear-gradient(to right, red, rgb(179, 179, 9));
+  background-repeat: no-repeat;
+  background-size: 0 5px;
+  background-position: 0 27px;
+  transition: 0.7s ease-in-out;
 }
 
 .top-movie-score__home{
@@ -57,7 +67,6 @@
   border-radius: 10px;
   object-position: center;
   animation: none;
-  transition: 0.4s;
   opacity: 1;
 }
 
@@ -65,6 +74,7 @@
   object-fit: contain;
 } 
 
-.top-anime-list li img:hover{
-  animation: rotate 1.5s linear infinite both;
+.top-anime-list li a:hover + div.title span{
+  background-size: 100% 5px;
+  color: yellow;
 }

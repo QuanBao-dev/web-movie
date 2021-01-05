@@ -163,13 +163,15 @@ window.addEventListener("scroll", () => {
         navBarE.style.transform = "translateY(-500px)";
         if (e.style.display !== "flex")
           navBarE.style.backgroundColor = "rgba(2, 2, 2, 0.3)";
-        if (e.style.display === "flex") e.style.display = "none";
+        if (e.style.display === "flex" && document.body.offsetWidth <= 697)
+          e.style.display = "none";
         buttonScrollTopE.style.transform = "translateY(500px)";
       } else if (v - window.scrollY > 1) {
         navBarE.style.transform = "translateY(0)";
         buttonScrollTopE.style.transform = "translateY(0)";
-        if (e.style.display !== "flex")
+        if (e.style.display !== "flex") {
           navBarE.style.backgroundColor = "rgba(2, 2, 2, 0.3)";
+        }
       }
   });
 });

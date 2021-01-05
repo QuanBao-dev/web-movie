@@ -46,16 +46,21 @@
   color: white;
   font-size: 1.5rem;
   border: none;
+  padding: 3px;
+  font-weight: bold;
 }
 
 .select-top-anime option{
-  color: black;
+  background-color: rgb(32, 28, 82);
+  color: white;
+  font-weight: bold;
 }
 
 @media (max-width:1510px){
   .top-anime-list-container{
     overflow-y: hidden;
     max-height: 100%;
+    min-width: 255px;
   }
 }
 
@@ -63,5 +68,6 @@
   .top-anime-list-container{
     width: 30%;
     height: 100%;
+    min-width: 355px;
   }
 }

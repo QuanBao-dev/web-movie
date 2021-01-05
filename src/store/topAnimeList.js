@@ -7,6 +7,7 @@ const initialState = {
   pageSplitTopMovie: 1,
   allowFetchIncreasePageTopMovie: false,
   pageTopMovie: 1,
+  toggleFetchMode: "score",
 };
 const behaviorSubject = new BehaviorSubject(initialState);
 

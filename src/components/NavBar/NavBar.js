@@ -13,7 +13,18 @@ const NavBar = ({ userState, removeCookie, cookies }) => {
   const history = useHistory();
   return (
     <nav className="nav-bar">
-      <ul className="nav-bar__app">
+      <ul
+        className="nav-bar__app"
+        onMouseMove={() => {
+          document.querySelector(".nav-bar__app").style.backgroundColor =
+            "black";
+        }}
+        onMouseLeave={() => {
+          if (window.scrollY >= 50)
+            document.querySelector(".nav-bar__app").style.backgroundColor =
+              "rgb(2,2,2,0.2)";
+        }}
+      >
         <div
           className="toggle-show__nav"
           onClick={() => {
@@ -27,7 +38,7 @@ const NavBar = ({ userState, removeCookie, cookies }) => {
             } else {
               e.style.display = "none";
               if (window.scrollY >= 50)
-                navBarApp.style.backgroundColor = "rgb(2,2,2,0.3)";
+                navBarApp.style.backgroundColor = "rgb(2,2,2,0.2)";
             }
           }}
         >

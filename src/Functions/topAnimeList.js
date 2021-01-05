@@ -67,6 +67,7 @@ export const pageScrollingUpdatePage = () => {
 export const fetchTopAnime = (topAnimeListState) => {
   return () => {
     let subscription7;
+    console.log("fetch");
     if (
       topAnimeListStream.currentState().pageTopMovieOnDestroy !==
         topAnimeListState.pageTopMovie &&

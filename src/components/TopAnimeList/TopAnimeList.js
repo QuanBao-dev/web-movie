@@ -21,8 +21,43 @@ function TopAnimeList() {
   usePageScrollingUpdatePage(topAnimeListState);
   useFetchTopAnime(topAnimeListState);
   return (
-    <div className="top-anime-list-container">
-      <h1>Top Anime</h1>
+    <div
+      className="top-anime-list-container"
+      onScroll={(e) => {
+        const containerHeaderTopAnime = document.querySelector(
+          ".container-header-top-anime"
+        );
+        if (e.target.scrollTop === 0) {
+          containerHeaderTopAnime.style.boxShadow = "none";
+        } else {
+          containerHeaderTopAnime.style.boxShadow = "0 0 10px 1px black";
+        }
+      }}
+    >
+      <div className="container-header-top-anime">
+        <h1>Top Anime</h1>
+        <select
+          defaultValue={topAnimeListState.toggleFetchMode}
+          className="select-top-anime"
+          onChange={(e) => {
+            document
+              .querySelector(".top-anime-list-container")
+              .scroll({ top: 0 });
+            topAnimeListStream.updateData({
+              toggleFetchMode: e.target.value,
+              pageTopMovieOnDestroy: null,
+              isStopFetchTopMovie: false,
+              pageSplitTopMovie: 1,
+              allowFetchIncreasePageTopMovie: false,
+              pageTopMovie: 1,
+              dataTopMovie: [],
+            });
+          }}
+        >
+          <option value="score">Score</option>
+          <option value="popularity">Popularity</option>
+        </select>{" "}
+      </div>
       <ul className="top-anime-list">
         {topAnimeListState.dataTopMovie
           .slice(0, 8 + (topAnimeListState.pageSplitTopMovie - 1) * 8)

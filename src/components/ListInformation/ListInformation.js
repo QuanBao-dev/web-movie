@@ -14,7 +14,7 @@ function ListInformation({ arrKeys, history, isLoading }) {
             typeof animeDetailStream.currentState().dataInformationAnime[v] !==
             "object"
           ) {
-            if (v !== "rank")
+            if (v !== "rank" && v !== "popularity")
               return (
                 <li key={index} style={{ lineHeight: "2.3rem" }}>
                   <span
@@ -172,7 +172,7 @@ function ListInformation({ arrKeys, history, isLoading }) {
                           fontSize: "2rem",
                         }}
                       >
-                        {v.replace("_"," ")}
+                        {v.replace("_", " ")}
                       </div>
                       {animeDetailStream
                         .currentState()
@@ -271,4 +271,4 @@ function ListInformation({ arrKeys, history, isLoading }) {
   );
 }
 
-export default ListInformation
+export default ListInformation;

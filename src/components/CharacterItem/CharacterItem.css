@@ -9,6 +9,8 @@
   box-shadow: 0 0 1px 1px wheat;
   transition: 0.2s linear;
   border:1px solid rgba(255, 255, 255, 0);
+  text-decoration: none;
+  color: white;
 }
 
 .name-character{

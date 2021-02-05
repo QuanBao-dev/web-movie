@@ -1,7 +1,11 @@
-import { fromEvent } from 'rxjs';
+import { fromEvent } from "rxjs";
 
-import { stream } from '../epics/home';
-import { scrollAnimeInterval$, upcomingAnimeListStream, upcomingAnimeListUpdated$ } from '../epics/upcomingAnimeList';
+import { stream } from "../epics/home";
+import {
+  scrollAnimeInterval$,
+  upcomingAnimeListStream,
+  upcomingAnimeListUpdated$,
+} from "../epics/upcomingAnimeList";
 
 export const initUpcomingAnimeList = (setUpcomingAnimeListState) => {
   return () => {
@@ -40,19 +44,12 @@ export const keepDragMoveAnimeList = (elementScroll, length, numberList) => {
           elementScroll,
           "touchstart"
         ).subscribe((e) => {
-          // stream.updateHasMoved(false);
-          // stream.updateMouseStartX(e.touches[0].clientX);
           upcomingAnimeListStream.updateDataQuick({
-            hasMoved: false,
             mouseStartX: e.touches[0].clientX,
           });
         });
         subscriptionTouchMove = fromEvent(elementScroll, "touchmove").subscribe(
           (e) => {
-            // stream.updateHasMoved(false);
-            upcomingAnimeListStream.updateDataQuick({
-              hasMoved: false,
-            });
             if (upcomingAnimeListStream.currentState().mouseStartX) {
               posX2 = posX1 - e.touches[0].clientX;
               if (posX2 < 0) {
@@ -123,9 +120,6 @@ export const keepDragMoveAnimeList = (elementScroll, length, numberList) => {
         subscriptionMouseMove = fromEvent(elementScroll, "mousemove").subscribe(
           (e) => {
             if (upcomingAnimeListStream.currentState().mouseStartX) {
-              upcomingAnimeListStream.updateDataQuick({
-                hasMoved: true,
-              });
               posX2 = posX1 - e.clientX;
 
               if (posX2 < 0) {
@@ -147,6 +141,11 @@ export const keepDragMoveAnimeList = (elementScroll, length, numberList) => {
                 delta -= posX2;
               }
               posX1 = e.clientX;
+              if (delta !== 0) {
+                upcomingAnimeListStream.updateDataQuick({
+                  isScrolling: true,
+                });
+              }
               const offsetLeft =
                 upcomingAnimeListStream.currentState().offsetLeft + delta * 0.2;
               elementScroll.style.transform = `translateX(${offsetLeft}px)`;
@@ -179,20 +178,16 @@ export const keepDragMoveAnimeList = (elementScroll, length, numberList) => {
             }
           }
         );
-        subscriptionMouseUp = fromEvent(elementScroll, "mouseup").subscribe(
-          () => {
-            // stream.updateMouseStartX(null);
-            delta = 0;
-            posX1 = 0;
-            posX2 = 0;
-            upcomingAnimeListStream.updateDataQuick({ mouseStartX: null });
-            setTimeout(() => {
-              upcomingAnimeListStream.updateDataQuick({
-                hasMoved: false,
-              });
-            }, 100);
-          }
-        );
+        subscriptionMouseUp = fromEvent(window, "mouseup").subscribe(() => {
+          if (upcomingAnimeListStream.currentState().isScrolling === true)
+            upcomingAnimeListStream.updateData({
+              isScrolling: false,
+            });
+          delta = 0;
+          posX1 = 0;
+          posX2 = 0;
+          upcomingAnimeListStream.updateDataQuick({ mouseStartX: null });
+        });
         subscriptionMouseEnter = fromEvent(
           elementScroll,
           "mouseenter"
@@ -210,7 +205,6 @@ export const keepDragMoveAnimeList = (elementScroll, length, numberList) => {
           posX2 = 0;
           upcomingAnimeListStream.updateDataQuick({
             mouseStartX: null,
-            hasMoved: false,
             modeScrolling: "interval",
           });
         });
@@ -220,6 +214,7 @@ export const keepDragMoveAnimeList = (elementScroll, length, numberList) => {
             // stream.updateMouseStartX(e.clientX);
             upcomingAnimeListStream.updateDataQuick({
               mouseStartX: e.clientX,
+              isScrolling: false,
             });
           }
         );

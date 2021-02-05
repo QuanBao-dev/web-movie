@@ -116,7 +116,7 @@ io.on("connection", (socket) => {
           groupId,
         }).lean();
         if (rooms[groupId] && rooms[groupId].users[userId]) {
-          socket.emit("disconnected-user", username, userId, groupId);
+          socket.emit("disconnected-user", userId);
           socket.broadcast.emit("disconnected-user", username, userId, groupId);
           delete rooms[groupId].users[userId];
           if (Object.keys(rooms[groupId].users).length === 0) {
@@ -221,7 +221,7 @@ io.on("connection", (socket) => {
         if (rooms[malId].users[socket.id]) {
           socket
             .to(malId)
-            .emit("disconnected-user", room.users[socket.id], socket.id, malId);
+            .emit("disconnected-user", socket.id);
           delete rooms[malId].users[socket.id];
           if (Object.keys(rooms[malId].users).length === 0) {
             delete rooms[malId];
@@ -242,7 +242,7 @@ io.on("connection", (socket) => {
         if (rooms[malId].users[socket.id]) {
           socket
             .to(malId)
-            .emit("disconnected-user", room.users[socket.id], socket.id, malId);
+            .emit("disconnected-user", socket.id);
           delete rooms[malId].users[socket.id];
           if (Object.keys(rooms[malId].users).length === 0) {
             delete rooms[malId];

@@ -1,11 +1,14 @@
-import './MessageInput.css';
+import "./MessageInput.css";
 
-import { nanoid } from 'nanoid';
-import React, { useEffect, useRef, useState } from 'react';
-import { fromEvent } from 'rxjs';
-import { debounceTime, first } from 'rxjs/operators';
+import { nanoid } from "nanoid";
+import React, { useEffect, useRef, useState } from "react";
+import { fromEvent } from "rxjs";
+import { debounceTime, first } from "rxjs/operators";
 
-import { createCaretPlacer, messageInputStream } from '../../epics/message-input';
+import {
+  createCaretPlacer,
+  messageInputStream,
+} from "../../epics/message-input";
 
 const idTyping = nanoid();
 const MessageInput = ({
@@ -26,9 +29,13 @@ const MessageInput = ({
   useEffect(() => {
     const subscription = messageInputStream.subscribe(setMessageInputState);
     messageInputStream.init();
+    socket.on("reconnect", () => {
+      socket.emit("notify-user-stop-type", idGroup, idTyping);
+    });
     return () => {
       subscription.unsubscribe();
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   useEffect(() => {
     let subStartTyping, subStopTyping;

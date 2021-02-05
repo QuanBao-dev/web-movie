@@ -1,12 +1,12 @@
 import { BehaviorSubject } from "rxjs";
 const initialState = {
   offsetLeft: 0,
-  hasMoved: false,
   mouseStartX: null,
   modeScrolling: "interval",
   upcomingAnimeList: [],
   shouldScrollLeft: true,
-  screenWidth: null
+  screenWidth: null,
+  isScrolling: false
 };
 const behaviorSubject = new BehaviorSubject(initialState);
 

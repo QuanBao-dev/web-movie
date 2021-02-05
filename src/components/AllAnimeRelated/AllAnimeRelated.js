@@ -6,7 +6,7 @@ import React from "react";
 const AnimeRelatedItem = loadable(() =>
   import("../AnimeRelatedItem/AnimeRelatedItem")
 );
-function AllAnimeRelated({ animeList, history, lazy = false }) {
+function AllAnimeRelated({ animeList, lazy = false }) {
   return (
     <div className="all-anime-related">
       {animeList &&
@@ -14,7 +14,6 @@ function AllAnimeRelated({ animeList, history, lazy = false }) {
           <AnimeRelatedItem
             anime={anime}
             key={index}
-            history={history}
             lazy={lazy}
           />
         ))}

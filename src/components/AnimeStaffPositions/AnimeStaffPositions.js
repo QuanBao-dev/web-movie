@@ -6,7 +6,7 @@ const AnimeStaffPositionItem = loadable(() =>
   import("../AnimeStaffPostionItem/AnimeStaffPositionItem")
 );
 
-function AnimeStaffPositions({ history, updateStaffPosition, lazy = false }) {
+function AnimeStaffPositions({ updateStaffPosition, lazy = false }) {
   return (
     <div className="container-staff-position">
       {updateStaffPosition &&
@@ -17,7 +17,6 @@ function AnimeStaffPositions({ history, updateStaffPosition, lazy = false }) {
             key={index}
             updateStaffPosition={updateStaffPosition}
             keyData={keyData}
-            history={history}
           />
         ))}
     </div>

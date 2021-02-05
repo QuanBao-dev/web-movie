@@ -59,6 +59,8 @@ pre{
   min-width: 200px;
   display: flex;
   flex-direction: column;
+  color: white;
+  text-decoration: none;
 }
 
 .actor-name{

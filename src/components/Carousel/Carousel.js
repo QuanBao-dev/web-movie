@@ -124,8 +124,8 @@ const Carousel = () => {
               />
             )}
             {dataCarousel &&
-              dataCarousel.map((data, index) => (
-                <CarouselItem key={index} data={data} history={history} />
+              dataCarousel.map((data) => (
+                <CarouselItem key={data.malId} data={data} />
               ))}
             {dataCarousel && dataCarousel[0] && (
               <CarouselItem data={dataCarousel[0]} history={history} />

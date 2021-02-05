@@ -1,15 +1,19 @@
-import './Theater.css';
+import "./Theater.css";
 
-import loadable from '@loadable/component';
-import Axios from 'axios';
-import React, { useRef, useState } from 'react';
-import { useCookies } from 'react-cookie';
-import { Link, Route, Switch } from 'react-router-dom';
+import loadable from "@loadable/component";
+import Axios from "axios";
+import React, { useRef, useState } from "react";
+import { useCookies } from "react-cookie";
+import { Link, Route, Switch } from "react-router-dom";
 
-import Input from '../../components/Input/Input';
-import { theaterStream } from '../../epics/theater';
-import { useFetchRoomData, useInitTheaterState } from '../../Hook/theater';
-import { updateAllowFetchCurrentRoomDetail, updateAllowFetchRooms, updateSignIn } from '../../store/theater';
+import Input from "../../components/Input/Input";
+import { theaterStream } from "../../epics/theater";
+import { useFetchRoomData, useInitTheaterState } from "../../Hook/theater";
+import {
+  updateAllowFetchCurrentRoomDetail,
+  updateAllowFetchRooms,
+  updateSignIn,
+} from "../../store/theater";
 
 const Toggle = loadable(() => import("../../components/Toggle/Toggle"));
 const TheaterWatch = loadable(

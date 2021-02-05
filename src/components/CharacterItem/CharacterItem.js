@@ -4,22 +4,19 @@ import React from "react";
 
 import { characterStream } from "../../epics/character";
 import { LazyLoadImage } from "react-lazy-load-image-component";
+import { Link } from "react-router-dom";
 
 function CharacterItem({ characterData, history, lazy }) {
   return (
-    <div
+    <Link
+      to={`/anime/character/${
+        characterData.mal_id
+      }-${characterData.name.replace(/[ /%^&*(),]/g, "-").toLocaleLowerCase()}`}
       className={`character-item${
         characterData.role === "Main" ? " border-yellow" : ""
       }`}
       onClick={() => {
         characterStream.updateRole(characterData.role);
-        history.push(
-          `/anime/character/${
-            characterData.mal_id
-          }-${characterData.name
-            .replace(/[ /%^&*(),]/g, "-")
-            .toLocaleLowerCase()}`
-        );
       }}
     >
       {!lazy && (
@@ -38,7 +35,7 @@ function CharacterItem({ characterData, history, lazy }) {
         />
       )}
       <div className="name-character">{characterData.name}</div>
-    </div>
+    </Link>
   );
 }
 export default CharacterItem;

@@ -3,7 +3,7 @@ import "./PersonDetail.css";
 import loadable from "@loadable/component";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import React, { useEffect, useState } from "react";
-import { useHistory } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import { BehaviorSubject, fromEvent, of, timer } from "rxjs";
 import { ajax } from "rxjs/ajax";
 import { catchError, filter, mergeMapTo, pluck, retry } from "rxjs/operators";
@@ -247,14 +247,12 @@ const PersonDetail = (props) => {
                   )
                   .map((key, index) => (
                     <div key={index} className="person-voice-item">
-                      <div
+                      <Link
+                        to={
+                          "/anime/character/" +
+                          updateVoiceActingRoles[key].mal_id
+                        }
                         className="character-item-voice"
-                        onClick={() => {
-                          history.push(
-                            "/anime/character/" +
-                              updateVoiceActingRoles[key].mal_id
-                          );
-                        }}
                       >
                         <img
                           className="person__image-character"
@@ -264,7 +262,7 @@ const PersonDetail = (props) => {
                         <div className="pop-up-hover-character">
                           <h3>{updateVoiceActingRoles[key].name}</h3>
                         </div>
-                      </div>
+                      </Link>
                       <AllAnimeRelated
                         animeList={updateVoiceActingRoles[key].animeList}
                         history={history}

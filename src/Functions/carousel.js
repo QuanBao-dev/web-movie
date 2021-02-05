@@ -23,7 +23,7 @@ export const fetchCarousel = () => {
 
 export const autoSlidingNextPage = (pageCarousel, setPageCarousel) => {
   return () => {
-    const intervalSub = interval(3000).subscribe(() => {
+    const intervalSub = interval(5000).subscribe(() => {
       const page = pageCarousel;
       document.querySelector(".section-carousel-container").style.transition =
         "0.4s";

@@ -8,6 +8,7 @@
   box-shadow: 0 0 5px 2px black;
 }
 
+
   .all-anime-related > div{
     cursor: pointer;
     margin: 0.9rem;
@@ -35,6 +36,7 @@
       text-transform: capitalize;
       font-style: italic;
       font-size: smaller;
+      color: white;
     }
   }
   .all-anime-related > div:hover{

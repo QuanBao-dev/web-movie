@@ -562,7 +562,7 @@ socket.on("user-join", async (username, userId, roomId) => {
     });
 });
 
-socket.on("disconnected-user", async (username, userId, roomId) => {
+socket.on("disconnected-user", async (userId) => {
   // console.log(roomId, groupId);
   fetchUserOnline$(groupId, idCartoonUser).subscribe((users) => {
     theaterStream.updateData({

@@ -1,17 +1,18 @@
-import './AnimeStaffPositionItem.css';
-import 'react-lazy-load-image-component/src/effects/opacity.css';
+import "./AnimeStaffPositionItem.css";
+import "react-lazy-load-image-component/src/effects/opacity.css";
 
-import React from 'react';
-import { LazyLoadImage } from 'react-lazy-load-image-component';
+import React from "react";
+import { LazyLoadImage } from "react-lazy-load-image-component";
+import { Link } from "react-router-dom";
 
 function AnimeStaffPositionItem({
   updateStaffPosition,
   keyData,
-  history,
   lazy = false,
 }) {
   return (
-    <div
+    <Link
+      to={"/anime/" + updateStaffPosition[keyData].mal_id}
       className={
         updateStaffPosition[keyData].positions.includes(
           "Theme Song Performance"
@@ -19,9 +20,6 @@ function AnimeStaffPositionItem({
           ? "anime-theme-song-performance-role"
           : ""
       }
-      onClick={() => {
-        history.push("/anime/" + updateStaffPosition[keyData].mal_id);
-      }}
     >
       {!lazy && (
         <img src={updateStaffPosition[keyData].image_url} alt="image_anime" />
@@ -41,7 +39,7 @@ function AnimeStaffPositionItem({
           </span>
         ))}
       </div>
-    </div>
+    </Link>
   );
 }
 

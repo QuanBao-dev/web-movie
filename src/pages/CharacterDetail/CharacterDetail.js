@@ -3,7 +3,7 @@ import "react-lazy-load-image-component/src/effects/opacity.css";
 
 import loadable from "@loadable/component";
 import React, { useEffect, useState } from "react";
-import { useHistory } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { of } from "rxjs";
 import { ajax } from "rxjs/ajax";
 import { catchError, pluck, retry } from "rxjs/operators";
@@ -18,7 +18,6 @@ const AllAnimeRelated = loadable(() =>
 
 const CharacterDetail = (props) => {
   const characterId = parseInt(props.match.params.characterId);
-  const history = useHistory();
   const [dataCharacterDetail, setDataCharacterDetail] = useState({});
   useEffect(() => {
     window.scroll({
@@ -103,7 +102,6 @@ const CharacterDetail = (props) => {
             <h1 className="text-capitalize">Character appears in...</h1>
             <AllAnimeRelated
               animeList={dataCharacterDetail.animeography}
-              history={history}
               lazy={true}
             />
           </div>
@@ -115,12 +113,10 @@ const CharacterDetail = (props) => {
             <div className="voice-actor-list">
               {dataCharacterDetail.voice_actors.map((actor, index) => {
                 return (
-                  <div
+                  <Link
+                    to={"/anime/person/" + actor.mal_id}
                     className="actor-item"
                     key={index}
-                    onClick={() => {
-                      history.push("/anime/person/" + actor.mal_id);
-                    }}
                   >
                     <LazyLoadImage
                       src={actor.image_url}
@@ -133,7 +129,7 @@ const CharacterDetail = (props) => {
                       <h3 title="name">{actor.name}</h3>
                       <div title="language">( {actor.language} )</div>
                     </div>
-                  </div>
+                  </Link>
                 );
               })}
             </div>

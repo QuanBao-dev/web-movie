@@ -1,5 +1,5 @@
 import Axios from "axios";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { animeDetailStream } from "../../epics/animeDetail";
 import Input from "../Input/Input";
 
@@ -17,6 +17,10 @@ function FormSubmitCrawl({
   selectModeEngVideoRef,
 }) {
   const [error, setError] = useState(null);
+  useEffect(() => {
+    buttonSubmitCrawlInputRef.current.disabled = false;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [malId]);
   return (
     <div className="form-submit">
       <select

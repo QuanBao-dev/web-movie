@@ -4,10 +4,12 @@
   background-color: #222742;
   color: white;
   padding: 1rem;
+  overflow: auto;
 }
 
 .table-user-session{
   margin: auto;
+  min-width: 1135px;
 }
 
 .table-user-session tr{

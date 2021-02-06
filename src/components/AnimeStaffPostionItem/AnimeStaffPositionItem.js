@@ -11,8 +11,7 @@ function AnimeStaffPositionItem({
   lazy = false,
 }) {
   return (
-    <Link
-      to={"/anime/" + updateStaffPosition[keyData].mal_id}
+    <div
       className={
         updateStaffPosition[keyData].positions.includes(
           "Theme Song Performance"
@@ -21,25 +20,27 @@ function AnimeStaffPositionItem({
           : ""
       }
     >
-      {!lazy && (
-        <img src={updateStaffPosition[keyData].image_url} alt="image_anime" />
-      )}
-      {lazy && (
-        <LazyLoadImage
-          src={updateStaffPosition[keyData].image_url}
-          alt="image_anime"
-          effect="opacity"
-        />
-      )}
-      <div className="pop-up-hover">
-        <h3 title="name">{updateStaffPosition[keyData].name}</h3>
-        {updateStaffPosition[keyData].positions.map((theme, index) => (
-          <span title="role" key={index}>
-            ( {theme} )
-          </span>
-        ))}
-      </div>
-    </Link>
+      <Link to={"/anime/" + updateStaffPosition[keyData].mal_id}>
+        {!lazy && (
+          <img src={updateStaffPosition[keyData].image_url} alt="image_anime" />
+        )}
+        {lazy && (
+          <LazyLoadImage
+            src={updateStaffPosition[keyData].image_url}
+            alt="image_anime"
+            effect="opacity"
+          />
+        )}
+        <div className="pop-up-hover">
+          <h3 title="name">{updateStaffPosition[keyData].name}</h3>
+          {updateStaffPosition[keyData].positions.map((theme, index) => (
+            <span title="role" key={index}>
+              ( {theme} )
+            </span>
+          ))}
+        </div>
+      </Link>
+    </div>
   );
 }
 

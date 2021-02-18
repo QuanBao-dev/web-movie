@@ -15,7 +15,7 @@ const initialState = {
   score: 0,
   genreId: "0",
   currentPage: 1,
-  numberOfProduct: 36,
+  numberOfProduct: 40,
   shouldScrollToSeeMore: false,
   season: currentSeason,
   year: new Date(Date.now()).getFullYear(),

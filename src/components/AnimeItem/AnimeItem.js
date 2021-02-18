@@ -282,7 +282,7 @@ function mouseMoveAnimeItem(animeItemRef, virtual) {
 
       /* Apply the calculated transformation */
       animeItemRef.current.style.transform = string;
-      animeItemRef.current.style.zIndex = 2;
+      animeItemRef.current.style.zIndex = 10;
     }
   };
 }

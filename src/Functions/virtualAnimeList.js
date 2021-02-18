@@ -30,7 +30,7 @@ export function updateVirtualStyle(virtual, index) {
         parseInt(
           index % virtualAnimeListStream.currentState().quantityAnimePerRow
         ) * virtualAnimeListStream.currentState().offsetWidthAnime || 0,
-      width: virtualAnimeListStream.currentState().offsetWidthAnime - 20,
+      width: virtualAnimeListStream.currentState().offsetWidthAnime - 10,
       height: virtualAnimeListStream.currentState().offsetHeightAnime - 10,
     };
   else virtualStyle = {};
@@ -43,8 +43,8 @@ export const updateVirtualAnimeList = (virtual, data) => {
       const listAnimeE = document.querySelector(
         ".container-genre-detail .list-anime"
       );
-      const screenWidth = document.querySelector(".container-genre-detail")
-        .offsetWidth;
+      const screenWidth =
+        document.querySelector(".container-genre-detail").offsetWidth + 1;
       virtualAnimeListStream.updateData({
         screenHeight:
           (data.length /
@@ -55,7 +55,8 @@ export const updateVirtualAnimeList = (virtual, data) => {
       });
       listAnimeE.style.width = `${
         virtualAnimeListStream.currentState().quantityAnimePerRow *
-        virtualAnimeListStream.currentState().offsetWidthAnime
+          virtualAnimeListStream.currentState().offsetWidthAnime -
+        10
       }px`;
       const numberRow =
         lazyLoadAnimeListStream.currentState().genreDetailData.length /
@@ -84,7 +85,7 @@ export const updateVirtualAnimeItem = (animeItemRef, virtual) => {
           virtualAnimeListStream.currentState().offsetWidthAnime
       );
       let width, height;
-      if (virtualAnimeListStream.currentState().screenWidth > 1260) {
+      if (virtualAnimeListStream.currentState().screenWidth > 1110) {
         width =
           document.querySelector(".container-genre-detail").offsetWidth / 5;
         height = (width * 340) / 224;
@@ -92,7 +93,7 @@ export const updateVirtualAnimeItem = (animeItemRef, virtual) => {
         width =
           document.querySelector(".container-genre-detail").offsetWidth / 4;
         height = (width * 340) / 224;
-      } else if (virtualAnimeListStream.currentState().screenWidth > 670) {
+      } else if (virtualAnimeListStream.currentState().screenWidth > 600) {
         width =
           document.querySelector(".container-genre-detail").offsetWidth / 3;
         height = (width * 340) / 224;

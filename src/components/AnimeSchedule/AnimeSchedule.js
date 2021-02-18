@@ -48,7 +48,7 @@ const AnimeSchedule = () => {
                   maxHeight: animeScheduleState.dateSchedule[index]
                     ? "5000px"
                     : "3px",
-                  transition: "0.4s",
+                  transition: "1s",
                 }}
                 ref={movieRefs[index]}
               >
@@ -74,11 +74,13 @@ function toggleShowHideAnimeSchedule(animeScheduleState, index, movieRefs) {
     animeScheduleState.dateSchedule[index] = !animeScheduleState.dateSchedule[
       index
     ];
-    const maxHeight = animeScheduleState.dateSchedule[index] ? "5000px" : "3px";
-    movieRefs[index].current.style.maxHeight = maxHeight;
-    const showMovie = movieRefs.map((movie) => {
-      return movie.current.style.maxHeight !== "3px";
+    const showMovie = movieRefs.map((_, i) => {
+      return index === i && movieRefs[index].current.style.maxHeight === "3px";
     });
     animeScheduleStream.updateData({ dateSchedule: showMovie });
+    if (movieRefs[index].current.style.maxHeight === "3px")
+      window.scroll({
+        top: movieRefs[index].current.offsetTop - 60,
+      });
   };
 }

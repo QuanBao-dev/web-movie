@@ -14,7 +14,7 @@ export const initTopAnimeList = (setTopAnimeListState) => {
           document.querySelector(".top-anime-list-container").scroll({
             top: topAnimeListStream.currentState().positionScrollTop,
           });
-      }, 400);
+      }, 10);
     }
     if (topAnimeListStream.currentState().dataTopMovie.length === 0) {
       // updatePageTopMovieOnDestroy(null);

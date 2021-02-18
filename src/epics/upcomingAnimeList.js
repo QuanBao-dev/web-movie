@@ -1,8 +1,17 @@
-import { asyncScheduler, interval, of, timer } from 'rxjs';
-import { ajax } from 'rxjs/ajax';
-import { catchError, filter, pluck, retry, switchMap, takeWhile, tap, throttleTime } from 'rxjs/operators';
+import { asyncScheduler, interval, of, timer } from "rxjs";
+import { ajax } from "rxjs/ajax";
+import {
+  catchError,
+  filter,
+  pluck,
+  retry,
+  switchMap,
+  takeWhile,
+  tap,
+  throttleTime,
+} from "rxjs/operators";
 
-import upcomingAnimeListStore from '../store/upcomingAnimeList';
+import upcomingAnimeListStore from "../store/upcomingAnimeList";
 
 export const upcomingAnimeListStream = upcomingAnimeListStore;
 
@@ -101,6 +110,10 @@ export const scrollAnimeInterval$ = (scrollE, end) => {
 
 export const upcomingAnimeListUpdated$ = () => {
   return timer(0).pipe(
+    filter(
+      () =>
+        upcomingAnimeListStream.currentState().upcomingAnimeList.length === 0
+    ),
     switchMap(() =>
       ajax({
         url: `https://api.jikan.moe/v3/top/anime/1/upcoming`,

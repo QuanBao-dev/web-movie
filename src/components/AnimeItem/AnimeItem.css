@@ -13,6 +13,7 @@
   flex: 1 1 auto;
   max-width: 250px;
   background-color: black;
+  margin: 10px 5px;
 }
 
 .anime-item.relative{
@@ -34,7 +35,7 @@
 }
 
 .anime-item:hover .anime-item-info{
-  background-color: black;
+  background-color: rgb(36, 36, 36);
   color: rgb(255, 251, 0);
 }
 
@@ -152,10 +153,6 @@
 
 .container-genre-detail .anime-item{
   margin: 0;
-}
-
-.anime-item{
-  margin: 30px 10px;
 }
 
 @media (max-width:365px){

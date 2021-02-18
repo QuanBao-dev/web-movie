@@ -38,15 +38,20 @@ export function fetchDataGenreAnimeList$(genreId, page, url) {
 
 export function updatePageScrollingWindow$() {
   return fromEvent(window, "scroll").pipe(
-    filter(() => document.body.scrollHeight - (window.scrollY + 1000) < 0),
+    filter(
+      () =>
+        document.body.scrollHeight - (window.scrollY + window.innerHeight) < 0
+    ),
     tap(() => {
       if (
-        lazyLoadAnimeListStream.currentState().pageSplit * 10 <=
+        lazyLoadAnimeListStream.currentState().pageSplit *
+          lazyLoadAnimeListStream.currentState().numberAnimeShowMore <=
         lazyLoadAnimeListStream.currentState().genreDetailData.length
-      )
+      ) {
         lazyLoadAnimeListStream.updateData({
           pageSplit: lazyLoadAnimeListStream.currentState().pageSplit + 1,
         });
+      }
     })
   );
 }

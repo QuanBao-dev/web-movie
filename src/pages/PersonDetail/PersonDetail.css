@@ -99,6 +99,7 @@
   max-width: 350px;
   align-self: flex-start;  
   height: auto;
+  text-decoration: none;
 }
 
 .person__image-character{

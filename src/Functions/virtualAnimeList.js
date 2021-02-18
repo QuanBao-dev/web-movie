@@ -89,11 +89,11 @@ export const updateVirtualAnimeItem = (animeItemRef, virtual) => {
         width =
           document.querySelector(".container-genre-detail").offsetWidth / 5;
         height = (width * 340) / 224;
-      } else if (virtualAnimeListStream.currentState().screenWidth > 900) {
+      } else if (virtualAnimeListStream.currentState().screenWidth > 850) {
         width =
           document.querySelector(".container-genre-detail").offsetWidth / 4;
         height = (width * 340) / 224;
-      } else if (virtualAnimeListStream.currentState().screenWidth > 600) {
+      } else if (virtualAnimeListStream.currentState().screenWidth > 560) {
         width =
           document.querySelector(".container-genre-detail").offsetWidth / 3;
         height = (width * 340) / 224;

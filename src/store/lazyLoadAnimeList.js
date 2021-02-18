@@ -10,7 +10,7 @@ const initialState = {
   genre: null,
   pageGenre: 1,
   pageSplit: 1,
-  numberAnimeShowMore: 10,
+  numberAnimeShowMore: (parseInt(window.innerHeight / 376) + 1) * 5,
 };
 
 const subject = new BehaviorSubject(initialState);

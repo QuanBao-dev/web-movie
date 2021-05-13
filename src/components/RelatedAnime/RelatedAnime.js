@@ -47,7 +47,7 @@ const RelatedAnime = ({ isLoading }) => {
             <AnimeList
               data={recommendationState.dataRelatedAnime.slice(
                 0,
-                8 * recommendationState.pageRelated
+                10 * recommendationState.pageRelated
               )}
               error={null}
               lazy={true}

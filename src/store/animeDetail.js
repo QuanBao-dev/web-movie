@@ -5,6 +5,7 @@ const initialState = {
   dataVideoPromo: [],
   dataEpisodesAnime: {},
   dataLargePicture: "",
+  dataLargePictureList: [],
   boxMovie: null,
   malId: null,
   dataRelatedAnime: [],

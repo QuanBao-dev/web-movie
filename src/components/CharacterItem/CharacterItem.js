@@ -16,7 +16,7 @@ function CharacterItem({ characterData, history, lazy }) {
         characterData.role === "Main" ? " border-yellow" : ""
       }`}
       onClick={() => {
-        characterStream.updateRole(characterData.role);
+        characterStream.updateData({ role: characterData.role });
       }}
     >
       {!lazy && (
@@ -34,7 +34,7 @@ function CharacterItem({ characterData, history, lazy }) {
           effect="opacity"
         />
       )}
-      <div className="name-character">{characterData.name}</div>
+      <div className="name-character">{characterData.name.replace(",","")}</div>
     </Link>
   );
 }

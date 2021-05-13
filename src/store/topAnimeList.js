@@ -7,7 +7,7 @@ const initialState = {
   pageSplitTopMovie: 1,
   allowFetchIncreasePageTopMovie: false,
   pageTopMovie: 1,
-  toggleFetchMode: "/bypopularity",
+  toggleFetchMode: "",
 };
 const behaviorSubject = new BehaviorSubject(initialState);
 

@@ -1,24 +1,21 @@
-import "./AnimeDetail.css";
+import './AnimeDetail.css';
 
-import loadable from "@loadable/component";
-import CircularProgress from "@material-ui/core/CircularProgress";
-import Axios from "axios";
-import React, { useEffect, useRef, useState } from "react";
-import { useCookies } from "react-cookie";
-import { Link, useHistory } from "react-router-dom";
+import loadable from '@loadable/component';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import Axios from 'axios';
+import React, { useEffect, useRef, useState } from 'react';
+import { useCookies } from 'react-cookie';
+import { Link, useHistory } from 'react-router-dom';
 
-import FormSubmit from "../../components/FormSubmit/FormSubmit";
-import FormSubmitCrawl from "../../components/FormSubmitCrawl/FormSubmitCrawl";
-import ListInformation from "../../components/ListInformation/ListInformation";
-import MenuTable from "../../components/MenuTable/MenuTable";
-import { animeDetailStream } from "../../epics/animeDetail";
-import { userStream } from "../../epics/user";
-import {
-  useFetchBoxMovieOneMovie,
-  useFetchData,
-  useInitAnimeDetailState,
-} from "../../Hook/animeDetail";
-import ListVideoUrl from "../../components/ListVideoUrl/ListVideoUrl";
+import FormSubmit from '../../components/FormSubmit/FormSubmit';
+import FormSubmitCrawl from '../../components/FormSubmitCrawl/FormSubmitCrawl';
+import ListImageAnimeDetail from '../../components/ListImageAnimeDetail/ListImageAnimeDetail';
+import ListInformation from '../../components/ListInformation/ListInformation';
+import ListVideoUrl from '../../components/ListVideoUrl/ListVideoUrl';
+import MenuTable from '../../components/MenuTable/MenuTable';
+import { animeDetailStream } from '../../epics/animeDetail';
+import { userStream } from '../../epics/user';
+import { useFetchBoxMovieOneMovie, useFetchData, useInitAnimeDetailState } from '../../Hook/animeDetail';
 
 const Characters = loadable(() =>
   import("../../components/Characters/Characters")
@@ -98,12 +95,8 @@ const AnimeDetail = (props) => {
             <CircularProgress color="secondary" size="4rem" />
           )}
         <div className="image">
-          <img
-            src={
-              animeDetailState.dataLargePicture ||
-              "https://reactnativecode.com/wp-content/uploads/2018/02/Default_Image_Thumbnail.png"
-            }
-            alt="image_anime"
+          <ListImageAnimeDetail
+            listImage={animeDetailState.dataLargePictureList}
           />
         </div>
         <MenuTable

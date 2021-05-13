@@ -1,6 +1,6 @@
-import random from "lodash/random";
 import { from } from "rxjs";
 import { combineAll, tap } from "rxjs/operators";
+
 import {
   animeDetailStream,
   fetchAnimeRecommendation$,
@@ -64,17 +64,14 @@ export const fetchData = (
     const fetchLargePictureUrl$ = fetchLargePicture$(malId).pipe(
       tap(({ pictures }) => {
         try {
-          animeDetailStream.updateIsLoading(false, "isLoadingLargePicture");
-          if (pictures) {
-            const imageUrl = pictures[random(pictures.length - 1)]
-              ? pictures[random(pictures.length - 1)].large
-              : undefined;
-            animeDetailStream.updateData({
-              dataLargePicture: imageUrl,
-            });
-          }
+          animeDetailStream.updateData({
+            dataLargePictureList: pictures
+              .map((picture) => picture.large)
+              .reverse(),
+            isLoadingLargePicture: false,
+          });
         } catch (error) {
-          animeDetailStream.updateIsLoading(false, "isLoadingLargePicture");
+          animeDetailStream.updateData({ isLoadingLargePicture: false });
           console.log(error);
         }
       })
@@ -109,7 +106,10 @@ export const fetchData = (
     const fetchCharacters$ = fetchDataCharacter$(malId).pipe(
       tap((data) => {
         animeDetailStream.updateIsLoading(false, "isLoadingCharacter");
-        characterStream.updateDataCharacter(data);
+        characterStream.updateData({
+          dataCharacter: data,
+          dataCharacterRaw: data,
+        });
       })
     );
     let subscription;
@@ -128,7 +128,7 @@ export const fetchData = (
       ])
         .pipe(combineAll())
         .subscribe(() => {
-          characterStream.updatePage(1);
+          characterStream.updateData({ page: 1 });
           animeDetailStream.updateData({
             malId: malId,
           });

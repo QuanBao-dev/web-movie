@@ -6,14 +6,16 @@ const initialState = {
   page: 1,
   numberDisplay: 12,
   dataCharacter:[],
+  dataCharacterRaw: [],
+  keyFilter: "",
 };
 let state = initialState;
 const characterStore = {
   initialState,
-  updateDataCharacter:(data)=>{
+  updateData: (object = initialState) => {
     state = {
       ...state,
-      dataCharacter:data
+      ...object
     };
     behaviorSubject.next(state);
   },
@@ -24,7 +26,7 @@ const characterStore = {
   currentState: () => {
     let ans;
     behaviorSubject.subscribe((v) => (ans = v));
-    return ans;
+    return ans || initialState; 
   },
   updateRole: (role) => {
     state = {

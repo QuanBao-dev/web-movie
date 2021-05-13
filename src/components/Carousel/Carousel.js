@@ -2,7 +2,7 @@
 import "./Carousel.css";
 
 import loadable from "@loadable/component";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 
 import { carouselStream } from "../../epics/carousel";
@@ -33,34 +33,37 @@ const Carousel = () => {
   useAutoSlidingNextPage(pageCarousel, setPageCarousel);
   // console.log(pageCarousel);
   const { dataCarousel } = carouselState;
-  if (pageCarousel === dataCarousel.length) {
-    setTimeout(() => {
-      if (document.querySelector(".section-carousel-container")) {
-        document.querySelector(".section-carousel-container").style.transition =
-          "0s";
-        setPageCarousel(0);
-      }
-    }, 400);
-  }
-  if (pageCarousel === -1) {
-    setTimeout(() => {
-      if (document.querySelector(".section-carousel-container")) {
-        document.querySelector(".section-carousel-container").style.transition =
-          "0s";
-        setPageCarousel(dataCarousel.length - 1);
-      }
-    }, 400);
-  }
+  useEffect(() => {
+    if (pageCarousel === dataCarousel.length) {
+      setTimeout(() => {
+        if (document.querySelector(".section-carousel-container")) {
+          document.querySelector(
+            ".section-carousel-container"
+          ).style.transition = "0s";
+          setPageCarousel(0);
+        }
+      }, 400);
+    }
+    if (pageCarousel === -1) {
+      setTimeout(() => {
+        if (document.querySelector(".section-carousel-container")) {
+          document.querySelector(
+            ".section-carousel-container"
+          ).style.transition = "0s";
+          setPageCarousel(dataCarousel.length - 1);
+        }
+      }, 400);
+    }
+  }, [pageCarousel]);
   const pageDisplay =
     pageCarousel === -1
       ? dataCarousel.length - 1
       : pageCarousel === dataCarousel.length
       ? 0
       : pageCarousel;
-  // console.log(stream.currentState());
   return (
     <div>
-      <FormEditCarousel  />
+      <FormEditCarousel />
       <div className="background">
         <div className="container-menu-control">
           <div

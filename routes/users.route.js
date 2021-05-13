@@ -31,6 +31,7 @@ router.get("/", verifyRole("Admin"), async (req, res) => {
 });
 
 router.post("/login", verifyLogin, async (req, res) => {
+  console.log(req.body);
   const result = loginValidation(req.body);
   if (result.error) {
     return res.status(400).send({ error: result.error.details[0].message });

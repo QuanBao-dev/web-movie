@@ -2,17 +2,13 @@ const jwt = require("jsonwebtoken");
 module.exports.verifyRole = (...roles) => {
   return (req, res, next) => {
     const authHeader = req.headers["authorization"];
-    // console.log(req.signedCookies.idCartoonUser);
-    let token = authHeader && authHeader.split(" ")[1];
-    if (token === "undefined") {
-      token = null;
-    }
-    if (!token || process.env.NODE_ENV === "production") {
+    let token;
+    if (process.env.NODE_ENV === "development")
+      token = authHeader && authHeader.split(" ")[1];
+    if (token === "undefined") token = null;
+    if (!token || process.env.NODE_ENV === "production")
       token = req.signedCookies.idCartoonUser;
-    }
-    if (!token) {
-      return res.status(401).send({ error: "Access Denied" });
-    }
+    if (!token) return res.status(401).send({ error: "Access Denied" });
     try {
       const decode = jwt.verify(token, process.env.JWT_KEY);
       req.user = decode;

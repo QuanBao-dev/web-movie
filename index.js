@@ -219,9 +219,7 @@ io.on("connection", (socket) => {
       }, [])
       .forEach(({ room, malId }) => {
         if (rooms[malId].users[socket.id]) {
-          socket
-            .to(malId)
-            .emit("disconnected-user", socket.id);
+          socket.to(malId).emit("disconnected-user", socket.id);
           delete rooms[malId].users[socket.id];
           if (Object.keys(rooms[malId].users).length === 0) {
             delete rooms[malId];
@@ -240,9 +238,7 @@ io.on("connection", (socket) => {
       }, [])
       .forEach(({ room, malId }) => {
         if (rooms[malId].users[socket.id]) {
-          socket
-            .to(malId)
-            .emit("disconnected-user", socket.id);
+          socket.to(malId).emit("disconnected-user", socket.id);
           delete rooms[malId].users[socket.id];
           if (Object.keys(rooms[malId].users).length === 0) {
             delete rooms[malId];
@@ -286,7 +282,6 @@ app.use("/api/movies", moviesRoute);
 app.use("/api/users", usersRoute);
 app.use("/api/", tokenRoute);
 app.use("/", renderRoute);
-server.listen(port, () => {
-  let port = server.address().port;
-  console.log(`Example app listening on port ${port}!`);
-});
+server.listen(port, () =>
+  console.log(`Example app listening on port ${port}!`)
+);

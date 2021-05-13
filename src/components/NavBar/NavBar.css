@@ -16,7 +16,7 @@
   margin-top: 65px;
 }
 
-.active{
+.nav-bar__item .active{
   transition: 0.3s ease-in-out;
   background-color: white;
   color: black!important;

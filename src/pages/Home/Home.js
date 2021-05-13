@@ -94,9 +94,7 @@ window.addEventListener("resize", () => {
   stream.init();
 });
 function Home() {
-  const [homeState, setHomeState] = useState(
-    stream.currentState() ? stream.currentState() : stream.initialState
-  );
+  const [homeState, setHomeState] = useState(stream.currentState());
   useEffect(() => {
     const subscription = stream.subscribe(setHomeState);
     stream.init();

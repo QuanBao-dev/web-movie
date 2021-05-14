@@ -1,6 +1,6 @@
 import "./SliderSmallImage.css";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   useMouseMoveHandling,
   useMouseUpHandling,
@@ -9,6 +9,7 @@ import {
 } from "../../Hook/slideScrollDrag";
 import { fromEvent } from "rxjs";
 import { debounceTime, tap } from "rxjs/operators";
+import navBarStore from "../../store/navbar";
 
 const SliderSmallImage = ({ dataListImage, page, setPage }) => {
   const [pageInternal, setPageInternal] = useState(0);
@@ -19,18 +20,21 @@ const SliderSmallImage = ({ dataListImage, page, setPage }) => {
   const delta = useRef(0);
   const isMouseDownRef = useRef(null);
   const [allowSliding, setAllowSliding] = useState(true);
+  const isMobile = useMemo(() => {
+    return navBarStore.currentState().isMobile;
+  }, []);
   useEffect(() => {
     const subscription = fromEvent(window, "scroll")
       .pipe(
         tap(() => {
-          if (allowSliding === true) setAllowSliding(false);
+          if (allowSliding === true && isMobile) setAllowSliding(false);
           sliderSmallImageRef.current.style.transform = `translateX(-${
             pageInternal < dataListImage.length - 4
               ? pageInternal * 25
               : (dataListImage.length - 4) * 25
           }%)`;
         }),
-        debounceTime(350)
+        debounceTime(1000)
       )
       .subscribe(() => {
         if (allowSliding === false) setAllowSliding(true);
@@ -38,6 +42,7 @@ const SliderSmallImage = ({ dataListImage, page, setPage }) => {
     return () => {
       subscription.unsubscribe();
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [allowSliding, dataListImage.length, pageInternal]);
   useEffect(() => {
     setPageInternal(page);
@@ -74,7 +79,6 @@ const SliderSmallImage = ({ dataListImage, page, setPage }) => {
     dataListImage,
     pageInternal,
     allowSliding,
-    setAllowSliding
   );
 
   useTouchEndHandling(

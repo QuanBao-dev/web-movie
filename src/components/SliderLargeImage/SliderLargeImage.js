@@ -1,7 +1,7 @@
 import "./SliderLargeImage.css";
 
 import React, { useEffect, useRef } from "react";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { fromEvent } from "rxjs";
 import { debounceTime, tap } from "rxjs/operators";
 
@@ -11,6 +11,7 @@ import {
   useTouchEndHandling,
   useTouchMoveHandling,
 } from "../../Hook/slideScrollDrag";
+import navBarStore from "../../store/navbar";
 
 const SliderLargeImage = ({ dataImageList, page, setPage }) => {
   const sliderLargeImageRef = useRef();
@@ -19,6 +20,9 @@ const SliderLargeImage = ({ dataImageList, page, setPage }) => {
   const posX2 = useRef(0);
   const delta = useRef(0);
   const [allowSliding, setAllowSliding] = useState(true);
+  const isMobile = useMemo(() => {
+    return navBarStore.currentState().isMobile;
+  }, []);
   useEffect(() => {
     const subscription = fromEvent(window, "scroll")
       .pipe(
@@ -29,12 +33,12 @@ const SliderLargeImage = ({ dataImageList, page, setPage }) => {
             sliderLargeImageRef.current.children[page]
           )
             sliderLargeImageRef.current.style.height = `${sliderLargeImageRef.current.children[page].offsetHeight}px`;
-          if (allowSliding === true) setAllowSliding(false);
+          if (allowSliding === true && isMobile) setAllowSliding(false);
           sliderLargeImageRef.current.style.transform = `translateX(-${
             (100 / dataImageList.length) * page
           }%)`;
         }),
-        debounceTime(350)
+        debounceTime(1000)
       )
       .subscribe(() => {
         if (allowSliding === false) setAllowSliding(true);
@@ -42,9 +46,9 @@ const SliderLargeImage = ({ dataImageList, page, setPage }) => {
     return () => {
       subscription.unsubscribe();
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [allowSliding, dataImageList.length, page]);
   useEffect(() => {
-    setAllowSliding(true);
     const subscription2 = fromEvent(window, "resize").subscribe(() => {
       sliderLargeImageRef.current.style.height = `${sliderLargeImageRef.current.children[page].offsetHeight}px`;
     });
@@ -52,8 +56,9 @@ const SliderLargeImage = ({ dataImageList, page, setPage }) => {
       sliderLargeImageRef.current &&
       sliderLargeImageRef.current.children.length > 0 &&
       sliderLargeImageRef.current.children[page]
-    )
+    ) {
       sliderLargeImageRef.current.style.height = `${sliderLargeImageRef.current.children[page].offsetHeight}px`;
+    }
     return () => {
       subscription2.unsubscribe();
     };
@@ -91,8 +96,7 @@ const SliderLargeImage = ({ dataImageList, page, setPage }) => {
     false,
     dataImageList,
     page,
-    allowSliding,
-    setAllowSliding
+    allowSliding
   );
 
   useTouchEndHandling(
@@ -107,25 +111,27 @@ const SliderLargeImage = ({ dataImageList, page, setPage }) => {
     setAllowSliding
   );
   return (
-    <div className="slider-large-image-container">
-      <i
-        onMouseDown={(e) => {
-          e.preventDefault();
-        }}
-        className="fas fa-chevron-right"
-        onClick={() =>
-          page < dataImageList.length - 1 ? setPage(page + 1) : setPage(0)
-        }
-      ></i>
-      <i
-        onMouseDown={(e) => {
-          e.preventDefault();
-        }}
-        className="fas fa-chevron-left"
-        onClick={() =>
-          page > 0 ? setPage(page - 1) : setPage(dataImageList.length - 1)
-        }
-      ></i>
+    <div className="slider-large-image-container hover">
+      {!isMobile && (
+        <i
+          onMouseDown={(e) => e.preventDefault()}
+          className="fas fa-chevron-right"
+          onClick={() =>
+            page < dataImageList.length - 1 ? setPage(page + 1) : setPage(0)
+          }
+        ></i>
+      )}
+      {!isMobile && (
+        <i
+          onMouseDown={(e) => {
+            e.preventDefault();
+          }}
+          className="fas fa-chevron-left"
+          onClick={() =>
+            page > 0 ? setPage(page - 1) : setPage(dataImageList.length - 1)
+          }
+        ></i>
+      )}
       <ul
         className="slider-large-image"
         ref={sliderLargeImageRef}

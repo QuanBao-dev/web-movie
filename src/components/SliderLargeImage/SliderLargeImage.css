@@ -31,11 +31,11 @@
   color: red;
 }
 
-.slider-large-image-container:hover .fa-chevron-right{
+.slider-large-image-container.hover:hover .fa-chevron-right{
   right: 0;
 }
 
-.slider-large-image-container:hover .fa-chevron-left{
+.slider-large-image-container.hover:hover .fa-chevron-left{
   left: 0;
 }
 

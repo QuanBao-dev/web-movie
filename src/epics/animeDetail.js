@@ -151,21 +151,22 @@ export function handleAddBoxMovie(
                 authorization: `Bearer ${idCartoonUser}`,
               },
               body: {
-                malId: animeDetailStream.currentState().dataInformationAnime
-                  .mal_id,
-                title: animeDetailStream.currentState().dataInformationAnime
-                  .title,
-                imageUrl: animeDetailStream.currentState()
-                  .dataLargePictureList[0],
+                malId:
+                  animeDetailStream.currentState().dataInformationAnime.mal_id,
+                title:
+                  animeDetailStream.currentState().dataInformationAnime.title,
+                imageUrl:
+                  animeDetailStream.currentState().dataLargePictureList[0],
                 episodes:
                   animeDetailStream.currentState().dataInformationAnime
                     .episodes || "??",
-                score: animeDetailStream.currentState().dataInformationAnime
-                  .score,
-                airing: animeDetailStream.currentState().dataInformationAnime
-                  .airing,
-                synopsis: animeDetailStream.currentState().dataInformationAnime
-                  .synopsis,
+                score:
+                  animeDetailStream.currentState().dataInformationAnime.score,
+                airing:
+                  animeDetailStream.currentState().dataInformationAnime.airing,
+                synopsis:
+                  animeDetailStream.currentState().dataInformationAnime
+                    .synopsis,
               },
             }).pipe(
               pluck("response", "message"),

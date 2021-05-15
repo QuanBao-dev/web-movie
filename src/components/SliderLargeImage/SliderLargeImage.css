@@ -50,9 +50,6 @@
 .slider-large-image-item{
   width: 100%;
   height: fit-content;
-  display: flex;
-  align-items: center;
-  min-height: 400px;
 }
 
 .slider-large-image-item img{

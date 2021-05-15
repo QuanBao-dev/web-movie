@@ -7,7 +7,6 @@ const initialState = {
   numberDisplay: 12,
   dataCharacter:[],
   dataCharacterRaw: [],
-  keyFilter: "",
 };
 let state = initialState;
 const characterStore = {

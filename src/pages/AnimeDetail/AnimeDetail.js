@@ -107,6 +107,7 @@ const AnimeDetail = (props) => {
         <div className="image">
           <ListImageAnimeDetail
             listImage={animeDetailState.dataLargePictureList}
+            isLoading={animeDetailState.isLoadingLargePicture}
           />
         </div>
         <MenuTable

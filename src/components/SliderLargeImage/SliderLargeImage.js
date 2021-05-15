@@ -13,16 +13,37 @@ import {
 } from "../../Hook/slideScrollDrag";
 import navBarStore from "../../store/navbar";
 
-const SliderLargeImage = ({ dataImageList, page, setPage }) => {
+const SliderLargeImage = ({ dataImageList, page, setPage, isLoading }) => {
   const sliderLargeImageRef = useRef();
   const isMouseDownRef = useRef(null);
   const posX1 = useRef(0);
   const posX2 = useRef(0);
   const delta = useRef(0);
+  const imageRef = useRef();
   const [allowSliding, setAllowSliding] = useState(true);
   const isMobile = useMemo(() => {
     return navBarStore.currentState().isMobile;
   }, []);
+  useEffect(() => {
+    let subscription;
+    console.log(imageRef.current);
+    if (!isLoading && imageRef.current) {
+      subscription = fromEvent(imageRef.current, "load").subscribe(() => {
+        setTimeout(() => {
+          if (
+            sliderLargeImageRef.current &&
+            sliderLargeImageRef.current.children.length > 0 &&
+            sliderLargeImageRef.current.children[page]
+          )
+            sliderLargeImageRef.current.style.height = `${sliderLargeImageRef.current.children[page].offsetHeight}px`;
+        }, 500);
+      });
+    }
+    return () => {
+      subscription && subscription.unsubscribe();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isLoading]);
   useEffect(() => {
     const subscription = fromEvent(window, "scroll")
       .pipe(
@@ -46,7 +67,7 @@ const SliderLargeImage = ({ dataImageList, page, setPage }) => {
     return () => {
       subscription.unsubscribe();
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [allowSliding, dataImageList.length, page]);
   useEffect(() => {
     const subscription2 = fromEvent(window, "resize").subscribe(() => {
@@ -147,7 +168,11 @@ const SliderLargeImage = ({ dataImageList, page, setPage }) => {
         {dataImageList &&
           dataImageList.map((imageUrl, index) => (
             <li className="slider-large-image-item" key={index}>
-              <img src={imageUrl} alt={"image_anime"}></img>
+              <img
+                src={imageUrl}
+                alt={"image_anime"}
+                ref={index === 0 ? imageRef : null}
+              ></img>
             </li>
           ))}
       </ul>

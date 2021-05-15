@@ -54,6 +54,9 @@ const Characters = ({ lazy = false, isLoading }) => {
       });
     });
     return () => {
+      characterStream.updateData({
+        dataCharacter: characterStream.currentState().dataCharacterRaw,
+      });
       subscription.unsubscribe();
     };
   }, []);

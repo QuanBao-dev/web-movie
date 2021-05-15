@@ -5,7 +5,7 @@ import React, { useState } from 'react';
 import SliderLargeImage from '../SliderLargeImage/SliderLargeImage';
 import SliderSmallImage from '../SliderSmallImage/SliderSmallImage';
 
-const ListImageAnimeDetail = ({ listImage }) => {
+const ListImageAnimeDetail = ({ listImage, isLoading }) => {
   const [page, setPage] = useState(0);
   return (
     <div className="list-image-anime-detail-container">
@@ -13,6 +13,7 @@ const ListImageAnimeDetail = ({ listImage }) => {
         dataImageList={listImage}
         page={page}
         setPage={setPage}
+        isLoading={isLoading}
       />
       <SliderSmallImage
         dataListImage={listImage}

@@ -42,9 +42,10 @@ const SliderSmallImage = ({ dataListImage, page, setPage }) => {
     return () => {
       subscription.unsubscribe();
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [allowSliding, dataListImage.length, pageInternal]);
   useEffect(() => {
+    sliderSmallImageRef.current.style.transition = "0.5s";
     setPageInternal(page);
   }, [page]);
   useMouseUpHandling(
@@ -78,7 +79,7 @@ const SliderSmallImage = ({ dataListImage, page, setPage }) => {
     true,
     dataListImage,
     pageInternal,
-    allowSliding,
+    allowSliding
   );
 
   useTouchEndHandling(

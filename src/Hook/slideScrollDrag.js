@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { fromEvent } from "rxjs";
 import { filter } from "rxjs/operators";
 import navBarStore from "../store/navbar";
-
+let timeout;
 export const useMouseUpHandling = (
   isMouseDownRef,
   sliderImageContainerRef,
@@ -25,7 +25,7 @@ export const useMouseUpHandling = (
         if (!isSmall)
           currentOffsetLeft =
             sliderLargeImageRef.current.offsetWidth *
-              ((1 / dataImageList.length) * page) +
+              ((1 / (dataImageList.length + 2)) * (page + 1)) +
             delta.current;
         else
           currentOffsetLeft =
@@ -38,7 +38,8 @@ export const useMouseUpHandling = (
         let widthEachItem;
         if (!isSmall)
           widthEachItem =
-            sliderLargeImageRef.current.offsetWidth / dataImageList.length;
+            sliderLargeImageRef.current.offsetWidth /
+            (dataImageList.length + 2);
         else widthEachItem = (sliderLargeImageRef.current.offsetWidth * 1) / 4;
         const estimatedPage = currentOffsetLeft / widthEachItem;
         if (!isSmall) {
@@ -52,19 +53,22 @@ export const useMouseUpHandling = (
 
             if (
               decimal >= 0.2 &&
-              parseInt(estimatedPage) < dataImageList.length - 1
+              parseInt(estimatedPage) <= dataImageList.length - 1
             ) {
-              setPage(parseInt(estimatedPage) + 1);
+              setPage(parseInt(estimatedPage));
             }
             if (decimal < 0.2) {
               sliderLargeImageRef.current.style.transform = `translateX(-${
                 currentOffsetLeft - delta.current
               }px)`;
             }
-            if (parseInt(estimatedPage) >= dataImageList.length - 1) {
-              sliderLargeImageRef.current.style.transform = `translateX(-${
-                (100 / dataImageList.length) * (dataImageList.length - 1)
-              }%)`;
+            if (parseInt(estimatedPage) > dataImageList.length - 1) {
+              setPage(parseInt(estimatedPage));
+              setTimeout(() => {
+                sliderLargeImageRef.current &&
+                  (sliderLargeImageRef.current.style.transition = "0s");
+                setPage(0);
+              }, 500);
             }
           }
 
@@ -76,16 +80,16 @@ export const useMouseUpHandling = (
               }px)`;
             }
 
-            if (decimal <= 0.8 && parseInt(estimatedPage) >= 0) {
-              setPage(parseInt(estimatedPage));
+            if (decimal <= 0.8 && parseInt(estimatedPage) > 0) {
+              setPage(parseInt(estimatedPage) - 1);
             }
-            if (decimal > 0.8) {
-              sliderLargeImageRef.current.style.transform = `translateX(-${
-                currentOffsetLeft - delta.current
-              }px)`;
-            }
-            if (parseInt(estimatedPage) < 0) {
-              sliderLargeImageRef.current.style.transform = `translateX(-${0}%)`;
+            if (parseInt(estimatedPage) <= 0) {
+              setPage(parseInt(estimatedPage) - 1);
+              setTimeout(() => {
+                sliderLargeImageRef.current &&
+                  (sliderLargeImageRef.current.style.transition = "0s");
+                setPage(dataImageList.length - 1);
+              }, 500);
             }
           }
         }
@@ -154,7 +158,7 @@ export const useMouseMoveHandling = (
           if (!isSmall)
             currentOffsetLeft =
               sliderLargeImageRef.current.offsetWidth *
-                ((1 / dataImageList.length) * page) +
+                ((1 / (dataImageList.length + 2)) * (page + 1)) +
               delta.current;
           else
             currentOffsetLeft =
@@ -175,7 +179,6 @@ export const useMouseMoveHandling = (
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dataImageList.length, page, isSmall]);
 };
-let timeout;
 export const useTouchEndHandling = (
   sliderLargeImageRef,
   isSmall,
@@ -192,13 +195,12 @@ export const useTouchEndHandling = (
       sliderLargeImageRef.current,
       "touchend"
     ).subscribe(() => {
-      sliderLargeImageRef.current.style.height = `${sliderLargeImageRef.current.children[page].offsetHeight}px`;
       sliderLargeImageRef.current.style.transition = "0.5s";
       let currentOffsetLeft;
       if (!isSmall)
         currentOffsetLeft =
           sliderLargeImageRef.current.offsetWidth *
-            ((1 / dataImageList.length) * page) +
+            ((1 / (dataImageList.length + 2)) * (page + 1)) +
           delta.current;
       else
         currentOffsetLeft =
@@ -211,7 +213,7 @@ export const useTouchEndHandling = (
       let widthEachItem;
       if (!isSmall)
         widthEachItem =
-          sliderLargeImageRef.current.offsetWidth / dataImageList.length;
+          sliderLargeImageRef.current.offsetWidth / (dataImageList.length + 2);
       else widthEachItem = (sliderLargeImageRef.current.offsetWidth * 1) / 4;
       const estimatedPage = currentOffsetLeft / widthEachItem;
       if (!isSmall) {
@@ -225,19 +227,23 @@ export const useTouchEndHandling = (
 
           if (
             decimal >= 0.2 &&
-            parseInt(estimatedPage) < dataImageList.length - 1
+            parseInt(estimatedPage) <= dataImageList.length - 1
           ) {
-            setPage(parseInt(estimatedPage) + 1);
+            setPage(parseInt(estimatedPage));
           }
           if (decimal < 0.2) {
             sliderLargeImageRef.current.style.transform = `translateX(-${
               currentOffsetLeft - delta.current
             }px)`;
           }
-          if (parseInt(estimatedPage) >= dataImageList.length - 1) {
-            sliderLargeImageRef.current.style.transform = `translateX(-${
-              (100 / dataImageList.length) * (dataImageList.length - 1)
-            }%)`;
+          if (parseInt(estimatedPage) === dataImageList.length) {
+            clearTimeout(timeout);
+            setPage(parseInt(estimatedPage));
+            timeout = setTimeout(() => {
+              sliderLargeImageRef.current &&
+                (sliderLargeImageRef.current.style.transition = "0s");
+              setPage(0);
+            }, 500);
           }
         }
 
@@ -248,17 +254,18 @@ export const useTouchEndHandling = (
               currentOffsetLeft - delta.current
             }px)`;
           }
-
-          if (decimal <= 0.8 && parseInt(estimatedPage) >= 0) {
-            setPage(parseInt(estimatedPage));
+          // console.log(parseInt(estimatedPage) - 1)
+          if (decimal <= 0.8 && parseInt(estimatedPage) > 0) {
+            setPage(parseInt(estimatedPage) - 1);
           }
-          if (decimal > 0.8) {
-            sliderLargeImageRef.current.style.transform = `translateX(-${
-              currentOffsetLeft - delta.current
-            }px)`;
-          }
-          if (parseInt(estimatedPage) < 0) {
-            sliderLargeImageRef.current.style.transform = `translateX(-${0}%)`;
+          if (parseInt(estimatedPage) === 0) {
+            clearTimeout(timeout);
+            setPage(parseInt(estimatedPage) - 1);
+            timeout = setTimeout(() => {
+              sliderLargeImageRef.current &&
+                (sliderLargeImageRef.current.style.transition = "0s");
+              setPage(dataImageList.length - 1);
+            }, 500);
           }
         }
       }
@@ -312,14 +319,20 @@ export const useTouchMoveHandling = (
         // if(allowSliding === true) setAllowSliding(false);
         posX2.current = posX1.current - e.touches[0].clientX;
         if (posX1.current !== 0) {
-          // console.log(posX2.current);
           delta.current += posX2.current;
+          // console.log(posX2.current);
           sliderLargeImageRef.current.style.transition = "0s";
           let currentOffsetLeft;
+          if (
+            (page <= -1 && delta.current < 0) ||
+            (page >= dataImageList.length && delta.current > 0)
+          ) {
+            return;
+          }
           if (!isSmall)
             currentOffsetLeft =
               sliderLargeImageRef.current.offsetWidth *
-                ((1 / dataImageList.length) * page) +
+                ((1 / (dataImageList.length + 2)) * (page + 1)) +
               delta.current;
           else
             currentOffsetLeft =

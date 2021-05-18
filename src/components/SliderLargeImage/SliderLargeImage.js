@@ -12,7 +12,6 @@ import {
   useTouchMoveHandling,
 } from "../../Hook/slideScrollDrag";
 import navBarStore from "../../store/navbar";
-
 const SliderLargeImage = ({ dataImageList, page, setPage, isLoading }) => {
   const sliderLargeImageRef = useRef();
   const isMouseDownRef = useRef(null);
@@ -26,16 +25,17 @@ const SliderLargeImage = ({ dataImageList, page, setPage, isLoading }) => {
   }, []);
   useEffect(() => {
     let subscription;
-    console.log(imageRef.current);
     if (!isLoading && imageRef.current) {
       subscription = fromEvent(imageRef.current, "load").subscribe(() => {
         setTimeout(() => {
           if (
             sliderLargeImageRef.current &&
             sliderLargeImageRef.current.children.length > 0 &&
-            sliderLargeImageRef.current.children[page]
+            sliderLargeImageRef.current.children[page + 1]
           )
-            sliderLargeImageRef.current.style.height = `${sliderLargeImageRef.current.children[page].offsetHeight}px`;
+            sliderLargeImageRef.current.style.height = `${
+              sliderLargeImageRef.current.children[page + 1].offsetHeight
+            }px`;
         }, 500);
       });
     }
@@ -51,12 +51,15 @@ const SliderLargeImage = ({ dataImageList, page, setPage, isLoading }) => {
           if (
             sliderLargeImageRef.current &&
             sliderLargeImageRef.current.children.length > 0 &&
-            sliderLargeImageRef.current.children[page]
+            sliderLargeImageRef.current.children[page + 1]
           )
-            sliderLargeImageRef.current.style.height = `${sliderLargeImageRef.current.children[page].offsetHeight}px`;
+            sliderLargeImageRef.current.style.height = `${
+              sliderLargeImageRef.current.children[page + 1].offsetHeight
+            }px`;
           if (allowSliding === true && isMobile) setAllowSliding(false);
+          sliderLargeImageRef.current.style.transition = "0.5s";
           sliderLargeImageRef.current.style.transform = `translateX(-${
-            (100 / dataImageList.length) * page
+            (100 / (dataImageList.length + 2)) * (page + 1)
           }%)`;
         }),
         debounceTime(1000)
@@ -71,14 +74,18 @@ const SliderLargeImage = ({ dataImageList, page, setPage, isLoading }) => {
   }, [allowSliding, dataImageList.length, page]);
   useEffect(() => {
     const subscription2 = fromEvent(window, "resize").subscribe(() => {
-      sliderLargeImageRef.current.style.height = `${sliderLargeImageRef.current.children[page].offsetHeight}px`;
+      sliderLargeImageRef.current.style.height = `${
+        sliderLargeImageRef.current.children[page + 1].offsetHeight
+      }px`;
     });
     if (
       sliderLargeImageRef.current &&
       sliderLargeImageRef.current.children.length > 0 &&
-      sliderLargeImageRef.current.children[page]
+      sliderLargeImageRef.current.children[page + 1]
     ) {
-      sliderLargeImageRef.current.style.height = `${sliderLargeImageRef.current.children[page].offsetHeight}px`;
+      sliderLargeImageRef.current.style.height = `${
+        sliderLargeImageRef.current.children[page + 1].offsetHeight
+      }px`;
     }
     return () => {
       subscription2.unsubscribe();
@@ -137,9 +144,19 @@ const SliderLargeImage = ({ dataImageList, page, setPage, isLoading }) => {
         <i
           onMouseDown={(e) => e.preventDefault()}
           className="fas fa-chevron-right"
-          onClick={() =>
-            page < dataImageList.length - 1 ? setPage(page + 1) : setPage(0)
-          }
+          onClick={() => {
+            if (page < dataImageList.length - 1) {
+              setPage(page + 1);
+            }
+            if (page === dataImageList.length - 1) {
+              setPage(page + 1);
+              setTimeout(() => {
+                sliderLargeImageRef.current.style.transition = "0s";
+                setPage(0);
+                sliderLargeImageRef.current.style.transition = "0.5s";
+              }, 500);
+            }
+          }}
         ></i>
       )}
       {!isMobile && (
@@ -148,23 +165,41 @@ const SliderLargeImage = ({ dataImageList, page, setPage, isLoading }) => {
             e.preventDefault();
           }}
           className="fas fa-chevron-left"
-          onClick={() =>
-            page > 0 ? setPage(page - 1) : setPage(dataImageList.length - 1)
-          }
+          onClick={() => {
+            if (page > 0) {
+              setPage(page - 1);
+            }
+            if (page === 0) {
+              setPage(-1);
+              setTimeout(() => {
+                sliderLargeImageRef.current.style.transition = "0s";
+                setPage(dataImageList.length - 1);
+                sliderLargeImageRef.current.style.transition = "0.5s";
+              }, 500);
+            }
+          }}
         ></i>
       )}
       <ul
         className="slider-large-image"
         ref={sliderLargeImageRef}
         style={{
-          width: `${dataImageList.length * 100}%`,
-          transform: `translateX(-${(100 / dataImageList.length) * page}%)`,
+          width: `${(dataImageList.length + 2) * 100}%`,
+          transform: `translateX(-${
+            (100 / (dataImageList.length + 2)) * (page + 1)
+          }%)`,
         }}
         onMouseDown={(e) => {
           e.preventDefault();
           isMouseDownRef.current = true;
         }}
       >
+        <li className="slider-large-image-item">
+          <img
+            src={dataImageList[dataImageList.length - 1]}
+            alt={"image_anime"}
+          ></img>
+        </li>
         {dataImageList &&
           dataImageList.map((imageUrl, index) => (
             <li className="slider-large-image-item" key={index}>
@@ -175,6 +210,9 @@ const SliderLargeImage = ({ dataImageList, page, setPage, isLoading }) => {
               ></img>
             </li>
           ))}
+        <li className="slider-large-image-item">
+          <img src={dataImageList[0]} alt={"image_anime"}></img>
+        </li>
       </ul>
     </div>
   );

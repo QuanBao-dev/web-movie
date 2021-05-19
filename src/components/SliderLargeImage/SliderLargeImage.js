@@ -145,15 +145,15 @@ const SliderLargeImage = ({ dataImageList, page, setPage, isLoading }) => {
           onMouseDown={(e) => e.preventDefault()}
           className="fas fa-chevron-right"
           onClick={() => {
+            sliderLargeImageRef.current.style.transition = "0.5s";
             if (page < dataImageList.length - 1) {
               setPage(page + 1);
             }
             if (page === dataImageList.length - 1) {
-              setPage(page + 1);
+              setPage(dataImageList.length);
               setTimeout(() => {
                 sliderLargeImageRef.current.style.transition = "0s";
                 setPage(0);
-                sliderLargeImageRef.current.style.transition = "0.5s";
               }, 500);
             }
           }}
@@ -166,15 +166,16 @@ const SliderLargeImage = ({ dataImageList, page, setPage, isLoading }) => {
           }}
           className="fas fa-chevron-left"
           onClick={() => {
+            sliderLargeImageRef.current.style.transition = "0.5s";
             if (page > 0) {
               setPage(page - 1);
             }
             if (page === 0) {
+              // clearTimeout(timeout);
               setPage(-1);
               setTimeout(() => {
                 sliderLargeImageRef.current.style.transition = "0s";
                 setPage(dataImageList.length - 1);
-                sliderLargeImageRef.current.style.transition = "0.5s";
               }, 500);
             }
           }}

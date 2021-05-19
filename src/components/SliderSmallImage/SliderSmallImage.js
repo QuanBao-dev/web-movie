@@ -99,28 +99,32 @@ const SliderSmallImage = ({ dataListImage, page, setPage }) => {
       ref={sliderSmallImageContainerRef}
     >
       <div className="layer-block"></div>
-      <i
-        className="fas fa-chevron-right"
-        onMouseDown={(e) => {
-          e.preventDefault();
-        }}
-        onClick={() => {
-          pageInternal < dataListImage.length - 4
-            ? setPageInternal(pageInternal + 1)
-            : setPageInternal(0);
-        }}
-      ></i>
-      <i
-        className="fas fa-chevron-left"
-        onMouseDown={(e) => {
-          e.preventDefault();
-        }}
-        onClick={() => {
-          pageInternal > 0
-            ? setPageInternal(pageInternal - 1)
-            : setPageInternal(dataListImage.length - 4);
-        }}
-      ></i>
+      {dataListImage.length > 4 && (
+        <i
+          className="fas fa-chevron-right"
+          onMouseDown={(e) => {
+            e.preventDefault();
+          }}
+          onClick={() => {
+            pageInternal < dataListImage.length - 4
+              ? setPageInternal(pageInternal + 1)
+              : setPageInternal(0);
+          }}
+        ></i>
+      )}
+      {dataListImage.length > 4 && (
+        <i
+          className="fas fa-chevron-left"
+          onMouseDown={(e) => {
+            e.preventDefault();
+          }}
+          onClick={() => {
+            pageInternal > 0
+              ? setPageInternal(pageInternal - 1)
+              : setPageInternal(dataListImage.length - 4);
+          }}
+        ></i>
+      )}
       <ul
         className="slider-small-image"
         ref={sliderSmallImageRef}

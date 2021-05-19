@@ -66,6 +66,7 @@ export const fetchData = (
         try {
           animeDetailStream.updateData({
             dataLargePictureList: pictures
+              .slice(0, pictures.length / 2)
               .map((picture) => picture.large)
               .reverse(),
             isLoadingLargePicture: false,

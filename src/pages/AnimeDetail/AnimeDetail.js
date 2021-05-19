@@ -105,10 +105,21 @@ const AnimeDetail = (props) => {
             <CircularProgress color="secondary" size="4rem" />
           )}
         <div className="image">
-          <ListImageAnimeDetail
-            listImage={animeDetailState.dataLargePictureList}
-            isLoading={animeDetailState.isLoadingLargePicture}
-          />
+          {animeDetailState.dataLargePictureList.length > 1 && (
+            <ListImageAnimeDetail
+              listImage={animeDetailState.dataLargePictureList}
+              isLoading={animeDetailState.isLoadingLargePicture}
+            />
+          )}
+          {animeDetailState.dataLargePictureList.length === 1 && (
+            <img
+              src={animeDetailState.dataLargePictureList[0]}
+              alt={"image_anime"}
+              style={{
+                width: "100%",
+              }}
+            ></img>
+          )}
         </div>
         <MenuTable
           elementTitle={elementTitle}

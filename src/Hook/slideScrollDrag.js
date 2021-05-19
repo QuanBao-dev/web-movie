@@ -63,7 +63,7 @@ export const useMouseUpHandling = (
               }px)`;
             }
             if (parseInt(estimatedPage) > dataImageList.length - 1) {
-              setPage(parseInt(estimatedPage));
+              setPage(dataImageList.length);
               setTimeout(() => {
                 sliderLargeImageRef.current &&
                   (sliderLargeImageRef.current.style.transition = "0s");
@@ -83,7 +83,7 @@ export const useMouseUpHandling = (
             if (decimal <= 0.8 && parseInt(estimatedPage) > 0) {
               setPage(parseInt(estimatedPage) - 1);
             }
-            if (parseInt(estimatedPage) <= 0) {
+            if (parseInt(estimatedPage) <= 0 && decimal <= 0.8) {
               setPage(parseInt(estimatedPage) - 1);
               setTimeout(() => {
                 sliderLargeImageRef.current &&
@@ -236,9 +236,12 @@ export const useTouchEndHandling = (
               currentOffsetLeft - delta.current
             }px)`;
           }
-          if (parseInt(estimatedPage) === dataImageList.length) {
+          if (
+            parseInt(estimatedPage) >= dataImageList.length &&
+            decimal >= 0.2
+          ) {
             clearTimeout(timeout);
-            setPage(parseInt(estimatedPage));
+            setPage(dataImageList.length);
             timeout = setTimeout(() => {
               sliderLargeImageRef.current &&
                 (sliderLargeImageRef.current.style.transition = "0s");
@@ -258,8 +261,8 @@ export const useTouchEndHandling = (
           if (decimal <= 0.8 && parseInt(estimatedPage) > 0) {
             setPage(parseInt(estimatedPage) - 1);
           }
-          if (parseInt(estimatedPage) === 0) {
-            clearTimeout(timeout);
+          if (parseInt(estimatedPage) <= 0 && decimal <= 0.8) {
+            navBarStore.currentState().isMobile && clearTimeout(timeout);
             setPage(parseInt(estimatedPage) - 1);
             timeout = setTimeout(() => {
               sliderLargeImageRef.current &&
@@ -324,8 +327,9 @@ export const useTouchMoveHandling = (
           sliderLargeImageRef.current.style.transition = "0s";
           let currentOffsetLeft;
           if (
-            (page <= -1 && delta.current < 0) ||
-            (page >= dataImageList.length && delta.current > 0)
+            ((page <= -1 && delta.current < 0) ||
+              (page >= dataImageList.length && delta.current > 0)) &&
+            navBarStore.currentState().isMobile
           ) {
             return;
           }

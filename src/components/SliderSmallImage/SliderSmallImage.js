@@ -11,7 +11,12 @@ import { fromEvent } from "rxjs";
 import { debounceTime, tap } from "rxjs/operators";
 import navBarStore from "../../store/navbar";
 
-const SliderSmallImage = ({ dataListImage, page, setPage }) => {
+const SliderSmallImage = ({
+  sliderLargeImageRef,
+  dataListImage,
+  page,
+  setPage,
+}) => {
   const [pageInternal, setPageInternal] = useState(0);
   const sliderSmallImageRef = useRef();
   const sliderSmallImageContainerRef = useRef();
@@ -146,7 +151,10 @@ const SliderSmallImage = ({ dataListImage, page, setPage }) => {
               key === page ? " active" : ""
             }`}
             key={key}
-            onClick={() => setPage(key)}
+            onClick={() => {
+              sliderLargeImageRef.current.style.transition = "0.5s";
+              setPage(key);
+            }}
           >
             <div style={{ padding: "0 0.5rem" }}>
               <img src={imageUrl} alt={"image_game_2"}></img>

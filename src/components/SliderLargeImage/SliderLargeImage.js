@@ -12,8 +12,13 @@ import {
   useTouchMoveHandling,
 } from "../../Hook/slideScrollDrag";
 import navBarStore from "../../store/navbar";
-const SliderLargeImage = ({ dataImageList, page, setPage, isLoading }) => {
-  const sliderLargeImageRef = useRef();
+const SliderLargeImage = ({
+  sliderLargeImageRef,
+  dataImageList,
+  page,
+  setPage,
+  isLoading,
+}) => {
   const isMouseDownRef = useRef(null);
   const posX1 = useRef(0);
   const posX2 = useRef(0);
@@ -57,7 +62,7 @@ const SliderLargeImage = ({ dataImageList, page, setPage, isLoading }) => {
               sliderLargeImageRef.current.children[page + 1].offsetHeight
             }px`;
           if (allowSliding === true && isMobile) setAllowSliding(false);
-          sliderLargeImageRef.current.style.transition = "0.5s";
+          sliderLargeImageRef.current.style.transition = "0s";
           sliderLargeImageRef.current.style.transform = `translateX(-${
             (100 / (dataImageList.length + 2)) * (page + 1)
           }%)`;
@@ -90,6 +95,7 @@ const SliderLargeImage = ({ dataImageList, page, setPage, isLoading }) => {
     return () => {
       subscription2.unsubscribe();
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page, dataImageList.length]);
   useMouseUpHandling(
     isMouseDownRef,

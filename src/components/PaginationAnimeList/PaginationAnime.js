@@ -89,27 +89,9 @@ const PaginationAnime = ({
                 }`}
                 onClick={() => {
                   if (subNavToggle === 0) {
-                    if (
-                      updatedAnimeStream.currentState()
-                        .currentPageUpdatedMovie !== pageData
-                    )
-                      updatedAnimeStream.updateData({
-                        updatedMovie: [],
-                      });
-                    updatedAnimeStream.updateData({
-                      currentPageUpdatedMovie: pageData,
-                    });
+                    updateNewPageUpdatedAnime(pageData);
                   } else {
-                    if (
-                      updatedAnimeStream.currentState().currentPageBoxMovie !==
-                      pageData
-                    )
-                      updatedAnimeStream.updateData({
-                        boxMovie: [],
-                      });
-                    updatedAnimeStream.updateData({
-                      currentPageBoxMovie: pageData,
-                    });
+                    updateNewPageBoxMovie(pageData);
                   }
                   const subNavBar = document.querySelector(".sub-nav-bar");
                   window.scroll({
@@ -120,49 +102,90 @@ const PaginationAnime = ({
                 {pageData}
               </div>
             ))}
-          {pageList.length > 0 && (
-            <div
-              className="home__page-item-search"
-              onClick={() => {
-                if (subNavToggle === 0) {
-                  if (
-                    updatedAnimeStream.currentState()
-                      .currentPageUpdatedMovie !== lastPage
-                  )
-                    updatedAnimeStream.updateData({
-                      updatedMovie: [],
-                    });
+          <div
+            className="home__page-item-search"
+            onClick={() => {
+              if (subNavToggle === 0) {
+                if (
+                  updatedAnimeStream.currentState().currentPageUpdatedMovie !==
+                  lastPage
+                )
                   updatedAnimeStream.updateData({
-                    currentPageUpdatedMovie: lastPage,
+                    updatedMovie: [],
                   });
-                } else {
-                  if (
-                    updatedAnimeStream.currentState().currentPageBoxMovie !==
-                    lastPage
-                  )
-                    updatedAnimeStream.updateData({
-                      boxMovie: [],
-                    });
-                  updatedAnimeStream.updateData({
-                    currentPageBoxMovie: lastPage,
-                  });
-                }
-                const subNavBar = document.querySelector(".sub-nav-bar");
-                window.scroll({
-                  top: subNavBar.offsetTop - 90,
+                updatedAnimeStream.updateData({
+                  currentPageUpdatedMovie: lastPage,
                 });
-              }}
-            >
-              <i className="fas fa-chevron-right"></i>
-              <i className="fas fa-chevron-right"></i>
-            </div>
-          )}
+              } else {
+                if (
+                  updatedAnimeStream.currentState().currentPageBoxMovie !==
+                  lastPage
+                )
+                  updatedAnimeStream.updateData({
+                    boxMovie: [],
+                  });
+                updatedAnimeStream.updateData({
+                  currentPageBoxMovie: lastPage,
+                });
+              }
+              const subNavBar = document.querySelector(".sub-nav-bar");
+              window.scroll({
+                top: subNavBar.offsetTop - 90,
+              });
+            }}
+          >
+            <i className="fas fa-chevron-right"></i>
+            <i className="fas fa-chevron-right"></i>
+          </div>
+          <select
+            className="select-page"
+            value={
+              subNavToggle === 0
+                ? updatedAnimeStream.currentState().currentPageUpdatedMovie
+                : updatedAnimeStream.currentState().currentPageBoxMovie
+            }
+            onChange={(e) => {
+              if (subNavToggle === 0) {
+                updateNewPageUpdatedAnime(+e.target.value);
+              } else {
+                updateNewPageBoxMovie(+e.target.value);
+              }
+              const subNavBar = document.querySelector(".sub-nav-bar");
+              window.scroll({
+                top: subNavBar.offsetTop - 90,
+              });
+            }}
+          >
+            {Array.from(Array(lastPage).keys()).map((page, key) => (
+              <option key={key}>{page + 1}</option>
+            ))}
+          </select>
         </div>
       )}
     </div>
   );
 };
 export default PaginationAnime;
+
+function updateNewPageBoxMovie(pageData) {
+  if (updatedAnimeStream.currentState().currentPageBoxMovie !== pageData)
+    updatedAnimeStream.updateData({
+      boxMovie: [],
+    });
+  updatedAnimeStream.updateData({
+    currentPageBoxMovie: pageData,
+  });
+}
+
+function updateNewPageUpdatedAnime(pageData) {
+  if (updatedAnimeStream.currentState().currentPageUpdatedMovie !== pageData)
+    updatedAnimeStream.updateData({
+      updatedMovie: [],
+    });
+  updatedAnimeStream.updateData({
+    currentPageUpdatedMovie: pageData,
+  });
+}
 
 function narrowPageList(page, lastPage, maxPageDisplay) {
   return Array.from(Array(maxPageDisplay).keys()).map((v) => {

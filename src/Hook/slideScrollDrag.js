@@ -3,7 +3,6 @@ import { fromEvent } from "rxjs";
 import { filter } from "rxjs/operators";
 import { animeDetailStream } from "../epics/animeDetail";
 import navBarStore from "../store/navbar";
-let timeout;
 export const useMouseUpHandling = (
   isMouseDownRef,
   sliderImageContainerRef,
@@ -72,7 +71,10 @@ export const useMouseUpHandling = (
                 currentOffsetLeft - delta.current
               }px)`;
             }
-            if (parseInt(estimatedPage) > dataImageList.length - 1) {
+            if (
+              decimal >= 0.2 &&
+              parseInt(estimatedPage) > dataImageList.length - 1
+            ) {
               setPage(dataImageList.length);
               setTimeout(() => {
                 sliderLargeImageRef.current &&
@@ -268,9 +270,8 @@ export const useTouchEndHandling = (
               parseInt(estimatedPage) === dataImageList.length &&
               decimal >= 0.2
             ) {
-              clearTimeout(timeout);
               setPage(dataImageList.length);
-              timeout = setTimeout(() => {
+              setTimeout(() => {
                 sliderLargeImageRef.current &&
                   (sliderLargeImageRef.current.style.transition = "0s");
                 if (page >= dataImageList.length - 1) setPage(0);
@@ -290,9 +291,8 @@ export const useTouchEndHandling = (
               setPage(parseInt(estimatedPage) - 1);
             }
             if (parseInt(estimatedPage) === 0 && decimal <= 0.8) {
-              clearTimeout(timeout);
               setPage(parseInt(estimatedPage) - 1);
-              timeout = setTimeout(() => {
+              setTimeout(() => {
                 sliderLargeImageRef.current &&
                   (sliderLargeImageRef.current.style.transition = "0s");
                 if (page <= 0) setPage(dataImageList.length - 1);
@@ -318,7 +318,7 @@ export const useTouchEndHandling = (
           }
         }
         if (navBarStore.currentState().isMobile)
-          timeout = setTimeout(() => {
+          setTimeout(() => {
             setAllowSliding(true);
           }, 500);
         posX1.current = 0;
@@ -326,7 +326,6 @@ export const useTouchEndHandling = (
         delta.current = 0;
       });
     return () => {
-      clearTimeout(timeout);
       subscription.unsubscribe();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps

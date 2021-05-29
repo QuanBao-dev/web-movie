@@ -22,9 +22,21 @@
   box-shadow: 0 0 2px 1px black;
 }
 
+.home__page-list div{
+  margin-bottom: 0.4rem;
+}
+
 .home__page-list .select-page{
   background-color: black;
   color: white;
   border-radius: 10px;
   border: none;
+  height: 100%;
+  width: 50px;
+  min-height: 54px;
+  font-size: 1rem;
+}
+
+.home__page-list .select-page option{
+  font-size: 1.5rem;
 }

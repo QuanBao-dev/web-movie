@@ -1,15 +1,11 @@
-import "./AnimeSchedule.css";
+import './AnimeSchedule.css';
 
-import loadable from "@loadable/component";
-import axios from "axios";
-import React, { createRef, useRef, useState } from "react";
-import { useCookies } from "react-cookie";
+import loadable from '@loadable/component';
+import React, { createRef, useState } from 'react';
 
-import { animeScheduleStream } from "../../epics/animeSchedule";
-import { updatedAnimeStream } from "../../epics/updatedAnime";
-import { userStream } from "../../epics/user";
-import { useFetchAnimeSchedule } from "../../Functions/animeSchedule";
-import { resetScheduleDate } from "../../store/animeSchedule";
+import { animeScheduleStream } from '../../epics/animeSchedule';
+import { useFetchAnimeSchedule } from '../../Functions/animeSchedule';
+import { resetScheduleDate } from '../../store/animeSchedule';
 
 const AnimeList = loadable(() => import("../AnimeList/AnimeList"));
 resetScheduleDate();
@@ -23,9 +19,6 @@ const AnimeSchedule = () => {
     "saturday",
     "sunday",
   ];
-  const selectRef = useRef();
-  const buttonScheduleRef = useRef();
-  const [cookies] = useCookies(["idCartoonUser"]);
   const movieRefs = Array.from(Array(7).keys()).map(() => {
     return createRef();
   });
@@ -36,44 +29,7 @@ const AnimeSchedule = () => {
   return (
     <div className="container-week-schedule-movie">
       <ul className="week-schedule-movie">
-        <div>
-          <h1>Schedule</h1>
-          {userStream.currentState() &&
-            userStream.currentState().role === "Admin" && (
-              <select ref={selectRef} className="select-schedule">
-                {week.map((date, index) => (
-                  <option key={index}>{date}</option>
-                ))}
-              </select>
-            )}
-          {userStream.currentState() &&
-            userStream.currentState().role === "Admin" && (
-              <button
-                className="button-update-select"
-                ref={buttonScheduleRef}
-                onClick={async () => {
-                  buttonScheduleRef.current.disabled = true;
-                  await axios.put(
-                    "/api/movies/date/" + selectRef.current.value,
-                    {},
-                    {
-                      headers: {
-                        authorization: "Bearer " + cookies.idCartoonUser,
-                      },
-                    }
-                  );
-                  if (buttonScheduleRef.current)
-                    buttonScheduleRef.current.disabled = false;
-                  updatedAnimeStream.updateData({
-                    triggerFetch:
-                      !updatedAnimeStream.currentState().triggerFetch,
-                  });
-                }}
-              >
-                update
-              </button>
-            )}
-        </div>
+        <h1>Schedule</h1>
         {week.map((date, index) => {
           return (
             <li key={index} className="day-schedule-movie">

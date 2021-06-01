@@ -254,44 +254,6 @@ function updateDeleteComment(state, listDelete = []) {
   return state.messages.filter((message, index) => !listDelete.includes(index));
 }
 
-router.put("/date/:date", verifyRole("Admin"), async (req, res) => {
-  const { date } = req.params;
-  const urlApi = "https://api.jikan.moe/v3/schedule/" + date;
-  const dataApi = await Axios.get(urlApi);
-  const listScheduledAnime = dataApi.data[date];
-  try {
-    await Promise.all(
-      listScheduledAnime.map(async ({ mal_id }) => {
-        const movie = await Movie.findOne({ malId: `${mal_id}` });
-        if (
-          !movie ||
-          !movie.sourceFilmList ||
-          movie.sourceFilmList.episodesEng === ""
-        )
-          return;
-        if (!movie.episodesEng[movie.episodesEng.length - 1]) return;
-        let newEpisode =
-          parseInt(movie.episodesEng[movie.episodesEng.length - 1].episode) + 1;
-        const savedMovie = await updateEpisodeCrawl(
-          newEpisode,
-          90000,
-          movie.sourceFilmList.episodesEng,
-          "gogostream",
-          null,
-          `${mal_id}`,
-          false,
-          movie
-        );
-        if (!savedMovie) return;
-      })
-    );
-    res.send({ message: "Done" });
-  } catch (error) {
-    console.log(error);
-    res.status(404).send({ error: "Something went wrong" });
-  }
-});
-
 router.put("/:malId/episodes/crawl", verifyRole("Admin"), async (req, res) => {
   const { start, end, url, serverWeb, isDub } = req.body;
   const { malId } = req.params;

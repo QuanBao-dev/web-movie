@@ -28,6 +28,8 @@
   text-transform: uppercase;
   font-weight: bolder;
   cursor: pointer;
+  display: flex;
+  justify-content: space-between;
 }
 
 .all-movies-day{
@@ -45,4 +47,22 @@
 .container-week-schedule-movie{
   padding:10px;
   background-color: #474453;
+}
+
+.select-schedule{
+  background-color: black;
+  color: white;
+  font-size: 1.2rem;
+}
+
+.select-schedule option{
+  background-color: black;
+  font-size: 1.2rem;
+  color: white;
+}
+
+.button-update-select{
+  background-color: black;
+  color: white;
+  font-size: 1rem;
 }

@@ -254,8 +254,46 @@ function updateDeleteComment(state, listDelete = []) {
   return state.messages.filter((message, index) => !listDelete.includes(index));
 }
 
+router.put("/date/:date", verifyRole("Admin"), async (req, res) => {
+  const { date } = req.params;
+  const urlApi = "https://api.jikan.moe/v3/schedule/" + date;
+  const dataApi = await Axios.get(urlApi);
+  const listScheduledAnime = dataApi.data[date];
+  try {
+    await Promise.all(
+      listScheduledAnime.map(async ({ mal_id }) => {
+        const movie = await Movie.findOne({ malId: `${mal_id}` });
+        if (
+          !movie ||
+          !movie.sourceFilmList ||
+          movie.sourceFilmList.episodesEng === ""
+        )
+          return;
+        if (!movie.episodesEng[movie.episodesEng.length - 1]) return;
+        let newEpisode =
+          parseInt(movie.episodesEng[movie.episodesEng.length - 1].episode) + 1;
+        const savedMovie = await updateEpisodeCrawl(
+          newEpisode,
+          90000,
+          movie.sourceFilmList.episodesEng,
+          "gogostream",
+          null,
+          `${mal_id}`,
+          false,
+          movie
+        );
+        if (!savedMovie) return;
+      })
+    );
+    res.send({ message: "Done" });
+  } catch (error) {
+    console.log(error);
+    res.status(404).send({ error: "Something went wrong" });
+  }
+});
+
 router.put("/:malId/episodes/crawl", verifyRole("Admin"), async (req, res) => {
-  const { start, end, url, serverWeb, serverVideo, isDub } = req.body;
+  const { start, end, url, serverWeb, isDub } = req.body;
   const { malId } = req.params;
   let movie = await Movie.findOne({ malId });
   if (movie) {
@@ -267,63 +305,18 @@ router.put("/:malId/episodes/crawl", verifyRole("Admin"), async (req, res) => {
     });
   }
   try {
-    const dataCrawl = await crawl(
-      parseInt(start),
-      parseInt(end),
+    const savedMovie = await updateEpisodeCrawl(
+      start,
+      end,
       url,
       serverWeb,
-      serverVideo
+      res,
+      malId,
+      isDub,
+      movie
     );
-    if (dataCrawl.error) {
-      return res.status(400).send({ error: dataCrawl.error });
-    }
-    if (!dataCrawl) {
-      return res.status(404).send({ error: "crawling web fail" });
-    }
-    console.log("Done");
-    addMovieUpdated(malId);
-    if (serverWeb !== "gogostream") {
-      dataCrawl.forEach((data) => {
-        const index = movie.episodes.findIndex(
-          // eslint-disable-next-line eqeqeq
-          (dataEp) => dataEp.episode == data.episode
-        );
-        if (index < 0) {
-          movie.episodes.push(data);
-        } else {
-          movie.episodes[index] = data;
-        }
-      });
-      movie.episodes.sort((a, b) => a.episode - b.episode);
-    } else if (isDub) {
-      dataCrawl.forEach((data) => {
-        const index = movie.episodesEngDub.findIndex(
-          // eslint-disable-next-line eqeqeq
-          (dataEp) => dataEp.episode == data.episode
-        );
-        if (index < 0) {
-          movie.episodesEngDub.push(data);
-        } else {
-          movie.episodesEngDub[index] = data;
-        }
-      });
-      movie.episodesEngDub.sort((a, b) => a.episode - b.episode);
-    } else {
-      dataCrawl.forEach((data) => {
-        const index = movie.episodesEng.findIndex(
-          // eslint-disable-next-line eqeqeq
-          (dataEp) => dataEp.episode == data.episode
-        );
-        if (index < 0) {
-          movie.episodesEng.push(data);
-        } else {
-          movie.episodesEng[index] = data;
-        }
-      });
-      movie.episodesEng.sort((a, b) => a.episode - b.episode);
-    }
-    updateSourceFilmList(movie, serverWeb, isDub, url);
-    const savedMovie = await movie.save();
+    const newLocal = "Something went wrong";
+    if (!savedMovie) throw newLocal;
     res.send({
       message: {
         source: movie.sourceFilm,
@@ -460,6 +453,65 @@ router.put("/:malId", verifyRole("Admin", "User"), async (req, res) => {
     res.status(404).send({ error: "Something went wrong" });
   }
 });
+
+async function updateEpisodeCrawl(
+  start,
+  end,
+  url,
+  serverWeb,
+  res,
+  malId,
+  isDub,
+  movie
+) {
+  const dataCrawl = await crawl(parseInt(start), parseInt(end), url, serverWeb);
+  if (res) {
+    if (dataCrawl.error) {
+      res.status(400).send({ error: dataCrawl.error });
+      return;
+    }
+    if (!dataCrawl) {
+      res.status(404).send({ error: "crawling web fail" });
+      return;
+    }
+  } else {
+    if (dataCrawl.error || !dataCrawl) {
+      return;
+    }
+  }
+  console.log("Done");
+  addMovieUpdated(malId);
+  if (isDub) {
+    dataCrawl.forEach((data) => {
+      const index = movie.episodesEngDub.findIndex(
+        // eslint-disable-next-line eqeqeq
+        (dataEp) => dataEp.episode == data.episode
+      );
+      if (index < 0) {
+        movie.episodesEngDub.push(data);
+      } else {
+        movie.episodesEngDub[index] = data;
+      }
+    });
+    movie.episodesEngDub.sort((a, b) => a.episode - b.episode);
+  } else {
+    dataCrawl.forEach((data) => {
+      const index = movie.episodesEng.findIndex(
+        // eslint-disable-next-line eqeqeq
+        (dataEp) => dataEp.episode == data.episode
+      );
+      if (index < 0) {
+        movie.episodesEng.push(data);
+      } else {
+        movie.episodesEng[index] = data;
+      }
+    });
+    movie.episodesEng.sort((a, b) => a.episode - b.episode);
+  }
+  updateSourceFilmList(movie, serverWeb, isDub, url);
+  return await movie.save();
+}
+
 function updateSourceFilmList(movie, serverWeb, isDub, url) {
   if (!movie.sourceFilmList)
     movie.sourceFilmList = {
@@ -558,7 +610,7 @@ async function addMovieUpdated(malId) {
   }
 }
 
-async function crawl(start, end, url, serverWeb, serverVideo) {
+async function crawl(start, end, url, serverWeb) {
   const browser = await puppeteer.launch({
     extra: {
       stealth: true,
@@ -577,24 +629,7 @@ async function crawl(start, end, url, serverWeb, serverVideo) {
       timeout: 0,
     };
     await page.goto(url, options);
-    let linkWatching = await page.evaluate((serverWeb) => {
-      let link = null;
-      switch (serverWeb) {
-        case "animehay":
-          link = document.querySelector(
-            ".ah-pif-ftool.ah-bg-bd.ah-clear-both > .ah-float-left > span"
-          ).childNodes[0].href;
-          break;
-        case "animevsub":
-          link = document.querySelectorAll(
-            ".Content .TpRwCont .Image > a.watch_button_more"
-          )[0].href;
-          break;
-        default:
-          break;
-      }
-      return link;
-    }, serverWeb);
+    let linkWatching;
     if (serverWeb === "gogostream") {
       linkWatching = url;
     }
@@ -602,60 +637,6 @@ async function crawl(start, end, url, serverWeb, serverVideo) {
     await page.goto(linkWatching, options);
     let listLinkWatchEpisode;
     switch (serverWeb) {
-      case "animehay":
-        listLinkWatchEpisode = await page.evaluate((start) => {
-          let listLink = document.querySelector(".ah-wf-body ul");
-          listLink = [...listLink.children];
-          if (listLink.length === 1) {
-            return listLink.map((link) => ({
-              url: link.children[0].href,
-              textContent: "1",
-            }));
-          }
-          for (let i = 0; i < listLink.length; i++) {
-            if (listLink[i] && !listLink[i].textContent.includes(`${start}`)) {
-              listLink[i].remove();
-            } else {
-              break;
-            }
-          }
-          listLink = document.querySelector(".ah-wf-body ul");
-          listLink = [...listLink.children];
-          return listLink.map((link) => ({
-            url: link.childNodes[0].href,
-            textContent: link.textContent,
-          }));
-        }, start);
-        break;
-      case "animevsub":
-        listLinkWatchEpisode = await page.evaluate((start) => {
-          let listLink =
-            document.querySelector(".Content #list-server ul .list-episode") ||
-            document.querySelector(".Content #list-server ul");
-          listLink = [...listLink.children];
-          if (listLink.length === 1) {
-            return listLink.map((link) => ({
-              url: link.children[0].href,
-              textContent: "1",
-            }));
-          }
-          for (let i = 0; i < listLink.length; i++) {
-            if (listLink[i] && !listLink[i].textContent.includes(`${start}`)) {
-              listLink[i].remove();
-            } else {
-              break;
-            }
-          }
-          listLink =
-            document.querySelector(".Content #list-server ul .list-episode") ||
-            document.querySelector(".Content #list-server ul");
-          listLink = [...listLink.children];
-          return listLink.map((link) => ({
-            url: link.childNodes[0].href,
-            textContent: link.textContent,
-          }));
-        }, start);
-        break;
       case "gogostream":
         listLinkWatchEpisode = await page.evaluate((start) => {
           let listLink = document.querySelector(
@@ -716,7 +697,6 @@ async function crawl(start, end, url, serverWeb, serverVideo) {
         page,
         listLinkWatchEpisode[i].url,
         serverWeb,
-        serverVideo,
         options
       );
       listSrc.push({
@@ -734,87 +714,18 @@ async function crawl(start, end, url, serverWeb, serverVideo) {
   }
 }
 
-async function extractSourceVideo(
-  page,
-  linkWatching,
-  serverWeb,
-  serverVideo,
-  options
-) {
+async function extractSourceVideo(page, linkWatching, serverWeb, options) {
   await page.goto(linkWatching, options);
   let episodeLink;
-  if (serverVideo === "serverMoe")
-    episodeLink = await page.evaluate((serverWeb) => {
-      switch (serverWeb) {
-        case "animehay":
-          let listSv = document.querySelector("#list_sv").childNodes;
-          listSv = [...listSv];
-          let serverCrawl = listSv.find((sv) => sv.id === "serverMoe");
-          if (!serverCrawl) {
-            return null;
-          }
-          serverCrawl.click();
-          return {
-            url: document.querySelector(".film-player.ah-bg-bd iframe").src,
-            typeVideo: false,
-          };
-        case "animevsub":
-          let typeVideo = true;
-          let e = document.querySelector(".media-player video");
-          if (!e) {
-            typeVideo = false;
-            e = document.querySelector(".media-player iframe");
-          }
-          if (!e) {
-            return null;
-          }
-          const linkEpisodeAnime = e.src;
-          return { url: linkEpisodeAnime, typeVideo: typeVideo };
-        case "gogostream":
-          let iframeE = document.querySelector(
-            ".watch_play .play-video iframe"
-          );
-          return { url: iframeE.src };
-        default:
-          return;
-      }
-    }, serverWeb);
-  else if (serverVideo === "serverICQ")
-    episodeLink = await page.evaluate((serverWeb) => {
-      switch (serverWeb) {
-        case "animehay":
-          let listSv = document.querySelector("#list_sv").childNodes;
-          listSv = [...listSv];
-          let serverCrawl = listSv.find((sv) => sv.id === "serverICQ");
-          if (!serverCrawl) {
-            return null;
-          }
-          serverCrawl.click();
-          return {
-            url: document.querySelector(".film-player.ah-bg-bd iframe").src,
-            typeVideo: false,
-          };
-        case "animevsub":
-          let typeVideo = true;
-          let e = document.querySelector(".media-player video");
-          if (!e) {
-            typeVideo = false;
-            e = document.querySelector(".media-player iframe");
-          }
-          if (!e) {
-            return null;
-          }
-          const linkEpisodeAnime = e.src;
-          return { url: linkEpisodeAnime, typeVideo: typeVideo };
-        case "gogostream":
-          let iframeE = document.querySelector(
-            ".watch_play .play-video iframe"
-          );
-          return { url: iframeE.src };
-        default:
-          return;
-      }
-    }, serverWeb);
+  episodeLink = await page.evaluate((serverWeb) => {
+    switch (serverWeb) {
+      case "gogostream":
+        let iframeE = document.querySelector(".watch_play .play-video iframe");
+        return { url: iframeE.src };
+      default:
+        return;
+    }
+  }, serverWeb);
   return episodeLink;
 }
 

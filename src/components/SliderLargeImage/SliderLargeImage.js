@@ -95,7 +95,7 @@ const SliderLargeImage = ({
     return () => {
       subscription2.unsubscribe();
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page, dataImageList.length]);
   useMouseUpHandling(
     isMouseDownRef,
@@ -151,12 +151,14 @@ const SliderLargeImage = ({
           onMouseDown={(e) => e.preventDefault()}
           className="fas fa-chevron-right"
           onClick={() => {
-            sliderLargeImageRef.current.style.transition = "0.5s";
             if (page < dataImageList.length - 1) {
+              sliderLargeImageRef.current.style.transition = "0.5s";
               setPage(page + 1);
             }
             if (page === dataImageList.length - 1) {
+              sliderLargeImageRef.current.style.transition = "0s";
               setPage(dataImageList.length);
+              sliderLargeImageRef.current.style.transition = "0.5s";
               setTimeout(() => {
                 sliderLargeImageRef.current.style.transition = "0s";
                 setPage(0);
@@ -172,13 +174,15 @@ const SliderLargeImage = ({
           }}
           className="fas fa-chevron-left"
           onClick={() => {
-            sliderLargeImageRef.current.style.transition = "0.5s";
             if (page > 0) {
+              sliderLargeImageRef.current.style.transition = "0.5s";
               setPage(page - 1);
             }
             if (page === 0) {
               // clearTimeout(timeout);
+              sliderLargeImageRef.current.style.transition = "0s";
               setPage(-1);
+              sliderLargeImageRef.current.style.transition = "0.5s";
               setTimeout(() => {
                 sliderLargeImageRef.current.style.transition = "0s";
                 setPage(dataImageList.length - 1);

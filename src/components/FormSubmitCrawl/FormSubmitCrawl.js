@@ -1,6 +1,7 @@
 import Axios from "axios";
 import React, { useEffect, useState } from "react";
 import { animeDetailStream } from "../../epics/animeDetail";
+import { updatedAnimeStream } from "../../epics/updatedAnime";
 import Input from "../Input/Input";
 
 function FormSubmitCrawl({
@@ -11,9 +12,6 @@ function FormSubmitCrawl({
   selectCrawlInputRef,
   malId,
   cookies,
-  selectCrawlServerVideo,
-  crawlAnimeMode,
-  setCrawlAnimeMode,
   selectModeEngVideoRef,
 }) {
   const [error, setError] = useState(null);
@@ -23,32 +21,13 @@ function FormSubmitCrawl({
   }, [malId]);
   return (
     <div className="form-submit">
-      <select
-        defaultValue="animehay"
-        ref={selectCrawlInputRef}
-        onChange={(e) => {
-          if (e.target.value === "animehay") {
-            selectCrawlServerVideo.current.style.display = "block";
-          } else {
-            selectCrawlServerVideo.current.style.display = "none";
-          }
-          setCrawlAnimeMode(e.target.value);
-        }}
-      >
-        <option value="animehay">animehay</option>
-        <option value="animevsub">animevsub</option>
+      <select defaultValue="gogostream" ref={selectCrawlInputRef}>
         <option value="gogostream">gogostream</option>
       </select>
-      <select defaultValue="serverMoe" ref={selectCrawlServerVideo}>
-        <option value="serverMoe">Moe</option>
-        <option value="serverICQ">Kol</option>
+      <select defaultValue="sub" ref={selectModeEngVideoRef}>
+        <option value="sub">Sub</option>
+        <option value="dub">Dub</option>
       </select>
-      {crawlAnimeMode === "gogostream" && (
-        <select defaultValue="sub" ref={selectModeEngVideoRef}>
-          <option value="sub">Sub</option>
-          <option value="dub">Dub</option>
-        </select>
-      )}
       <div className="form-limit-episode">
         <Input
           label="start"
@@ -67,22 +46,11 @@ function FormSubmitCrawl({
           const end = endEpisodeInputRef.current.value;
           const url = linkWatchingInputRef.current.value;
           const serverWeb = selectCrawlInputRef.current.value;
-          const serverVideo = selectCrawlServerVideo.current.value;
           const isDub = selectModeEngVideoRef.current
             ? selectModeEngVideoRef.current.value === "dub"
             : false;
           // console.log(isDub);
           switch (serverWeb) {
-            case "animehay":
-              if (!url.includes("animehay.tv/phim/")) {
-                return alert("Invalid url");
-              }
-              break;
-            case "animevsub":
-              if (!url.includes("animevsub.tv/phim/")) {
-                return alert("Invalid url");
-              }
-              break;
             case "gogostream":
               if (
                 !url.includes("gogo-stream.com/videos/") ||
@@ -115,7 +83,6 @@ function FormSubmitCrawl({
                 end,
                 url,
                 serverWeb,
-                serverVideo,
                 isDub,
               },
               {
@@ -162,6 +129,9 @@ function FormSubmitCrawl({
                 (buttonSubmitCrawlInputRef.current.disabled = false);
             }
           }
+          updatedAnimeStream.updateData({
+            triggerFetch: !updatedAnimeStream.currentState().triggerFetch,
+          });
         }}
       >
         Submit

@@ -49,7 +49,6 @@ const AnimeDetail = (props) => {
     animeDetailStream.currentState()
   );
   const [showThemeMusic, setShowThemeMusic] = useState(false);
-  const [crawlAnimeMode, setCrawlAnimeMode] = useState("animehay");
   const [toggleNavTitle, setToggleNavTitle] = useState(false);
   const [elementTitle, setElementTitle] = useState([]);
 
@@ -65,7 +64,6 @@ const AnimeDetail = (props) => {
   const selectCrawlInputRef = useRef();
   const buttonDeleteCrawlInputRef = useRef();
   const typeVideoSelectRef = useRef();
-  const selectCrawlServerVideo = useRef();
   useInitAnimeDetailState(setAnimeDetailState);
   useFetchData(setShowThemeMusic, linkWatchingInputRef, malId);
   useFetchBoxMovieOneMovie(
@@ -250,9 +248,6 @@ const AnimeDetail = (props) => {
                   selectCrawlInputRef={selectCrawlInputRef}
                   malId={malId}
                   cookies={cookies}
-                  selectCrawlServerVideo={selectCrawlServerVideo}
-                  crawlAnimeMode={crawlAnimeMode}
-                  setCrawlAnimeMode={setCrawlAnimeMode}
                   selectModeEngVideoRef={selectModeEngVideoRef}
                 />
                 <button

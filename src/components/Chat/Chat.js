@@ -244,34 +244,34 @@ const Chat = ({ groupId, user, withoutName = false, isZoom = false }) => {
   );
 };
 
-socket.on("user-join", (username, userId, roomId, avatarImage) => {
-  if (roomId !== idGroup) {
-    return;
-  }
-  appendNewMessageDialog(
-    `NOTIFICATION: ${username} joined`,
-    "Robot",
-    false,
-    messageDialogE,
-    avatarImage
-  );
-});
+// socket.on("user-join", (username, userId, roomId, avatarImage) => {
+//   if (roomId !== idGroup) {
+//     return;
+//   }
+//   appendNewMessageDialog(
+//     `NOTIFICATION: ${username} joined`,
+//     "Robot",
+//     false,
+//     messageDialogE,
+//     avatarImage
+//   );
+// });
 
-socket.on(
-  "disconnected-user",
-  async (username, userId, roomId, avatarImage) => {
-    if (roomId !== idGroup || !isWithoutName) {
-      return;
-    }
-    appendNewMessageDialog(
-      `NOTIFICATION: ${username} left`,
-      "Robot",
-      false,
-      messageDialogE,
-      avatarImage
-    );
-  }
-);
+// socket.on(
+//   "disconnected-user",
+//   async (username, userId, roomId, avatarImage) => {
+//     if (roomId !== idGroup || !isWithoutName) {
+//       return;
+//     }
+//     appendNewMessageDialog(
+//       `NOTIFICATION: ${username} left`,
+//       "Robot",
+//       false,
+//       messageDialogE,
+//       avatarImage
+//     );
+//   }
+// );
 
 socket.on("send-message-other-users", (username, message, groupId, avatar) => {
   // console.log(username,"sends", groupId);
@@ -525,7 +525,8 @@ function isInBottom() {
   const distance =
     containerMessageChatBot.scrollHeight -
     (containerMessageChatBot.scrollTop + containerMessageChatBot.offsetHeight);
-  return distance < 100;
+  console.log(distance);
+  return distance < 40;
 }
 
 function scrollToBottom() {

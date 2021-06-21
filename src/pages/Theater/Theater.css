@@ -73,3 +73,17 @@
   background-color: #F90; 
   border-radius: 10px;
 }
+
+.btn{
+  padding: 1rem;
+  color: white;
+}
+
+.btn:disabled {
+  pointer-events: none;
+  background-color: #6b3333;
+}
+
+.btn-primary {
+  background-color: #1838c5;
+}

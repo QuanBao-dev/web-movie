@@ -53,6 +53,7 @@ const TheaterWatch = (props) => {
   const inputVideoRef = useRef();
   const videoWatchRef = useRef();
   const videoUrlUpload = useRef();
+  const transcriptUrlUpload = useRef();
   const [cookies] = useCookies(["idCartoonUser"]);
   useEffect(() => {
     videoWatchElement = videoWatchRef.current;
@@ -176,7 +177,25 @@ const TheaterWatch = (props) => {
                 <button
                   onClick={() => {
                     if (videoUrlUpload.current.value !== "") {
-                      createNewVideo(videoUrlUpload.current.value, true);
+                      createNewVideo(
+                        videoUrlUpload.current.value,
+                        true,
+                        undefined
+                      );
+                    }
+                  }}
+                >
+                  Upload
+                </button>
+                <Input label={"Transcript url"} input={transcriptUrlUpload} />
+                <button
+                  onClick={() => {
+                    if (transcriptUrlUpload.current.value !== "") {
+                      createNewVideo(
+                        undefined,
+                        true,
+                        transcriptUrlUpload.current.value
+                      );
                     }
                   }}
                 >
@@ -202,8 +221,9 @@ const TheaterWatch = (props) => {
               <div className="wrapper-video-player">
                 <video
                   className="video-watch"
-                  poster="https://videopromotion.club/assets/images/default-video-thumbnail.jpg"
+                  poster="https://media.istockphoto.com/videos/movie-time-concept-background-video-id1127766856?s=640x640"
                   ref={videoWatchRef}
+                  crossOrigin="anonymous"
                   onContextMenu={(e) => e.preventDefault()}
                   playsInline
                 ></video>
@@ -212,14 +232,14 @@ const TheaterWatch = (props) => {
                     id="button-get-remote"
                     className="btn btn-danger"
                     onClick={async (e) => {
-                      if (!videoWatchElement)
-                        videoWatchElement = document.querySelector(
-                          ".video-watch"
-                        );
-                      if (videoWatchElement && videoWatchElement.src) {
-                        videoWatchElement.controls = true;
+                      console.log("change remote", videoWatchRef.current);
+                      if (
+                        videoWatchRef.current &&
+                        videoWatchRef.current.childElementCount > 0
+                      ) {
+                        videoWatchRef.current.controls = true;
                         const element = e.target;
-                        addEventListenerVideoElement(videoWatchElement);
+                        addEventListenerVideoElement(videoWatchRef.current);
                         element.disabled = true;
                         await updateUserKeepRemote(groupId, user.userId);
                         socket.emit("user-keep-remote-changed", groupId);
@@ -391,9 +411,8 @@ async function newUserJoinHandleVideo(
         myPeer = new Peer(id, options);
         const myAudio = document.createElement(elementCall);
         myAudio.muted = true;
-        const buttonGetRemoteElement = document.getElementById(
-          "button-get-remote"
-        );
+        const buttonGetRemoteElement =
+          document.getElementById("button-get-remote");
         socket.emit(
           "new-user",
           user.avatarImage,
@@ -480,19 +499,19 @@ function UserListOnline({ usersOnline }) {
 
 function createVideoUri(inputVideoE) {
   if (inputVideoE.files[0] && inputVideoE.files[0].type === "video/mp4") {
-    createNewVideo(URL.createObjectURL(inputVideoE.files[0]));
+    createNewVideo(URL.createObjectURL(inputVideoE.files[0]), false, undefined);
     inputVideoE.value = "";
   } else {
     alert("required file mp4");
   }
 }
 
-async function createNewVideo(source, uploadOtherUser = false) {
-  uploadNewVideo(source, videoWatchElement, true);
+async function createNewVideo(source, uploadOtherUser = false, transcriptUrl) {
+  uploadNewVideo(source, videoWatchElement, true, transcriptUrl);
   addEventListenerVideoElement(videoWatchElement);
   document.getElementById("button-get-remote").disabled = true;
   await updateUserKeepRemote(groupId, user.userId);
-  socket.emit("new-video", source, groupId, uploadOtherUser);
+  socket.emit("new-video", source, groupId, uploadOtherUser, transcriptUrl);
 }
 
 async function updateUserKeepRemote(groupId, userId) {
@@ -513,7 +532,7 @@ async function updateUserKeepRemote(groupId, userId) {
 function addEventListenerVideoElement(
   videoWatchElement = document.querySelector(".video-watch")
 ) {
-  if (videoWatchElement && videoWatchElement.src) {
+  if (videoWatchElement && videoWatchElement.childElementCount > 0) {
     videoWatchElement.addEventListener("pause", socketPauseAll);
     videoWatchElement.addEventListener("play", socketPlayAll);
     videoWatchElement.addEventListener("ended", socketPauseAll);
@@ -523,7 +542,7 @@ function addEventListenerVideoElement(
 function removeEventListenerVideoElement(
   videoWatchElement = document.querySelector(".video-watch")
 ) {
-  if (videoWatchElement && videoWatchElement.src) {
+  if (videoWatchElement && videoWatchElement.childElementCount > 0) {
     videoWatchElement.controls = false;
     videoWatchElement.removeEventListener("pause", socketPauseAll);
     videoWatchElement.removeEventListener("play", socketPlayAll);
@@ -592,15 +611,15 @@ socket.on("disconnect", () => {
 socket.on("fetch-user-online", () => {
   fetchUserOnline$(groupId, idCartoonUser).subscribe((users) => {
     theaterStream.updateData({
-      usersOnline:users
-    })
+      usersOnline: users,
+    });
   });
 });
 socket.on("play-video-user", (currentTime, idGroup) => {
   if (!videoWatchElement)
     videoWatchElement = document.querySelector(".video-watch");
   if (idGroup === groupId && videoWatchElement) {
-    if (videoWatchElement.src && videoWatchElement.src !== "") {
+    if (videoWatchElement.childElementCount > 0) {
       videoWatchElement
         .play()
         .then(() => {
@@ -626,19 +645,22 @@ socket.on("pause-video-user", (currentTime, idGroup) => {
   }
 });
 
-socket.on("upload-video", (uri, idGroup, uploadVideoOtherUser) => {
-  if (!videoWatchElement)
-    videoWatchElement = document.querySelector(".video-watch");
-  if (idGroup === groupId && videoWatchElement) {
-    if (uploadVideoOtherUser) {
-      uploadNewVideo(uri, videoWatchElement);
+socket.on(
+  "upload-video",
+  (uri, idGroup, uploadVideoOtherUser, transcriptUrl) => {
+    if (!videoWatchElement)
+      videoWatchElement = document.querySelector(".video-watch");
+    if (idGroup === groupId && videoWatchElement) {
+      if (uploadVideoOtherUser) {
+        uploadNewVideo(uri, videoWatchElement, false, transcriptUrl);
+      }
+      if (document.getElementById("button-get-remote")) {
+        document.getElementById("button-get-remote").disabled = false;
+      }
+      removeEventListenerVideoElement(videoWatchElement);
     }
-    if (document.getElementById("button-get-remote")) {
-      document.getElementById("button-get-remote").disabled = false;
-    }
-    removeEventListenerVideoElement(videoWatchElement);
   }
-});
+);
 
 socket.on("change-user-keep-remote", (idGroup) => {
   if (!videoWatchElement)
@@ -654,12 +676,40 @@ socket.on("change-user-keep-remote", (idGroup) => {
 function uploadNewVideo(
   fileContent,
   videoWatchElement = document.querySelector(".video-watch"),
-  isControls = false
+  isControls = false,
+  transcriptUrl
 ) {
   try {
-    videoWatchElement.controls = isControls;
-    videoWatchElement.src = fileContent;
-  } catch (error) {}
+    if (fileContent && fileContent.trim() !== "") {
+      videoWatchElement.controls = isControls;
+      let sourceElement = videoWatchElement.querySelector("source");
+      if (!sourceElement) {
+        sourceElement = document.createElement("source");
+        sourceElement.src = fileContent;
+        sourceElement.type = "video/mp4";
+        videoWatchElement.append(sourceElement);
+      }
+      if(sourceElement){
+        sourceElement.src = fileContent;
+        sourceElement.type = "video/mp4";
+      }
+    }
+    if (transcriptUrl && transcriptUrl.trim() !== "") {
+      let trackElement = videoWatchElement.querySelector("track");
+      if(!trackElement){
+        trackElement = document.createElement("track");
+        trackElement.src = transcriptUrl.trim();
+        trackElement.default = true;
+        videoWatchElement.append(trackElement);
+      }
+      if(trackElement){
+        trackElement.src = transcriptUrl.trim();
+        trackElement.default = true;
+      }
+    }
+  } catch (error) {
+    console.error(error);
+  }
 }
 
 function appendNewMessageNotification(

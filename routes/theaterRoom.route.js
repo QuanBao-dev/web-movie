@@ -139,11 +139,12 @@ router.post("/", verifyRole("User", "Admin"), async (req, res) => {
   if (result.error) {
     return res.status(400).send({ error: result.error.details[0].message });
   }
-  const room = await TheaterRoom.create({
+  const newTheaterRoom = new TheaterRoom({
     roomName,
     password,
     groupId: nanoid(),
   });
+  const room = await newTheaterRoom.save();
   try {
     res.send({ message: ignoreProps(["_id", "__v"], room.toJSON()) });
   } catch (error) {

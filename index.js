@@ -80,7 +80,7 @@ io.on("connection", (socket) => {
       )
         .lean()
         .select({ _id: false, __v: false });
-      socket.to(groupId).emit("user-join", username, userId, groupId, avatar);
+      // socket.to(groupId).emit("user-join", username, userId, groupId, avatar);
       socket.on("fetch-updated-user-online", () => {
         socket.emit("fetch-user-online");
         socket.to(groupId).emit("fetch-user-online");
@@ -93,12 +93,13 @@ io.on("connection", (socket) => {
         }).lean();
       });
 
-      socket.on("new-video", (videoUri, groupId, uploadOtherVideo) => {
+      socket.on("new-video", (videoUri, groupId, uploadOtherVideo,transcriptUrl) => {
         socket.broadcast.emit(
           "upload-video",
           videoUri,
           groupId,
-          uploadOtherVideo
+          uploadOtherVideo,
+          transcriptUrl
         );
       });
       socket.on("user-keep-remote-changed", (groupId) => {
@@ -116,8 +117,7 @@ io.on("connection", (socket) => {
           groupId,
         }).lean();
         if (rooms[groupId] && rooms[groupId].users[userId]) {
-          socket.emit("disconnected-user", userId);
-          socket.broadcast.emit("disconnected-user", username, userId, groupId);
+          // socket.broadcast.emit("disconnected-user", username, userId, groupId);
           delete rooms[groupId].users[userId];
           if (Object.keys(rooms[groupId].users).length === 0) {
             delete rooms[groupId];
@@ -131,13 +131,13 @@ io.on("connection", (socket) => {
           groupId,
         }).lean();
         if (rooms[groupId] && rooms[groupId].users[userId]) {
-          socket.broadcast.emit(
-            "disconnected-user",
-            username,
-            userId,
-            groupId,
-            avatar
-          );
+          // socket.broadcast.emit(
+          //   "disconnected-user",
+          //   username,
+          //   userId,
+          //   groupId,
+          //   avatar
+          // );
           delete rooms[groupId].users[userId];
           if (Object.keys(rooms[groupId].users).length === 0) {
             delete rooms[groupId];

@@ -63,7 +63,7 @@ const AnimeItem = ({
       )}
       <Link
         to={`/anime/${anime.malId || anime.mal_id}-${anime.title
-          .replace(/[ /%^&*()]/g, "-")
+          .replace(/[ /%^&*():.$]/g, "-")
           .toLocaleLowerCase()}`}
       >
         {anime.airing_start &&

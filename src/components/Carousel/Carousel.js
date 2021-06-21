@@ -121,10 +121,7 @@ const Carousel = () => {
             }}
           >
             {dataCarousel && dataCarousel[dataCarousel.length - 1] && (
-              <CarouselItem
-                data={dataCarousel[dataCarousel.length - 1]}
-                history={history}
-              />
+              <CarouselItem data={dataCarousel[dataCarousel.length - 1]} />
             )}
             {dataCarousel &&
               dataCarousel.map((data) => (

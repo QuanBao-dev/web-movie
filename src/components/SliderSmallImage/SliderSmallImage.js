@@ -150,6 +150,12 @@ const SliderSmallImage = ({
             className={`slider-small-image-item${
               key === page ? " active" : ""
             }`}
+            style={{
+              minWidth:
+                dataListImage.length > 4
+                  ? null
+                  : `${100 / dataListImage.length}%`,
+            }}
             key={key}
             onClick={() => {
               sliderLargeImageRef.current.style.transition = "0.5s";

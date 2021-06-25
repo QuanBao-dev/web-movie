@@ -1,5 +1,5 @@
 import capitalize from "lodash/capitalize";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 import { animeListSeasonStream } from "../../epics/animeListSeason";
 import {
@@ -10,6 +10,7 @@ import {
 } from "../../Hook/animeListSeason";
 import AnimeList from "../AnimeList/AnimeList";
 import PageNavList from "../PageNavList/PageNavList";
+import CircularProgress from "@material-ui/core/CircularProgress";
 
 const genresData = [
   { genreId: "1", genre: "Action" },
@@ -84,10 +85,8 @@ const AnimeListSeason = () => {
   }
   useInitAnimeListSeason(setAnimeListSeasonState);
   useFilterAnimeList(animeListSeasonState);
-
   useListenWhenOptionChange(
     animeListSeasonState,
-    targetScroll,
     selectSeason,
     selectYear,
     selectScore,
@@ -95,7 +94,20 @@ const AnimeListSeason = () => {
     selectGenre
   );
   useFetchAnimeListSeason(animeListSeasonState);
-  
+  useEffect(() => {
+    if (!animeListSeasonState.isInit) {
+      window.scroll({
+        top: targetScroll.current.offsetTop - 170,
+        behavior: animeListSeasonStream.currentState().isSmoothScroll
+          ? "smooth"
+          : "auto",
+      });
+      animeListSeasonStream.updateDataQuick({
+        isSmoothScroll: true,
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [animeListSeasonState.triggerScroll]);
   return (
     <div>
       <h1 style={{ textAlign: "center" }}>
@@ -172,6 +184,18 @@ function SelectFilterAnime({
       }}
       ref={targetScroll}
     >
+      {animeListSeasonState.isFetching && (
+        <CircularProgress
+          style={{
+            position: "fixed",
+            left: 0,
+            top: 0,
+            zIndex: 10,
+          }}
+          color="secondary"
+          size="5rem"
+        />
+      )}
       <select
         className="select-filter"
         defaultValue={`${animeListSeasonState.season}`}

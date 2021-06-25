@@ -16,7 +16,6 @@ const initialState = {
   genreId: "0",
   currentPage: 1,
   numberOfProduct: 40,
-  shouldScrollToSeeMore: false,
   season: currentSeason,
   year: new Date(Date.now()).getFullYear(),
   textSearch: "",
@@ -24,6 +23,10 @@ const initialState = {
   currentPageOnDestroy: null,
   currentYearOnDestroy: null,
   currentSeasonOnDestroy: null,
+  isFetching: false,
+  triggerScroll: false,
+  isSmoothScroll: true,
+  isInit: true,
 };
 const behaviorSubject = new BehaviorSubject(initialState);
 

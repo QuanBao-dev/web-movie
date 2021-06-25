@@ -63,7 +63,9 @@ const Characters = ({ lazy = false, isLoading }) => {
   return (
     <div>
       <h1 className="title">Characters</h1>
-      <Input label={"Search Character"} input={searchCharacterRef} />
+      <div style={{ width: "100%", maxWidth: 800, margin: "auto" }}>
+        <Input label={"Search Character"} input={searchCharacterRef} />
+      </div>
       {isLoading !== null && isLoading === true && (
         <CircularProgress color="secondary" size="4rem" />
       )}

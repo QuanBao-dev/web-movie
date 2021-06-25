@@ -21,36 +21,39 @@ const Reviews = ({ malId }) => {
   useUpdatePageScrolling(reviewState);
   useFetchReviewsData(reviewState, malId);
   return (
-    reviewState && (
-      <div className="container-reviews">
-        {reviewState && reviewState.reviewsData.length > 0 && (
-          <h1 className="title">Reviews</h1>
+    <div
+      className="container-reviews"
+      style={{
+        boxShadow: reviewState.reviewsData.length === 0 && "none",
+      }}
+    >
+      {reviewState && reviewState.reviewsData.length > 0 && (
+        <h1 className="title">Reviews</h1>
+      )}
+      {reviewState &&
+        reviewState.reviewsData.length === 0 &&
+        !reviewState.isStopFetchingReviews && (
+          <div className="loading-symbol-review">
+            <CircularProgress color="secondary" size="3rem" />
+          </div>
         )}
-        {reviewState &&
-          reviewState.reviewsData.length === 0 &&
-          !reviewState.isStopFetchingReviews && (
+      {reviewState && reviewState.reviewsData.length > 0 && (
+        <div className="reviews-list-container">
+          {reviewState &&
+            reviewState.reviewsData
+              .slice(0, reviewState.pageSplit)
+              .map((review, index) => (
+                <ReviewItem key={index} review={review} />
+              ))}
+          {reviewState && !reviewState.isStopFetchingReviews && (
             <div className="loading-symbol-review">
               <CircularProgress color="secondary" size="3rem" />
             </div>
           )}
-        {reviewState && reviewState.reviewsData.length > 0 && (
-          <div className="reviews-list-container">
-            {reviewState &&
-              reviewState.reviewsData
-                .slice(0, reviewState.pageSplit)
-                .map((review, index) => (
-                  <ReviewItem key={index} review={review} />
-                ))}
-            {reviewState && !reviewState.isStopFetchingReviews && (
-              <div className="loading-symbol-review">
-                <CircularProgress color="secondary" size="3rem" />
-              </div>
-            )}
-            {reviewState && reviewState.isStopFetchingReviews && <h1>End</h1>}
-          </div>
-        )}
-      </div>
-    )
+          {reviewState && reviewState.isStopFetchingReviews && <h1>End</h1>}
+        </div>
+      )}
+    </div>
   );
 };
 

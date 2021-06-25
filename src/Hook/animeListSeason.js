@@ -30,7 +30,6 @@ export const useFetchAnimeListSeason = (animeListSeasonState) => {
 
 export const useListenWhenOptionChange = (
   animeListSeasonState,
-  targetScroll,
   selectSeason,
   selectYear,
   selectScore,
@@ -40,16 +39,12 @@ export const useListenWhenOptionChange = (
   useEffect(
     listenWhenOptionChange(
       animeListSeasonState,
-      targetScroll,
       selectSeason,
       selectYear,
       selectScore,
       selectFilterMode,
       selectGenre
     ),
-    [
-      animeListSeasonState.shouldScrollToSeeMore,
-      animeListSeasonState.screenWidth,
-    ]
+    [animeListSeasonState.screenWidth]
   );
 };

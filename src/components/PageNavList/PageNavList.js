@@ -3,10 +3,7 @@ import "./PageNavList.css";
 import React from "react";
 import { animeListSeasonStream } from "../../epics/animeListSeason";
 
-const PageNavList = ({
-  numberOfPagesDisplay,
-  animeListSeasonState,
-}) => {
+const PageNavList = ({ numberOfPagesDisplay, animeListSeasonState }) => {
   animeListSeasonState.currentPage === 0 &&
     (animeListSeasonState.currentPage = 1);
   const elementsLi = Array.from(Array(numberOfPagesDisplay).keys()).map((v) => {
@@ -34,8 +31,11 @@ const PageNavList = ({
           className={`page-nav-item`}
           onClick={() => {
             animeListSeasonStream.updateData({
-              shouldScrollToSeeMore: true,
               currentPage: 1,
+              triggerScroll:
+                !animeListSeasonStream.currentState().triggerScroll,
+              isSmoothScroll: true,
+              isInit: false
             });
           }}
         >
@@ -53,8 +53,11 @@ const PageNavList = ({
                   parseInt(e.target.innerHTML)
                 ) {
                   animeListSeasonStream.updateData({
-                    shouldScrollToSeeMore: true,
                     currentPage: +e.target.innerHTML,
+                    triggerScroll:
+                      !animeListSeasonStream.currentState().triggerScroll,
+                    isSmoothScroll: true,
+                    isInit: false
                   });
                 }
               }}
@@ -70,8 +73,11 @@ const PageNavList = ({
           className={`page-nav-item`}
           onClick={() => {
             animeListSeasonStream.updateData({
-              shouldScrollToSeeMore: true,
+              triggerScroll:
+                !animeListSeasonStream.currentState().triggerScroll,
+              isSmoothScroll: true,
               currentPage: animeListSeasonState.maxPage,
+              isInit: false
             });
           }}
         >

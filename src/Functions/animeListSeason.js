@@ -76,7 +76,6 @@ export const fetchAnimeListSeason = (
   animeListSeasonState = animeListSeasonStream.currentState()
 ) => {
   return () => {
-    let subscription2;
     if (
       animeListSeasonState.currentPage !==
         animeListSeasonState.currentPageOnDestroy ||
@@ -84,26 +83,30 @@ export const fetchAnimeListSeason = (
         animeListSeasonState.currentSeasonOnDestroy ||
       animeListSeasonState.year !== animeListSeasonState.currentYearOnDestroy
     ) {
-      animeListSeasonStream.updateData({ currentPage: 1 });
-      subscription2 = fetchAnimeSeason$(
+      animeListSeasonStream.updateData({ isFetching: true });
+      fetchAnimeSeason$(
         animeListSeasonState.year,
         animeListSeasonState.season,
         1,
         animeListSeasonState.numberOfProduct,
         animeListSeasonState.score
       ).subscribe((v) => {
+        if (!animeListSeasonStream.currentState().isInit) {
+          console.log("scroll");
+          animeListSeasonStream.updateData({
+            triggerScroll: !animeListSeasonStream.currentState().triggerScroll,
+            isInit: false,
+          });
+        }
         animeListSeasonStream.updateData({
           dataDetail: v,
+          isFetching: false,
+          isSmoothScroll: false,
         });
+        animeListSeasonStream.updateDataQuick({ isInit: false });
       });
     }
     return () => {
-      subscription2 && subscription2.unsubscribe();
-      // updateDataOnDestroy(
-      //   animeListSeasonStream.currentState().currentPage,
-      //   animeListSeasonState.season,
-      //   animeListSeasonState.year
-      // );
       animeListSeasonStream.updateDataQuick({
         currentPageOnDestroy: animeListSeasonStream.currentState().currentPage,
         currentSeasonOnDestroy: animeListSeasonState.season,
@@ -116,7 +119,6 @@ export const fetchAnimeListSeason = (
 
 export const listenWhenOptionChange = (
   animeListSeasonState,
-  targetScroll,
   selectSeason,
   selectYear,
   selectScore,
@@ -124,17 +126,6 @@ export const listenWhenOptionChange = (
   selectGenre
 ) => {
   return () => {
-    if (animeListSeasonStream.currentState().shouldScrollToSeeMore) {
-      window.scroll({
-        top: targetScroll.current.offsetTop - 170,
-        behavior: "smooth",
-      });
-      // animeListSeasonStream.allowScrollToSeeMore(false);
-      animeListSeasonStream.updateDataQuick({
-        shouldScrollToSeeMore: false,
-      });
-    }
-
     if (selectSeason.current && selectYear.current) {
       selectSeason.current.value = animeListSeasonState.season;
       selectYear.current.value = animeListSeasonState.year;
@@ -159,6 +150,12 @@ export const listenWhenOptionChange = (
         selectFilterMode.current,
         selectGenre.current
       ).subscribe(([year, season, score, modeFilter, genreId]) => {
+        if (!animeListSeasonStream.currentState().isInit)
+          animeListSeasonStream.updateData({
+            triggerScroll: !animeListSeasonStream.currentState().triggerScroll,
+            isSmoothScroll: false,
+            isInit: false,
+          });
         animeListSeasonStream.updateSeasonYear(
           season,
           year,
@@ -167,7 +164,6 @@ export const listenWhenOptionChange = (
           genreId
         );
       });
-
     return () => {
       subscription4 && subscription4.unsubscribe();
       subscription3.unsubscribe();

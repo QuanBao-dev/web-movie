@@ -23,8 +23,8 @@
   position: absolute;
   width: 102%;
   height: 100%;
-  top:50%;
-  left:2%;
+  top: 50%;
+  left: 0;
   font-size: 120%;
   pointer-events: auto;
   transition: 0.3s;

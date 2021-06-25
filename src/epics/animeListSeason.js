@@ -137,6 +137,8 @@ export const fetchAnimeSeason$ = (
           ) {
             page = Math.ceil((latestAiringIndex + 1) / numberOfProducts);
             animeListSeasonStream.updateData({ currentPage: page });
+          } else {
+            animeListSeasonStream.updateData({ currentPage: 1 });
           }
           if (page === 0) page = 1;
           sortedArray = sortedArray.slice(

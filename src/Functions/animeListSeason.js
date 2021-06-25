@@ -14,6 +14,7 @@ export const initAnimeListSeason = (setAnimeListState) => {
       top: 0,
     });
     return () => {
+      animeListSeasonStream.updateData({ isInit: true });
       subscription.unsubscribe();
     };
   };

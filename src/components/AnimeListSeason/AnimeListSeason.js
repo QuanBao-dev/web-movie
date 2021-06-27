@@ -62,11 +62,6 @@ const AnimeListSeason = () => {
   const [animeListSeasonState, setAnimeListSeasonState] = useState(
     animeListSeasonStream.currentState()
   );
-  const selectYear = useRef(null);
-  const selectSeason = useRef(null);
-  const selectScore = useRef(null);
-  const selectFilterMode = useRef(null);
-  const selectGenre = useRef(null);
   const targetScroll = useRef(null);
 
   const startYear = 1963;
@@ -85,14 +80,7 @@ const AnimeListSeason = () => {
   }
   useInitAnimeListSeason(setAnimeListSeasonState);
   useFilterAnimeList(animeListSeasonState);
-  useListenWhenOptionChange(
-    animeListSeasonState,
-    selectSeason,
-    selectYear,
-    selectScore,
-    selectFilterMode,
-    selectGenre
-  );
+
   useFetchAnimeListSeason(animeListSeasonState);
   useEffect(() => {
     if (!animeListSeasonState.isInit) {
@@ -126,11 +114,6 @@ const AnimeListSeason = () => {
       <SelectFilterAnime
         targetScroll={targetScroll}
         animeListSeasonState={animeListSeasonState}
-        selectSeason={selectSeason}
-        selectYear={selectYear}
-        selectScore={selectScore}
-        selectFilterMode={selectFilterMode}
-        selectGenre={selectGenre}
         numberOfYears={numberOfYears}
       />
 
@@ -165,25 +148,27 @@ const AnimeListSeason = () => {
 function SelectFilterAnime({
   targetScroll,
   animeListSeasonState = animeListSeasonStream.currentState(),
-  selectSeason,
-  selectYear,
-  selectScore,
-  selectFilterMode,
-  selectGenre,
   numberOfYears,
 }) {
+  const selectYear = useRef(null);
+  const selectSeason = useRef(null);
+  const selectScore = useRef(null);
+  const selectFilterMode = useRef(null);
+  const selectGenre = useRef(null);
   const elementOptions = Array.from(Array(numberOfYears).keys()).map(
     (v) => new Date(Date.now()).getFullYear() + 1 - v
   );
   const scoreOptions = Array.from(Array(10).keys());
+  useListenWhenOptionChange(
+    animeListSeasonState,
+    selectSeason,
+    selectYear,
+    selectScore,
+    selectFilterMode,
+    selectGenre
+  );
   return (
-    <div
-      style={{
-        marginTop: "10px",
-        textAlign: "center",
-      }}
-      ref={targetScroll}
-    >
+    <div ref={targetScroll}>
       {animeListSeasonState.isFetching && (
         <CircularProgress
           style={{
@@ -196,72 +181,84 @@ function SelectFilterAnime({
           size="5rem"
         />
       )}
-      <select
-        className="select-filter"
-        defaultValue={`${animeListSeasonState.season}`}
-        ref={selectSeason}
+      <div
+        style={{
+          marginTop: "10px",
+          textAlign: "center",
+        }}
       >
-        <option value="winter">winter</option>
-        <option value="spring">spring</option>
-        <option value="summer">summer</option>
-        <option value="fall">fall</option>
-      </select>
-      <select
-        className="select-filter"
-        defaultValue={`${animeListSeasonState.year}`}
-        ref={selectYear}
-      >
-        {elementOptions.map((v, index) => {
-          return (
-            <option key={index} value={`${v}`}>
-              {v}
+        <select
+          className="select-filter"
+          defaultValue={`${animeListSeasonState.season}`}
+          ref={selectSeason}
+          disabled={animeListSeasonState.isFetching}
+        >
+          <option value="winter">winter</option>
+          <option value="spring">spring</option>
+          <option value="summer">summer</option>
+          <option value="fall">fall</option>
+        </select>
+        <select
+          disabled={animeListSeasonState.isFetching}
+          className="select-filter"
+          defaultValue={`${animeListSeasonState.year}`}
+          ref={selectYear}
+        >
+          {elementOptions.map((v, index) => {
+            return (
+              <option key={index} value={`${v}`}>
+                {v}
+              </option>
+            );
+          })}
+        </select>
+        <select
+          className="select-filter"
+          defaultValue={`${animeListSeasonStream.currentState().score}`}
+          ref={selectScore}
+          disabled={animeListSeasonState.isFetching}
+        >
+          {scoreOptions.map((score, key) => (
+            <option key={key} value={`${score}`}>
+              {score !== 0 ? score : "Score"}
             </option>
-          );
-        })}
-      </select>
-      <select
-        className="select-filter"
-        defaultValue={`${animeListSeasonStream.currentState().score}`}
-        ref={selectScore}
-      >
-        {scoreOptions.map((score, key) => (
-          <option key={key} value={`${score}`}>
-            {score !== 0 ? score : "Score"}
-          </option>
-        ))}
-      </select>
-      <select
-        className="select-filter"
-        defaultValue={animeListSeasonStream.currentState().modeFilter}
-        ref={selectFilterMode}
-      >
-        <option value={`all`}>All</option>
-        <option value={`filter`}>Filter</option>
-      </select>
-      <select
-        className="select-filter"
-        ref={selectGenre}
-        defaultValue={animeListSeasonStream.currentState().genreId}
-      >
-        <option value={0}>Genre</option>
-        {genresData.map((data) => {
-          if (data.genreId !== "12") {
-            return (
-              <option key={data.genreId} value={data.genreId}>
-                {data.genre}
-              </option>
-            );
-          }
-          if (animeListSeasonStream.currentState().modeFilter === "all") {
-            return (
-              <option key={data.genreId} value={data.genreId}>
-                {data.genre}
-              </option>
-            );
-          }
-          return undefined;
-        })}
-      </select>
+          ))}
+        </select>
+        <select
+          className="select-filter"
+          defaultValue={animeListSeasonStream.currentState().modeFilter}
+          ref={selectFilterMode}
+          disabled={animeListSeasonState.isFetching}
+        >
+          <option value={`all`}>All</option>
+          <option value={`filter`}>Filter</option>
+        </select>
+        <select
+          className="select-filter"
+          ref={selectGenre}
+          defaultValue={animeListSeasonStream.currentState().genreId}
+          disabled={animeListSeasonState.isFetching}
+        >
+          <option value={0}>Genre</option>
+          {genresData.map((data) => {
+            if (data.genreId !== "12") {
+              return (
+                <option key={data.genreId} value={data.genreId}>
+                  {data.genre}
+                </option>
+              );
+            }
+            if (animeListSeasonStream.currentState().modeFilter === "all") {
+              return (
+                <option key={data.genreId} value={data.genreId}>
+                  {data.genre}
+                </option>
+              );
+            }
+            return undefined;
+          })}
+        </select>
+      </div>
     </div>
   );
 }

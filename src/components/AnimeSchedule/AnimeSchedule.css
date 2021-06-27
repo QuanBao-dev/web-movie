@@ -7,8 +7,8 @@
   color: white;
   display: flex;
   flex-direction: column;
-  box-shadow: 0 0 10px 10px rgba(0, 0, 0, 0.979), 0 0 10px 10px #131414;
-  text-align: center;
+  text-align: center;  
+  box-shadow: 0 0 5px 1px rgba(255, 255, 255, 0.534);
 }
 
 .day-schedule-movie{
@@ -45,8 +45,8 @@
 }
 
 .container-week-schedule-movie{
-  padding:10px;
-  background-color: #474453;
+  padding: 0.5rem 0;
+  background-color: #000000;
 }
 
 .select-schedule{

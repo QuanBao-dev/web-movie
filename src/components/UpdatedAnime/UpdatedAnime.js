@@ -33,7 +33,14 @@ const UpdatedAnime = () => {
   useInitUpdatedAnime(setUpdatedAnimeState);
   useFetchAnimeList(updatedAnimeState, subNavToggle, setIsEmpty, cookies);
   return (
-    <div style={{ paddingBottom: "1.2rem" }}>
+    <div
+      style={{
+        paddingBottom: "1.2rem",
+        boxShadow: "0 0 3px 3px rgb(51, 57, 92)",
+        backgroundColor: "#212541",
+        marginBottom:"0.7rem"
+      }}
+    >
       <SubNavBar
         subNavToggle={subNavToggle}
         setSubNavToggle={setSubNavToggle}

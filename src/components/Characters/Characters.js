@@ -92,6 +92,7 @@ const Characters = ({ lazy = false, isLoading }) => {
             ))}
           <div
             className="see-more-character"
+            style={{ display: "none" }}
             onClick={() => {
               const page = characterStream.currentState().page;
               characterStream.updatePage(page + 1);

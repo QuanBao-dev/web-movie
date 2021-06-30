@@ -18,7 +18,9 @@ const SearchInput = ({ textSearch }) => {
     const subscription10 = listenSearchInputPressEnter$(
       searchInput.current
     ).subscribe((v) => {
-      history.push("/anime/search?key=" + v);
+      let textSearch = v;
+      if (textSearch.length < 3) textSearch += "  ";
+      history.push("/anime/search?key=" + textSearch);
     });
     return () => {
       unsubscribeSubscription(subscription6, subscription10);

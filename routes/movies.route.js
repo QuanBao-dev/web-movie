@@ -631,7 +631,7 @@ async function crawl(start, end, url, serverWeb) {
             url: link.children[0].href,
             textContent: link.children[0].children[1].textContent
               .replace(/[0-9][a-z]+/g, "")
-              .match(/Episode [0-9]+/g)[0]
+              .match(/Episode [0-9.]+/g)[0]
               .replace("Episode ", ""),
           }));
         }, start);

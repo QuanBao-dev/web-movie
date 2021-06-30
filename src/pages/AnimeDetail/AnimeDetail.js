@@ -191,12 +191,22 @@ const AnimeDetail = (props) => {
           </div>
           <div className="box-content">
             <h1 style={{ margin: "0" }} className="title">
-              Summary
+              Synopsis
             </h1>
             <div className="content">
               {animeDetailState.dataInformationAnime.synopsis ||
-                "(No summary added yet)"}
+                "(No synopsis added yet)"}
             </div>
+            {animeDetailState.dataInformationAnime.background && (
+              <div>
+                <h1 style={{ marginBottom: "0" }} className="title">
+                  Background
+                </h1>
+                <div className="content">
+                  {animeDetailState.dataInformationAnime.background}
+                </div>
+              </div>
+            )}
             {animeDetailState.isLoadingEpisode !== null &&
               animeDetailState.isLoadingEpisode === true && (
                 <div>
@@ -306,6 +316,7 @@ function deformData(animeDetailState, showThemeMusic) {
         "request_cached",
         "request_cache_expiry",
         "mal_id",
+        "background"
       ];
       if (!showThemeMusic) {
         arrayExclude = [...arrayExclude, "opening_themes", "ending_themes"];

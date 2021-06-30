@@ -58,7 +58,7 @@ function FormSubmit({
           const isDub =
             document.querySelector(".select-mode-anime").value === "dub";
           const { idCartoonUser } = cookies;
-          if (!episode || !embedUrl || embedUrl.trim() === "") {
+          if (isNaN(episode) || !embedUrl || embedUrl.trim() === "") {
             alert("Episode and Url are required");
             return;
           }

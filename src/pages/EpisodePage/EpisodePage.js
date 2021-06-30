@@ -139,9 +139,7 @@ const EpisodePage = (props) => {
   }
   if (episodes)
     currentEpisode = episodes.find((ep) => {
-      if (ep.episode[0] === "0") {
-        ep.episode = ep.episode.slice(1);
-      }
+      ep.episode = parseFloat(ep.episode);
       return ep.episode == episode;
     });
   let episodeIndex = 0;
@@ -343,6 +341,7 @@ function ListEpisodeUrlDisplay({
   mode,
   modeDisplay,
 }) {
+  console.log(episodes, episode)
   return (
     <div className="list-episode-movie">
       {episodes &&

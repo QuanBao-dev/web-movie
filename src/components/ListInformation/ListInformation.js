@@ -14,7 +14,7 @@ function ListInformation({ arrKeys, history, isLoading }) {
             typeof animeDetailStream.currentState().dataInformationAnime[v] !==
             "object"
           ) {
-            if (v !== "rank" && v !== "popularity")
+            if (v !== "rank" && v !== "popularity" && v !== "score")
               return (
                 <li key={index} style={{ lineHeight: "2.3rem" }}>
                   <span
@@ -46,17 +46,42 @@ function ListInformation({ arrKeys, history, isLoading }) {
                     {capitalizeString(v)}
                   </span>{" "}
                   <span
-                    style={{
-                      color:
-                        animeDetailStream.currentState().dataInformationAnime[
-                          v
-                        ] <= 1000
-                          ? "Yellow"
-                          : animeDetailStream.currentState()
-                              .dataInformationAnime[v] <= 2000
-                          ? "#8b8bff"
-                          : "inherit",
-                    }}
+                    style={
+                      v === "rank"
+                        ? {
+                            color:
+                              animeDetailStream.currentState()
+                                .dataInformationAnime[v] <= 500
+                                ? "Yellow"
+                                : animeDetailStream.currentState()
+                                    .dataInformationAnime[v] <= 3000
+                                ? "#8b8bff"
+                                : "inherit",
+                          }
+                        : v === "popularity"
+                        ? {
+                            color:
+                              animeDetailStream.currentState()
+                                .dataInformationAnime[v] <= 1000
+                                ? "Yellow"
+                                : animeDetailStream.currentState()
+                                    .dataInformationAnime[v] <= 2000
+                                ? "#8b8bff"
+                                : "inherit",
+                          }
+                        : v === "score"
+                        ? {
+                            color:
+                              animeDetailStream.currentState()
+                                .dataInformationAnime[v] >= 8
+                                ? "Yellow"
+                                : animeDetailStream.currentState()
+                                    .dataInformationAnime[v] >= 6
+                                ? "#8b8bff"
+                                : "inherit",
+                          }
+                        : {}
+                    }
                   >
                     {`${
                       animeDetailStream.currentState().dataInformationAnime[v]
@@ -78,8 +103,8 @@ function ListInformation({ arrKeys, history, isLoading }) {
                   }
                 });
               if (!check) {
-                const array = animeDetailStream.currentState()
-                  .dataInformationAnime[v];
+                const array =
+                  animeDetailStream.currentState().dataInformationAnime[v];
                 return (
                   <li key={index}>
                     <ul className="title-synonym-list">
@@ -190,8 +215,8 @@ function ListInformation({ arrKeys, history, isLoading }) {
                 .length !== 0
             ) {
               if (v === "related") {
-                const related = animeDetailStream.currentState()
-                  .dataInformationAnime[v];
+                const related =
+                  animeDetailStream.currentState().dataInformationAnime[v];
                 return Object.keys(related).map((key) => (
                   <li key={key}>
                     <ul className="title-synonym-list">
@@ -222,8 +247,8 @@ function ListInformation({ arrKeys, history, isLoading }) {
                 ));
               }
               if (v === "aired") {
-                const aired = animeDetailStream.currentState()
-                  .dataInformationAnime[v];
+                const aired =
+                  animeDetailStream.currentState().dataInformationAnime[v];
                 return (
                   <li style={{ lineHeight: "2.3rem" }} key={index}>
                     <span

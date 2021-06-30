@@ -341,7 +341,6 @@ function ListEpisodeUrlDisplay({
   mode,
   modeDisplay,
 }) {
-  console.log(episodes, episode)
   return (
     <div className="list-episode-movie">
       {episodes &&

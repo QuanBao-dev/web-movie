@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useHistory } from "react-router-dom";
 import {
   changeSearchInput$,
@@ -9,6 +9,7 @@ import Input from "../Input/Input";
 const SearchInput = ({ textSearch }) => {
   const history = useHistory();
   const searchInput = useRef(null);
+  const [error, setError] = useState(null);
   useEffect(() => {
     const subscription6 = changeSearchInput$(searchInput.current).subscribe(
       (v) => {
@@ -18,9 +19,12 @@ const SearchInput = ({ textSearch }) => {
     const subscription10 = listenSearchInputPressEnter$(
       searchInput.current
     ).subscribe((v) => {
-      let textSearch = v;
-      if (textSearch.length < 3) textSearch += "  ";
-      history.push("/anime/search?key=" + textSearch);
+      if (v.length < 3) {
+        setError("Require at least 3 character to search");
+        return;
+      }
+      history.push("/anime/search?key=" + v);
+      setError(null);
     });
     return () => {
       unsubscribeSubscription(subscription6, subscription10);
@@ -29,7 +33,7 @@ const SearchInput = ({ textSearch }) => {
   }, [textSearch]);
   return (
     <div style={{ width: "90%", margin: "auto" }}>
-      <Input label="Search Anime" input={searchInput} />
+      <Input label="Search Anime" input={searchInput} error={error} />
     </div>
   );
 };

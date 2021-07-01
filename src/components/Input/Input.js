@@ -21,7 +21,7 @@ const Input = ({
         />
         <label className="label-name">{label}</label>
       </div>
-      {error && <div className="error-message">Error: {error}</div>}
+      {error && <div className="error-message">{error}</div>}
     </div>
   );
 };

@@ -1,9 +1,8 @@
-import "./ListImageAnimeDetail.css";
+import React, { useRef, useState } from 'react';
 
-import React, { useRef, useState } from "react";
+import SliderLargeImage from '../SliderLargeImage/SliderLargeImage';
+import SliderSmallImage from '../SliderSmallImage/SliderSmallImage';
 
-import SliderLargeImage from "../SliderLargeImage/SliderLargeImage";
-import SliderSmallImage from "../SliderSmallImage/SliderSmallImage";
 
 const ListImageAnimeDetail = ({ listImage, isLoading }) => {
   const [page, setPage] = useState(0);

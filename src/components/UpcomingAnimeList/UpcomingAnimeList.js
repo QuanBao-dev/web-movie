@@ -62,15 +62,14 @@ const UpcomingAnimeList = () => {
         });
       }}
     >
-      <h1 className="title-upcoming-anime">Upcoming anime</h1>
       <div className="container-upcoming-anime-main">
+        <h1 className="title-upcoming-anime">Upcoming anime</h1>
         {upcomingAnimeListState.screenWidth >= 700 && (
           <i
             className="button-scrolling left fas fa-arrow-alt-circle-left fa-3x"
             onClick={() => {
-              const elementScroll = document.querySelector(
-                ".list-anime-nowrap"
-              );
+              const elementScroll =
+                document.querySelector(".list-anime-nowrap");
               scrollByTranslate(
                 elementScroll.childNodes[0].offsetWidth,
                 -1,
@@ -83,9 +82,8 @@ const UpcomingAnimeList = () => {
           <i
             className="button-scrolling right fas fa-arrow-alt-circle-right fa-3x"
             onClick={() => {
-              const elementScroll = document.querySelector(
-                ".list-anime-nowrap"
-              );
+              const elementScroll =
+                document.querySelector(".list-anime-nowrap");
               scrollByTranslate(
                 elementScroll.childNodes[0].offsetWidth,
                 1,

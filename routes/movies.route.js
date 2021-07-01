@@ -614,8 +614,9 @@ async function crawl(start, end, url, serverWeb) {
             if (
               listLink[i] &&
               !listLink[i].children[0].children[1].textContent
+                .trim()
                 .replace(/[0-9][a-z]+/g, "")
-                .includes(`${start}`)
+                .match(new RegExp("Episode " + start + "([.0-9]+)?$", "g"))
             ) {
               listLink[i].remove();
             } else {
@@ -630,7 +631,8 @@ async function crawl(start, end, url, serverWeb) {
           return listLink.map((link) => ({
             url: link.children[0].href,
             textContent: link.children[0].children[1].textContent
-              .replace(/[0-9][a-z]+/g, "").trim()
+              .replace(/[0-9][a-z]+/g, "")
+              .trim()
               .match(/Episode [0-9.]+$/g)[0]
               .replace("Episode ", ""),
           }));

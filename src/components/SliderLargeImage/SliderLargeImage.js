@@ -37,10 +37,12 @@ const SliderLargeImage = ({
             sliderLargeImageRef.current &&
             sliderLargeImageRef.current.children.length > 0 &&
             sliderLargeImageRef.current.children[page + 1]
-          )
+          ) {
+            sliderLargeImageRef.current.style.transition = "0s";
             sliderLargeImageRef.current.style.height = `${
               sliderLargeImageRef.current.children[page + 1].offsetHeight
             }px`;
+          }
         }, 500);
       });
     }

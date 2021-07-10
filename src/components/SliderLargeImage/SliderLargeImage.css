@@ -44,7 +44,6 @@
   display: flex;
   flex-wrap: nowrap;
   padding: 0;
-  transition: 0.5s;
 }
 
 .slider-large-image-item{

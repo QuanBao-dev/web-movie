@@ -65,9 +65,6 @@ const SliderLargeImage = ({
             }px`;
           if (allowSliding === true && isMobile) setAllowSliding(false);
           sliderLargeImageRef.current.style.transition = "0s";
-          sliderLargeImageRef.current.style.transform = `translateX(-${
-            (100 / (dataImageList.length + 2)) * (page + 1)
-          }%)`;
         }),
         debounceTime(1000)
       )

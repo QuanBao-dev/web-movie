@@ -280,8 +280,15 @@ function handleEndSlidingSmooth(
           parseInt(currentOffsetLeft / widthEachItem)) *
           widthEachItem >
         threshold;
+      console.log(page, isNextPage);
       if (isNextPage) {
-        setPage(parseInt(currentOffsetLeft / widthEachItem));
+        if (parseInt(currentOffsetLeft / widthEachItem) !== page) {
+          setPage(parseInt(currentOffsetLeft / widthEachItem));
+        } else {
+          sliderLargeImageRef.current.style.transform = `translateX(-${
+            (parseInt(currentOffsetLeft / widthEachItem) + 1) * widthEachItem
+          }px)`;
+        }
       } else {
         if (parseInt(currentOffsetLeft / widthEachItem) - 1 !== page) {
           setPage(parseInt(currentOffsetLeft / widthEachItem) - 1);
@@ -301,7 +308,13 @@ function handleEndSlidingSmooth(
           widthEachItem >
         threshold;
       if (isNextPage) {
-        setPage(parseInt(currentOffsetLeft / widthEachItem) - 1);
+        if (parseInt(currentOffsetLeft / widthEachItem) - 1 !== page)
+          setPage(parseInt(currentOffsetLeft / widthEachItem) - 1);
+        else {
+          sliderLargeImageRef.current.style.transform = `translateX(-${
+            parseInt(currentOffsetLeft / widthEachItem) * widthEachItem
+          }px)`;
+        }
       } else {
         if (parseInt(currentOffsetLeft / widthEachItem) !== page) {
           setPage(parseInt(currentOffsetLeft / widthEachItem));

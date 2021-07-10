@@ -280,7 +280,6 @@ function handleEndSlidingSmooth(
           parseInt(currentOffsetLeft / widthEachItem)) *
           widthEachItem >
         threshold;
-      console.log(page, isNextPage);
       if (isNextPage) {
         if (parseInt(currentOffsetLeft / widthEachItem) !== page) {
           setPage(parseInt(currentOffsetLeft / widthEachItem));

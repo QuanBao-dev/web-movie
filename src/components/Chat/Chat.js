@@ -397,9 +397,8 @@ function appendNewUserSeen(avatar) {
     return;
   }
   const elements = [...allMessages.childNodes];
-  let newSpanContainer = elements[elements.length - 1].querySelector(
-    ".seen-user"
-  );
+  let newSpanContainer =
+    elements[elements.length - 1].querySelector(".seen-user");
   let add = false;
   if (!newSpanContainer) {
     add = true;

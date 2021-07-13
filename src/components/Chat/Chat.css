@@ -110,7 +110,7 @@
 }
 
 .message-dialog-item{
-  padding:1rem;
+  padding:0.5rem;
   margin:5px;
   display: flex;
   flex-direction: column;

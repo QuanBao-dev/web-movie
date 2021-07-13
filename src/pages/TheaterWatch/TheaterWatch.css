@@ -121,6 +121,41 @@
   padding: 1em;
 }
 
+.input-section-1{
+  background-color: #473f26;
+  width: 100%;
+  margin: 1rem;
+  border-radius: 10px;
+}
+
+.input-section-1 div{
+  margin: auto;
+}
+
+.input-section-1 button{
+  padding: 0.5rem 1rem;
+  border-radius: 10px;
+  color: white;
+  background-color: rgb(52, 102, 136);
+  margin-top: 0.2rem;
+}
+
+.input-section-2{
+  width: 100%;
+  background-color: #473f26;
+  border-radius: 10px;
+}
+
+.input-section-2 input{
+  margin: 2rem;
+}
+
+.input-checkbox{
+  width: 90%;
+  margin-top: 1.5rem!important;
+  margin-bottom: 1.5rem!important;
+}
+
 .video-zoom{
   position: fixed;
   top: 0;

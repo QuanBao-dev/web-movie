@@ -54,6 +54,7 @@ const TheaterWatch = (props) => {
   const videoWatchRef = useRef();
   const videoUrlUpload = useRef();
   const transcriptUrlUpload = useRef();
+  const checkBoxRef = useRef();
   const [cookies] = useCookies(["idCartoonUser"]);
   useEffect(() => {
     videoWatchElement = videoWatchRef.current;
@@ -165,48 +166,56 @@ const TheaterWatch = (props) => {
               {theaterState.currentRoomDetail.roomName}
             </h1>
             <div className="container-input-section">
-              <div
-                style={{
-                  width: "90%",
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "flex-end",
-                }}
-              >
-                <Input label={"Video url"} input={videoUrlUpload} />
-                <button
-                  onClick={() => {
-                    if (videoUrlUpload.current.value !== "") {
-                      createNewVideo(
-                        videoUrlUpload.current.value,
-                        true,
-                        undefined
-                      );
-                    }
+              <div className="input-section-1">
+                <div
+                  style={{
+                    width: "90%",
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "flex-end",
                   }}
                 >
-                  Upload
-                </button>
-                <Input label={"Transcript url"} input={transcriptUrlUpload} />
-                <button
-                  onClick={() => {
-                    if (transcriptUrlUpload.current.value !== "") {
-                      createNewVideo(
-                        undefined,
-                        true,
-                        transcriptUrlUpload.current.value
-                      );
-                    }
-                  }}
-                >
-                  Upload
-                </button>
+                  <Input label={"Video url"} input={videoUrlUpload} />
+                  <button
+                    onClick={() => {
+                      if (videoUrlUpload.current.value !== "") {
+                        createNewVideo(
+                          videoUrlUpload.current.value,
+                          checkBoxRef.current.checked,
+                          undefined
+                        );
+                      }
+                    }}
+                  >
+                    Upload
+                  </button>
+                  <Input label={"Transcript url"} input={transcriptUrlUpload} />
+                  <button
+                    onClick={() => {
+                      if (transcriptUrlUpload.current.value !== "") {
+                        createNewVideo(
+                          undefined,
+                          checkBoxRef.current.checked,
+                          transcriptUrlUpload.current.value
+                        );
+                      }
+                    }}
+                  >
+                    Upload
+                  </button>
+                </div>
+                <div className="input-checkbox">
+                  <input id="update-other" type="checkbox" ref={checkBoxRef} />
+                  <label htmlFor="update-other">Share with other members</label>
+                </div>
               </div>
-              <input
-                type="file"
-                ref={inputVideoRef}
-                onChange={() => createVideoUri(inputVideoRef.current)}
-              />
+              <div className="input-section-2">
+                <input
+                  type="file"
+                  ref={inputVideoRef}
+                  onChange={() => createVideoUri(inputVideoRef.current)}
+                />
+              </div>
             </div>
             {theaterState.isSignIn && (
               <UserListOnline usersOnline={theaterState.usersOnline} />
@@ -223,7 +232,6 @@ const TheaterWatch = (props) => {
                   className="video-watch"
                   poster="https://media.istockphoto.com/videos/movie-time-concept-background-video-id1127766856?s=640x640"
                   ref={videoWatchRef}
-                  crossOrigin="anonymous"
                   onContextMenu={(e) => e.preventDefault()}
                   playsInline
                 ></video>
@@ -425,11 +433,12 @@ async function newUserJoinHandleVideo(
         if (!audioCallE)
           audioCallE = document.querySelector(".container-audio-call");
         addAudioStream(myAudio, stream, audioCallE);
-        appendNewMessageNotification(
-          "Your " + elementCall + " is connected",
-          notificationE,
-          "audio-connected"
-        );
+        if (!document.querySelector(".audio-connected"))
+          appendNewMessageNotification(
+            "Your " + elementCall + " is connected",
+            notificationE,
+            "audio-connected"
+          );
         myPeer.on("open", (id) => {
           myAudio.id = id;
           myPeer.on("call", (call) => {
@@ -689,20 +698,20 @@ function uploadNewVideo(
         sourceElement.type = "video/mp4";
         videoWatchElement.append(sourceElement);
       }
-      if(sourceElement){
+      if (sourceElement) {
         sourceElement.src = fileContent;
         sourceElement.type = "video/mp4";
       }
     }
     if (transcriptUrl && transcriptUrl.trim() !== "") {
       let trackElement = videoWatchElement.querySelector("track");
-      if(!trackElement){
+      if (!trackElement) {
         trackElement = document.createElement("track");
         trackElement.src = transcriptUrl.trim();
         trackElement.default = true;
         videoWatchElement.append(trackElement);
       }
-      if(trackElement){
+      if (trackElement) {
         trackElement.src = transcriptUrl.trim();
         trackElement.default = true;
       }

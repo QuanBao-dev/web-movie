@@ -32,10 +32,13 @@ const MessageInput = ({
     socket.on("reconnect", () => {
       socket.emit("notify-user-stop-type", idGroup, idTyping);
     });
+    socket.on("disconnect", () => {
+      socket.emit("notify-user-stop-type", idGroup, idTyping);
+    });
     return () => {
       subscription.unsubscribe();
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   useEffect(() => {
     let subStartTyping, subStopTyping;
@@ -284,9 +287,8 @@ function sendMessage(
           idGroup,
           user.avatarImage
         );
-        const buttonGetRemoteElement = document.getElementById(
-          "button-get-remote"
-        );
+        const buttonGetRemoteElement =
+          document.getElementById("button-get-remote");
         if (buttonGetRemoteElement) {
           socket.emit("update-user-online", buttonGetRemoteElement.disabled);
         }
@@ -321,9 +323,8 @@ function sendMessage(
         idGroup,
         user.avatarImage
       );
-      const buttonGetRemoteElement = document.getElementById(
-        "button-get-remote"
-      );
+      const buttonGetRemoteElement =
+        document.getElementById("button-get-remote");
       if (buttonGetRemoteElement) {
         socket.emit("update-user-online", buttonGetRemoteElement.disabled);
       }

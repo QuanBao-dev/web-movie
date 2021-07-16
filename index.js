@@ -62,6 +62,12 @@ io.on("connection", (socket) => {
       socket.emit("fetch-user-online");
       socket.to(groupId).emit("fetch-user-online");
       rooms[groupId].users[userId] = username;
+      const members = await TheaterRoomMember.find({ groupId })
+        .select({ _id: 0, keepRemote: 1, userId: 1 })
+        .lean();
+      const isContainedMemberHavingRemote = !!members.find(
+        (member) => member.keepRemote === true
+      );
       await TheaterRoomMember.findOneAndUpdate(
         {
           userId: publicUserId,
@@ -71,16 +77,16 @@ io.on("connection", (socket) => {
           username,
           avatar,
           joinAt: Date.now(),
-          keepRemote: keepRemote,
+          keepRemote: !isContainedMemberHavingRemote,
         },
         {
           upsert: true,
           new: true,
         }
       )
-        .lean()
-        .select({ _id: false, __v: false });
-      // socket.to(groupId).emit("user-join", username, userId, groupId, avatar);
+        .select({ _id: false, __v: false })
+        .lean();
+      socket.to(groupId).emit("user-join", userId, groupId);
       socket.on("fetch-updated-user-online", () => {
         socket.emit("fetch-user-online");
         socket.to(groupId).emit("fetch-user-online");
@@ -93,15 +99,18 @@ io.on("connection", (socket) => {
         }).lean();
       });
 
-      socket.on("new-video", (videoUri, groupId, uploadOtherVideo,transcriptUrl) => {
-        socket.broadcast.emit(
-          "upload-video",
-          videoUri,
-          groupId,
-          uploadOtherVideo,
-          transcriptUrl
-        );
-      });
+      socket.on(
+        "new-video",
+        (videoUri, groupId, uploadOtherVideo, transcriptUrl) => {
+          socket.broadcast.emit(
+            "upload-video",
+            videoUri,
+            groupId,
+            uploadOtherVideo,
+            transcriptUrl
+          );
+        }
+      );
       socket.on("user-keep-remote-changed", (groupId) => {
         socket.broadcast.emit("change-user-keep-remote", groupId);
       });
@@ -146,23 +155,6 @@ io.on("connection", (socket) => {
       });
     }
   );
-  socket.on("update-user-avatar", async (publicUserId, groupId, avatar) => {
-    await TheaterRoomMember.findOneAndUpdate(
-      {
-        userId: publicUserId,
-        groupId,
-      },
-      {
-        avatar,
-      },
-      {
-        upsert: true,
-        new: true,
-      }
-    )
-      .lean()
-      .select({ _id: false, __v: false });
-  });
   socket.on("notify-user-typing", (groupId, idUserTyping, username) => {
     socket.broadcast.emit("new-user-typing", groupId, idUserTyping, username);
   });

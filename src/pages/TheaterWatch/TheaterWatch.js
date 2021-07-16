@@ -176,6 +176,19 @@ const TheaterWatch = (props) => {
                   }}
                 >
                   <Input label={"Video url"} input={videoUrlUpload} />
+                  <Input label={"Transcript url"} input={transcriptUrlUpload} />
+                </div>
+                <div className="input-checkbox">
+                  <span>
+                    <input
+                      id="update-other"
+                      type="checkbox"
+                      ref={checkBoxRef}
+                    />
+                    <label htmlFor="update-other">
+                      Share with other members
+                    </label>
+                  </span>
                   <button
                     onClick={() => {
                       if (videoUrlUpload.current.value !== "") {
@@ -185,13 +198,7 @@ const TheaterWatch = (props) => {
                           undefined
                         );
                       }
-                    }}
-                  >
-                    Upload
-                  </button>
-                  <Input label={"Transcript url"} input={transcriptUrlUpload} />
-                  <button
-                    onClick={() => {
+
                       if (transcriptUrlUpload.current.value !== "") {
                         createNewVideo(
                           undefined,
@@ -203,10 +210,6 @@ const TheaterWatch = (props) => {
                   >
                     Upload
                   </button>
-                </div>
-                <div className="input-checkbox">
-                  <input id="update-other" type="checkbox" ref={checkBoxRef} />
-                  <label htmlFor="update-other">Share with other members</label>
                 </div>
               </div>
               <div className="input-section-2">
@@ -240,7 +243,6 @@ const TheaterWatch = (props) => {
                     id="button-get-remote"
                     className="btn btn-danger"
                     onClick={async (e) => {
-                      console.log("change remote", videoWatchRef.current);
                       if (
                         videoWatchRef.current &&
                         videoWatchRef.current.childElementCount > 0

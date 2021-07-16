@@ -113,7 +113,7 @@
 
 .container-input-section{
   background-color: #32363f;
-  box-shadow: 0 0 10px 10px black;
+  box-shadow: 0 0 3px 1px rgb(124, 102, 102);
   margin:10px;
   display: flex;
   flex-direction: column;
@@ -154,6 +154,9 @@
   width: 90%;
   margin-top: 1.5rem!important;
   margin-bottom: 1.5rem!important;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .video-zoom{

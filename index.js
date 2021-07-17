@@ -93,7 +93,7 @@ io.on("connection", (socket) => {
       });
 
       socket.on("delete-specific-member", async (publicUserId, groupId) => {
-        await TheaterRoomMember.deleteMany({
+        await TheaterRoomMember.deleteOne({
           userId: publicUserId,
           groupId,
         }).lean();
@@ -121,32 +121,13 @@ io.on("connection", (socket) => {
         socket.broadcast.emit("pause-video-user", currentTime, groupId);
       });
       socket.on("disconnect", async () => {
-        await TheaterRoomMember.deleteMany({
+        console.log("disconnect");
+        await TheaterRoomMember.deleteOne({
           userId: publicUserId,
           groupId,
         }).lean();
         if (rooms[groupId] && rooms[groupId].users[userId]) {
           // socket.broadcast.emit("disconnected-user", username, userId, groupId);
-          delete rooms[groupId].users[userId];
-          if (Object.keys(rooms[groupId].users).length === 0) {
-            delete rooms[groupId];
-          }
-        }
-      });
-      socket.on("disconnect-custom", async () => {
-        console.log("disconnect");
-        await TheaterRoomMember.deleteMany({
-          userId: publicUserId,
-          groupId,
-        }).lean();
-        if (rooms[groupId] && rooms[groupId].users[userId]) {
-          // socket.broadcast.emit(
-          //   "disconnected-user",
-          //   username,
-          //   userId,
-          //   groupId,
-          //   avatar
-          // );
           delete rooms[groupId].users[userId];
           if (Object.keys(rooms[groupId].users).length === 0) {
             delete rooms[groupId];
@@ -201,26 +182,27 @@ io.on("connection", (socket) => {
     socket.broadcast.emit("fetch-data-rooms");
   });
 
-  socket.on("disconnect-custom", async () => {
-    Object.entries(rooms)
-      .reduce((disconnectedUsers, [malId, room]) => {
-        if (rooms[malId].users[socket.id]) {
-          disconnectedUsers.push({ room, malId: malId });
-        }
-        return disconnectedUsers;
-      }, [])
-      .forEach(({ room, malId }) => {
-        if (rooms[malId].users[socket.id]) {
-          socket.to(malId).emit("disconnected-user", socket.id);
-          delete rooms[malId].users[socket.id];
-          if (Object.keys(rooms[malId].users).length === 0) {
-            delete rooms[malId];
-          }
-        }
-      });
-  });
+  // socket.on("disconnect-custom", async () => {
+  //   Object.entries(rooms)
+  //     .reduce((disconnectedUsers, [malId, room]) => {
+  //       if (rooms[malId].users[socket.id]) {
+  //         disconnectedUsers.push({ room, malId: malId });
+  //       }
+  //       return disconnectedUsers;
+  //     }, [])
+  //     .forEach(({ room, malId }) => {
+  //       if (rooms[malId].users[socket.id]) {
+  //         socket.to(malId).emit("disconnected-user", socket.id);
+  //         delete rooms[malId].users[socket.id];
+  //         if (Object.keys(rooms[malId].users).length === 0) {
+  //           delete rooms[malId];
+  //         }
+  //       }
+  //     });
+  // });
 
   socket.on("disconnect", async () => {
+    console.log("disconnect malId")
     Object.entries(rooms)
       .reduce((disconnectedUsers, [malId, room]) => {
         if (rooms[malId].users[socket.id]) {

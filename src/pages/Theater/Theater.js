@@ -104,7 +104,7 @@ function RoomList({ rooms, locationPath, inputSearchRoom }) {
               onClick={() => {
                 updateSignIn(false);
                 updateAllowFetchCurrentRoomDetail(true);
-                socket.emit("disconnect-custom");
+                // socket.emit("disconnect-custom");
               }}
               key={index}
             >

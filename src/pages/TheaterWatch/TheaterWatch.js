@@ -150,7 +150,7 @@ const TheaterWatch = (props) => {
       theaterState.usersOnline = [];
       audioCallRef.current.innerHTML = "";
       updateSignIn(false);
-      socket.emit("disconnect-custom");
+      // socket.emit("disconnect-custom");
     }
   }
   // console.log(theaterState.usersOnline);
@@ -616,7 +616,6 @@ socket.on("disconnected-user", async (userId) => {
 
 socket.on("disconnect", () => {
   console.log("disconnect");
-  socket.emit("disconnect-custom");
 });
 
 socket.on("fetch-user-online", () => {
@@ -693,6 +692,7 @@ function uploadNewVideo(
   try {
     if (fileContent && fileContent.trim() !== "") {
       videoWatchElement.controls = isControls;
+      videoWatchElement.src = fileContent
       let sourceElement = videoWatchElement.querySelector("source");
       if (!sourceElement) {
         sourceElement = document.createElement("source");

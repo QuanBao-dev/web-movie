@@ -29,7 +29,7 @@ export const initTheaterState = (
         setFilterKeyRoom(e.target.value);
       });
     return () => {
-      theaterStream.socket.emit("disconnect-custom");
+      // theaterStream.socket.emit("disconnect-custom");
       if (socket.connected) theaterStream.socket.close();
       updateAllowUserJoin(false);
       subscription1.unsubscribe();

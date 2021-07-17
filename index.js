@@ -9,8 +9,8 @@ const port = process.env.PORT || 5000;
 const server = require("http").Server(app);
 const sslRedirect = require("heroku-ssl-redirect").default;
 const io = require("socket.io")(server, {
-  pingTimeout: 5000,
-  pingInterval: 2000,
+  pingTimeout: 7000,
+  pingInterval: 3000,
 });
 const compression = require("compression");
 cloudinary.config({
@@ -49,10 +49,15 @@ mongoose.connect(
 );
 
 let rooms = {};
+TheaterRoomMember.watch().on("change", async (a) => {
+  console.log("change");
+  io.emit("mongo-change-watch");
+});
+
 io.on("connection", (socket) => {
   socket.on(
     "new-user",
-    async (avatar, username, groupId, userId, publicUserId, keepRemote) => {
+    async (avatar, username, groupId, userId, publicUserId) => {
       console.log(username);
       if (!rooms[groupId]) {
         rooms[groupId] = { users: {} };
@@ -68,29 +73,20 @@ io.on("connection", (socket) => {
       const isContainedMemberHavingRemote = !!members.find(
         (member) => member.keepRemote === true
       );
-      await TheaterRoomMember.findOneAndUpdate(
-        {
-          userId: publicUserId,
-          groupId,
-        },
-        {
-          username,
-          avatar,
-          joinAt: Date.now(),
-          keepRemote: !isContainedMemberHavingRemote,
-        },
-        {
-          upsert: true,
-          new: true,
-        }
-      )
-        .select({ _id: false, __v: false })
-        .lean();
-      socket.to(groupId).emit("user-join", userId, groupId);
-      socket.on("fetch-updated-user-online", () => {
-        socket.emit("fetch-user-online");
-        socket.to(groupId).emit("fetch-user-online");
+      const newMember = new TheaterRoomMember({
+        userId: publicUserId,
+        groupId,
+        username,
+        avatar,
+        joinAt: Date.now(),
+        keepRemote: !isContainedMemberHavingRemote,
       });
+      await newMember.save();
+      socket.to(groupId).emit("user-join", userId, groupId);
+      // socket.on("fetch-updated-user-online", () => {
+      //   socket.emit("fetch-user-online");
+      //   socket.to(groupId).emit("fetch-user-online");
+      // });
 
       socket.on("delete-specific-member", async (publicUserId, groupId) => {
         await TheaterRoomMember.deleteOne({
@@ -202,7 +198,7 @@ io.on("connection", (socket) => {
   // });
 
   socket.on("disconnect", async () => {
-    console.log("disconnect malId")
+    console.log("disconnect malId");
     Object.entries(rooms)
       .reduce((disconnectedUsers, [malId, room]) => {
         if (rooms[malId].users[socket.id]) {
@@ -220,10 +216,6 @@ io.on("connection", (socket) => {
         }
       });
   });
-});
-
-TheaterRoomMember.watch().on("change", async () => {
-  io.emit("mongo-change-watch");
 });
 
 // Movie.watch().on("change", async () => {

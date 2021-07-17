@@ -1,18 +1,8 @@
-import { from, fromEvent, of, timer } from "rxjs";
-import { ajax } from "rxjs/ajax";
-import {
-  tap,
-  catchError,
-  combineAll,
-  filter,
-  map,
-  pluck,
-  switchMap,
-  switchMapTo,
-  startWith,
-} from "rxjs/operators";
+import { from, fromEvent, of } from 'rxjs';
+import { ajax } from 'rxjs/ajax';
+import { catchError, combineAll, filter, map, pluck, startWith, switchMap, tap } from 'rxjs/operators';
 
-import theaterStore from "../store/theater";
+import theaterStore from '../store/theater';
 
 export const theaterStream = theaterStore;
 export const validateForm$ = (buttonSubmitElement, ...elements) => {
@@ -89,18 +79,14 @@ export const submitFormPasswordRoom$ = (
 };
 
 export const fetchUserOnline$ = (groupId, idCartoonUser) => {
-  return timer(0).pipe(
-    switchMapTo(
-      ajax({
-        url: `/api/theater/${groupId}/members`,
-        headers: {
-          authorization: `Bearer ${idCartoonUser}`,
-        },
-      }).pipe(
-        pluck("response", "message"),
-        catchError(() => of([]))
-      )
-    )
+  return ajax({
+    url: `/api/theater/${groupId}/members`,
+    headers: {
+      authorization: `Bearer ${idCartoonUser}`,
+    },
+  }).pipe(
+    pluck("response", "message"),
+    catchError(() => of([]))
   );
 };
 

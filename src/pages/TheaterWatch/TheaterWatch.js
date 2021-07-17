@@ -6,8 +6,9 @@ import { nanoid } from "nanoid";
 import Peer from "peerjs";
 import React, { useEffect, useRef, useState } from "react";
 import { useCookies } from "react-cookie";
-import { ReplaySubject } from "rxjs";
-import { first } from "rxjs/operators";
+import { timer, ReplaySubject, of } from "rxjs";
+import { ajax } from "rxjs/ajax";
+import { first, pluck, switchMapTo, catchError, map } from "rxjs/operators";
 
 import Input from "../../components/Input/Input";
 import {
@@ -56,6 +57,39 @@ const TheaterWatch = (props) => {
   const transcriptUrlUpload = useRef();
   const checkBoxRef = useRef();
   const [cookies] = useCookies(["idCartoonUser"]);
+  useEffect(() => {
+    let subscription;
+    if (theaterState.isSignIn) {
+      subscription = timer(2000, 20000)
+        .pipe(
+          switchMapTo(
+            ajax({
+              url: "/api/theater/" + groupId + "/members",
+              headers: { authorization: "Bearer " + cookies.idCartoonUser },
+            }).pipe(
+              pluck("response", "message"),
+              catchError((error) =>
+                of(error).pipe(
+                  pluck("response", "error"),
+                  map(() => ({ error }))
+                )
+              )
+            )
+          )
+        )
+        .subscribe((res) => {
+          if (!res.error) {
+            theaterStream.updateData({
+              usersOnline: res,
+            });
+          }
+        });
+    }
+    return () => {
+      subscription && subscription.unsubscribe();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [theaterState.isSignIn]);
   useEffect(() => {
     videoWatchElement = videoWatchRef.current;
     notificationE = notificationRef.current;
@@ -480,7 +514,7 @@ async function newUserJoin(id, groupId) {
       user.userId,
       buttonGetRemoteElement.disabled
     );
-    socket.emit("fetch-updated-user-online");
+    // socket.emit("fetch-updated-user-online");
   }
 }
 
@@ -593,11 +627,11 @@ socket.on("user-join", async (username, userId, roomId) => {
 
 socket.on("disconnected-user", async (userId) => {
   // console.log(roomId, groupId);
-  fetchUserOnline$(groupId, idCartoonUser).subscribe((users) => {
-    theaterStream.updateData({
-      usersOnline: users,
-    });
-  });
+  // fetchUserOnline$(groupId, idCartoonUser).subscribe((users) => {
+  //   theaterStream.updateData({
+  //     usersOnline: users,
+  //   });
+  // });
   if (peers[userId]) {
     peers[userId].close();
   }

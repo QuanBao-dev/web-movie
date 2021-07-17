@@ -14,6 +14,7 @@ import {
   updateAllowFetchRooms,
   updateSignIn,
 } from "../../store/theater";
+import { useEffect } from "react";
 
 const Toggle = loadable(() => import("../../components/Toggle/Toggle"));
 const TheaterWatch = loadable(
@@ -34,11 +35,14 @@ const Theater = (props) => {
   const inputPasswordRef = useRef();
   const buttonSubmitRef = useRef();
   const inputSearchRoom = useRef();
-  useInitTheaterState(
-    setTheaterState,
-    setFilterKeyRoom,
-    inputSearchRoom
-  );
+
+  useEffect(() => {
+    setTimeout(() => {
+      if (theaterStream.socket.connected) theaterStream.socket.close();
+    }, 0);
+  }, []);
+
+  useInitTheaterState(setTheaterState, setFilterKeyRoom, inputSearchRoom);
   useFetchRoomData(
     theaterState,
     cookies,

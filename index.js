@@ -9,8 +9,8 @@ const port = process.env.PORT || 5000;
 const server = require("http").Server(app);
 const sslRedirect = require("heroku-ssl-redirect").default;
 const io = require("socket.io")(server, {
-  pingTimeout: 9000,
-  pingInterval: 3000,
+  pingTimeout: 5000,
+  pingInterval: 2000,
 });
 const compression = require("compression");
 cloudinary.config({

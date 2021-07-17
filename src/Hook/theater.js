@@ -1,14 +1,12 @@
 import { useEffect } from "react";
 import { fetchRoomData, initTheaterState } from "../Functions/theater";
 export const useInitTheaterState = (
-  socket,
   setTheaterState,
   setFilterKeyRoom,
   inputSearchRoom
 ) => {
   useEffect(
     initTheaterState(
-      socket,
       setTheaterState,
       setFilterKeyRoom,
       inputSearchRoom
@@ -18,7 +16,6 @@ export const useInitTheaterState = (
 };
 
 export const useFetchRoomData = (
-  socket,
   theaterState,
   cookies,
   buttonSubmitRef,
@@ -27,7 +24,6 @@ export const useFetchRoomData = (
 ) => {
   useEffect(
     fetchRoomData(
-      socket,
       theaterState,
       cookies,
       buttonSubmitRef,

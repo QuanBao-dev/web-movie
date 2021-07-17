@@ -64,8 +64,11 @@ const TheaterWatch = (props) => {
     const subscription = theaterStream.subscribe(setTheaterState);
     theaterStream.init();
     let submitFormSub;
+    if (!theaterState.isSignIn)
+      if (socket.connected) theaterStream.socket.close();
     if (theaterState.isSignIn) {
       if (theaterStream.currentState().allowUserJoin) {
+        if (!socket.connected) theaterStream.socket.connect();
         newUserJoinHandleVideo(
           audioCallRef.current ||
             document.querySelector(".container-audio-call")
@@ -134,10 +137,6 @@ const TheaterWatch = (props) => {
     theaterState.allowRemoveVideoWatch,
     theaterState.isSignIn,
   ]);
-  useEffect(() => {
-    socket.emit("update-user-avatar", user.userId, groupId, user.avatarImage);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user.avatarImage]);
 
   if (!theaterState.isSignIn && notificationRef.current) {
     notificationRef.current.innerHTML = "";
@@ -692,7 +691,7 @@ function uploadNewVideo(
   try {
     if (fileContent && fileContent.trim() !== "") {
       videoWatchElement.controls = isControls;
-      videoWatchElement.src = fileContent
+      videoWatchElement.src = fileContent;
       let sourceElement = videoWatchElement.querySelector("source");
       if (!sourceElement) {
         sourceElement = document.createElement("source");

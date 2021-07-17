@@ -9,13 +9,11 @@ import {
 } from "../epics/theater";
 
 export const initTheaterState = (
-  socket,
   setTheaterState,
   setFilterKeyRoom,
   inputSearchRoom
 ) => {
   return () => {
-    if (!socket.connected) theaterStream.socket.connect();
     const subscription = theaterStream.subscribe(setTheaterState);
     theaterStream.init();
     const subscription1 = fromEvent(inputSearchRoom.current, "input")
@@ -30,7 +28,6 @@ export const initTheaterState = (
       });
     return () => {
       // theaterStream.socket.emit("disconnect-custom");
-      if (socket.connected) theaterStream.socket.close();
       updateAllowUserJoin(false);
       subscription1.unsubscribe();
       subscription.unsubscribe();
@@ -39,7 +36,6 @@ export const initTheaterState = (
 };
 
 export const fetchRoomData = (
-  socket,
   theaterState,
   cookies,
   buttonSubmitRef,
@@ -53,14 +49,14 @@ export const fetchRoomData = (
         updateAllowFetchRooms(false);
       });
     }
-    socket.on("fetch-data-rooms", () => {
-      if (theaterState.allowFetchRooms) {
-        fetchRoomsData$(cookies.idCartoonUser).subscribe((rooms) => {
-          theaterStream.updateData({ rooms });
-          updateAllowFetchRooms(false);
-        });
-      }
-    });
+    // socket.on("fetch-data-rooms", () => {
+    //   if (theaterState.allowFetchRooms) {
+    //     fetchRoomsData$(cookies.idCartoonUser).subscribe((rooms) => {
+    //       theaterStream.updateData({ rooms });
+    //       updateAllowFetchRooms(false);
+    //     });
+    //   }
+    // });
     const validationFormSub = validateForm$(
       buttonSubmitRef.current,
       inputRoomNameRef.current,

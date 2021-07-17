@@ -23,7 +23,6 @@ const TheaterWatch = loadable(
   }
 );
 
-const socket = theaterStream.socket;
 const Theater = (props) => {
   const locationPath = props.location.pathname.replace(/\/theater\//g, "");
   const [theaterState, setTheaterState] = useState(theaterStream.initialState);
@@ -36,13 +35,11 @@ const Theater = (props) => {
   const buttonSubmitRef = useRef();
   const inputSearchRoom = useRef();
   useInitTheaterState(
-    socket,
     setTheaterState,
     setFilterKeyRoom,
     inputSearchRoom
   );
   useFetchRoomData(
-    socket,
     theaterState,
     cookies,
     buttonSubmitRef,
@@ -152,7 +149,7 @@ function InputCreateRoom({
                 authorization: `Bearer ${cookies.idCartoonUser}`,
               },
             });
-            socket.emit("create-new-room");
+            // socket.emit("create-new-room");
             updateAllowFetchRooms(true);
             inputRoomNameRef.current.value = "";
             inputPasswordRef.current.value = "";

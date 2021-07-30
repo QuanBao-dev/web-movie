@@ -9,7 +9,7 @@ const port = process.env.PORT || 5000;
 const server = require("http").Server(app);
 const sslRedirect = require("heroku-ssl-redirect").default;
 const io = require("socket.io")(server, {
-  pingTimeout: 7000,
+  pingTimeout: 63000,
   pingInterval: 3000,
 });
 const compression = require("compression");
@@ -62,10 +62,7 @@ io.on("connection", (socket) => {
       if (!rooms[groupId]) {
         rooms[groupId] = { users: {} };
       }
-      socket.join(groupId);
       console.log(username, "join", groupId);
-      socket.emit("fetch-user-online");
-      socket.to(groupId).emit("fetch-user-online");
       rooms[groupId].users[userId] = username;
       const members = await TheaterRoomMember.find({ groupId })
         .select({ _id: 0, keepRemote: 1, userId: 1 })
@@ -82,7 +79,9 @@ io.on("connection", (socket) => {
         keepRemote: !isContainedMemberHavingRemote,
       });
       await newMember.save();
-      socket.to(groupId).emit("user-join", userId, groupId);
+      socket.broadcast.emit("user-join", userId, groupId);
+      socket.emit("fetch-user-online");
+      socket.broadcast.emit("fetch-user-online");
       // socket.on("fetch-updated-user-online", () => {
       //   socket.emit("fetch-user-online");
       //   socket.to(groupId).emit("fetch-user-online");
@@ -123,7 +122,7 @@ io.on("connection", (socket) => {
           groupId,
         }).lean();
         if (rooms[groupId] && rooms[groupId].users[userId]) {
-          // socket.broadcast.emit("disconnected-user", username, userId, groupId);
+          socket.broadcast.emit("disconnected-user", userId);
           delete rooms[groupId].users[userId];
           if (Object.keys(rooms[groupId].users).length === 0) {
             delete rooms[groupId];
@@ -208,7 +207,7 @@ io.on("connection", (socket) => {
       }, [])
       .forEach(({ room, malId }) => {
         if (rooms[malId].users[socket.id]) {
-          socket.to(malId).emit("disconnected-user", socket.id);
+          socket.broadcast.emit("disconnected-user", socket.id);
           delete rooms[malId].users[socket.id];
           if (Object.keys(rooms[malId].users).length === 0) {
             delete rooms[malId];

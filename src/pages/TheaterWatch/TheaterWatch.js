@@ -7,7 +7,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { useCookies } from "react-cookie";
 import { of, ReplaySubject, timer } from "rxjs";
 import { ajax } from "rxjs/ajax";
-import { catchError, first, map, pluck, switchMapTo } from "rxjs/operators";
+import { catchError, first, map, pluck, concatMapTo } from "rxjs/operators";
 
 import Input from "../../components/Input/Input";
 import {
@@ -47,7 +47,7 @@ const options = {
         ],
       },
     ],
-    iceCandidatePoolSize:10
+    iceCandidatePoolSize: 10,
   },
 };
 if (process.env.NODE_ENV === "development") {
@@ -166,6 +166,9 @@ const TheaterWatch = (props) => {
         });
       }
     });
+    socket.on("error", () => {
+      socket.close();
+    });
 
     socket.on("reconnect", async () => {
       console.log("reconnect");
@@ -180,9 +183,9 @@ const TheaterWatch = (props) => {
   useEffect(() => {
     let subscription;
     if (theaterState.isSignIn) {
-      subscription = timer(2000, 10000)
+      subscription = timer(2000, 60000)
         .pipe(
-          switchMapTo(
+          concatMapTo(
             ajax({
               url: "/api/theater/" + groupId + "/members",
               headers: { authorization: "Bearer " + cookies.idCartoonUser },

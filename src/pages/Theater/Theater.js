@@ -39,7 +39,7 @@ const Theater = (props) => {
   useEffect(() => {
     setTimeout(() => {
       if (theaterStream.socket.connected) theaterStream.socket.close();
-    }, 0);
+    }, 1000);
     return () => {
       console.log("out");
       if (theaterStream.socket.connected) theaterStream.socket.close();

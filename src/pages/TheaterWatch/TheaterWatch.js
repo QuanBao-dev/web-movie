@@ -38,6 +38,17 @@ let elementCall = "audio";
 const options = {
   host: window.location.origin.replace(/http(s)?:\/\//g, ""),
   path: "/peerjs",
+  config: {
+    iceServers: [
+      {
+        urls: [
+          "stun:stun1.l.google.com:19302",
+          "stun:stun2.l.google.com:19302",
+        ],
+      },
+    ],
+    iceCandidatePoolSize:10
+  },
 };
 if (process.env.NODE_ENV === "development") {
   options.host = "localhost";
@@ -75,7 +86,7 @@ const TheaterWatch = (props) => {
           const myPeer = new Peer(id, options);
           function connectToNewUser(userId, stream, audioGridElement) {
             let call = myPeer.call(userId, stream);
-            if(!call){
+            if (!call) {
               return;
             }
             const audio = document.createElement(elementCall);

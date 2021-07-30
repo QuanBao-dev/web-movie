@@ -40,6 +40,10 @@ const Theater = (props) => {
     setTimeout(() => {
       if (theaterStream.socket.connected) theaterStream.socket.close();
     }, 0);
+    return () => {
+      console.log("out");
+      if (theaterStream.socket.connected) theaterStream.socket.close();
+    };
   }, []);
 
   useInitTheaterState(setTheaterState, setFilterKeyRoom, inputSearchRoom);

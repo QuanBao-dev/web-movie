@@ -17,10 +17,17 @@ const initialState = {
   unreadMessage: 0,
 };
 let state = initialState;
+console.log(
+  `http${process.env.NODE_ENV === "production" ? "s" : ""}://${
+    window.location.hostname
+  }:${+window.location.port + 1}/`
+);
 const theaterStore = {
   initialState,
   socket: io.connect(
-    `http://${window.location.hostname}:${+window.location.port + 1}/`,
+    `http${process.env.NODE_ENV === "production" ? "s" : ""}://${
+      window.location.hostname
+    }:${+window.location.port + 1}/`,
     {
       upgrade: false,
       forceNew: true,

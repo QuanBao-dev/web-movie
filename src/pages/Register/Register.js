@@ -70,9 +70,12 @@ async function submitForm(
   history,
   setEmailError,
   setPasswordError,
-  setUsernameError  
+  setUsernameError
 ) {
   try {
+    setEmailError(null);
+    setPasswordError(null);
+    setUsernameError(null);
     await Axios.post("/api/users/register", {
       email,
       password,

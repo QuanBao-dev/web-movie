@@ -92,7 +92,7 @@ const TheaterWatch = (props) => {
             const audio = document.createElement(elementCall);
             call.on("stream", (userVideoStream) => {
               audio.id = userId;
-              addAudioStream(audio, userVideoStream, audioGridElement);
+              addAudioStream(audio, userVideoStream, audioGridElement, userId);
             });
             call.on("close", () => {
               audio.remove();
@@ -125,7 +125,7 @@ const TheaterWatch = (props) => {
               "audio-connected"
             );
           myAudio.id = id;
-          addAudioStream(myAudio, stream, audioCallRef.current);
+          addAudioStream(myAudio, stream, audioCallRef.current, id);
           myAudio.id = id;
           myPeer.on("call", (call) => {
             call.answer(stream);
@@ -133,7 +133,7 @@ const TheaterWatch = (props) => {
             call.on("stream", (stream) => {
               audio.id = call.peer;
               peers[call.peer] = call;
-              addAudioStream(audio, stream, audioCallRef.current);
+              addAudioStream(audio, stream, audioCallRef.current, call.peer);
             });
           });
         })
@@ -165,9 +165,6 @@ const TheaterWatch = (props) => {
           }
         });
       }
-    });
-    socket.on("error", () => {
-      socket.close();
     });
 
     socket.on("reconnect", async () => {
@@ -763,13 +760,15 @@ function appendNewMessageNotification(
   }
 }
 
-function addAudioStream(audioElement, stream, audioGridElement) {
+function addAudioStream(audioElement, stream, audioGridElement, userId) {
   audioElement.srcObject = stream;
   audioElement.addEventListener("loadedmetadata", () => {
     audioElement.play();
   });
   if (audioGridElement) {
-    audioGridElement.append(audioElement);
+    const children = [...audioGridElement.children];
+    const childrenId = children.map((child) => child.id);
+    if (!childrenId.includes(userId)) audioGridElement.append(audioElement);
   }
 }
 

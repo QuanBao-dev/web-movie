@@ -105,6 +105,8 @@ async function submitForm(
   history
 ) {
   try {
+    setEmailError(null);
+    setPasswordError(null);
     const res = await Axios.post("/api/users/login", {
       email: email.value,
       password: password.value,

@@ -17,23 +17,13 @@ const initialState = {
   unreadMessage: 0,
 };
 let state = initialState;
-console.log(
-  `http${process.env.NODE_ENV === "production" ? "s" : ""}://${
-    window.location.hostname
-  }:${+window.location.port + 1}/`
-);
 const theaterStore = {
   initialState,
-  socket: io.connect(
-    `http${process.env.NODE_ENV === "production" ? "s" : ""}://${
-      window.location.hostname
-    }:${+window.location.port + 1}/`,
-    {
-      upgrade: false,
-      forceNew: true,
-      transports: ["websocket"],
-    }
-  ),
+  socket: io.connect(`/`, {
+    upgrade: false,
+    forceNew: true,
+    transports: ["polling"],
+  }),
   subscribe: (setState) => behaviorSubject.subscribe(setState),
   currentState: () => {
     let temp;

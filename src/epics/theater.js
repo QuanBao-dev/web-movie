@@ -1,8 +1,18 @@
-import { from, fromEvent, of } from 'rxjs';
-import { ajax } from 'rxjs/ajax';
-import { catchError, combineAll, filter, map, pluck, startWith, switchMap, tap } from 'rxjs/operators';
+import { from, fromEvent, of } from "rxjs";
+import { ajax } from "rxjs/ajax";
+import {
+  catchError,
+  combineAll,
+  exhaustMap,
+  filter,
+  map,
+  pluck,
+  startWith,
+  switchMap,
+  tap,
+} from "rxjs/operators";
 
-import theaterStore from '../store/theater';
+import theaterStore from "../store/theater";
 
 export const theaterStream = theaterStore;
 export const validateForm$ = (buttonSubmitElement, ...elements) => {
@@ -52,9 +62,9 @@ export const submitFormPasswordRoom$ = (
 ) => {
   return fromEvent(inputElement, "keydown").pipe(
     filter((e) => e.keyCode === 13),
-    tap(() => console.log("submit")),
+    tap(() => setErrorPassword(null)),
     pluck("target", "value"),
-    switchMap((password) =>
+    exhaustMap((password) =>
       ajax({
         method: "POST",
         url: `/api/theater/${groupId}/join`,

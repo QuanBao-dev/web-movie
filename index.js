@@ -6,10 +6,9 @@ const cloudinary = require("cloudinary");
 const path = require("path");
 const app = express();
 const port = process.env.PORT || 5000;
-const socketPort = +port + 1;
 const server = require("http").Server(app);
 const sslRedirect = require("heroku-ssl-redirect").default;
-const io = require("socket.io")(server, {});
+const io = require("socket.io")(server);
 const compression = require("compression");
 cloudinary.config({
   cloud_name: "storagecloud",
@@ -220,8 +219,7 @@ app.use("/api/movies", moviesRoute);
 app.use("/api/users", usersRoute);
 app.use("/api/", tokenRoute);
 app.use("/", renderRoute);
-console.log("socket listen on port", socketPort);
-io.listen(socketPort);
+io.listen(server);
 server.listen(port, () =>
   console.log(`Example app listening on port ${port}!`)
 );

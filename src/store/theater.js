@@ -20,9 +20,7 @@ let state = initialState;
 const theaterStore = {
   initialState,
   socket: io.connect(
-    `http${process.env.NODE_ENV === "production" ? "s" : ""}://${
-      window.location.hostname
-    }:${+window.location.port + 1}/`,
+    `http://${window.location.hostname}:${+window.location.port + 1}/`,
     {
       upgrade: false,
       forceNew: true,

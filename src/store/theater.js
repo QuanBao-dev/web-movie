@@ -19,10 +19,16 @@ const initialState = {
 let state = initialState;
 const theaterStore = {
   initialState,
-  socket: io.connect(`/`, {
-    upgrade: false,
-    forceNew: true,
-  }),
+  socket: io.connect(
+    `http${process.env.NODE_ENV === "production" ? "s" : ""}://${
+      window.location.hostname
+    }:${+window.location.port + 1}/`,
+    {
+      upgrade: false,
+      forceNew: true,
+      transports: ["websocket"],
+    }
+  ),
   subscribe: (setState) => behaviorSubject.subscribe(setState),
   currentState: () => {
     let temp;

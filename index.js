@@ -6,12 +6,10 @@ const cloudinary = require("cloudinary");
 const path = require("path");
 const app = express();
 const port = process.env.PORT || 5000;
+const socketPort = +port + 1;
 const server = require("http").Server(app);
 const sslRedirect = require("heroku-ssl-redirect").default;
-const io = require("socket.io")(server, {
-  pingTimeout: 63000,
-  pingInterval: 3000,
-});
+const io = require("socket.io")(server, {});
 const compression = require("compression");
 cloudinary.config({
   cloud_name: "storagecloud",
@@ -50,7 +48,6 @@ mongoose.connect(
 
 let rooms = {};
 TheaterRoomMember.watch().on("change", async (a) => {
-  console.log("change");
   io.emit("mongo-change-watch");
 });
 
@@ -64,29 +61,28 @@ io.on("connection", (socket) => {
       }
       console.log(username, "join", groupId);
       rooms[groupId].users[userId] = username;
-      const members = await TheaterRoomMember.find({ groupId })
-        .select({ _id: 0, keepRemote: 1, userId: 1 })
-        .lean();
-      const isContainedMemberHavingRemote = !!members.find(
-        (member) => member.keepRemote === true
-      );
-      const newMember = new TheaterRoomMember({
-        userId: publicUserId,
-        groupId,
-        username,
-        avatar,
-        joinAt: Date.now(),
-        keepRemote: !isContainedMemberHavingRemote,
-      });
-      await newMember.save();
+      try {
+        const members = await TheaterRoomMember.find({ groupId })
+          .select({ _id: 0, keepRemote: 1, userId: 1 })
+          .lean();
+        const isContainedMemberHavingRemote = !!members.find(
+          (member) => member.keepRemote === true
+        );
+        const newMember = new TheaterRoomMember({
+          userId: publicUserId,
+          groupId,
+          username,
+          avatar,
+          joinAt: Date.now(),
+          keepRemote: !isContainedMemberHavingRemote,
+        });
+        await newMember.save();
+      } catch (error) {
+        console.log("something went wrong");
+      }
       socket.broadcast.emit("user-join", userId, groupId);
       socket.emit("fetch-user-online");
       socket.broadcast.emit("fetch-user-online");
-      // socket.on("fetch-updated-user-online", () => {
-      //   socket.emit("fetch-user-online");
-      //   socket.to(groupId).emit("fetch-user-online");
-      // });
-
       socket.on("delete-specific-member", async (publicUserId, groupId) => {
         await TheaterRoomMember.deleteOne({
           userId: publicUserId,
@@ -177,25 +173,6 @@ io.on("connection", (socket) => {
     socket.broadcast.emit("fetch-data-rooms");
   });
 
-  // socket.on("disconnect-custom", async () => {
-  //   Object.entries(rooms)
-  //     .reduce((disconnectedUsers, [malId, room]) => {
-  //       if (rooms[malId].users[socket.id]) {
-  //         disconnectedUsers.push({ room, malId: malId });
-  //       }
-  //       return disconnectedUsers;
-  //     }, [])
-  //     .forEach(({ room, malId }) => {
-  //       if (rooms[malId].users[socket.id]) {
-  //         socket.to(malId).emit("disconnected-user", socket.id);
-  //         delete rooms[malId].users[socket.id];
-  //         if (Object.keys(rooms[malId].users).length === 0) {
-  //           delete rooms[malId];
-  //         }
-  //       }
-  //     });
-  // });
-
   socket.on("disconnect", async () => {
     console.log("disconnect malId");
     Object.entries(rooms)
@@ -216,10 +193,6 @@ io.on("connection", (socket) => {
       });
   });
 });
-
-// Movie.watch().on("change", async () => {
-//   io.emit("comment-change");
-// });
 
 app.use(sslRedirect());
 app.use(compression());
@@ -247,6 +220,8 @@ app.use("/api/movies", moviesRoute);
 app.use("/api/users", usersRoute);
 app.use("/api/", tokenRoute);
 app.use("/", renderRoute);
+console.log("socket listen on port", socketPort);
+io.listen(socketPort);
 server.listen(port, () =>
   console.log(`Example app listening on port ${port}!`)
 );

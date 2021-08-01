@@ -247,11 +247,11 @@ const TheaterWatch = (props) => {
     theaterStream.init();
     let submitFormSub;
     if (!theaterState.isSignIn) {
-      if (socket.connected) theaterStream.socket.close();
+      // if (socket.connected) theaterStream.socket.close();
     }
     if (theaterState.isSignIn) {
       if (theaterStream.currentState().allowUserJoin) {
-        if (!socket.connected) theaterStream.socket.connect();
+        // if (!socket.connected) theaterStream.socket.connect();
         newUserJoinHandleVideo(audioCallRef.current);
         setErrorPassword(null);
         updateAllowUserJoin(false);
@@ -794,11 +794,12 @@ function addAudioStream(audioElement, stream, audioGridElement, userId) {
   audioElement.addEventListener("loadedmetadata", () => {
     audioElement.play();
   });
-  if (audioGridElement) {
-    const children = [...audioGridElement.children];
-    const childrenId = children.map((child) => child.id);
-    if (!childrenId.includes(userId)) audioGridElement.append(audioElement);
-  }
+  audioGridElement.append(audioElement);
+  // if (audioGridElement) {
+  //   const children = [...audioGridElement.children];
+  //   const childrenId = children.map((child) => child.id);
+  //   if (!childrenId.includes(userId)) audioGridElement.append(audioElement);
+  // }
 }
 
 async function fetchGroup(groupId, idCartoonUser) {

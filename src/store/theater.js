@@ -22,7 +22,7 @@ const theaterStore = {
   socket: io.connect("/", {
     upgrade: false,
     forceNew: true,
-    transports: ["polling"],
+    transports: ["websocket"],
   }),
   subscribe: (setState) => behaviorSubject.subscribe(setState),
   currentState: () => {

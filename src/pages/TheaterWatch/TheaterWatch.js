@@ -36,8 +36,9 @@ let user;
 let videoWatchElement;
 let elementCall = "audio";
 const options = {
-  host: window.location.origin.replace(/http(s)?:\/\//g, ""),
-  path: "/peerjs",
+  host: "peerjs-server.herokuapp.com",
+  secure:true,
+  path: "/",
   config: {
     iceServers: [
       { url: "stun:stun01.sipphone.com" },
@@ -72,16 +73,16 @@ const options = {
     ],
   },
 };
-if (process.env.NODE_ENV === "development") {
-  options.host = "localhost";
-  options.port = 5000;
-}
+// if (process.env.NODE_ENV === "development") {
+//   options.host = "localhost";
+//   options.port = 5000;
+// }
 
-if (process.env.NODE_ENV !== "development") {
-  options.port = 443;
-  options.secure = true;
-  delete options.path;
-}
+// if (process.env.NODE_ENV !== "development") {
+//   options.port = 443;
+//   options.secure = true;
+//   delete options.path;
+// }
 const replaySubject = new ReplaySubject(3);
 
 const TheaterWatch = (props) => {

@@ -55,6 +55,11 @@ const options = {
       { url: "stun:stun3.l.google.com:19302" },
       { url: "stun:stun4.l.google.com:19302" },
       {
+        url: "turn:numb.viagenie.ca",
+        credential: "muazkh",
+        username: "webrtc@live.com",
+      },
+      {
         url: "turn:192.158.29.39:3478?transport=udp",
         credential: "JZEOEt2V3Qb0y27GRntt2u2PAYA=",
         username: "28224511:1379330808",
@@ -70,6 +75,12 @@ const options = {
 if (process.env.NODE_ENV === "development") {
   options.host = "localhost";
   options.port = 5000;
+}
+
+if (process.env.NODE_ENV !== "development") {
+  options.port = 443;
+  options.secure = true;
+  delete options.path;
 }
 const replaySubject = new ReplaySubject(3);
 
@@ -100,11 +111,7 @@ const TheaterWatch = (props) => {
           audio: true,
         })
         .then((stream) => {
-          const myPeer = new Peer(id, {
-            ...options,
-            port: 443,
-            secure: process.env.NODE_ENV === "production",
-          });
+          const myPeer = new Peer(id, options);
           function connectToNewUser(userId, stream, audioGridElement) {
             let call = myPeer.call(userId, stream);
             if (!call) {

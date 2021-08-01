@@ -36,9 +36,8 @@ let user;
 let videoWatchElement;
 let elementCall = "audio";
 const options = {
-  host: "peerjs-server.herokuapp.com",
-  secure:true,
-  path: "/",
+  host: window.location.origin.replace(/http(s)?:\/\//g, ""),
+  path: "/peerjs",
   config: {
     iceServers: [
       { url: "stun:stun01.sipphone.com" },
@@ -73,16 +72,10 @@ const options = {
     ],
   },
 };
-// if (process.env.NODE_ENV === "development") {
-//   options.host = "localhost";
-//   options.port = 5000;
-// }
-
-// if (process.env.NODE_ENV !== "development") {
-//   options.port = 443;
-//   options.secure = true;
-//   delete options.path;
-// }
+if (process.env.NODE_ENV === "development") {
+  options.host = "localhost";
+  options.port = 5000;
+}
 const replaySubject = new ReplaySubject(3);
 
 const TheaterWatch = (props) => {
@@ -795,11 +788,11 @@ function addAudioStream(audioElement, stream, audioGridElement, userId) {
     audioElement.play();
   });
   audioGridElement.append(audioElement);
-  // if (audioGridElement) {
-  //   const children = [...audioGridElement.children];
-  //   const childrenId = children.map((child) => child.id);
-  //   if (!childrenId.includes(userId)) audioGridElement.append(audioElement);
-  // }
+  if (audioGridElement) {
+    const children = [...audioGridElement.children];
+    const childrenId = children.map((child) => child.id);
+    if (!childrenId.includes(userId)) audioGridElement.append(audioElement);
+  }
 }
 
 async function fetchGroup(groupId, idCartoonUser) {

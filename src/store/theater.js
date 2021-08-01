@@ -19,10 +19,10 @@ const initialState = {
 let state = initialState;
 const theaterStore = {
   initialState,
-  socket: io.connect(`/`, {
+  socket: io.connect(`localhost:5000`, {
     upgrade: false,
     forceNew: true,
-    transports: ["polling"],
+    transports: ["websocket"],
   }),
   subscribe: (setState) => behaviorSubject.subscribe(setState),
   currentState: () => {

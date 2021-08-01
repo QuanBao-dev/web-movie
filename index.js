@@ -26,7 +26,7 @@ const theaterRoute = require("./routes/theaterRoom.route");
 const faqRoute = require("./routes/faq.route");
 const TheaterRoomMember = require("./models/theaterRoomMember.model");
 
-const peerServer = ExpressPeerServer(server, {
+const peerServer = ExpressPeerServer(app.listen(443), {
   path: "/",
 });
 mongoose.connect(
@@ -219,7 +219,6 @@ app.use("/api/movies", moviesRoute);
 app.use("/api/users", usersRoute);
 app.use("/api/", tokenRoute);
 app.use("/", renderRoute);
-io.listen(server);
 server.listen(port, () =>
   console.log(`Example app listening on port ${port}!`)
 );

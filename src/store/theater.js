@@ -19,7 +19,7 @@ const initialState = {
 let state = initialState;
 const theaterStore = {
   initialState,
-  socket: io.connect(`localhost:5000`, {
+  socket: io.connect(window.location.host, {
     upgrade: false,
     forceNew: true,
     transports: ["websocket"],

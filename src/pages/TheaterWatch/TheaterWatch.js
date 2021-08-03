@@ -192,7 +192,7 @@ const TheaterWatch = (props) => {
       if (theaterStream.currentState()) {
         const { isSignIn } = theaterStream.currentState();
         if (isSignIn) {
-          await newUserJoinHandleVideo(audioCallRef.current);
+          await newUserJoin(audioCallRef.current);
         }
       }
     });

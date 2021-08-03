@@ -192,7 +192,7 @@ const TheaterWatch = (props) => {
       if (theaterStream.currentState()) {
         const { isSignIn } = theaterStream.currentState();
         if (isSignIn) {
-          await newUserJoin(audioCallRef.current);
+          await newUserJoin(userStream.currentState().userId, groupId);
         }
       }
     });
@@ -200,7 +200,7 @@ const TheaterWatch = (props) => {
   useEffect(() => {
     let subscription;
     if (theaterState.isSignIn) {
-      subscription = timer(2000, 60000)
+      subscription = timer(2000)
         .pipe(
           concatMapTo(
             ajax({
@@ -785,11 +785,7 @@ function addAudioStream(audioElement, stream, audioGridElement, userId) {
   audioElement.addEventListener("loadedmetadata", () => {
     audioElement.play();
   });
-  if (audioGridElement) {
-    const children = [...audioGridElement.children];
-    const childrenId = children.map((child) => child.id);
-    if (!childrenId.includes(userId)) audioGridElement.append(audioElement);
-  }
+  audioGridElement.append(audioElement);
 }
 
 async function fetchGroup(groupId, idCartoonUser) {

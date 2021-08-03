@@ -36,8 +36,9 @@ let user;
 let videoWatchElement;
 let elementCall = "audio";
 const options = {
-  host: window.location.origin.replace(/http(s)?:\/\//g, ""),
-  path: "/peerjs",
+  host: "web-rtc-myanimefun.herokuapp.com",
+  secure: true,
+  path: "/",
   config: {
     iceServers: [
       { url: "stun:stun01.sipphone.com" },
@@ -72,10 +73,7 @@ const options = {
     ],
   },
 };
-if (process.env.NODE_ENV === "development") {
-  options.host = "localhost";
-  options.port = 5000;
-}
+
 const replaySubject = new ReplaySubject(3);
 
 const TheaterWatch = (props) => {
@@ -787,7 +785,6 @@ function addAudioStream(audioElement, stream, audioGridElement, userId) {
   audioElement.addEventListener("loadedmetadata", () => {
     audioElement.play();
   });
-  audioGridElement.append(audioElement);
   if (audioGridElement) {
     const children = [...audioGridElement.children];
     const childrenId = children.map((child) => child.id);

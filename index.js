@@ -15,7 +15,7 @@ cloudinary.config({
   api_key: process.env.API_KEY,
   api_secret: process.env.API_SECRET,
 });
-const { ExpressPeerServer } = require("peer");
+// const { ExpressPeerServer } = require("peer");
 
 const moviesRoute = require("./routes/movies.route");
 const usersRoute = require("./routes/users.route");
@@ -27,9 +27,9 @@ const faqRoute = require("./routes/faq.route");
 const TheaterRoomMember = require("./models/theaterRoomMember.model");
 const { verifyRole } = require("./middleware/verify-role");
 
-const peerServer = ExpressPeerServer(server, {
-  path: "/",
-});
+// const peerServer = ExpressPeerServer(server, {
+//   path: "/",
+// });
 mongoose.connect(
   process.env.MONGO_URI,
   {
@@ -212,7 +212,7 @@ app.use((req, res, next) => {
   res.setHeader("X-Content-Type-Options", "nosniff");
   next();
 });
-app.use("/peerjs", verifyRole("Admin", "User"), peerServer);
+// app.use("/peerjs", verifyRole("Admin", "User"), peerServer);
 app.use("/api/faq", faqRoute);
 app.use("/api/theater/", theaterRoute);
 app.use("/api/movies/box", boxMovieRoute);

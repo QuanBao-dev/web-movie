@@ -120,6 +120,7 @@ async function submitForm(
     fetchingUser$(token).subscribe((v) => {
       if (!v.error) {
         history.replace("/");
+        window.scroll({ top: 0 });
         userStream.updateUser(v.response.message);
       }
     });

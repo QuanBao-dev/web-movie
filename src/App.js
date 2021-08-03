@@ -193,6 +193,7 @@ function App() {
   useEffect(() => {
     const subscription = userStream.subscribe(setUserState);
     const subscriptionLock = navBarStore.subscribe(setToggleNavBarState);
+    fetch("https://web-rtc-myanimefun.herokuapp.com");
     return () => {
       subscription.unsubscribe();
       subscriptionLock.unsubscribe();
@@ -231,10 +232,8 @@ function App() {
       <div
         className="button-scroll-top"
         onClick={() => {
-          const {
-            genreDetailData,
-            numberAnimeShowMore,
-          } = lazyLoadAnimeListStream.currentState();
+          const { genreDetailData, numberAnimeShowMore } =
+            lazyLoadAnimeListStream.currentState();
           virtualAnimeListStream.updateData({
             numberShowMorePreviousAnime: Math.ceil(
               genreDetailData.length / numberAnimeShowMore - 1

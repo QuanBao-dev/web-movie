@@ -524,7 +524,6 @@ function isInBottom() {
   const distance =
     containerMessageChatBot.scrollHeight -
     (containerMessageChatBot.scrollTop + containerMessageChatBot.offsetHeight);
-  console.log(distance);
   return distance < 40;
 }
 

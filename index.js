@@ -25,7 +25,6 @@ const renderRoute = require("./routes/index.route");
 const theaterRoute = require("./routes/theaterRoom.route");
 const faqRoute = require("./routes/faq.route");
 const TheaterRoomMember = require("./models/theaterRoomMember.model");
-const { verifyRole } = require("./middleware/verify-role");
 
 // const peerServer = ExpressPeerServer(server, {
 //   path: "/",
@@ -52,10 +51,13 @@ TheaterRoomMember.watch().on("change", async (a) => {
 });
 
 io.on("connection", (socket) => {
+  socket.on("device-reconnect", (peerId, groupId) => {
+    socket.broadcast.emit("connect-device-to-others", peerId, groupId);
+  });
   socket.on(
     "new-user",
-    async (avatar, username, groupId, userId, publicUserId) => {
-      console.log(username);
+    async (avatar, username, groupId, userId, peerId, publicUserId) => {
+      console.log(username, peerId);
       if (!rooms[groupId]) {
         rooms[groupId] = { users: {} };
       }
@@ -80,9 +82,9 @@ io.on("connection", (socket) => {
       } catch (error) {
         console.log("something went wrong");
       }
-      socket.broadcast.emit("user-join", userId, groupId);
-      socket.emit("fetch-user-online");
-      socket.broadcast.emit("fetch-user-online");
+      socket.broadcast.emit("user-join", peerId, groupId);
+      // socket.emit("fetch-user-online");
+      // socket.broadcast.emit("fetch-user-online");
       socket.on("delete-specific-member", async (publicUserId, groupId) => {
         await TheaterRoomMember.deleteOne({
           userId: publicUserId,
@@ -118,7 +120,8 @@ io.on("connection", (socket) => {
           groupId,
         }).lean();
         if (rooms[groupId] && rooms[groupId].users[userId]) {
-          socket.broadcast.emit("disconnected-user", userId);
+          console.log("Disconnect",{ peerId });
+          socket.broadcast.emit("disconnected-user", peerId);
           delete rooms[groupId].users[userId];
           if (Object.keys(rooms[groupId].users).length === 0) {
             delete rooms[groupId];

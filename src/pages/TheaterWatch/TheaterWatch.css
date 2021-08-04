@@ -150,6 +150,18 @@
   margin: 2rem;
 }
 
+.input-section-3{
+  width: 100%;
+  background-color: #473f26;
+  border-radius: 10px;
+  margin-top: 1rem;
+}
+
+.input-section-3 input{
+  margin: 2rem;
+  margin-right: 1rem;
+}
+
 .input-checkbox{
   width: 90%;
   margin-top: 1.5rem!important;

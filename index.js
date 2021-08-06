@@ -51,85 +51,87 @@ TheaterRoomMember.watch().on("change", async (a) => {
 });
 
 io.on("connection", (socket) => {
-  socket.on("device-reconnect", (peerId, groupId) => {
-    socket.broadcast.emit("connect-device-to-others", peerId, groupId);
-  });
-  socket.on(
-    "new-user",
-    async (avatar, username, groupId, userId, peerId, publicUserId) => {
-      console.log(username, peerId);
-      if (!rooms[groupId]) {
-        rooms[groupId] = { users: {} };
-      }
-      console.log(username, "join", groupId);
-      rooms[groupId].users[userId] = username;
-      try {
-        const members = await TheaterRoomMember.find({ groupId })
-          .select({ _id: 0, keepRemote: 1, userId: 1 })
-          .lean();
-        const isContainedMemberHavingRemote = !!members.find(
-          (member) => member.keepRemote === true
-        );
-        const newMember = new TheaterRoomMember({
-          userId: publicUserId,
-          groupId,
-          username,
-          avatar,
-          joinAt: Date.now(),
-          keepRemote: !isContainedMemberHavingRemote,
-        });
-        await newMember.save();
-      } catch (error) {
-        console.log("something went wrong");
-      }
-      socket.broadcast.emit("user-join", peerId, groupId);
-      // socket.emit("fetch-user-online");
-      // socket.broadcast.emit("fetch-user-online");
-      socket.on("delete-specific-member", async (publicUserId, groupId) => {
-        await TheaterRoomMember.deleteOne({
-          userId: publicUserId,
-          groupId,
-        }).lean();
-      });
-
-      socket.on(
-        "new-video",
-        (videoUri, groupId, uploadOtherVideo, transcriptUrl) => {
-          socket.broadcast.emit(
-            "upload-video",
-            videoUri,
-            groupId,
-            uploadOtherVideo,
-            transcriptUrl
-          );
-        }
-      );
-      socket.on("user-keep-remote-changed", (groupId) => {
-        socket.broadcast.emit("change-user-keep-remote", groupId);
-      });
-      socket.on("play-all-video", (currentTime, groupId) => {
-        socket.broadcast.emit("play-video-user", currentTime, groupId);
-      });
-      socket.on("pause-all-video", (currentTime, groupId) => {
-        socket.broadcast.emit("pause-video-user", currentTime, groupId);
-      });
-      socket.on("disconnect", async () => {
-        console.log("disconnect");
-        await TheaterRoomMember.deleteOne({
-          userId: publicUserId,
-          groupId,
-        }).lean();
-        if (rooms[groupId] && rooms[groupId].users[userId]) {
-          console.log("Disconnect",{ peerId });
-          socket.broadcast.emit("disconnected-user", peerId);
-          delete rooms[groupId].users[userId];
-          if (Object.keys(rooms[groupId].users).length === 0) {
-            delete rooms[groupId];
-          }
-        }
-      });
+  socket.on("new-user", async (avatar, username, groupId, userId, peerId) => {
+    console.log(username, peerId);
+    if (!rooms[groupId]) {
+      rooms[groupId] = { users: {} };
     }
-  );
+    console.log(username, "join", groupId);
+    rooms[groupId].users[userId] = username;
+    try {
+      const members = await TheaterRoomMember.find({ groupId })
+        .select({ _id: 0, keepRemote: 1, userId: 1 })
+        .lean();
+      const isContainedMemberHavingRemote = !!members.find(
+        (member) => member.keepRemote === true
+      );
+      const newMember = new TheaterRoomMember({
+        userId: userId,
+        groupId,
+        username,
+        avatar,
+        peerId,
+        joinAt: Date.now(),
+        keepRemote: !isContainedMemberHavingRemote,
+      });
+      await newMember.save();
+    } catch (error) {
+      console.log("something went wrong");
+    }
+    socket.broadcast.emit("user-join", peerId, groupId);
+    // socket.emit("fetch-user-online");
+    socket.broadcast.emit("fetch-user-online");
+    socket.on("delete-specific-member", async (peerId, groupId) => {
+      await TheaterRoomMember.deleteOne({
+        peerId,
+        groupId,
+      }).lean();
+    });
+
+    socket.on(
+      "new-video",
+      (videoUri, groupId, uploadOtherVideo, transcriptUrl) => {
+        socket.broadcast.emit(
+          "upload-video",
+          videoUri,
+          groupId,
+          uploadOtherVideo,
+          transcriptUrl
+        );
+      }
+    );
+    socket.on("device-reconnect", (peerId, groupId) => {
+      console.log("device-reconnect", peerId, groupId);
+      socket.broadcast.emit("connect-device-to-others", peerId, groupId);
+    });
+    socket.on("user-keep-remote-changed", (groupId) => {
+      socket.emit("fetch-user-online");
+      socket.broadcast.emit("fetch-user-online");
+      socket.broadcast.emit("change-user-keep-remote", groupId);
+    });
+    socket.on("play-all-video", (currentTime, groupId) => {
+      socket.broadcast.emit("play-video-user", currentTime, groupId);
+    });
+    socket.on("pause-all-video", (currentTime, groupId) => {
+      socket.broadcast.emit("pause-video-user", currentTime, groupId);
+    });
+    socket.on("disconnect", async () => {
+      console.log("disconnect");
+      await TheaterRoomMember.deleteOne({
+        peerId,
+        groupId,
+      }).lean();
+      socket.broadcast.emit("fetch-user-online");
+      if (rooms[groupId] && rooms[groupId].users[userId]) {
+        console.log("Disconnect", { peerId });
+        socket.broadcast.emit("disconnected-user", peerId);
+        delete rooms[groupId].users[userId];
+        if (Object.keys(rooms[groupId].users).length === 0) {
+          delete rooms[groupId];
+        }
+      }
+    });
+  });
   socket.on("notify-user-typing", (groupId, idUserTyping, username) => {
     socket.broadcast.emit("new-user-typing", groupId, idUserTyping, username);
   });

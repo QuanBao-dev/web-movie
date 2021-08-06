@@ -23,6 +23,9 @@ const theaterMemberRoomSchema = new mongoose.Schema({
   avatar:{
     type:String,
     required:true
+  },
+  peerId:{
+    type:String,
   }
 });
 

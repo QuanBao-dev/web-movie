@@ -15,6 +15,16 @@ const initialState = {
   allowRemoveVideoWatch: true,
   allowUserJoin: true,
   unreadMessage: 0,
+  groupId: null,
+  timePlayingVideo: 0,
+  videoUrl: null,
+  isVideoCall: false,
+  isControlVideoWatching: false,
+  isReconnect: false,
+  isTriggerReconnect: false,
+  isVideoWatchPlaying: false,
+  peerId: null,
+  isDisableReconnectButton: false,
 };
 let state = initialState;
 const theaterStore = {

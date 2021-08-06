@@ -23,6 +23,8 @@ import {
   updateSignIn,
 } from "../../store/theater";
 import { v4 } from "uuid";
+import { useHistory } from "react-router-dom";
+import navBarStore from "../../store/navbar";
 
 const Chat = loadable(() => import("../../components/Chat/Chat"), {
   fallback: <i className="fas fa-spinner fa-9x fa-spin"></i>,
@@ -33,7 +35,6 @@ const peers = {};
 let notificationE;
 let idCartoonUser;
 let groupId;
-let user;
 let videoWatchElement;
 const options = {
   host: "web-rtc-myanimefun.herokuapp.com",
@@ -79,7 +80,6 @@ let myPeer;
 const TheaterWatch = (props) => {
   groupId = props.match.params.groupId;
   replaySubject.next(groupId);
-  user = userStream.currentState() || {};
   const [theaterState, setTheaterState] = useState(theaterStream.initialState);
   const [isFullScreenState, setIsFullScreenState] = useState(null);
   const [errorPassword, setErrorPassword] = useState(null);
@@ -90,57 +90,75 @@ const TheaterWatch = (props) => {
   const videoWatchRef = useRef();
   const videoUrlUpload = useRef();
   const transcriptUrlUpload = useRef();
-  // const checkBoxVideoRef = useRef();
+  const checkBoxVideoRef = useRef();
   const checkBoxRef = useRef();
   const [cookies] = useCookies(["idCartoonUser"]);
+  const history = useHistory();
+  useEffect(() => {
+    if (!theaterState.isReconnect) {
+      return;
+    }
+    console.log("Reconnect");
+    if (theaterState.videoUrl) {
+      reconnectVideoWatch(theaterState, videoWatchRef);
+    }
+    theaterStream.updateData({ isReconnect: false });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [theaterState.timePlayingVideo]);
 
   async function newUserJoinHandleVideo(isReconnect = false, isVideo = false) {
-    const userId = userStream.currentState().userId;
-    let isError = false;
-    try {
-      navigator.mediaDevices
-        .getUserMedia({
-          video: isVideo,
-          audio: true,
-        })
-        .then((stream) => {
-          myPeer = new Peer(v4(), options);
-          function connectToNewUser(peerId, stream, audioGridElement) {
-            let call = myPeer.call(peerId, stream);
-            if (!call) {
-              return;
+    if (isReconnect) {
+      if (isVideo) alert("Please turn on your webcam");
+      reconnectPeer(
+        history,
+        isVideo,
+        theaterState.groupId,
+        videoWatchRef.current
+      );
+    }
+    if (!isReconnect) {
+      const userId = userStream.currentState().userId;
+      let isError = false;
+      try {
+        navigator.mediaDevices
+          .getUserMedia({
+            video: isVideo,
+            audio: true,
+          })
+          .then((stream) => {
+            const peerRandomId = v4();
+            theaterStream.updateData({ peerId: peerRandomId });
+            myPeer = new Peer(peerRandomId, options);
+            function connectToNewUser(peerId, stream, audioGridElement) {
+              let call = myPeer.call(peerId, stream);
+              if (!call) {
+                return;
+              }
+              const audio = document.createElement("video");
+              call.on("stream", (userVideoStream) => {
+                audio.id = peerId;
+                peers[call.peer] = call;
+                addDeviceStream(
+                  audio,
+                  userVideoStream,
+                  audioGridElement,
+                  peerId
+                );
+              });
+              call.on("close", () => {
+                audio.remove();
+              });
+              peers[peerId] = call;
             }
-            const audio = document.createElement("video");
-            call.on("stream", (userVideoStream) => {
-              audio.id = peerId;
-              reconnectDeviceStream(
-                audio,
-                userVideoStream,
-                audioGridElement,
-                peerId
-              );
-            });
-            call.on("close", () => {
-              audio.remove();
-            });
-            peers[peerId] = call;
-          }
-          const myAudio = document.createElement("video");
-          myAudio.muted = true;
-          const buttonGetRemoteElement =
-            document.getElementById("button-get-remote");
-
-          if (!isReconnect) {
-            console.log(myPeer.id);
+            const myAudio = document.createElement("video");
+            myAudio.muted = true;
             socket.emit(
               "new-user",
-              user.avatarImage,
-              user.username,
+              userStream.currentState().avatarImage,
+              userStream.currentState().username,
               groupId,
               userId,
-              myPeer.id,
-              user.userId,
-              buttonGetRemoteElement ? buttonGetRemoteElement.disabled : false
+              myPeer.id
             );
             socket.on("user-join", (peerId, roomId) => {
               if (roomId !== groupId) {
@@ -148,80 +166,64 @@ const TheaterWatch = (props) => {
               }
               connectToNewUser(peerId, stream, audioCallRef.current);
             });
-          } else {
-            console.log(myPeer.id, "reconnect");
-            socket.emit("device-reconnect", myPeer.id, groupId);
-            socket.on("connect-device-to-others", (peerId, roomId) => {
-              if (roomId !== groupId) {
-                return;
-              }
-              connectToNewUser(peerId, stream, audioCallRef.current);
-            });
-          }
-
-          if (!document.querySelector(".audio-connected"))
-            appendNewMessageNotification(
-              "Your device is connected",
-              notificationE,
-              "audio-connected"
-            );
-          myAudio.id = myPeer.id;
-          reconnectDeviceStream(
-            myAudio,
-            stream,
-            audioCallRef.current,
-            myPeer.id
-          );
-          myPeer.on("error", (id) => {
-            console.log(id);
-          });
-          myPeer.on("call", (call) => {
-            call.answer(stream);
-            call.on("stream", (userVideoStream) => {
+            myAudio.id = myPeer.id;
+            addDeviceStream(myAudio, stream, audioCallRef.current, myPeer.id);
+            theaterStream.updateData({ isDisableReconnectButton: false });
+            myPeer.on("call", (call) => {
+              call.answer(stream);
               const audio = document.createElement("video");
-              audio.id = call.peer;
-              peers[call.peer] = call;
-              reconnectDeviceStream(
-                audio,
-                userVideoStream,
-                audioCallRef.current,
-                call.peer
+              call.on("stream", (userVideoStream) => {
+                audio.id = call.peer;
+                peers[call.peer] = call;
+                addDeviceStream(
+                  audio,
+                  userVideoStream,
+                  audioCallRef.current,
+                  call.peer
+                );
+              });
+              call.on("close", () => {
+                audio.remove();
+              });
+            });
+            myPeer.on("error", (id) => {
+              reconnectPeer(
+                history,
+                checkBoxVideoRef.current.checked,
+                theaterState.groupId,
+                videoWatchRef.current
               );
             });
+
+            if (!document.querySelector(".audio-connected"))
+              appendNewMessageNotification(
+                "Your device is connected",
+                notificationE,
+                "audio-connected"
+              );
+          })
+          .catch(async (err) => {
+            isError = true;
+            if (!isReconnect) await newUserJoin(userId, groupId);
+            console.log(err, ": join error 1");
           });
-        })
-        .catch(async (err) => {
-          if (isReconnect) {
-            alert("Please turn on your webcam");
-          }
-          isError = true;
-          if (!isReconnect) await newUserJoin(userId, groupId);
-          console.log(err, ": join error 1");
-        });
-    } catch (error) {
-      isError = true;
-      console.log(error, ": join error 2");
-    }
-    if (isError && !isReconnect) {
-      await newUserJoin(userId, groupId);
-      console.log("user join error");
+      } catch (error) {
+        isError = true;
+        console.log(error, ": join error 2");
+      }
+      if (isError && !isReconnect) {
+        await newUserJoin(userId, groupId);
+        console.log("user join error");
+      }
     }
   }
   useEffect(() => {
+    theaterStream.updateData({ groupId });
+
     socket.on("disconnected-user", async (peerId) => {
-      console.log(peerId, "disconnected user");
-      console.log(peers);
       if (peers[peerId]) {
         peers[peerId].close();
         delete peers[peerId];
-      }
-      if (audioCallRef.current) {
-        const childrenElementList = [...audioCallRef.current.children];
-        childrenElementList.forEach((child) => {
-          if (child.id === peerId) {
-            child.remove();
-          }
-        });
       }
     });
 
@@ -284,7 +286,7 @@ const TheaterWatch = (props) => {
     if (theaterState.isSignIn) {
       if (theaterStream.currentState().allowUserJoin) {
         // if (!socket.connected) theaterStream.socket.connect();
-        newUserJoinHandleVideo(false, false);
+        newUserJoinHandleVideo(false, theaterState.isVideoCall);
         setErrorPassword(null);
         updateAllowUserJoin(false);
       }
@@ -341,6 +343,7 @@ const TheaterWatch = (props) => {
       const buttonScrollTopE = document.querySelector(".button-scroll-top");
       buttonScrollTopE.style.display = "block";
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     cookies.idCartoonUser,
     isFullScreenState,
@@ -348,14 +351,31 @@ const TheaterWatch = (props) => {
     theaterState.allowFetchCurrentRoomDetail,
     theaterState.allowRemoveVideoWatch,
     theaterState.isSignIn,
+    theaterState.isVideoCall,
   ]);
+
+  useEffect(() => {
+    if (audioCallRef.current) {
+      [...audioCallRef.current.children].forEach((child) => {
+        const user = theaterState.usersOnline.find(
+          (user) => user.peerId === child.id
+        );
+        if (user) child.poster = user.avatar;
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [theaterState.peerId, theaterState.usersOnline]);
 
   if (!theaterState.isSignIn && notificationRef.current) {
     notificationRef.current.innerHTML = "";
     if (audioCallRef.current) {
       if (theaterState.usersOnline.length === 1) {
         replaySubject.pipe(first()).subscribe((groupId) => {
-          socket.emit("delete-specific-member", user.userId, groupId);
+          socket.emit(
+            "delete-specific-member",
+            userStream.currentState().peerId,
+            groupId
+          );
         });
       }
       theaterState.usersOnline = [];
@@ -430,38 +450,39 @@ const TheaterWatch = (props) => {
                   onChange={() => createVideoUri(inputVideoRef.current)}
                 />
               </div>
-              {/* <div className="input-section-3">
-                <input type="checkbox" ref={checkBoxVideoRef}></input>
-                <label>Video</label>
-                <button
-                  onClick={() => {
-                    if (myPeer) {
-                      console.log("disconnect", myPeer.id);
-                      const children = [...audioCallRef.current.children];
-                      children.forEach((child) => {
-                        if (child.id === myPeer.id) {
-                          child.remove();
-                        }
-                      });
-                      myPeer = null;
-                    }
-                    newUserJoinHandleVideo(
-                      true,
-                      checkBoxVideoRef.current.checked
-                    );
-                  }}
-                >
-                  Reconnect
-                </button>
-              </div> */}
+              <div className="input-section-3">
+                <div>
+                  <input
+                    id="checkbox-video-call"
+                    type="checkbox"
+                    ref={checkBoxVideoRef}
+                    defaultChecked={theaterState.isVideoCall}
+                  ></input>
+                  <label htmlFor="checkbox-video-call">Video</label>
+                </div>
+                {!theaterState.isDisableReconnectButton && (
+                  <button
+                    className="button-check-video-call"
+                    onClick={() => {
+                      newUserJoinHandleVideo(
+                        true,
+                        checkBoxVideoRef.current.checked
+                      );
+                    }}
+                  >
+                    Reconnect
+                  </button>
+                )}
+              </div>
             </div>
             {theaterState.isSignIn && (
               <UserListOnline usersOnline={theaterState.usersOnline} />
             )}
+            <div className="container-audio-call" ref={audioCallRef}></div>
             <div className="container-section-video">
               <Chat
                 groupId={groupId}
-                user={user}
+                user={userStream.currentState()}
                 withoutName={true}
                 isZoom={isFullScreenState}
               />
@@ -478,17 +499,15 @@ const TheaterWatch = (props) => {
                     id="button-get-remote"
                     className="btn btn-danger"
                     onClick={async (e) => {
-                      if (
-                        videoWatchRef.current &&
-                        videoWatchRef.current.childElementCount > 0
-                      ) {
-                        videoWatchRef.current.controls = true;
-                        const element = e.target;
-                        addEventListenerVideoElement(videoWatchRef.current);
-                        element.disabled = true;
-                        await updateUserKeepRemote(groupId, user.userId);
-                        socket.emit("user-keep-remote-changed", groupId);
-                      }
+                      const element = e.target;
+                      element.disabled = true;
+                      addEventListenerVideoElement(videoWatchRef.current);
+                      await updateUserKeepRemote(
+                        groupId,
+                        userStream.currentState().userId
+                      );
+                      socket.emit("user-keep-remote-changed", groupId);
+                      videoWatchRef.current.controls = true;
                     }}
                   >
                     Get Remote
@@ -529,7 +548,7 @@ const TheaterWatch = (props) => {
                         if (theaterState.unreadMessage !== 0)
                           socket.emit(
                             "new-user-seen",
-                            user.avatarImage,
+                            userStream.currentState().avatarImage,
                             groupId
                           );
                         e.style.transform = "scale(1)";
@@ -557,7 +576,6 @@ const TheaterWatch = (props) => {
                 </div>
               )}
             </div>
-            <div className="container-audio-call" ref={audioCallRef}></div>
           </div>
         </div>
       )}
@@ -573,25 +591,32 @@ const TheaterWatch = (props) => {
   );
 };
 
-socket.on("mongo-change-watch", () => {
-  fetchUserOnline$(groupId, idCartoonUser).subscribe((users) => {
-    theaterStream.updateData({
-      usersOnline: users,
-    });
+function reconnectVideoWatch(theaterState, videoWatchRef) {
+  uploadNewVideo(theaterState.videoUrl, videoWatchElement, false, null);
+  videoWatchRef.current.addEventListener("loadedmetadata", async () => {
+    if (theaterState.isVideoWatchPlaying) videoWatchRef.current.play();
+    removeEventListenerVideoElement(videoWatchRef.current);
+    videoWatchRef.current.controls = false;
+    document.getElementById("button-get-remote").disabled = false;
+    videoWatchRef.current.currentTime = theaterState.timePlayingVideo;
   });
-});
-function checkStream(stream) {
-  var hasMedia = { hasVideo: false, hasAudio: false };
+}
 
-  if (stream.getAudioTracks().length)
-    // checking audio presence
-    hasMedia.hasAudio = true;
-
-  if (stream.getVideoTracks().length)
-    // checking video presence
-    hasMedia.hasVideo = true;
-
-  return hasMedia;
+function reconnectPeer(history, isVideoCall, groupId, videoWatchElement) {
+  navBarStore.updateIsShowBlockPopUp(true);
+  theaterStream.updateData({
+    isReconnect: true,
+    isDisableReconnectButton: true,
+    timePlayingVideo: videoWatchElement.currentTime,
+    videoUrl: videoWatchElement.src,
+    isVideoCall: isVideoCall,
+    isVideoWatchPlaying: !videoWatchElement.paused,
+  });
+  history.push("/theater");
+  setTimeout(() => {
+    history.push("/theater/" + groupId);
+    navBarStore.updateIsShowBlockPopUp(false);
+  }, 1000);
 }
 function allowExitFullscreen(containerMessageDialog) {
   containerMessageDialog &&
@@ -637,12 +662,11 @@ async function newUserJoin(id, groupId) {
   if (buttonGetRemoteElement) {
     socket.emit(
       "new-user",
-      user.avatarImage,
-      user.username,
+      userStream.currentState().avatarImage,
+      userStream.currentState().username,
       groupId,
       id,
-      user.userId,
-      buttonGetRemoteElement.disabled
+      myPeer.id
     );
     // socket.emit("fetch-updated-user-online");
   }
@@ -684,7 +708,7 @@ async function createNewVideo(source, uploadOtherUser = false, transcriptUrl) {
   uploadNewVideo(source, videoWatchElement, true, transcriptUrl);
   addEventListenerVideoElement(videoWatchElement);
   document.getElementById("button-get-remote").disabled = true;
-  await updateUserKeepRemote(groupId, user.userId);
+  await updateUserKeepRemote(groupId, userStream.currentState().userId);
   socket.emit("new-video", source, groupId, uploadOtherUser, transcriptUrl);
 }
 
@@ -716,7 +740,7 @@ function addEventListenerVideoElement(
 function removeEventListenerVideoElement(
   videoWatchElement = document.querySelector(".video-watch")
 ) {
-  if (videoWatchElement && videoWatchElement.childElementCount > 0) {
+  if (videoWatchElement) {
     videoWatchElement.controls = false;
     videoWatchElement.removeEventListener("pause", socketPauseAll);
     videoWatchElement.removeEventListener("play", socketPlayAll);
@@ -743,6 +767,15 @@ socket.on("fetch-user-online", () => {
     });
   });
 });
+
+socket.on("mongo-change-watch", () => {
+  fetchUserOnline$(groupId, idCartoonUser).subscribe((users) => {
+    theaterStream.updateData({
+      usersOnline: users,
+    });
+  });
+});
+
 socket.on("play-video-user", (currentTime, idGroup) => {
   if (!videoWatchElement)
     videoWatchElement = document.querySelector(".video-watch");
@@ -857,24 +890,28 @@ function appendNewMessageNotification(
   }
 }
 
-function reconnectDeviceStream(
-  deviceElement,
-  stream,
-  deviceGridElement,
-  userId
-) {
+function addDeviceStream(deviceElement, stream, deviceGridElement, peerId) {
+  if (!deviceGridElement) return;
+  deviceElement.id = peerId;
   deviceElement.srcObject = stream;
+  deviceElement.poster =
+    "https://www.kindpng.com/picc/m/24-248253_user-profile-default-image-png-clipart-png-download.png";
   deviceElement.addEventListener("loadedmetadata", () => {
     deviceElement.play();
   });
   const children = [...deviceGridElement.children];
   children.forEach((child) => {
-    if (child.id === userId) {
+    if (child.id === peerId) {
       child.remove();
     }
   });
-  deviceElement.id = userId;
   deviceGridElement.append(deviceElement);
+  [...deviceGridElement.children].forEach((child) => {
+    const user = theaterStream
+      .currentState()
+      .usersOnline.find((user) => user.peerId === child.id);
+    if (user) child.poster = user.avatar;
+  });
 }
 
 async function fetchGroup(groupId, idCartoonUser) {

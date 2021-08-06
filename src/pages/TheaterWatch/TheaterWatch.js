@@ -130,6 +130,7 @@ const TheaterWatch = (props) => {
             theaterStream.updateData({ peerId: peerRandomId });
             myPeer = new Peer(peerRandomId, options);
             function connectToNewUser(peerId, stream, audioGridElement) {
+              if (!myPeer) return;
               let call = myPeer.call(peerId, stream);
               if (!call) {
                 return;
@@ -168,7 +169,6 @@ const TheaterWatch = (props) => {
             });
             myAudio.id = myPeer.id;
             addDeviceStream(myAudio, stream, audioCallRef.current, myPeer.id);
-            theaterStream.updateData({ isDisableReconnectButton: false });
             myPeer.on("call", (call) => {
               call.answer(stream);
               const audio = document.createElement("video");
@@ -186,13 +186,8 @@ const TheaterWatch = (props) => {
                 audio.remove();
               });
             });
-            myPeer.on("error", (id) => {
-              reconnectPeer(
-                history,
-                checkBoxVideoRef.current.checked,
-                theaterState.groupId,
-                videoWatchRef.current
-              );
+            myPeer.on("error", (error) => {
+              console.log(error);
             });
 
             if (!document.querySelector(".audio-connected"))
@@ -204,7 +199,8 @@ const TheaterWatch = (props) => {
           })
           .catch(async (err) => {
             isError = true;
-            if (!isReconnect) await newUserJoin(userId, groupId);
+            alert("Failing access your device call");
+            await newUserJoin(userId, groupId);
             console.log(err, ": join error 1");
           });
       } catch (error) {
@@ -460,19 +456,17 @@ const TheaterWatch = (props) => {
                   ></input>
                   <label htmlFor="checkbox-video-call">Video</label>
                 </div>
-                {!theaterState.isDisableReconnectButton && (
-                  <button
-                    className="button-check-video-call"
-                    onClick={() => {
-                      newUserJoinHandleVideo(
-                        true,
-                        checkBoxVideoRef.current.checked
-                      );
-                    }}
-                  >
-                    Reconnect
-                  </button>
-                )}
+                <button
+                  className="button-check-video-call"
+                  onClick={() => {
+                    newUserJoinHandleVideo(
+                      true,
+                      checkBoxVideoRef.current.checked
+                    );
+                  }}
+                >
+                  Reconnect
+                </button>
               </div>
             </div>
             {theaterState.isSignIn && (
@@ -606,7 +600,6 @@ function reconnectPeer(history, isVideoCall, groupId, videoWatchElement) {
   navBarStore.updateIsShowBlockPopUp(true);
   theaterStream.updateData({
     isReconnect: true,
-    isDisableReconnectButton: true,
     timePlayingVideo: videoWatchElement.currentTime,
     videoUrl: videoWatchElement.src,
     isVideoCall: isVideoCall,
@@ -658,18 +651,14 @@ function allowFullscreen() {
 }
 
 async function newUserJoin(id, groupId) {
-  const buttonGetRemoteElement = document.getElementById("button-get-remote");
-  if (buttonGetRemoteElement) {
-    socket.emit(
-      "new-user",
-      userStream.currentState().avatarImage,
-      userStream.currentState().username,
-      groupId,
-      id,
-      myPeer.id
-    );
-    // socket.emit("fetch-updated-user-online");
-  }
+  socket.emit(
+    "new-user",
+    userStream.currentState().avatarImage,
+    userStream.currentState().username,
+    groupId,
+    id,
+    id
+  );
 }
 
 function UserListOnline({ usersOnline }) {

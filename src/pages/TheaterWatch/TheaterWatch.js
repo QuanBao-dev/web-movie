@@ -223,15 +223,15 @@ const TheaterWatch = (props) => {
       }
     });
 
-    socket.on("reconnect", async () => {
-      console.log("reconnect");
-      if (theaterStream.currentState()) {
-        const { isSignIn } = theaterStream.currentState();
-        if (isSignIn) {
-          await newUserJoin(userStream.currentState().userId, groupId);
-        }
-      }
-    });
+    // socket.on("reconnect", async () => {
+    //   console.log("reconnect");
+    //   if (theaterStream.currentState()) {
+    //     const { isSignIn } = theaterStream.currentState();
+    //     if (isSignIn) {
+    //       await newUserJoin(userStream.currentState().userId, groupId);
+    //     }
+    //   }
+    // });
   }, []);
   useEffect(() => {
     let subscription;

@@ -36,16 +36,6 @@ const Theater = (props) => {
   const buttonSubmitRef = useRef();
   const inputSearchRoom = useRef();
 
-  useEffect(() => {
-    setTimeout(() => {
-      if (theaterStream.socket.connected) theaterStream.socket.close();
-    }, 1000);
-    return () => {
-      console.log("out");
-      if (theaterStream.socket.connected) theaterStream.socket.close();
-    };
-  }, []);
-
   useInitTheaterState(setTheaterState, setFilterKeyRoom, inputSearchRoom);
   useFetchRoomData(
     theaterState,

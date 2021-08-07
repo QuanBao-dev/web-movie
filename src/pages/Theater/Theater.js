@@ -14,7 +14,6 @@ import {
   updateAllowFetchRooms,
   updateSignIn,
 } from "../../store/theater";
-import { useEffect } from "react";
 
 const Toggle = loadable(() => import("../../components/Toggle/Toggle"));
 const TheaterWatch = loadable(

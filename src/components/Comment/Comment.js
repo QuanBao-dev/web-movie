@@ -47,6 +47,9 @@ function Comment({ malId, user }) {
   useEffect(() => {
     return () => {
       navBarStore.updateIsShowBlockPopUp(false);
+      chatStream.updateData({
+        messages: [],
+      });
     };
   }, []);
   useEffect(() => {
@@ -79,9 +82,8 @@ function Comment({ malId, user }) {
         inputAuthorRefs[chatState.indexInputDisplayBlock] &&
         buttonSubmitRefs[chatState.indexInputDisplayBlock]
       ) {
-        inputAuthorRefs[
-          chatState.indexInputDisplayBlock
-        ].current.value = chatStream.currentState().currentName;
+        inputAuthorRefs[chatState.indexInputDisplayBlock].current.value =
+          chatStream.currentState().currentName;
         subscription2 = validateInput$(
           inputRefs[chatState.indexInputDisplayBlock].current,
           inputAuthorRefs[chatState.indexInputDisplayBlock].current,

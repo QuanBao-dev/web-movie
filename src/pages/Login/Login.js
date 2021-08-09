@@ -18,6 +18,8 @@ const Login = () => {
   const submitRef = useRef();
   const history = useHistory();
   useEffect(() => {
+    document.querySelector(".button-scroll-top").style.transform =
+      "translateY(500px)";
     const subscription = validateFormSubmitLogin$(
       emailRef.current,
       passwordRef.current,
@@ -45,7 +47,7 @@ const Login = () => {
           label="Email"
           input={emailRef}
           error={emailError}
-          onKeyDown={(e) => {
+          onKeyUp={(e) => {
             if (e.keyCode === 13)
               submitForm(
                 emailRef.current,
@@ -58,7 +60,7 @@ const Login = () => {
           }}
         />
         <Input
-          onKeyDown={(e) => {
+          onKeyUp={(e) => {
             if (e.keyCode === 13)
               submitForm(
                 emailRef.current,

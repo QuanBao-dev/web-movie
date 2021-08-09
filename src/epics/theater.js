@@ -60,7 +60,7 @@ export const submitFormPasswordRoom$ = (
   idCartoonUser,
   setErrorPassword
 ) => {
-  return fromEvent(inputElement, "keydown").pipe(
+  return fromEvent(inputElement, "keyup").pipe(
     filter((e) => e.keyCode === 13),
     tap(() => setErrorPassword(null)),
     pluck("target", "value"),
@@ -126,7 +126,7 @@ export const createNewMessageNotSignIn$ = (user, ...elements) => {
     }),
     filter(({ blankExistIndex }) => blankExistIndex < 0),
     switchMap(({ texts }) =>
-      fromEvent(document, "keydown").pipe(
+      fromEvent(document, "keyup").pipe(
         filter((e) => {
           if (e.keyCode !== 13) {
             return false;

@@ -7,6 +7,7 @@
   box-shadow: 10px 10px 30px black;
   position: relative;
   padding: 4rem 0;
+  padding-bottom: 0;
 }
 
 .container-room{
@@ -23,7 +24,7 @@
   flex-grow: 3;
   padding-left:0.5em;
   border-left: 1px solid rgba(255, 255, 255, 0.425);
-  padding-bottom: 3rem;
+  padding-bottom: 2rem;
   min-height: 70vh;
 }
 
@@ -65,12 +66,12 @@
 
 .container-room-list::-webkit-scrollbar{
   width: 5px;
-  background-color: #F5F5F5;
+  background-color: #000000;
   border-radius: 10px;
 }
 
 .container-room-list::-webkit-scrollbar-thumb {
-  background-color: #F90; 
+  background-color: rgb(255, 205, 66); 
   border-radius: 10px;
 }
 

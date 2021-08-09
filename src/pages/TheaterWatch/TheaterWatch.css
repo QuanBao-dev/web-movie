@@ -16,30 +16,23 @@
 
 .container-audio-call{
   display: flex;
-  width: 96%;
+  width: 99%;
   margin: auto;
   background-color: #000000;
   border-radius: 10px;
   flex-wrap: wrap;
-  padding: 1rem;
   margin-bottom: 2rem;
-  box-shadow: 0 0 1px 10px rgba(146, 87, 19, 0.856);
+  box-shadow: 0 0 1px 4px rgba(146, 87, 19, 0.856);
   min-height: 120px;
   position: relative;
 }
 
-.container-audio-call::before{
-  position: absolute;
-  top: 0;
-  right: 0;
-  content: "Users call";
-  margin: 1rem;
-}
-
 .container-audio-call video{
-  width: 100px;
-  height: 100px;
-  margin: 0.4rem;
+  width: 140px;
+  height: 140px;
+  margin: 1rem;
+  margin-right: 0.4rem;
+  border-radius: 10px;
 }
 
 .theater-user-login{
@@ -65,7 +58,7 @@
   max-width: 1511px;
   width: inherit;
   text-align: start;
-  margin:2rem 0;
+  margin:1rem 0;
   align-items: center;
   white-space: nowrap;
 }

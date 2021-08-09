@@ -44,7 +44,7 @@ export const changeSearchInput$ = (searchInputElement) => {
 };
 
 export const listenSearchInputPressEnter$ = (searchInputE) => {
-  return fromEvent(searchInputE, "keydown").pipe(
+  return fromEvent(searchInputE, "keyup").pipe(
     filter((e) => e.keyCode === 13 && e.target.value.trim() !== ""),
     pluck("target", "value")
   );

@@ -117,6 +117,9 @@ const TheaterWatch = (props) => {
       );
     }
     if (!isReconnect) {
+      if (!userStream.currentState()) {
+        return;
+      }
       const userId = userStream.currentState().userId;
       let isError = false;
       try {
@@ -318,6 +321,7 @@ const TheaterWatch = (props) => {
         setErrorPassword
       ).subscribe((v) => {
         if (!!v) {
+          theaterStream.updateData({ modeRoom: false });
           inputPasswordRef.current.value = "";
           if (theaterState.allowFetchCurrentRoomDetail) {
             fetchGroup(groupId, cookies.idCartoonUser);
@@ -356,7 +360,10 @@ const TheaterWatch = (props) => {
         const user = theaterState.usersOnline.find(
           (user) => user.peerId === child.id
         );
-        if (user) child.poster = user.avatar;
+        if (user) {
+          child.poster = user.avatar;
+          child.title = user.username;
+        }
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -469,10 +476,24 @@ const TheaterWatch = (props) => {
                 </button>
               </div>
             </div>
+
+            <div
+              title={"Users call"}
+              className="container-audio-call"
+              ref={audioCallRef}
+              style={{
+                display:
+                  theaterState.usersOnline[0] &&
+                  theaterState.usersOnline[0].userId !==
+                    theaterState.usersOnline[0].peerId
+                    ? "flex"
+                    : "none",
+              }}
+            ></div>
+
             {theaterState.isSignIn && (
               <UserListOnline usersOnline={theaterState.usersOnline} />
             )}
-            <div className="container-audio-call" ref={audioCallRef}></div>
             <div className="container-section-video">
               <Chat
                 groupId={groupId}
@@ -899,7 +920,10 @@ function addDeviceStream(deviceElement, stream, deviceGridElement, peerId) {
     const user = theaterStream
       .currentState()
       .usersOnline.find((user) => user.peerId === child.id);
-    if (user) child.poster = user.avatar;
+    if (user) {
+      child.poster = user.avatar;
+      child.title = user.username;
+    }
   });
 }
 

@@ -7,13 +7,13 @@ const Input = ({
   type,
   error = null,
   defaultValue = "",
-  onKeyDown,
+  onKeyUp,
 }) => {
   return (
     <div style={{ width: "100%" }}>
       <div className="form-custom">
         <input
-          onKeyDown={onKeyDown}
+          onKeyUp={onKeyUp}
           defaultValue={defaultValue}
           ref={input}
           type={type || "text"}

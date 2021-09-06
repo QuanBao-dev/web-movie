@@ -106,8 +106,7 @@ function Home() {
   // console.log(homeState);
   return (
     <div className="home-page">
-      {stream.currentState().screenWidth &&
-        stream.currentState().screenWidth >= 450 && <Carousel />}
+      <Carousel />
       <div className="recently-updated-movie">
         <div className="wrapper-search-anime-list">
           <SearchTool />

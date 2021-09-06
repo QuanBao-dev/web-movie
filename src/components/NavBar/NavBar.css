@@ -13,7 +13,7 @@
 }
 
 .nav-bar + div{
-  margin-top: 65px;
+  margin-top: 70px;
 }
 
 .nav-bar__item .active{
@@ -109,7 +109,7 @@
     padding: 11px 0;
   }
   .nav-bar + div{
-    margin-top: 54px;
+    margin-top: 76px;
   }  
   .child-nav-bar__app{
     display: none;

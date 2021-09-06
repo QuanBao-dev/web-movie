@@ -6,6 +6,18 @@
 
 .section-carousel-container .item h1{
   transition: 0.4s;
+  max-width: 50%;
+  display: inline-block;
+  text-align: center;
+  background-color: rgba(0, 0, 0, 0.295);
+  color: white;
+  white-space: nowrap;
+  border-radius: 10px;
+  overflow: hidden;
+  text-shadow: 3px 3px black;
+  text-overflow: ellipsis;
+  padding: 1rem;
+  margin: 0.5rem;
 }
 
 .section-carousel-container .item:hover h1{
@@ -23,28 +35,21 @@
   justify-content: center;
 }
 
-.container-title h1{
-  display: inline-block;
-  text-align: center;
-  padding: 1em;
-  background-color: rgba(0, 0, 0, 0.295);
-  color: white;
-  white-space: nowrap;
-  border-radius: 10px;
-  overflow: hidden;
-  text-shadow: 3px 3px black;
-  text-overflow: ellipsis;
-}
-
 .section-carousel-container .item img{
   object-fit: contain;
   width: 100%;
-  height: 600px;
+  max-height: 85vh;
 }
 
 
 .section-carousel-container .item span{
   object-fit: contain;
   width: 100%;
-  height: 600px;
+}
+
+@media (max-width: 540px) {
+  .section-carousel-container .item h1{
+    padding: 0.5rem;
+    margin: 0;
+  }
 }

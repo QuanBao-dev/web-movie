@@ -51,7 +51,6 @@
   width: 700%;
   align-items: center;
   justify-content: center;
-  height: 650px;
   position: relative;
   transition: 0.4s;
 }
@@ -89,6 +88,16 @@
 @media (max-width:950px){
   .layout-section{
     margin: 0;
+  }
+}
+
+@media (max-width:540px) {
+  .button-left{
+    display: none;
+  }
+
+  .button-right{
+    display: none;
   }
 }
 

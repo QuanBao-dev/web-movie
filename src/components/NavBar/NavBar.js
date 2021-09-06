@@ -36,7 +36,7 @@ const NavBar = ({ userState, removeCookie, cookies }) => {
             <Link to="/">
               <div className="logo-wrapper">
                 <img
-                  src="http://localhost:5000/logo192.png"
+                  src="https://myanimefun.herokuapp.com/logo192.png"
                   width={50}
                   height={50}
                   alt=""

@@ -112,10 +112,10 @@ function Home() {
         <div className="wrapper-search-anime-list">
           <SearchTool />
         </div>
+        <Genres />
         <UpcomingAnimeList />
         <UpdatedAnime />
       </div>
-      <Genres />
       <AnimeSchedule />
       <div className="container-anime-list">
         <div className="container-display-anime__home">

@@ -147,7 +147,7 @@ export const keepDragMoveAnimeList = (elementScroll, length, numberList) => {
                 });
               }
               const offsetLeft =
-                upcomingAnimeListStream.currentState().offsetLeft + delta * 0.2;
+                upcomingAnimeListStream.currentState().offsetLeft + delta * 0.05;
               elementScroll.style.transform = `translateX(${offsetLeft}px)`;
               upcomingAnimeListStream.updateDataQuick({ offsetLeft });
               if (

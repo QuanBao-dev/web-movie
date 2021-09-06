@@ -216,8 +216,10 @@ const AnimeItem = ({
 };
 
 export default AnimeItem;
+let x = 0;
 function mouseLeaveAnimeItem(animeItemRef) {
   return () => {
+    x = 0;
     animeItemRef.current.style.transition = "0.1s";
     animeItemRef.current.style.transform =
       "perspective(500px) scale(1) rotateX(0) rotateY(0)";
@@ -247,22 +249,26 @@ function mouseMoveAnimeItem(animeItemRef, virtual) {
         animeItemRef.current.className = "anime-item";
         return;
       }
+      if (x === 0) {
+        x = animeItemRef.current.getBoundingClientRect().x;
+      }
+      const isHalf =
+        e.pageX - ((x + e.movementX) % e.pageX) >
+        animeItemRef.current.offsetWidth / 2;
+      xVal = isHalf ? animeItemRef.current.offsetWidth : 0;
       if (
         animeItemRef.current.parentElement.className.includes(
           "list-anime-nowrap"
         )
       ) {
-        xVal = e.pageX - e.target.getBoundingClientRect().x;
         yVal =
           e.pageY - animeItemRef.current.parentElement.parentElement.offsetTop;
       } else if (virtual) {
-        xVal = e.pageX - e.target.getBoundingClientRect().x;
         yVal =
           e.pageY -
           (animeItemRef.current.parentElement.offsetTop +
             animeItemRef.current.offsetTop);
       } else {
-        xVal = e.pageX - animeItemRef.current.offsetLeft;
         yVal = e.pageY - animeItemRef.current.offsetTop;
       }
       const width = animeItemRef.current.clientWidth;

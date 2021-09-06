@@ -26,26 +26,47 @@ const NavBar = ({ userState, removeCookie, cookies }) => {
         }}
       >
         <div
-          className="toggle-show__nav"
-          onClick={() => {
-            const e = document
-              .getElementsByClassName("child-nav-bar__app")
-              .item(0);
-            const navBarApp = document.querySelector(".nav-bar__app");
-            if (e.style.display === "none") {
-              e.style.display = "flex";
-              navBarApp.style.backgroundColor = "rgb(2,2,2)";
-            } else {
-              e.style.display = "none";
-              if (window.scrollY >= 50)
-                navBarApp.style.backgroundColor = "rgb(2,2,2,0.2)";
-            }
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            paddingTop: "0.3rem",
           }}
         >
-          <i className="fas fa-bars fa-2x"></i>
+          <div className="logo">
+            <Link to="/">
+              <div className="logo-wrapper">
+                <img
+                  src="http://localhost:5000/logo192.png"
+                  width={50}
+                  height={50}
+                  alt=""
+                ></img>
+                <span>MyAnimeFun</span>
+              </div>
+            </Link>
+          </div>
+          <div
+            className="toggle-show__nav"
+            onClick={() => {
+              const e = document
+                .getElementsByClassName("child-nav-bar__app")
+                .item(0);
+              const navBarApp = document.querySelector(".nav-bar__app");
+              if (e.style.display === "none") {
+                e.style.display = "flex";
+                navBarApp.style.backgroundColor = "rgb(2,2,2)";
+              } else {
+                e.style.display = "none";
+                if (window.scrollY >= 50)
+                  navBarApp.style.backgroundColor = "rgb(2,2,2,0.2)";
+              }
+            }}
+          >
+            <i className="fas fa-bars fa-2x"></i>
+          </div>
         </div>
         <ul className="child-nav-bar__app">
-          <li className="nav-bar__item">
+          <li className="left-nav-item nav-bar__item">
             <Link to="/" activeClassName="active" exact>
               Home
             </Link>
@@ -68,7 +89,7 @@ const NavBar = ({ userState, removeCookie, cookies }) => {
           )}
           <li
             style={{ color: "white", cursor: "pointer" }}
-            className="left-nav-item nav-bar__item"
+            className="nav-bar__item"
           >
             <Link to="/faq" activeClassName="active">
               FAQ

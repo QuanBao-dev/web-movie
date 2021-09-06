@@ -57,8 +57,28 @@
   display: none; 
   padding-left: 10px;
   color:white;
-  width: 100%;
   z-index: 100;
+  padding-top: 0.5rem;
+  padding-right: 1rem;
+}
+
+.logo a{
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  border-radius: 10px;
+}
+
+.logo-wrapper{
+  display: flex;
+  align-items: center;
+}
+
+.logo-wrapper > span{
+  font-weight: 800;
+  color: white;
+  font-size: 2.5rem;
+  font-family: 'Cookie', cursive;
 }
 
 .nav-bar__app .nav-bar__item{
@@ -83,7 +103,7 @@
   border-radius: 50%;
 }
 
-@media (max-width:697px){
+@media (max-width:964px){
   .nav-bar__app{
     flex-direction: column;
     padding: 11px 0;

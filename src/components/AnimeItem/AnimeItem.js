@@ -70,7 +70,7 @@ const AnimeItem = ({
           new Date(anime.airing_start).getTime() <=
             new Date(Date.now()).getTime() && (
             <div
-              title="Already_Aired"
+              title={new Date(anime.airing_start).toUTCString().slice(4, 17)}
               className="anime-info-display_summary top-left_summary color-green"
             >
               {new Date(anime.airing_start).getMonth() + 1}-
@@ -82,7 +82,7 @@ const AnimeItem = ({
           new Date(anime.airing_start).getTime() >
             new Date(Date.now()).getTime() && (
             <div
-              title="start_date_airing"
+              title={new Date(anime.airing_start).toUTCString().slice(4, 17)}
               className="anime-info-display_summary top-left_summary color-green"
             >
               {anime.airing_start && (
@@ -98,7 +98,7 @@ const AnimeItem = ({
           new Date(anime.airing_start).getTime() <=
             new Date(Date.now()).getTime() && (
             <div
-              title="Already_Aired"
+              title={new Date(anime.airing_start).toUTCString().slice(4, 17)}
               className="anime-info-display_summary top-left_summary color-green"
             >
               {new Date(anime.airing_start).getMonth() + 1}-
@@ -155,7 +155,7 @@ const AnimeItem = ({
           )}
         {!anime.recommendation_count && (
           <div
-            title="Score"
+            title={`${anime.score} out of 10`}
             className="anime-info-display_summary top-right_summary color-red"
             style={{
               display:
@@ -167,7 +167,7 @@ const AnimeItem = ({
         )}
         {anime.recommendation_count && (
           <div
-            title={"recommendation count"}
+            title={`${anime.recommendation_count} people recommend`}
             className="anime-info-display_summary top-right_summary color-red"
           >
             {anime.recommendation_count}
@@ -201,7 +201,7 @@ const AnimeItem = ({
           />
         )}
         <div className="anime-item-info">
-          <h3 style={{ margin: "5px" }} title="title_anime">
+          <h3 style={{ margin: "5px" }} title={anime.title}>
             {anime.title}
           </h3>
           {anime.genres && !limitAdultGenre(anime.genres) && (

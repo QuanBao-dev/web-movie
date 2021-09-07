@@ -11,6 +11,7 @@ function CarouselItem({ data }) {
         .replace(/[ /%^&*():.$]/g, "-")
         .toLocaleLowerCase()}`}
       className="item"
+      title={data.title}
     >
       <LazyLoadImage src={data.url} alt="NOT_FOUND" effect="opacity" />
       <div className="container-title">

@@ -7,7 +7,10 @@ import { Link } from "react-router-dom";
 
 function AnimeRelatedItem({ anime, lazy = false }) {
   return (
-    <div className={anime.role === "Main" ? "anime-main-role" : ""}>
+    <div
+      title={anime.name}
+      className={anime.role === "Main" ? "anime-main-role" : ""}
+    >
       <Link
         to={
           "/anime/" +
@@ -26,7 +29,7 @@ function AnimeRelatedItem({ anime, lazy = false }) {
         {!lazy && <img src={anime.image_url} alt="image_anime" />}
         <div className="pop-up-hover">
           <h3>{anime.name}</h3>
-          <div title="role">({anime.role} )</div>
+          <div title={anime.role + " role"}>({anime.role})</div>
         </div>
       </Link>
     </div>

@@ -37,11 +37,23 @@
 .button-left{
   cursor: pointer;
   z-index: 2;
+  opacity: 0;
+  transition: 0.5s;
+}
+
+.button-left:hover{
+  opacity: 1;
 }
 
 .button-right{
   cursor: pointer;
   z-index: 2;
+  opacity: 0;
+  transition: 0.5s;
+}
+
+.button-right:hover{
+  opacity: 1;
 }
 
 

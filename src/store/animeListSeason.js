@@ -3,9 +3,9 @@ let today = new Date(Date.now()).getMonth() + 1;
 let currentSeason;
 let numSeason = today / 3;
 if (numSeason <= 1) currentSeason = "winter";
-if (1 <= numSeason && numSeason < 2) currentSeason = "spring";
-if (2 <= numSeason && numSeason < 3) currentSeason = "summer";
-if (3 <= numSeason) currentSeason = "fall";
+if (1 < numSeason && numSeason <= 2) currentSeason = "spring";
+if (2 < numSeason && numSeason <= 3) currentSeason = "summer";
+if (3 < numSeason) currentSeason = "fall";
 
 const initialState = {
   maxPage: 1,

@@ -103,20 +103,28 @@ export const fetchAnimeSeason$ = (
             if (animeListSeasonStream.currentState().modeFilter === "all") {
               return (
                 movie.airing_start &&
-                checkAnimeIncludeGenre(
+                (checkAnimeIncludeGenre(
                   movie.genres,
                   animeListSeasonStream.currentState().genreId
-                ) &&
+                ) ||
+                  checkAnimeIncludeGenre(
+                    movie.explicit_genres,
+                    animeListSeasonStream.currentState().genreId
+                  )) &&
                 (movie.score > score || score === 0)
               );
             }
             return (
               movie.airing_start &&
-              limitAdultGenre(movie.genres) &&
-              checkAnimeIncludeGenre(
+              limitAdultGenre(movie.explicit_genres) &&
+              (checkAnimeIncludeGenre(
                 movie.genres,
                 animeListSeasonStream.currentState().genreId
-              ) &&
+              ) ||
+                checkAnimeIncludeGenre(
+                  movie.explicit_genres,
+                  animeListSeasonStream.currentState().genreId
+                )) &&
               (movie.score > score || score === 0)
             );
           });

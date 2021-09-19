@@ -47,10 +47,11 @@ export const updateVirtualAnimeList = (virtual, data) => {
         document.querySelector(".container-genre-detail").offsetWidth + 1;
       virtualAnimeListStream.updateData({
         screenHeight:
-          (data.length /
-            virtualAnimeListStream.currentState().quantityAnimePerRow -
-            1) *
-            virtualAnimeListStream.currentState().offsetHeightAnime || 0,
+          Math.ceil(
+            data.length /
+              virtualAnimeListStream.currentState().quantityAnimePerRow -
+              1
+          ) * virtualAnimeListStream.currentState().offsetHeightAnime || 0,
         screenWidth: screenWidth || 0,
       });
       listAnimeE.style.width = `${
@@ -64,10 +65,11 @@ export const updateVirtualAnimeList = (virtual, data) => {
       if (parseInt(numberRow) !== numberRow) {
         listAnimeE.style.height = `${
           virtualAnimeListStream.currentState().screenHeight +
-          virtualAnimeListStream.currentState().offsetHeightAnime +
-          virtualAnimeListStream.currentState().offsetHeightAnime / 1.5
+          virtualAnimeListStream.currentState().offsetHeightAnime
         }px`;
-      } else {
+      }
+
+      if (parseInt(numberRow) === numberRow) {
         listAnimeE.style.height = `${
           virtualAnimeListStream.currentState().screenHeight +
           virtualAnimeListStream.currentState().offsetHeightAnime

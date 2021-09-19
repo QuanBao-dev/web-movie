@@ -20,7 +20,7 @@ export const fetchAnimeSchedule = (
       "sunday",
     ];
     const filterWeek = week.filter(
-      (v, index) => animeScheduleState.dateSchedule[index]
+      (_, index) => animeScheduleState.dateSchedule[index]
     );
     // console.log(filterWeek);
     const fetchDataScheduleSub = fetchAnimeSchedule$(filterWeek).subscribe();

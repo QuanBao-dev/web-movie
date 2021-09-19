@@ -50,7 +50,7 @@ const Reviews = ({ malId }) => {
               <CircularProgress color="secondary" size="3rem" />
             </div>
           )}
-          {reviewState && reviewState.isStopFetchingReviews && <h1>End</h1>}
+          {/* {reviewState && reviewState.isStopFetchingReviews && <h1>End</h1>} */}
         </div>
       )}
     </div>

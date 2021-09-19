@@ -189,7 +189,7 @@ const AdminManager = () => {
                               dateStartRef.current,
                               dateEndRef.current
                             );
-                            console.log(dataFilter);
+                            // console.log(dataFilter);
                             let userFilter = filterUsers(temp, dataFilter);
                             adminStream.updateUsersFilter(userFilter);
                           } catch (error) {}

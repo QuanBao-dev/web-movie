@@ -1,6 +1,17 @@
 import { CircularProgress } from "@material-ui/core";
 import React from "react";
+import { Link } from "react-router-dom";
 import { animeDetailStream, capitalizeString } from "../../epics/animeDetail";
+
+const dataLinkList = [
+  { name: "explicit_genres", route: "/genre/" },
+  { name: "genres", route: "/genre/" },
+  { name: "producers", route: "/producer/" },
+  { name: "licensors", route: "/licensor/" },
+  { name: "studios", route: "/studio/" },
+  { name: "themes", route: "/genre/" },
+  { name: "demographics", route: "/genre/" },
+];
 function ListInformation({ arrKeys, history, isLoading }) {
   return (
     <ul>
@@ -89,20 +100,24 @@ function ListInformation({ arrKeys, history, isLoading }) {
                   </span>
                 </li>
               );
-          } else {
+          }
+          if (
+            typeof animeDetailStream.currentState().dataInformationAnime[v] ===
+            "object"
+          ) {
             if (
               animeDetailStream.currentState().dataInformationAnime[v] &&
               animeDetailStream.currentState().dataInformationAnime[v].length
             ) {
-              let check = true;
+              let isNotContainedObject = true;
               animeDetailStream
                 .currentState()
                 .dataInformationAnime[v].forEach((anime) => {
                   if (typeof anime === "object") {
-                    check = false;
+                    isNotContainedObject = false;
                   }
                 });
-              if (!check) {
+              if (!isNotContainedObject) {
                 const array =
                   animeDetailStream.currentState().dataInformationAnime[v];
                 return (
@@ -112,59 +127,41 @@ function ListInformation({ arrKeys, history, isLoading }) {
                         {capitalizeString(v)}
                       </span>
                       {array.map((anime, index) => {
-                        return (
-                          <li
-                            className={
-                              v === "genres" ||
-                              v === "producers" ||
-                              v === "studios" ||
-                              v === "licensors"
-                                ? "click-able-info"
-                                : ""
-                            }
-                            key={index}
-                            onClick={() => {
-                              if (v === "genres") {
-                                history.push(
-                                  "/genre/" +
-                                    anime.mal_id +
-                                    `-${anime.name
-                                      .replace(/[ /%^&*(),]/g, "-")
-                                      .toLocaleLowerCase()}`
-                                );
-                              }
-                              if (v === "producers") {
-                                history.push(
-                                  "/producer/" +
-                                    anime.mal_id +
-                                    `-${anime.name
-                                      .replace(/[ /%^&*(),]/g, "-")
-                                      .toLocaleLowerCase()}`
-                                );
-                              }
-                              if (v === "studios") {
-                                history.push(
-                                  "/studio/" +
-                                    anime.mal_id +
-                                    `-${anime.name
-                                      .replace(/[ /%^&*(),]/g, "-")
-                                      .toLocaleLowerCase()}`
-                                );
-                              }
-                              if (v === "licensors") {
-                                history.push(
-                                  "/licensor/" +
-                                    anime.mal_id +
-                                    `-${anime.name
-                                      .replace(/[ /%^&*(),]/g, "-")
-                                      .toLocaleLowerCase()}`
-                                );
-                              }
-                            }}
-                          >
-                            {anime.name}
-                          </li>
-                        );
+                        if (v === "external_links") {
+                          return (
+                            <Link
+                              key={index}
+                              to={anime.url}
+                              rel={"noreferrer"}
+                              target={"_blank"}
+                            >
+                              <li className="click-able-info">{anime.name}</li>
+                            </Link>
+                          );
+                        }
+
+                        for (let i = 0; i < dataLinkList.length; i++) {
+                          const { name, route } = dataLinkList[i];
+                          if (v === name) {
+                            return (
+                              <Link
+                                key={index}
+                                to={
+                                  route +
+                                  anime.mal_id +
+                                  `-${anime.name
+                                    .replace(/[ /%^&*(),]/g, "-")
+                                    .toLocaleLowerCase()}`
+                                }
+                              >
+                                <li className="click-able-info">
+                                  {anime.name}
+                                </li>
+                              </Link>
+                            );
+                          }
+                        }
+                        return <li>{anime.name}</li>;
                       })}
                     </ul>
                   </li>
@@ -172,40 +169,16 @@ function ListInformation({ arrKeys, history, isLoading }) {
               }
               return (
                 <li key={index}>
-                  {!/themes/g.test(v) && (
-                    <ul className="title-synonym-list">
-                      <span className="title-capitalize">
-                        {capitalizeString(v)}
-                      </span>
-                      {animeDetailStream
-                        .currentState()
-                        .dataInformationAnime[v].map((nameAnime, index) => {
-                          return <li key={index}>{nameAnime}</li>;
-                        })}
-                    </ul>
-                  )}
-
-                  {/themes/g.test(v) && (
-                    <div
-                      style={{
-                        border: "none",
-                      }}
-                    >
-                      <div
-                        style={{
-                          textTransform: "capitalize",
-                          fontSize: "2rem",
-                        }}
-                      >
-                        {v.replace("_", " ")}
-                      </div>
-                      {animeDetailStream
-                        .currentState()
-                        .dataInformationAnime[v].map((anime, key) => {
-                          return <div key={key}>{anime}</div>;
-                        })}
-                    </div>
-                  )}
+                  <ul className="title-synonym-list">
+                    <span className="title-capitalize">
+                      {v.replace("_", " ")}
+                    </span>
+                    {animeDetailStream
+                      .currentState()
+                      .dataInformationAnime[v].map((anime, key) => {
+                        return <li key={key}>{anime}</li>;
+                      })}
+                  </ul>
                 </li>
               );
             }

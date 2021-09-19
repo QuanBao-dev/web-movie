@@ -82,7 +82,7 @@ function TopAnimeList() {
         >
           <CircularProgress color="secondary" />
         </div>
-        {topAnimeListState.isStopFetchTopMovie && <h1>End</h1>}
+        {/* {topAnimeListState.isStopFetchTopMovie && <h1>End</h1>} */}
       </ul>
     </div>
   );

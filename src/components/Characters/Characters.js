@@ -13,7 +13,7 @@ const CharacterItem = loadable(() => import("../CharacterItem/CharacterItem"));
 const Characters = ({ lazy = false, isLoading }) => {
   const history = useHistory();
   const [charactersState, setCharactersState] = useState(
-    characterStream.initialState
+    characterStream.currentState()
   );
   const searchCharacterRef = useRef();
   useEffect(() => {

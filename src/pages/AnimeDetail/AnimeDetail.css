@@ -181,7 +181,7 @@
   padding: 0;
 }
 
-.anime-name-info .box-info ul > li {
+.anime-name-info .box-info ul li {
   border-bottom: 2px solid black;
   padding:10px;
   margin:0.3em 0;
@@ -260,7 +260,11 @@
   box-shadow: 0 0 5px 5px black, 0 0 1px 5px white;
 }
 
-.title-synonym-list > li{
+.title-synonym-list a{
+  text-decoration: none;
+}
+
+.title-synonym-list li{
   margin:0!important;
   text-shadow: 2px 2px black;
   font-size: 1em!important;

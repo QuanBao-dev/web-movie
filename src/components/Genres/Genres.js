@@ -34,8 +34,6 @@ const genresData = [
   { genreId: "30", genre: "Sports" },
   { genreId: "31", genre: "Super Power" },
   { genreId: "32", genre: "Vampire" },
-  { genreId: "33", genre: "Yaoi" },
-  { genreId: "34", genre: "Yuri" },
   { genreId: "35", genre: "Harem" },
   { genreId: "36", genre: "Slice Of Life" },
   { genreId: "37", genre: "Supernatural" },

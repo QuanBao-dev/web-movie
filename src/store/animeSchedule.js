@@ -2,7 +2,7 @@ import { BehaviorSubject } from "rxjs";
 const initialState = {
   dataScheduleMovie: {},
   dateSchedule: Array.from(Array(7).keys()).map(() => false),
-
+  indexActive: 0
 };
 const behaviorSubject = new BehaviorSubject(initialState);
 

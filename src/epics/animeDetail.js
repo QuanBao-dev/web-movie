@@ -106,7 +106,7 @@ export function fetchAnimeRecommendation$(malId) {
       ajax({
         url: `https://api.jikan.moe/v3/anime/${malId}/recommendations`,
       }).pipe(
-        retry(10),
+        retry(null),
         pluck("response", "recommendations"),
         catchError(() => of([]))
       )

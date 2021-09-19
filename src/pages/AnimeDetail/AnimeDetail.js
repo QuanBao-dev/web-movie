@@ -304,7 +304,7 @@ const AnimeDetail = (props) => {
 };
 
 function deformData(animeDetailState, showThemeMusic) {
-  const arrKeys = Object.keys(animeDetailState.dataInformationAnime).filter(
+  let arrKeys = Object.keys(animeDetailState.dataInformationAnime).filter(
     (v) => {
       let arrayExclude = [
         "title",
@@ -316,11 +316,11 @@ function deformData(animeDetailState, showThemeMusic) {
         "request_cached",
         "request_cache_expiry",
         "mal_id",
-        "background"
+        "background",
+        "external_links",
+        "opening_themes",
+        "ending_themes",
       ];
-      if (!showThemeMusic) {
-        arrayExclude = [...arrayExclude, "opening_themes", "ending_themes"];
-      }
       if (animeDetailState.dataInformationAnime)
         if (
           document.querySelector(".button-show-more-information") &&
@@ -334,6 +334,12 @@ function deformData(animeDetailState, showThemeMusic) {
       return arrayExclude.indexOf(v) === -1 ? true : false;
     }
   );
+  if (!showThemeMusic) {
+    arrKeys = [...arrKeys, "external_links"];
+  }
+  if (showThemeMusic) {
+    arrKeys = [...arrKeys, "external_links", "opening_themes", "ending_themes"];
+  }
   let episodeDataDisplay = { key: "", episodeList: [] };
   Object.keys(animeDetailState.dataEpisodesAnime).forEach((key) => {
     const episodeList = animeDetailState.dataEpisodesAnime[key];

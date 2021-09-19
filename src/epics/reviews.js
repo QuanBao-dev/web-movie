@@ -22,7 +22,6 @@ export function fetchReviewsData$(malId, page) {
     switchMapTo(
       ajax(`https://api.jikan.moe/v3/anime/${malId}/reviews/${page}`).pipe(
         pluck("response", "reviews"),
-        tap(() => console.log(reviewsStream.currentState().reviewsData.length)),
         timeout(5000), 
         retry(reviewsStream.currentState().reviewsData.length === 0 ? null : 3),
         tap(() => reviewsStream.updateData({ pageReviewsOnDestroy: page })),

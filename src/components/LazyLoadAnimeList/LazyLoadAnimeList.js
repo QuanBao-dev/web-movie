@@ -49,7 +49,7 @@ const LazyLoadAnimeList = ({ genreId, url }) => {
           <CircularProgress color="secondary" size="3rem" />
         </div>
       )}
-      {lazyLoadState.isStopScrollingUpdated && <h1>End</h1>}
+      {/* {lazyLoadState.isStopScrollingUpdated && <h1>End</h1>} */}
     </div>
   );
 };

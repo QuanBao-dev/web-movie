@@ -60,6 +60,10 @@
   object-fit: cover;
   object-position: center;
   border-radius: 10px;
+  color: red;
+  font-weight: 700;
+  text-align: center;
+  text-transform: capitalize;
 }
 
 .anime-info-display_summary{

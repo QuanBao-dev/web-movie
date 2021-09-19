@@ -184,7 +184,7 @@ const AnimeItem = ({
             }}
             effect="opacity"
             src={anime.imageUrl || anime.image_url}
-            alt="NOT_FOUND"
+            alt={anime.title}
           />
         )}
         {lazy === false && (
@@ -197,7 +197,7 @@ const AnimeItem = ({
               left: 0,
             }}
             src={anime.imageUrl || anime.image_url}
-            alt="NOT_FOUND"
+            alt={anime.title}
           />
         )}
         <div className="anime-item-info">
@@ -205,6 +205,11 @@ const AnimeItem = ({
             {anime.title}
           </h3>
           {anime.genres && !limitAdultGenre(anime.genres) && (
+            <h3 title={`age_limited`} style={{ color: "red", margin: "0" }}>
+              18+
+            </h3>
+          )}
+          {anime.explicit_genres && !limitAdultGenre(anime.explicit_genres) && (
             <h3 title={`age_limited`} style={{ color: "red", margin: "0" }}>
               18+
             </h3>

@@ -12,7 +12,14 @@ function TopAnimeItem({ movie, lazy = false }) {
       <div>
         <div className="top-anime-list-info">
           <div className="top-movie-score__home">{movie.score}/10</div>
-          <Link to={"/anime/" + movie.mal_id}>
+          <Link
+            to={
+              "/anime/" +
+              movie.mal_id +
+              "-" +
+              movie.title.replace(/[ /%^&*(),]/g, "-")
+            }
+          >
             {lazy && (
               <LazyLoadImage
                 src={movie.image_url}

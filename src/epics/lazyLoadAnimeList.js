@@ -7,6 +7,7 @@ import {
   pluck,
   retry,
   tap,
+  timeout,
 } from "rxjs/operators";
 
 import lazyLoadAnimeListStore from "../store/lazyLoadAnimeList";
@@ -26,7 +27,12 @@ export function fetchDataGenreAnimeList$(genreId, page, url) {
     filter(() => page === parseInt(page)),
     mergeMap(() =>
       ajax(url.replace("{genreId}", genreId).replace("{page}", page)).pipe(
-        retry(5),
+        timeout(5000),
+        retry(
+          lazyLoadAnimeListStream.currentState().genreDetailData.length > 0
+            ? 5
+            : null
+        ),
         pluck("response"),
         catchError(() => {
           return of({ error: true });

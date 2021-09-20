@@ -67,6 +67,8 @@ export const fetchEpisodeDataVideo$ = (malId) => {
 export function fetchLargePicture$(name) {
   return timer(0).pipe(
     tap(() => {
+      document.body.style.backgroundImage = `url(/background.jpg)`;
+      document.body.style.backgroundSize = "cover";    
       animeDetailStream.updateIsLoading(true, "isLoadingLargePicture");
     }),
     mergeMapTo(

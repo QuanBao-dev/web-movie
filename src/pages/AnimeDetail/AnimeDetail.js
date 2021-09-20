@@ -64,6 +64,17 @@ const AnimeDetail = (props) => {
   const selectCrawlInputRef = useRef();
   const buttonDeleteCrawlInputRef = useRef();
   const typeVideoSelectRef = useRef();
+  useEffect(() => {
+    if (animeDetailState.dataLargePictureList[0]) {
+      document.body.style.backgroundImage = `url(${animeDetailState.dataLargePictureList[0]})`;
+      document.body.style.backgroundSize = "contain";
+    }
+    return () => {
+      document.body.style.backgroundImage = `url(/background.jpg)`;
+      document.body.style.backgroundSize = "cover";
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   useInitAnimeDetailState(setAnimeDetailState);
   useFetchData(setShowThemeMusic, linkWatchingInputRef, malId);
   useFetchBoxMovieOneMovie(

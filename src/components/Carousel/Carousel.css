@@ -34,25 +34,25 @@
   padding: 1.4rem;
 }
 
-.button-left{
+.container-menu-control .button-left{
   cursor: pointer;
   z-index: 2;
   opacity: 0;
   transition: 0.5s;
 }
 
-.button-left:hover{
+.container-menu-control .button-left:hover{
   opacity: 1;
 }
 
-.button-right{
+.container-menu-control .button-right{
   cursor: pointer;
   z-index: 2;
   opacity: 0;
   transition: 0.5s;
 }
 
-.button-right:hover{
+.container-menu-control .button-right:hover{
   opacity: 1;
 }
 

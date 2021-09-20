@@ -178,10 +178,7 @@ window.addEventListener("scroll", () => {
       }
   });
 });
-window.addEventListener("load", () => {
-  const body = document.querySelector("body");
-  body.style.backgroundImage = "url(/background.jpg)";
-});
+
 function App() {
   const [userState, setUserState] = useState(userStream.currentState());
   // eslint-disable-next-line no-unused-vars

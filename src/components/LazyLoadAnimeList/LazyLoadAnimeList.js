@@ -12,6 +12,7 @@ import {
   useInitLazyLoadAnimeList,
   useUpdatePageScrollingWindow,
 } from "../../Hook/lazyLoadAnimeList";
+import { useEffect } from "react";
 
 const AnimeList = loadable(() =>
   import("../../components/AnimeList/AnimeList")
@@ -22,6 +23,10 @@ const LazyLoadAnimeList = ({ genreId, url }) => {
     lazyLoadAnimeListStream.currentState()
   );
   const virtual = true;
+  useEffect(() => {
+    document.body.style.backgroundImage = `url(/background.jpg)`;
+    document.body.style.backgroundSize = "cover"
+  },[])
   useInitLazyLoadAnimeList(virtual, setLazyLoadState);
   useGenreIdChange(parseInt(genreId), virtual, lazyLoadState);
   useUpdatePageScrollingWindow(virtual, lazyLoadState);

@@ -97,6 +97,8 @@ function Home() {
   const [homeState, setHomeState] = useState(stream.currentState());
   useEffect(() => {
     const subscription = stream.subscribe(setHomeState);
+    document.body.style.backgroundImage = `url(/background.jpg)`;
+    document.body.style.backgroundSize = "cover"
     stream.init();
     return () => {
       subscription.unsubscribe();

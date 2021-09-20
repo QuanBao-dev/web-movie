@@ -29,6 +29,14 @@ const SliderLargeImage = ({
     return navBarStore.currentState().isMobile;
   }, []);
   useEffect(() => {
+    return () => {
+      document.body.style.backgroundImage = `url(/background.jpg)`;
+      document.body.style.backgroundSize = "cover";
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
     let subscription;
     if (!isLoading && imageRef.current) {
       subscription = fromEvent(imageRef.current, "load").subscribe(() => {

@@ -126,14 +126,14 @@ function ListInformation({ arrKeys, history, isLoading }) {
                     {array.map((anime, index) => {
                       if (v === "external_links") {
                         return (
-                          <Link
+                          <a
                             key={index}
-                            to={anime.url}
-                            rel={"noreferrer"}
+                            href={anime.url}
                             target={"_blank"}
+                            rel={"noopener noreferrer"}
                           >
                             <li className="click-able-info">{anime.name}</li>
-                          </Link>
+                          </a>
                         );
                       }
 

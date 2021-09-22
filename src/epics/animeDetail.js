@@ -25,7 +25,7 @@ export const fetchData$ = (name) => {
     }),
     mergeMapTo(
       ajax(`https://api.jikan.moe/v3/anime/${name}`).pipe(
-        retry(),
+        retry(20),
         pluck("response")
       )
     )
@@ -39,7 +39,7 @@ export const fetchDataVideo$ = (malId) => {
     }),
     mergeMapTo(
       ajax(`https://api.jikan.moe/v3/anime/${malId}/videos`).pipe(
-        retry(5),
+        retry(20),
         pluck("response"),
         catchError((error) => of({ error }))
       )
@@ -64,19 +64,23 @@ export const fetchEpisodeDataVideo$ = (malId) => {
   );
 };
 
-export function fetchLargePicture$(name) {
+export function fetchLargePicture$(name, history) {
   return timer(0).pipe(
     tap(() => {
       document.body.style.backgroundImage = `url(/background.jpg)`;
-      document.body.style.backgroundSize = "cover";    
+      document.body.style.backgroundSize = "cover";
       animeDetailStream.updateIsLoading(true, "isLoadingLargePicture");
     }),
     mergeMapTo(
       ajax(`https://api.jikan.moe/v3/anime/${name}/pictures`).pipe(
-        retry(10),
+        retry(20),
         pluck("response", "pictures"),
         map((pictures) => ({ pictures })),
-        catchError(() => of([]))
+        catchError(() => {
+          history.push("/");
+          alert("Anime not found");
+          return of({ error: "cancel request" });
+        })
       )
     )
   );
@@ -108,7 +112,7 @@ export function fetchAnimeRecommendation$(malId) {
       ajax({
         url: `https://api.jikan.moe/v3/anime/${malId}/recommendations`,
       }).pipe(
-        retry(null),
+        retry(20),
         pluck("response", "recommendations"),
         catchError(() => of([]))
       )

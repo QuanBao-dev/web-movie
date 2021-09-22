@@ -76,7 +76,7 @@ const AnimeDetail = (props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   useInitAnimeDetailState(setAnimeDetailState);
-  useFetchData(setShowThemeMusic, linkWatchingInputRef, malId);
+  useFetchData(setShowThemeMusic, linkWatchingInputRef, malId, history);
   useFetchBoxMovieOneMovie(
     cookies,
     malId,

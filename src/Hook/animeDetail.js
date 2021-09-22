@@ -12,9 +12,10 @@ export const useInitAnimeDetailState = (setNameState) => {
 export const useFetchData = (
   setShowThemeMusic,
   linkWatchingInputRef,
-  malId
+  malId,
+  history
 ) => {
-  useEffect(fetchData(malId, linkWatchingInputRef.current, setShowThemeMusic), [
+  useEffect(fetchData(malId, linkWatchingInputRef.current, setShowThemeMusic, history), [
     malId,
     linkWatchingInputRef.current,
   ]);

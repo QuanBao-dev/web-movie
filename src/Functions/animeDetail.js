@@ -30,7 +30,8 @@ export const initAnimeDetailState = (setNameState) => {
 export const fetchData = (
   malId,
   linkWatchingInputElement,
-  setShowThemeMusic
+  setShowThemeMusic,
+  history
 ) => {
   return () => {
     const fetchDataInfo$ = fetchData$(malId).pipe(
@@ -61,8 +62,12 @@ export const fetchData = (
         animeDetailStream.updateIsLoading(false, "isLoadingVideoAnime");
       })
     );
-    const fetchLargePictureUrl$ = fetchLargePicture$(malId).pipe(
-      tap(({ pictures }) => {
+    const fetchLargePictureUrl$ = fetchLargePicture$(malId, history).pipe(
+      tap(({ pictures, error }) => {
+        if (error) {
+          animeDetailStream.updateData({ isLoadingLargePicture: false });
+          return;
+        }
         try {
           animeDetailStream.updateData({
             dataLargePictureList: pictures
@@ -71,8 +76,10 @@ export const fetchData = (
               .reverse(),
             isLoadingLargePicture: false,
           });
-          document.body.style.backgroundImage = `url(${animeDetailStream.currentState().dataLargePictureList[0]})`;
-          document.body.style.backgroundSize = "contain"    
+          document.body.style.backgroundImage = `url(${
+            animeDetailStream.currentState().dataLargePictureList[0]
+          })`;
+          document.body.style.backgroundSize = "contain";
         } catch (error) {
           animeDetailStream.updateData({ isLoadingLargePicture: false });
           console.log(error);

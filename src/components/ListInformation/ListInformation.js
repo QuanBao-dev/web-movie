@@ -192,23 +192,36 @@ function ListInformation({ arrKeys, history, isLoading }) {
                       {capitalizeString(key)}
                     </span>
                     {related[key].map((anime, index) => {
-                      return (
-                        <li
-                          className={
-                            anime.type === "anime" ? "click-able-info" : null
-                          }
-                          key={index}
-                          onClick={() => {
-                            if (anime.type === "anime")
-                              history.push("/anime/" + anime.mal_id);
-                          }}
-                        >
-                          {anime.name}{" "}
-                          {anime.type !== "anime" && (
-                            <span>({capitalizeString(anime.type)})</span>
-                          )}
-                        </li>
-                      );
+                      if (anime.type === "anime")
+                        return (
+                          <Link
+                            key={index}
+                            to={
+                              "/anime/" +
+                              anime.mal_id +
+                              "-" +
+                              anime.name
+                                .replace(/[ /%^&*():.$]/g, "-")
+                                .toLocaleLowerCase()
+                            }
+                          >
+                            <li className={"click-able-info"}>
+                              {anime.name}{" "}
+                              {anime.type !== "anime" && (
+                                <span>({capitalizeString(anime.type)})</span>
+                              )}
+                            </li>
+                          </Link>
+                        );
+                      else
+                        return (
+                          <li key={index}>
+                            {anime.name}{" "}
+                            {anime.type !== "anime" && (
+                              <span>({capitalizeString(anime.type)})</span>
+                            )}
+                          </li>
+                        );
                     })}
                   </ul>
                 </li>

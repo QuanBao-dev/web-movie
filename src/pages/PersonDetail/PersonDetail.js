@@ -6,7 +6,7 @@ import React, { useEffect, useState } from "react";
 import { Link, useHistory } from "react-router-dom";
 import { BehaviorSubject, fromEvent, of, timer } from "rxjs";
 import { ajax } from "rxjs/ajax";
-import { catchError, filter, mergeMapTo, pluck, retry } from "rxjs/operators";
+import { catchError, filter, mergeMapTo, pluck, retry, timeout } from "rxjs/operators";
 
 import navBarStore from "../../store/navbar";
 
@@ -310,8 +310,9 @@ function validateDataStaff(updateStaffPosition, personDetail) {
 function fetchDataPerson(personId) {
   navBarStore.updateIsShowBlockPopUp(true);
   return ajax("https://api.jikan.moe/v3/person/" + personId).pipe(
-    retry(5),
     pluck("response"),
+    timeout(3000),
+    retry(50),
     catchError(() => {
       return of({ error: "Something went wrong" });
     })

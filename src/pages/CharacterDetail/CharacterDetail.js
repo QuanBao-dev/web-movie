@@ -6,7 +6,7 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { of } from "rxjs";
 import { ajax } from "rxjs/ajax";
-import { catchError, pluck, retry } from "rxjs/operators";
+import { catchError, pluck, retry, timeout } from "rxjs/operators";
 
 import { characterStream } from "../../epics/character";
 import { LazyLoadImage } from "react-lazy-load-image-component";
@@ -142,7 +142,8 @@ const CharacterDetail = (props) => {
 function fetchCharacterDetailData$(characterId) {
   navBarStore.updateIsShowBlockPopUp(true);
   return ajax(`https://api.jikan.moe/v3/character/${characterId}`).pipe(
-    retry(20),
+    timeout(3000),
+    retry(50),
     pluck("response"),
     catchError(() => of({}))
   );

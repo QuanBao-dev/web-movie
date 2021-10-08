@@ -4,6 +4,7 @@ const initialState = {
   dataFilter: [],
   textSearch: "",
   dataCarousel: [],
+  scrollTop: 0,
 };
 const behaviorSubject = new BehaviorSubject(initialState);
 

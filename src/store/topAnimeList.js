@@ -8,6 +8,7 @@ const initialState = {
   allowFetchIncreasePageTopMovie: false,
   pageTopMovie: 1,
   toggleFetchMode: "",
+  positionScrollTop: 0
 };
 const behaviorSubject = new BehaviorSubject(initialState);
 

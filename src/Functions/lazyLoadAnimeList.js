@@ -33,9 +33,9 @@ export const genreIdChange = (genreId, virtual, currentGenreId) => {
       lazyLoadAnimeListStream.currentState().genreDetailData.length === 0 ||
       currentGenreId !== genreId
     ) {
-      window.scroll({
-        top: 0,
-      });
+      // window.scroll({
+      //   top: 0,
+      // });
       lazyLoadAnimeListStream.updateData({
         allowFetchIncreaseGenrePage: false,
         genreDetailData: [],

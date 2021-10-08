@@ -1,6 +1,5 @@
 .top-anime-list li{
   width: 100%;
-  max-width: 300px;
   min-height: 460px;
   position: relative;
   border-radius: 10px;
@@ -14,9 +13,9 @@
   text-align: center;
   background-color: rgb(37, 39, 63);
   white-space: normal;
-  box-shadow: 0 0 10px 2px black;
-  border: 10px double black;
+  box-shadow: 0 0 2px 3px black, 0 0 1px 3px rgb(255, 255, 255);
   border-radius: 10px;
+  border: 1px double black
 }
 
 .top-anime-list-info .title{
@@ -25,6 +24,7 @@
   padding: 3px 10px;
   box-shadow: 0 0px 1px 1px rgb(107, 106, 106);
   border: 10px double black;
+  border-radius: 10px;
   display: -webkit-box;
   -webkit-line-clamp: 3;
   text-overflow: ellipsis;

@@ -10,9 +10,9 @@ export const initAnimeListSeason = (setAnimeListState) => {
   return () => {
     const subscription = animeListSeasonStream.subscribe(setAnimeListState);
     animeListSeasonStream.init();
-    window.scroll({
-      top: 0,
-    });
+    // window.scroll({
+    //   top: 0,
+    // });
     return () => {
       animeListSeasonStream.updateData({ isInit: true });
       subscription.unsubscribe();

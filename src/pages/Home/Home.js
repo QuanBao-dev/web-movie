@@ -96,13 +96,22 @@ window.addEventListener("resize", () => {
 function Home() {
   const [homeState, setHomeState] = useState(stream.currentState());
   useEffect(() => {
+    setTimeout(() => {
+      window.scroll({
+        top: homeState.scrollTop,
+      });
+    }, 10);
     const subscription = stream.subscribe(setHomeState);
     document.body.style.backgroundImage = `url(/background.jpg)`;
-    document.body.style.backgroundSize = "cover"
+    document.body.style.backgroundSize = "cover";
     stream.init();
     return () => {
+      stream.updateData({
+        scrollTop: window.scrollY,
+      });
       subscription.unsubscribe();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // console.log(homeState);

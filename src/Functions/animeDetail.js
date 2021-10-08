@@ -19,7 +19,7 @@ export const initAnimeDetailState = (setNameState) => {
   return () => {
     const subscription2 = animeDetailStream.subscribe(setNameState);
     animeDetailStream.init();
-    window.scroll({ top: 0 });
+    // window.scroll({ top: 0 });
     return () => {
       document.title = `My Anime Fun - Watch latest anime in high quality`;
       subscription2.unsubscribe();

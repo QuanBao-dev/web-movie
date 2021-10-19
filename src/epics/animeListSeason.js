@@ -98,7 +98,7 @@ export const fetchAnimeSeason$ = (
           // updateOriginalData(anime);
           animeListSeasonStream.updateData({
             dataDetailOriginal: anime,
-          });
+          })
           anime = anime.filter((movie) => {
             if (animeListSeasonStream.currentState().modeFilter === "all") {
               return (

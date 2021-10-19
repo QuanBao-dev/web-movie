@@ -81,9 +81,10 @@ export const filterAnimeList = (
   };
 };
 
+let subscription;
 export const fetchAnimeListSeason = (
   animeListSeasonState = animeListSeasonStream.currentState()
-) => {
+  ) => {
   return () => {
     if (
       animeListSeasonState.currentPage !==
@@ -93,7 +94,8 @@ export const fetchAnimeListSeason = (
       animeListSeasonState.year !== animeListSeasonState.currentYearOnDestroy
     ) {
       animeListSeasonStream.updateData({ isFetching: true });
-      fetchAnimeSeason$(
+      subscription && subscription.unsubscribe();
+      subscription = fetchAnimeSeason$(
         animeListSeasonState.year,
         animeListSeasonState.season,
         1,
@@ -101,7 +103,6 @@ export const fetchAnimeListSeason = (
         animeListSeasonState.score
       ).subscribe((v) => {
         if (!animeListSeasonStream.currentState().isInit) {
-          console.log("scroll");
           animeListSeasonStream.updateData({
             triggerScroll: !animeListSeasonStream.currentState().triggerScroll,
             isInit: false,

@@ -189,7 +189,7 @@ function SelectFilterAnime({
           className="select-filter"
           defaultValue={`${animeListSeasonState.season}`}
           ref={selectSeason}
-          disabled={animeListSeasonState.isFetching}
+          // disabled={animeListSeasonState.isFetching}
         >
           <option value="winter">winter</option>
           <option value="spring">spring</option>
@@ -197,7 +197,7 @@ function SelectFilterAnime({
           <option value="fall">fall</option>
         </select>
         <select
-          disabled={animeListSeasonState.isFetching}
+          // disabled={animeListSeasonState.isFetching}
           className="select-filter"
           defaultValue={`${animeListSeasonState.year}`}
           ref={selectYear}
@@ -214,7 +214,7 @@ function SelectFilterAnime({
           className="select-filter"
           defaultValue={`${animeListSeasonStream.currentState().score}`}
           ref={selectScore}
-          disabled={animeListSeasonState.isFetching}
+          // disabled={animeListSeasonState.isFetching}
         >
           {scoreOptions.map((score, key) => (
             <option key={key} value={`${score}`}>
@@ -226,7 +226,7 @@ function SelectFilterAnime({
           className="select-filter"
           defaultValue={animeListSeasonStream.currentState().modeFilter}
           ref={selectFilterMode}
-          disabled={animeListSeasonState.isFetching}
+          // disabled={animeListSeasonState.isFetching}
         >
           <option value={`all`}>18+</option>
           <option value={`filter`}>Filter</option>
@@ -235,7 +235,7 @@ function SelectFilterAnime({
           className="select-filter"
           ref={selectGenre}
           defaultValue={animeListSeasonStream.currentState().genreId}
-          disabled={animeListSeasonState.isFetching}
+          // disabled={animeListSeasonState.isFetching}
         >
           <option value={0}>Genre</option>
           {genresData.map((data) => {

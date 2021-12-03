@@ -47,7 +47,15 @@
 }
 
 @media (max-width:570px) {
+  .requested-anime-item-container{
+    padding: 1rem 0;
+  }
+
   .requested-anime-item-container .link-requested-anime-item{
     flex-direction: column;
+  }
+  .container-requested-anime-information{
+    margin-left: 0;
+    margin-top: 1rem;
   }
 }

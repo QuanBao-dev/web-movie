@@ -4,10 +4,10 @@ import "./RequestedAnimeList.css";
 const RequestedAnimeList = ({ requestedAnimeList, setRequestedAnimeList }) => {
   return (
     <div className="requested-anime-list-container">
-      {requestedAnimeList.map((requestedAnime) => (
+      {requestedAnimeList.map((requestedAnime, key) => (
         <RequestedAnimeItem
           requestedAnime={requestedAnime}
-          key={requestedAnimeList.malId}
+          key={key}
           requestedAnimeList={requestedAnimeList}
           setRequestedAnimeList={setRequestedAnimeList}
         />

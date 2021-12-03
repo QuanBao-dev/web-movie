@@ -14,7 +14,6 @@ const RequestedAnime = () => {
   const [page, setPage] = useState(1);
   const [maxPage, setMaxPage] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
-  console.log(maxPage);
   useEffect(() => {
     const subscription = fromEvent(window, "scroll")
       .pipe(
@@ -61,10 +60,25 @@ const RequestedAnime = () => {
   }, [page]);
   return (
     <div>
-      <RequestedAnimeList
-        requestedAnimeList={requestedAnimeList}
-        setRequestedAnimeList={setRequestedAnimeList}
-      />
+      {requestedAnimeList.length === 0 && (
+        <div
+          style={{
+            minHeight: "100vh",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            backgroundColor: "rgb(34, 39, 44)",
+          }}
+        >
+          <h1>Empty</h1>
+        </div>
+      )}
+      {requestedAnimeList.length !== 0 && (
+        <RequestedAnimeList
+          requestedAnimeList={requestedAnimeList}
+          setRequestedAnimeList={setRequestedAnimeList}
+        />
+      )}
     </div>
   );
 };

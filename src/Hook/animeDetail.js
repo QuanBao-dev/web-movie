@@ -26,7 +26,6 @@ export const useFetchBoxMovieOneMovie = (
   malId,
   addMovieRef,
   deleteMovieRef,
-  linkWatchingInputRef,
   isLoadingLargePicture
 ) => {
   useEffect(
@@ -35,8 +34,7 @@ export const useFetchBoxMovieOneMovie = (
       idCartoonUser,
       addMovieRef,
       deleteMovieRef,
-      linkWatchingInputRef.current
     ),
-    [idCartoonUser, malId, linkWatchingInputRef.current, isLoadingLargePicture]
+    [idCartoonUser, malId, isLoadingLargePicture]
   );
 };

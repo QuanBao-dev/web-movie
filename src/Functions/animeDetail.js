@@ -145,6 +145,7 @@ export const fetchData = (
         });
     }
     return () => {
+      linkWatchingInputElement && (linkWatchingInputElement.value = "");
       fetchEpisodesUrlSub.unsubscribe();
       subscription && subscription.unsubscribe();
       setShowThemeMusic(false);
@@ -157,7 +158,6 @@ export const fetchBoxMovieOneMovie = (
   idCartoonUser,
   addMovieRef,
   deleteMovieRef,
-  linkWatchingInputElement
 ) => {
   return () => {
     const subscription = fetchBoxMovieOneMovie$(malId, idCartoonUser).subscribe(
@@ -183,7 +183,6 @@ export const fetchBoxMovieOneMovie = (
     return () => {
       subscription && subscription.unsubscribe();
       // eslint-disable-next-line react-hooks/exhaustive-deps
-      linkWatchingInputElement && (linkWatchingInputElement.value = "");
     };
   };
 };

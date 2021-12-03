@@ -393,6 +393,16 @@ router.put(
 router.put("/:malId", verifyRole("Admin", "User"), async (req, res) => {
   const { malId } = req.params;
   const { newMessage, commentId, isPush } = req.body;
+  if (
+    newMessage.textContent.trim().length === 0 ||
+    newMessage.author.trim() === ""
+  ) {
+    return res.status(400).send({
+      error: {
+        message: "Bad request",
+      },
+    });
+  }
   const movie = await Movie.findOne({ malId });
   let index = null;
   if (commentId) {

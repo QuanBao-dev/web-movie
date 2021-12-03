@@ -74,19 +74,37 @@ const NavBar = ({ userState, removeCookie, cookies }) => {
 
           {userState && userState.role === "Admin" && (
             <li className="nav-bar__item">
+              <Link to="/requests" activeClassName="active">
+                Request
+              </Link>
+            </li>
+          )}
+
+          {userState && userState.role === "Admin" && (
+            <li className="nav-bar__item">
               <Link to="/admin" activeClassName="active">
                 Admin
               </Link>
             </li>
           )}
 
-          {userState && (
-            <li className="nav-bar__item">
+          <li className="nav-bar__item">
+            {userState && (
               <Link to="/theater" activeClassName="active">
                 Theater
               </Link>
-            </li>
-          )}
+            )}
+            {!userState && (
+              <span
+                style={{ cursor: "pointer" }}
+                onClick={() => {
+                  alert("Require Login");
+                }}
+              >
+                Theater
+              </span>
+            )}
+          </li>
           <li
             style={{ color: "white", cursor: "pointer" }}
             className="nav-bar__item"
@@ -97,11 +115,7 @@ const NavBar = ({ userState, removeCookie, cookies }) => {
           </li>
           <li className="nav-bar__item" ref={navLoginRef}>
             {!userState && (
-              <Link
-                to="/auth/login"
-                activeClassName="active"
-                onClick={() => {}}
-              >
+              <Link to="/auth/login" activeClassName="active">
                 Login
               </Link>
             )}

@@ -24,6 +24,7 @@ const boxMovieRoute = require("./routes/boxMovie.route");
 const renderRoute = require("./routes/index.route");
 const theaterRoute = require("./routes/theaterRoom.route");
 const faqRoute = require("./routes/faq.route");
+const requestAnimeRoute = require("./routes/requestAnime.route");
 const TheaterRoomMember = require("./models/theaterRoomMember.model");
 
 // const peerServer = ExpressPeerServer(server, {
@@ -220,6 +221,7 @@ app.use((req, res, next) => {
 // app.use("/peerjs", verifyRole("Admin", "User"), peerServer);
 app.use("/api/faq", faqRoute);
 app.use("/api/theater/", theaterRoute);
+app.use("/api/movies/request", requestAnimeRoute);
 app.use("/api/movies/box", boxMovieRoute);
 app.use("/api/movies", moviesRoute);
 app.use("/api/users", usersRoute);

@@ -13,6 +13,7 @@ body {
   background-attachment: fixed;
   background-size: cover;
   background-position: right;
+  background-image: url(/background.jpg);
 }
 
 body::-webkit-scrollbar{
@@ -27,4 +28,8 @@ body::-webkit-scrollbar-thumb{
 body::-webkit-scrollbar-thumb:hover{
   background-color: rgb(255, 193, 78);
   border-radius: 10px;
+}
+
+button{
+  transition: 0.5s;
 }

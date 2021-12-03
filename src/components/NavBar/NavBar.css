@@ -91,7 +91,7 @@
   font-size: 1.3rem;
 }
 
-.nav-bar__app .nav-bar__item a{
+.nav-bar__app .nav-bar__item a,.nav-bar__app .nav-bar__item span{
   text-decoration: none;
   color: white;
   padding: 10px;

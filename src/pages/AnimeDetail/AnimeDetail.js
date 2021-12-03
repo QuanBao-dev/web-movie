@@ -18,6 +18,7 @@ import {
   useFetchData,
   useInitAnimeDetailState,
 } from "../../Hook/animeDetail";
+import { ajax } from "rxjs/ajax";
 
 const ListInformation = loadable(() =>
   import("../../components/ListInformation/ListInformation")
@@ -64,6 +65,7 @@ const AnimeDetail = (props) => {
   const selectCrawlInputRef = useRef();
   const buttonDeleteCrawlInputRef = useRef();
   const typeVideoSelectRef = useRef();
+  const [isSendingRequest, setIsSendingRequest] = useState(false);
   useEffect(() => {
     if (animeDetailState.dataLargePictureList[0]) {
       document.body.style.backgroundImage = `url(${animeDetailState.dataLargePictureList[0]})`;
@@ -82,7 +84,8 @@ const AnimeDetail = (props) => {
     malId,
     addMovieRef,
     deleteMovieRef,
-    linkWatchingInputRef
+    linkWatchingInputRef,
+    animeDetailState.isLoadingLargePicture
   );
   useEffect(() => {
     const { dataInformationAnime } = animeDetailStream.currentState();
@@ -137,7 +140,6 @@ const AnimeDetail = (props) => {
         <div className="menu-control">
           {episodeDataDisplay && episodeDataDisplay.episodeList.length > 0 && (
             <Link
-              className="btn btn-success"
               to={
                 "/anime/" +
                 malId +
@@ -148,31 +150,87 @@ const AnimeDetail = (props) => {
                 }`
               }
             >
-              Watch
+              <button className="btn btn-success">Watch</button>
             </Link>
           )}
-          {user && (
+          {user && !animeDetailState.isLoadingLargePicture && (
             <span style={{ display: "inline" }}>
               {!animeDetailState.boxMovie && (
-                <span className="btn btn-primary" ref={addMovieRef}>
+                <button className="btn btn-primary" ref={addMovieRef}>
                   Add to Box
-                </span>
+                </button>
               )}
               {animeDetailState.boxMovie && (
-                <span ref={deleteMovieRef} className="btn btn-danger">
+                <button ref={deleteMovieRef} className="btn btn-danger">
                   Delete from Box
-                </span>
+                </button>
               )}
             </span>
           )}
-          <span
+          {!animeDetailState.isLoadingLargePicture && (
+            <button
+              disabled={isSendingRequest}
+              className="btn btn-request"
+              onClick={() => {
+                if (
+                  animeDetailState.dataInformationAnime.status ===
+                  "Not yet aired"
+                ) {
+                  return alert("This anime is not aired yet");
+                }
+                if (
+                  animeDetailState.dataInformationAnime.episodes ===
+                  episodeDataDisplay.episodeList.length
+                ) {
+                  return alert("This anime has been updated");
+                }
+                if (
+                  user &&
+                  (animeDetailState.dataInformationAnime.status ===
+                    "Currently Airing" ||
+                    animeDetailState.dataInformationAnime.status ===
+                      "Finished Airing") &&
+                  animeDetailState.dataInformationAnime.episodes !==
+                    episodeDataDisplay.episodeList.length
+                ) {
+                  const { dataInformationAnime } = animeDetailState;
+                  setIsSendingRequest(true);
+                  ajax({
+                    url: "/api/movies/request",
+                    method: "POST",
+                    headers: {
+                      authorization: `Bearer ${cookies.idCartoonUser}`,
+                    },
+                    body: {
+                      malId: malId.toString(),
+                      title: dataInformationAnime.title,
+                      imageUrl: dataInformationAnime.image_url,
+                      score: dataInformationAnime.score,
+                      synopsis: dataInformationAnime.synopsis,
+                    },
+                  }).subscribe((res) => {
+                    if (!res.error) {
+                      console.log(res);
+                      alert("Your request has been filed");
+                      setIsSendingRequest(false);
+                    }
+                  });
+                } else {
+                  alert("require Login");
+                }
+              }}
+            >
+              Request
+            </button>
+          )}
+          <button
             className="btn btn-dark"
             onClick={() => {
               setToggleNavTitle(!toggleNavTitle);
             }}
           >
             Shortcut
-          </span>
+          </button>
         </div>
         <div className="box">
           <div className="box-info">

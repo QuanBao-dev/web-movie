@@ -18,6 +18,7 @@ import { fetchingUser$, userStream } from "./epics/user";
 import navBarStore from "./store/navbar";
 import { virtualAnimeListStream } from "./epics/virtualAnimeList";
 import { lazyLoadAnimeListStream } from "./epics/lazyLoadAnimeList";
+import RequestedAnime from "./pages/RequestedAnime/RequestedAnime";
 
 const Login = loadable(() => import("./pages/Login/Login"), {
   fallback: (
@@ -275,6 +276,7 @@ function App() {
         <Route path="/licensor/:producerId" component={ProducerDetail} />
         {userState && <Route path="/theater" component={Theater} />}
         {userState && <Route path="/edit" component={EditUser} />}
+        {userState && <Route path="/requests" component={RequestedAnime} />}
         {!userState && <Route path="/auth/login" component={Login} />}
         {!userState && <Route path="/auth/register" component={Register} />}
         <Route path="/*" component={NotFound} />

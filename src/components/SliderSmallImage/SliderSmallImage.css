@@ -1,84 +1,81 @@
-.slider-small-image-container{
+.carousel-small-image-list-container{
   overflow: hidden;
+  height: 100px;
   position: relative;
+  cursor: grab;
+  margin-top: 0.6rem;
+}
+
+.carousel-small-image-overlay{
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 100;
+  cursor: grabbing;
+  height: 100%;
+}
+
+.carousel-small-image-list-wrapper{
+  display: flex;
+  height: 100%;
+  transition: 0.5s;
   touch-action: pan-y;
 }
 
-.slider-small-image{
+.carousel-small-image-item{
   display: flex;
-  width: 100%;
-  list-style-type: none;
-  padding: 0;
-  flex-wrap: nowrap;
-  max-height: 140px;
-  position: relative;
-  transition: 0.5s;
-  margin: 0;
+  justify-content: center;
 }
 
-.slider-small-image-container .layer-block{
-  position: absolute;
-  width: 100%;
+.carousel-small-image-item img{
+  width: 95%;
   height: 100%;
-  background-color: transparent;
-  z-index: 0;
-}
-
-.slider-small-image-container.sliding .layer-block{
-  z-index: 20;
-}
-
-.slider-small-image-item{
-  min-width: 25%;
-  position: relative;
-  opacity: 0.35;
-}
-
-.slider-small-image img{
-  width: 100%;
   object-fit: cover;
-  height: 100%;
   cursor: pointer;
-  margin: auto;
 }
 
-.slider-small-image-item > div{
-  height: 100%;
-}
-
-.slider-small-image-item.active{
-  opacity: 1;
-}
-
-.slider-small-image-container i{
-  font-size: 1.5rem;
-  filter: contrast(50%);
+.small-carousel-prev-button{
   position: absolute;
   top: 50%;
-  z-index: 10;
+  left: 10px;
   transform: translateY(-50%);
-  padding: 0.6rem;
-  cursor: pointer;
+  -webkit-text-stroke: 1px black;
+  color: white;
+  z-index: 10;
   transition: 0.5s;
+  font-size: 1.2rem;
+  cursor: pointer;
+  opacity: 0;
 }
 
-.slider-small-image-container i:hover{
+.small-carousel-next-button{
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+  -webkit-text-stroke: 1px black;
+  font-size: 1.2rem;
+  z-index: 10;
+  transition: 0.5s;
+  cursor: pointer;
+  opacity: 0;
+}
+
+.carousel-small-image-list-container:hover .small-carousel-prev-button{
+  left: 1px;
+  opacity: 1;
+  font-size: 1.4rem;
+}
+
+.carousel-small-image-list-container:hover .small-carousel-next-button{
+  right: 1px;
+  opacity: 1;
+  font-size: 1.4rem;
+}
+
+.small-carousel-prev-button:hover,
+.small-carousel-next-button:hover{
   color: red;
+  -webkit-text-stroke: 1px transparent;
 }
-
-.slider-small-image-container .fa-chevron-right{
-  right: -40px;
-}
-
-.slider-small-image-container .fa-chevron-left{
-  left: -40px;
-}
-
-.slider-small-image-container:hover .fa-chevron-right{
-  right: 0;
-}
-
-.slider-small-image-container:hover .fa-chevron-left{
-  left: 0;
-}
-

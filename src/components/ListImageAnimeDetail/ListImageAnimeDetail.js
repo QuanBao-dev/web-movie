@@ -5,22 +5,25 @@ import SliderSmallImage from '../SliderSmallImage/SliderSmallImage';
 
 
 const ListImageAnimeDetail = ({ listImage, isLoading }) => {
-  const [page, setPage] = useState(0);
+  const [page, setPage] = useState(1);
+  const [triggerSlideSmallImage, setTriggerSlideSmallImage] = useState(false);
   const sliderLargeImageRef = useRef();
   return (
     <div className="list-image-anime-detail-container">
       <SliderLargeImage
-        sliderLargeImageRef={sliderLargeImageRef}
         dataImageList={listImage}
-        page={page}
         setPage={setPage}
+        page={page}
+        triggerSlideSmallImage={triggerSlideSmallImage}
         isLoading={isLoading}
       />
       <SliderSmallImage
         sliderLargeImageRef={sliderLargeImageRef}
-        dataListImage={listImage}
+        dataImageList={listImage}
         page={page}
         setPage={setPage}
+        triggerSlideSmallImage={triggerSlideSmallImage}
+        setTriggerSlideSmallImage={setTriggerSlideSmallImage}
       />
     </div>
   );

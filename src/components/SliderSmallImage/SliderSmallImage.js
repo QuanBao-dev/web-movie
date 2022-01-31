@@ -1,173 +1,198 @@
 import "./SliderSmallImage.css";
 
-import React, { useEffect, useMemo, useRef, useState } from "react";
-import {
-  useMouseMoveHandling,
-  useMouseUpHandling,
-  useTouchEndHandling,
-  useTouchMoveHandling,
-} from "../../Hook/slideScrollDrag";
+import React, { useEffect, useRef, useState } from "react";
 import { fromEvent } from "rxjs";
-import { debounceTime, tap } from "rxjs/operators";
-import navBarStore from "../../store/navbar";
-
+import { filter } from "rxjs/operators";
+import { mobileAndTabletCheck } from "../../util/checkMobileDevice";
 const SliderSmallImage = ({
-  sliderLargeImageRef,
-  dataListImage,
+  dataImageList,
   page,
   setPage,
+  triggerSlideSmallImage,
+  setTriggerSlideSmallImage,
 }) => {
-  const [pageInternal, setPageInternal] = useState(0);
-  const sliderSmallImageRef = useRef();
-  const sliderSmallImageContainerRef = useRef();
+  const carouselSmallImageListWrapperRef = useRef();
+  const isMouseDownRef = useRef();
   const posX1 = useRef(0);
   const posX2 = useRef(0);
-  const delta = useRef(0);
-  const isMouseDownRef = useRef(null);
-  const [allowSliding, setAllowSliding] = useState(true);
-  const isMobile = useMemo(() => {
-    return navBarStore.currentState().isMobile;
-  }, []);
+  const touchClientYList = useRef([]);
+  const [smallPage, setSmallPage] = useState(0);
+  const [isOverlayDisplay, setIsOverlayDisplay] = useState(false);
+  const isMobileRef = useRef(mobileAndTabletCheck());
+
   useEffect(() => {
-    const subscription = fromEvent(window, "scroll")
-      .pipe(
-        tap(() => {
-          if (allowSliding === true && isMobile) setAllowSliding(false);
-          sliderSmallImageRef.current.style.transform = `translateX(-${
-            pageInternal < dataListImage.length - 4
-              ? pageInternal * 25
-              : (dataListImage.length - 4) * 25
-          }%)`;
-        }),
-        debounceTime(1000)
-      )
-      .subscribe(() => {
-        if (allowSliding === false) setAllowSliding(true);
+    const widthItem =
+      carouselSmallImageListWrapperRef.current.children[0].offsetWidth;
+    carouselSmallImageListWrapperRef.current.style.transform = `translateX(${
+      -widthItem * smallPage
+    }px)`;
+  }, [smallPage]);
+  useEffect(() => {
+    if (dataImageList.length <= 4) {
+      setSmallPage(0);
+      return;
+    }
+    if (page > dataImageList.length - 4) {
+      setSmallPage(dataImageList.length - 4);
+      return;
+    }
+    setSmallPage(page - 1);
+  }, [dataImageList.length, page]);
+
+  useEffect(() => {
+    const subscription = fromEvent(
+      carouselSmallImageListWrapperRef.current,
+      isMobileRef.current ? "touchstart" : "mousedown"
+    ).subscribe((e) => {
+      if (!isMobileRef.current) e.preventDefault();
+      isMouseDownRef.current = true;
+    });
+    ///////////////////////
+    const subscription2 = fromEvent(
+      window,
+      isMobileRef.current ? "touchmove" : "mousemove"
+    )
+      .pipe(filter(() => isMouseDownRef.current))
+      .subscribe((e) => {
+        if (isMobileRef.current) {
+          if (touchClientYList.current.length < 5) {
+            touchClientYList.current.push(window.scrollY);
+            return;
+          }
+          if (
+            touchClientYList.current.length === 5 &&
+            Math.abs(
+              touchClientYList.current[touchClientYList.current.length - 1] -
+                touchClientYList.current[0]
+            ) > 1
+          )
+            return;
+        }
+        const translateX = parseFloat(
+          carouselSmallImageListWrapperRef.current.style.transform
+            .replace("translateX(", "")
+            .replace("px)")
+        );
+        carouselSmallImageListWrapperRef.current.style.transition = "0s";
+        if (isMobileRef.current) {
+          posX2.current = posX1.current - e.touches[0].clientX;
+          if (posX1.current) {
+            carouselSmallImageListWrapperRef.current.style.transform = `translateX(${
+              translateX - posX2.current
+            }px)`;
+          }
+          posX1.current = e.touches[0].clientX;
+          return;
+        }
+        setIsOverlayDisplay(true);
+        carouselSmallImageListWrapperRef.current.style.transform = `translateX(${
+          translateX + e.movementX
+        }px)`;
       });
+    ////////////////////////
+    const subscription3 = fromEvent(
+      window,
+      isMobileRef.current ? "touchend" : "mouseup"
+    ).subscribe(() => {
+      isMouseDownRef.current = false;
+      posX1.current = 0;
+      posX2.current = 0;
+      touchClientYList.current = [];
+      carouselSmallImageListWrapperRef.current.style.transition = "0.5s";
+      const widthItem =
+        carouselSmallImageListWrapperRef.current.children[0].offsetWidth;
+      const translateX = parseFloat(
+        carouselSmallImageListWrapperRef.current.style.transform
+          .replace("translateX(", "")
+          .replace("px)")
+      );
+
+      const estimatedPage = Math.abs(Math.round(translateX / widthItem));
+      if (translateX > 0 || dataImageList.length <= 4) {
+        setIsOverlayDisplay(false);
+        if (smallPage === 0) {
+          carouselSmallImageListWrapperRef.current.style.transform = `translateX(${0}px)`;
+          return;
+        }
+        setSmallPage(0);
+        return;
+      }
+      if (estimatedPage > dataImageList.length - 4) {
+        setIsOverlayDisplay(false);
+        if (smallPage === dataImageList.length - 4) {
+          carouselSmallImageListWrapperRef.current.style.transform = `translateX(${
+            -widthItem * (dataImageList.length - 4)
+          }px)`;
+          return;
+        }
+        setSmallPage(dataImageList.length - 4);
+        return;
+      }
+      setIsOverlayDisplay(false);
+      if (smallPage === estimatedPage) {
+        carouselSmallImageListWrapperRef.current.style.transform = `translateX(${
+          -estimatedPage * widthItem
+        }px)`;
+        return;
+      }
+      setSmallPage(estimatedPage);
+    });
     return () => {
       subscription.unsubscribe();
+      subscription2.unsubscribe();
+      subscription3.unsubscribe();
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [allowSliding, dataListImage.length, pageInternal]);
-  useEffect(() => {
-    sliderSmallImageRef.current.style.transition = "0.5s";
-    setPageInternal(page);
-  }, [page]);
-  useMouseUpHandling(
-    isMouseDownRef,
-    sliderSmallImageContainerRef,
-    sliderSmallImageRef,
-    dataListImage,
-    pageInternal,
-    delta,
-    setPageInternal,
-    posX1,
-    posX2,
-    true
-  );
-  useMouseMoveHandling(
-    isMouseDownRef,
-    sliderSmallImageContainerRef,
-    posX1,
-    posX2,
-    delta,
-    sliderSmallImageRef,
-    dataListImage,
-    pageInternal,
-    true
-  );
-  useTouchMoveHandling(
-    sliderSmallImageRef,
-    posX2,
-    posX1,
-    delta,
-    true,
-    dataListImage,
-    pageInternal,
-    allowSliding
-  );
-
-  useTouchEndHandling(
-    sliderSmallImageRef,
-    true,
-    dataListImage,
-    pageInternal,
-    delta,
-    posX1,
-    posX2,
-    setPageInternal,
-    setAllowSliding
-  );
+  }, [dataImageList.length, smallPage]);
   return (
-    <div
-      className="slider-small-image-container"
-      ref={sliderSmallImageContainerRef}
-    >
-      <div className="layer-block"></div>
-      {dataListImage.length > 4 && (
+    <div className="carousel-small-image-list-container">
+      {isOverlayDisplay && <div className="carousel-small-image-overlay" />}
+      {smallPage !== 0 && (
         <i
-          className="fas fa-chevron-right"
-          onMouseDown={(e) => {
-            e.preventDefault();
-          }}
+          className="fas fa-chevron-left small-carousel-prev-button"
           onClick={() => {
-            pageInternal < dataListImage.length - 4
-              ? setPageInternal(pageInternal + 1)
-              : setPageInternal(0);
+            if (smallPage > 0) {
+              setSmallPage(smallPage - 1);
+            }
           }}
         ></i>
       )}
-      {dataListImage.length > 4 && (
+      {smallPage < dataImageList.length - 4 && (
         <i
-          className="fas fa-chevron-left"
-          onMouseDown={(e) => {
-            e.preventDefault();
-          }}
+          className="fas fa-chevron-right small-carousel-next-button"
           onClick={() => {
-            pageInternal > 0
-              ? setPageInternal(pageInternal - 1)
-              : setPageInternal(dataListImage.length - 4);
+            console.log(smallPage, dataImageList.length);
+            if (smallPage < dataImageList.length - 4) {
+              setSmallPage(smallPage + 1);
+            }
           }}
         ></i>
       )}
-      <ul
-        className="slider-small-image"
-        ref={sliderSmallImageRef}
-        onMouseDown={(e) => {
-          e.preventDefault();
-          isMouseDownRef.current = true;
-        }}
-        style={{
-          transform: `translateX(-${
-            pageInternal < dataListImage.length - 4
-              ? pageInternal * 25
-              : (dataListImage.length - 4) * 25
-          }%)`,
-        }}
+      <div
+        className="carousel-small-image-list-wrapper"
+        ref={carouselSmallImageListWrapperRef}
       >
-        {dataListImage.map((imageUrl, key) => (
-          <li
-            className={`slider-small-image-item${
-              key === page ? " active" : ""
-            }`}
-            style={{
-              minWidth:
-                dataListImage.length > 4
-                  ? null
-                  : `${100 / dataListImage.length}%`,
-            }}
+        {dataImageList.map((imageUrl, key) => (
+          <div
             key={key}
-            onClick={() => {
-              sliderLargeImageRef.current.style.transition = "0.5s";
-              setPage(key);
+            className="carousel-small-image-item"
+            style={{
+              minWidth: `${100 / 4}%`,
             }}
           >
-            <div style={{ padding: "0 0.5rem" }}>
-              <img src={imageUrl} alt={"image_game_2"}></img>
-            </div>
-          </li>
+            <img
+              src={imageUrl}
+              alt=""
+              style={{
+                opacity: key === page - 1 ? "1" : "0.3",
+              }}
+              onClick={() => {
+                setPage(key + 1);
+                setTriggerSlideSmallImage(!triggerSlideSmallImage);
+              }}
+            />
+          </div>
         ))}
-      </ul>
+      </div>
     </div>
   );
 };

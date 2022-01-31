@@ -1,59 +1,67 @@
-.slider-large-image-container{
-  width: 97%;
+.carousel-slide-list{
+  width: 100%;
   overflow: hidden;
   position: relative;
-  margin: auto;
+  cursor: grab;
+}
+
+.carousel-slide-list-wrapper{
+  display: flex;
+  width: 100%;
   touch-action: pan-y;
 }
 
-.slider-large-image-container .fa-chevron-right{
-  position: absolute;
-  top: 50%;
-  right: -40px;
-}
-
-.slider-large-image-container .fa-chevron-left{
-  position: absolute;
-  top: 50%;
-  left: -40px;
-}
-
-.slider-large-image-container i{
-  z-index: 10;
-  filter: contrast(50%);
-  font-size: 2rem;
-  cursor: pointer;
-  transition: 0.2s;
-  padding: 0.5rem;
-}
-
-.slider-large-image-container i:hover{
-  color: red;
-}
-
-.slider-large-image-container.hover:hover .fa-chevron-right{
-  right: 0;
-}
-
-.slider-large-image-container.hover:hover .fa-chevron-left{
-  left: 0;
-}
-
-.slider-large-image{
-  list-style-type: none;
-  display: flex;
-  flex-wrap: nowrap;
-  padding: 0;
-}
-
-.slider-large-image-item{
-  width: 100%;
+.carousel-slide-item{
+  min-width: 100%;
+  height: -webkit-fit-content;
+  height: -moz-fit-content;
   height: fit-content;
 }
 
-.slider-large-image-item img{
-  object-fit: contain;
-  object-position: center;
+.carousel-slide-item img{
   width: 100%;
-  cursor: grab;
+}
+
+.carousel-slide-list:hover .carousel-prev-button{
+  opacity: 1;
+  transform: translate(10px, -50%);
+}
+
+.carousel-slide-list:hover .carousel-next-button{
+  opacity: 1;
+  transform: translate(-10px, -50%);
+}
+
+.carousel-prev-button{
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translate(20px, -50%);
+  font-size: 2rem;
+  color: black;
+  -webkit-text-stroke: 1px white;
+  transition: 0.3s;
+  z-index: 10;
+  opacity: 0;
+  
+}
+
+.carousel-prev-button:hover,
+.carousel-next-button:hover{
+  cursor: pointer;
+  color: red;
+  -webkit-text-stroke: 1px black;
+}
+
+.carousel-next-button{
+  position: absolute;
+  right: 0;
+  transition: 0.3s;
+  top: 50%;
+  transform: translate(-20px,-50%);
+  font-size: 2rem;
+  color: black;
+  -webkit-text-stroke: 1px white;
+  z-index: 10;
+  opacity: 0;
 }

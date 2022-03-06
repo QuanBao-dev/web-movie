@@ -14,7 +14,7 @@ function VideoPromotionItem({ video, lazy }) {
         <div className="image-video-promotion">
           {lazy && (
             <LazyLoadImage
-              src={video.video_url
+              src={video.trailer.embed_url
                 .replace(
                   "https://www.youtube.com/embed",
                   "https://img.youtube.com/vi"
@@ -27,7 +27,7 @@ function VideoPromotionItem({ video, lazy }) {
           )}
           {!lazy && (
             <img
-              src={video.video_url
+              src={video.trailer.embed_url
                 .replace(
                   "https://www.youtube.com/embed",
                   "https://img.youtube.com/vi"
@@ -48,7 +48,7 @@ function VideoPromotionItem({ video, lazy }) {
           style={{ margin: "auto",outline:"none",border:"none" }}
           width="100%"
           height="600px"
-          src={video.video_url.replace(/autoplay=0/g, "autoplay=1")}
+          src={video.trailer.embed_url.replace(/autoplay=0/g, "autoplay=1")}
           title={video.title}
         />
       )}

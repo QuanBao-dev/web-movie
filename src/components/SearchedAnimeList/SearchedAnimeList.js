@@ -37,7 +37,7 @@ const SearchedAnimeList = ({ textSearch, dataSearch }) => {
             return (
               <SearchedAnime
                 key={index}
-                image_url={anime.image_url}
+                image_url={anime.images.webp.large_image_url}
                 malId={anime.mal_id}
                 title={anime.title}
               />

@@ -33,7 +33,7 @@ export function fetchDataGenreAnimeList$(genreId, page, url) {
             ? 5
             : null
         ),
-        pluck("response"),
+        pluck("response", "data"),
         catchError(() => {
           return of({ error: true });
         })

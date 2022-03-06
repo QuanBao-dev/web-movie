@@ -4,9 +4,9 @@ import "react-lazy-load-image-component/src/effects/opacity.css";
 import loadable from "@loadable/component";
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { of } from "rxjs";
+import { from, of } from "rxjs";
 import { ajax } from "rxjs/ajax";
-import { catchError, pluck, retry, timeout } from "rxjs/operators";
+import { catchError, combineAll, pluck, retry, timeout, map } from "rxjs/operators";
 
 import { characterStream } from "../../epics/character";
 import { LazyLoadImage } from "react-lazy-load-image-component";
@@ -28,29 +28,27 @@ const CharacterDetail = (props) => {
     };
   }, []);
   useEffect(() => {
-    const subscription = fetchCharacterDetailData$(characterId).subscribe(
-      (data) => {
-        window.scroll({
-          top: 0,
-        });
-        navBarStore.updateIsShowBlockPopUp(false);
-        setDataCharacterDetail(data);
-      }
-    );
+    const subscription = fetchData$(characterId).subscribe((data) => {
+      window.scroll({
+        top: 0,
+      });
+      navBarStore.updateIsShowBlockPopUp(false);
+      setDataCharacterDetail(data);
+    });
     return () => {
       subscription.unsubscribe();
       characterStream.updateData({ role: null });
     };
   }, [characterId]);
-  // console.log(dataCharacterDetail);
   return (
     <div className="character-detail-container">
       <div className="character-information-wrapper">
         <img
           className="image-character"
           src={
-            dataCharacterDetail.image_url ||
-            "https://us.123rf.com/450wm/pikepicture/pikepicture1612/pikepicture161200526/68824651-stock-vector-male-default-placeholder-avatar-profile-gray-picture-isolated-on-white-background-for-your-design-ve.jpg?ver=6"
+            dataCharacterDetail.images
+              ? dataCharacterDetail.images.webp.image_url
+              : "https://us.123rf.com/450wm/pikepicture/pikepicture1612/pikepicture161200526/68824651-stock-vector-male-default-placeholder-avatar-profile-gray-picture-isolated-on-white-background-for-your-design-ve.jpg?ver=6"
           }
           alt="image_character"
         ></img>
@@ -114,19 +112,19 @@ const CharacterDetail = (props) => {
               {dataCharacterDetail.voice_actors.map((actor, index) => {
                 return (
                   <Link
-                    to={"/anime/person/" + actor.mal_id}
+                    to={"/anime/person/" + actor.person.mal_id}
                     className="actor-item"
                     key={index}
                   >
                     <LazyLoadImage
-                      src={actor.image_url}
+                      src={actor.person.images.jpg.image_url}
                       alt="person_image"
                       width="100%"
                       effect="opacity"
                       height="100%"
                     />
                     <div className="actor-name">
-                      <h3 title="name">{actor.name}</h3>
+                      <h3 title="name">{actor.person.name}</h3>
                       <div title="language">( {actor.language} )</div>
                     </div>
                   </Link>
@@ -141,11 +139,35 @@ const CharacterDetail = (props) => {
 
 function fetchCharacterDetailData$(characterId) {
   navBarStore.updateIsShowBlockPopUp(true);
-  return ajax(`https://api.jikan.moe/v3/character/${characterId}`).pipe(
+  return ajax(`https://api.jikan.moe/v4/characters/${characterId}`).pipe(
     timeout(3000),
-    retry(50),
-    pluck("response"),
+    retry(20),
+    pluck("response", "data"),
     catchError(() => of({}))
+  );
+}
+
+function fetchVoiceActorByCharacterId$(characterId) {
+  return ajax(`https://api.jikan.moe/v4/characters/${characterId}/voices`).pipe(
+    timeout(3000),
+    retry(20),
+    pluck("response", "data"),
+    catchError(() => of([]))
+  );
+}
+
+function fetchData$(characterId) {
+  return from([
+    fetchCharacterDetailData$(characterId),
+    fetchVoiceActorByCharacterId$(characterId),
+  ]).pipe(
+    combineAll(),
+    map(([dataCharacter, dataVoiceActor]) => {
+      return {
+        ...dataCharacter,
+        voice_actors: dataVoiceActor,
+      };
+    })
   );
 }
 

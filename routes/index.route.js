@@ -31,9 +31,10 @@ router.get("/anime/character/:characterId", async (req, res) => {
   const descriptionReg = new RegExp(descriptionHTML, "g");
   const imageReg = new RegExp(imageHTML, "g");
   const { data } = await Axios(
-    "https://api.jikan.moe/v3/character/" + parseInt(req.params.characterId)
+    "https://api.jikan.moe/v4/characters/" + parseInt(req.params.characterId)
   );
-  const { name, image_url } = data;
+  const { name } = data.data;
+  const image_url = data.data.images.jpg.image_url;
   const filePath = path.join(__dirname, "../build", "index.html");
   fs.readFile(filePath, "utf8", (error, data) => {
     if (!error) {
@@ -57,9 +58,10 @@ router.get("/anime/person/:personId", async (req, res) => {
   const descriptionReg = new RegExp(descriptionHTML, "g");
   const imageReg = new RegExp(imageHTML, "g");
   const { data } = await Axios(
-    "https://api.jikan.moe/v3/person/" + parseInt(req.params.personId)
+    "https://api.jikan.moe/v4/people/" + parseInt(req.params.personId)
   );
-  const { name, image_url } = data;
+  const { name } = data.data;
+  const image_url = data.data.images.jpg.image_url;
   const filePath = path.join(__dirname, "../build", "index.html");
   fs.readFile(filePath, "utf8", (error, data) => {
     if (!error) {
@@ -86,9 +88,11 @@ router.get("/anime/:id", async (req, res) => {
   const descriptionReg = new RegExp(descriptionHTML, "g");
   const imageReg = new RegExp(imageHTML, "g");
   const { data } = await Axios(
-    "https://api.jikan.moe/v3/anime/" + parseInt(req.params.id)
+    "https://api.jikan.moe/v4/anime/" + parseInt(req.params.id)
   );
-  const { title, synopsis, image_url } = data;
+  const { title, synopsis } = data.data;
+  const image_url =
+    data.data.images.jpg.large_image_url || data.data.images.jpg.image_url;
   const filePath = path.join(__dirname, "../build", "index.html");
   fs.readFile(filePath, "utf8", (error, data) => {
     if (!error) {

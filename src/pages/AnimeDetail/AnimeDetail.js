@@ -210,7 +210,6 @@ const AnimeDetail = (props) => {
                     },
                   }).subscribe((res) => {
                     if (!res.error) {
-                      console.log(res);
                       alert("Your request has been filed");
                       setIsSendingRequest(false);
                     }
@@ -389,6 +388,7 @@ function deformData(animeDetailState, showThemeMusic) {
         "external_links",
         "opening_themes",
         "ending_themes",
+        "type_data"
       ];
       if (animeDetailState.dataInformationAnime)
         if (

@@ -70,9 +70,9 @@ router.put("/carousel/:id", verifyRole("Admin"), async (req, res) => {
   try {
     const [carouselList, dataAnime] = await Promise.all([
       CarouselMovie.findOne({ name: "data" }),
-      Axios.get("https://api.jikan.moe/v3/anime/" + malId),
+      Axios.get("https://api.jikan.moe/v4/anime/" + malId),
     ]);
-    const { title } = dataAnime.data;
+    const { title } = dataAnime.data.data;
     const dataList = carouselList.data.map((data, index) => {
       if (index === id) {
         return {
@@ -560,13 +560,14 @@ router.delete("/:malId", verifyRole("Admin"), async (req, res) => {
 async function addMovieUpdated(malId) {
   let dataApi;
   try {
-    const api = await Axios.get(`https://api.jikan.moe/v3/anime/${malId}`);
-    dataApi = api.data;
+    const api = await Axios.get(`https://api.jikan.moe/v4/anime/${malId}`);
+    dataApi = api.data.data;
     const movie = await UpdatedMovie.findOneAndUpdate(
       { malId },
       {
         title: dataApi.title,
-        imageUrl: dataApi.image_url,
+        imageUrl:
+          dataApi.images.jpg.large_image_url || dataApi.images.jpg.image_url,
         numEpisodes: dataApi.episodes,
         score: dataApi.score,
         synopsis: dataApi.synopsis,

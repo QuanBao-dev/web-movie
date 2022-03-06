@@ -119,7 +119,7 @@ const EpisodePage = (props) => {
       });
       fetchTitleAnimeSub = fetchTitle$(malId).subscribe((v) => {
         pageWatchStream.updateTitle(v.title);
-        pageWatchStream.updateImageUrl(v.image_url);
+        pageWatchStream.updateImageUrl(v.images.webp.image_url);
       });
     }
     return () => {
@@ -364,9 +364,9 @@ function ListEpisodeUrlDisplay({
 }
 
 function fetchTitle$(malId) {
-  return ajax("https://api.jikan.moe/v3/anime/" + malId).pipe(
+  return ajax("https://api.jikan.moe/v4/anime/" + malId).pipe(
     retry(10),
-    pluck("response"),
+    pluck("response","data"),
     catchError((error) => of({ error }))
   );
 }

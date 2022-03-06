@@ -131,13 +131,6 @@ const PersonDetail = loadable(
     ),
   }
 );
-const GenreDetail = loadable(() => import("./pages/GenreDetail/GenreDetail"), {
-  fallback: (
-    <section style={{ position: "fixed", width: "100%", zIndex: "2000" }}>
-      <LinearProgress color="secondary" />
-    </section>
-  ),
-});
 
 const scrollSaveSubject = new ReplaySubject(3);
 window.addEventListener("resize", () => {
@@ -270,7 +263,7 @@ function App() {
           component={CharacterDetail}
         />
         <Route path="/anime/:name" component={AnimeDetail} />
-        <Route path="/genre/:genreId" component={GenreDetail} />
+        <Route path="/genre/:producerId" component={ProducerDetail} />
         <Route path="/producer/:producerId" component={ProducerDetail} />
         <Route path="/studio/:producerId" component={ProducerDetail} />
         <Route path="/licensor/:producerId" component={ProducerDetail} />

@@ -9,14 +9,11 @@ const AnimeStaffPositionItem = loadable(() =>
 function AnimeStaffPositions({ updateStaffPosition, lazy = false }) {
   return (
     <div className="container-staff-position">
-      {updateStaffPosition &&
-        Object.keys(updateStaffPosition) &&
-        Object.keys(updateStaffPosition).map((keyData, index) => (
+      {updateStaffPosition && updateStaffPosition.map((data, index) => (
           <AnimeStaffPositionItem
             lazy={lazy}
             key={index}
-            updateStaffPosition={updateStaffPosition}
-            keyData={keyData}
+            updateStaffPosition={data}
           />
         ))}
     </div>

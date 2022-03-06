@@ -116,9 +116,9 @@ export const upcomingAnimeListUpdated$ = () => {
     ),
     switchMap(() =>
       ajax({
-        url: `https://api.jikan.moe/v3/top/anime/1/upcoming`,
+        url: `https://api.jikan.moe/v4/anime?status=upcoming&order_by=start_date`,
       }).pipe(
-        pluck("response", "top"),
+        pluck("response", "data"),
         retry(),
         catchError(() => of([]))
       )

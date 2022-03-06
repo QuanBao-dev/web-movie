@@ -8,7 +8,7 @@ import { Link } from "react-router-dom";
 function AnimeRelatedItem({ anime, lazy = false }) {
   return (
     <div
-      title={anime.name}
+      title={anime.title}
       className={anime.role === "Main" ? "anime-main-role" : ""}
     >
       <Link
@@ -16,19 +16,19 @@ function AnimeRelatedItem({ anime, lazy = false }) {
           "/anime/" +
           anime.mal_id +
           "-" +
-          anime.name.replace(/[ /%^&*()]/g, "-").toLocaleLowerCase()
+          anime.title.replace(/[ /%^&*()]/g, "-").toLocaleLowerCase()
         }
       >
         {lazy && (
           <LazyLoadImage
-            src={anime.image_url}
+            src={anime.images.jpg.large_image_url || anime.images.jpg.image_url}
             alt="image_anime"
             effect="opacity"
           />
         )}
-        {!lazy && <img src={anime.image_url} alt="image_anime" />}
+        {!lazy && <img src={anime.images.jpg.large_image_url ||anime.images.jpg.image_url} alt="image_anime" />}
         <div className="pop-up-hover">
-          <h3>{anime.name}</h3>
+          <h3>{anime.title}</h3>
           <div title={anime.role + " role"}>({anime.role})</div>
         </div>
       </Link>

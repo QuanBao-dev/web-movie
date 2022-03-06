@@ -106,53 +106,31 @@ const AnimeItem = ({
               {new Date(anime.airing_start).getFullYear()}
             </div>
           )}
-        {(new Date(anime.end_date).getTime() > new Date(Date.now()).getTime() ||
-          !anime.end_date) &&
-          anime.start_date &&
-          new Date(anime.start_date).getTime() >
-            new Date(Date.now()).getTime() && (
-            <div
-              title="start_date_airing"
-              className="anime-info-display_summary top-left_summary color-green"
-            >
-              {anime.start_date.slice(0, 10)}
-            </div>
-          )}
-        {(new Date(anime.end_date).getTime() > new Date(Date.now()).getTime() ||
-          !anime.end_date) &&
-          anime.start_date &&
-          new Date(anime.start_date).getTime() <=
-            new Date(Date.now()).getTime() && (
-            <div
-              title="start_date_airing"
-              className="anime-info-display_summary top-left_summary color-green"
-            >
-              {anime.start_date.slice(0, 10)}
-            </div>
-          )}
-        {anime.end_date &&
-          anime.end_date.length > 8 &&
-          new Date(anime.end_date).getTime() <=
-            new Date(Date.now()).getTime() && (
-            <div
-              title={"End_Airing"}
-              className="anime-info-display_summary top-left_summary color-yellow"
-            >
-              {anime.end_date.slice(0, 10)}
-            </div>
-          )}
+        {anime.aired && anime.aired.prop.from.day && (
+          <div
+            title="start_date_airing"
+            className="anime-info-display_summary top-left_summary color-green"
+          >
+            {anime.aired.prop.from.day}
+            {anime.aired.prop.from.day && "/"}
+            {anime.aired.prop.from.month}
+            {anime.aired.prop.from.month && "/"}
+            {anime.aired.prop.from.year}
+          </div>
+        )}
+        {anime.aired && anime.aired.prop.to.day && (
+          <div
+            title={"End_Airing"}
+            className="anime-info-display_summary top-left_summary color-yellow"
+          >
+            {anime.aired.prop.to.day}
+            {anime.aired.prop.to.day && "/"}
+            {anime.aired.prop.to.month}
+            {anime.aired.prop.to.month && "/"}
+            {anime.aired.prop.to.year}{" "}
+          </div>
+        )}
 
-        {!anime.score &&
-          anime.end_date &&
-          new Date(anime.end_date).getTime() >
-            new Date(Date.now()).getTime() && (
-            <div
-              title={"End_date_Airing"}
-              className="anime-info-display_summary top-right_summary color-yellow"
-            >
-              {anime.end_date.slice(0, 10)}
-            </div>
-          )}
         {!anime.recommendation_count && (
           <div
             title={`${anime.score} out of 10`}
@@ -183,7 +161,11 @@ const AnimeItem = ({
               left: 0,
             }}
             effect="opacity"
-            src={anime.imageUrl || anime.image_url}
+            src={
+              anime.imageUrl ||
+              anime.image_url ||
+              anime.images.webp.large_image_url
+            }
             alt={anime.title}
           />
         )}
@@ -196,7 +178,11 @@ const AnimeItem = ({
               top: 0,
               left: 0,
             }}
-            src={anime.imageUrl || anime.image_url}
+            src={
+              anime.imageUrl ||
+              anime.image_url ||
+              anime.images.webp.large_image_url
+            }
             alt={anime.title}
           />
         )}

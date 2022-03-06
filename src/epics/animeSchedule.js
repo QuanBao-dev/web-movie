@@ -21,8 +21,8 @@ export const fetchAnimeSchedule$ = (weekIndex) => {
           () => !animeScheduleStream.currentState().dataScheduleMovie[day]
         ),
         mergeMap(() =>
-          ajax(`https://api.jikan.moe/v3/schedule/${day}`).pipe(
-            pluck("response", day),
+          ajax(`https://api.jikan.moe/v4/schedules?filter=${day}`).pipe(
+            pluck("response", "data"),
             retry(20),
             catchError((err) => {
               return of([]);

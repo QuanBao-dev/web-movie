@@ -13,7 +13,6 @@ export const useInitAnimeListSeason = (setAnimeListState) => {
 
 export const useFilterAnimeList = (animeListSeasonState) => {
   useEffect(filterAnimeList(animeListSeasonState), [
-    animeListSeasonState.currentPage,
     animeListSeasonState.score,
     animeListSeasonState.modeFilter,
     animeListSeasonState.genreId,
@@ -25,6 +24,7 @@ export const useFetchAnimeListSeason = (animeListSeasonState) => {
     animeListSeasonState.year,
     animeListSeasonState.season,
     animeListSeasonState.numberOfProduct,
+    animeListSeasonState.currentPage
   ]);
 };
 
@@ -33,7 +33,6 @@ export const useListenWhenOptionChange = (
   selectSeason,
   selectYear,
   selectScore,
-  selectFilterMode,
   selectGenre
 ) => {
   useEffect(
@@ -42,7 +41,6 @@ export const useListenWhenOptionChange = (
       selectSeason,
       selectYear,
       selectScore,
-      selectFilterMode,
       selectGenre
     ),
     [animeListSeasonState.screenWidth]

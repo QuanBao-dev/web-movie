@@ -32,7 +32,7 @@ export const useUpdatePageScrollingWindow = (
       genreDetailData,
       isStopScrollingUpdated
     ),
-    [allowFetchIncreaseGenrePage, pageGenre]
+    [genreDetailData.length, allowFetchIncreaseGenrePage, pageGenre]
   );
 };
 
@@ -45,7 +45,8 @@ export const useFetchDataGenreAnimeList = (
   } = lazyLoadAnimeListStream.currentState(),
   genreId,
   url,
-  virtual
+  virtual,
+  type
 ) => {
   useEffect(
     fetchDataGenreAnimeList(
@@ -54,7 +55,8 @@ export const useFetchDataGenreAnimeList = (
       genreDetailData,
       genreId,
       url,
-      virtual
+      virtual,
+      type
     ),
     [pageGenre, genreId, currentGenreId]
   );

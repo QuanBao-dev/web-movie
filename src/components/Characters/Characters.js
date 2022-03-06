@@ -49,7 +49,9 @@ const Characters = ({ lazy = false, isLoading }) => {
           .currentState()
           .dataCharacterRaw.filter(
             (characterData) =>
-              !!characterData.name.match(new RegExp(e.target.value, "i"))
+              !!characterData.character.name.match(
+                new RegExp(e.target.value, "i")
+              )
           ),
       });
     });
@@ -86,7 +88,10 @@ const Characters = ({ lazy = false, isLoading }) => {
               <CharacterItem
                 key={index}
                 lazy={lazy}
-                characterData={characterData}
+                characterData={{
+                  ...characterData.character,
+                  role: characterData.role,
+                }}
                 history={history}
               />
             ))}

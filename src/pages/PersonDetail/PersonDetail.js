@@ -4,9 +4,18 @@ import loadable from "@loadable/component";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import React, { useEffect, useState } from "react";
 import { Link, useHistory } from "react-router-dom";
-import { BehaviorSubject, fromEvent, of, timer } from "rxjs";
+import { BehaviorSubject, from, fromEvent, of, timer } from "rxjs";
 import { ajax } from "rxjs/ajax";
-import { catchError, filter, mergeMapTo, pluck, retry, timeout } from "rxjs/operators";
+import {
+  catchError,
+  filter,
+  mergeMapTo,
+  pluck,
+  retry,
+  timeout,
+  map,
+  combineAll,
+} from "rxjs/operators";
 
 import navBarStore from "../../store/navbar";
 
@@ -23,7 +32,6 @@ const AllAnimeRelated = loadable(
     fallback: <CircularProgress color="primary" size="7rem" />,
   }
 );
-let updateStaffPosition;
 let updateVoiceActingRoles;
 let numberDisplay = 1;
 const initialState = {
@@ -105,7 +113,7 @@ const PersonDetail = (props) => {
     if (personDetailState.malId !== personId) {
       personDetailStore.updateData({ lazy: true });
       personDetailStore.resetData();
-      subscription = fetchDataPerson(personId).subscribe((v) => {
+      subscription = fetchDataPerson$(personId).subscribe((v) => {
         navBarStore.updateIsShowBlockPopUp(false);
         personDetailStore.updateDataPersonDetail(v);
         personDetailStore.updateMalId(personId);
@@ -150,34 +158,35 @@ const PersonDetail = (props) => {
       "image_url",
       "url",
       "website_url",
+      "images",
     ]
   );
-  // console.log(personDetail);
-  if (personDetailState.dataPersonDetail.anime_staff_positions) {
-    updateStaffPosition = validateDataStaff(
-      updateStaffPosition,
-      personDetailState.dataPersonDetail
-    );
-  }
+  // if (personDetailState.dataPersonDetail.anime_staff_positions) {
+  //   updateStaffPosition = validateDataStaff(
+  //     updateStaffPosition,
+  //     personDetailState.dataPersonDetail
+  //   );
+  // }
   if (personDetailState.dataPersonDetail.voice_acting_roles) {
-    updateVoiceActingRoles = personDetailState.dataPersonDetail.voice_acting_roles.reduce(
-      (ans, dataVoiceActor) => {
-        if (!ans[dataVoiceActor.character.mal_id])
-          ans[dataVoiceActor.character.mal_id] = {};
-        ans[dataVoiceActor.character.mal_id] = {
-          ...ans[dataVoiceActor.character.mal_id],
-          ...dataVoiceActor.character,
-        };
-        !ans[dataVoiceActor.character.mal_id].animeList &&
-          (ans[dataVoiceActor.character.mal_id].animeList = []);
-        ans[dataVoiceActor.character.mal_id].animeList = [
-          ...ans[dataVoiceActor.character.mal_id].animeList,
-          { ...dataVoiceActor.anime, role: dataVoiceActor.role },
-        ];
-        return ans;
-      },
-      {}
-    );
+    updateVoiceActingRoles =
+      personDetailState.dataPersonDetail.voice_acting_roles.reduce(
+        (ans, dataVoiceActor) => {
+          if (!ans[dataVoiceActor.character.mal_id])
+            ans[dataVoiceActor.character.mal_id] = {};
+          ans[dataVoiceActor.character.mal_id] = {
+            ...ans[dataVoiceActor.character.mal_id],
+            ...dataVoiceActor.character,
+          };
+          !ans[dataVoiceActor.character.mal_id].animeList &&
+            (ans[dataVoiceActor.character.mal_id].animeList = []);
+          ans[dataVoiceActor.character.mal_id].animeList = [
+            ...ans[dataVoiceActor.character.mal_id].animeList,
+            { ...dataVoiceActor.anime, role: dataVoiceActor.role },
+          ];
+          return ans;
+        },
+        {}
+      );
   }
   if (!personDetailState.dataPersonDetail.error)
     return (
@@ -225,16 +234,20 @@ const PersonDetail = (props) => {
             </pre>
           </div>
         )}
-        {updateStaffPosition && Object.keys(updateStaffPosition).length !== 0 && (
-          <div>
-            <h1 className="text-capitalize">Anime Staff Positions</h1>
-            <AnimeStaffPositions
-              history={history}
-              lazy={personDetailState.lazy}
-              updateStaffPosition={updateStaffPosition}
-            />
-          </div>
-        )}
+        {personDetailState.dataPersonDetail.anime_staff_positions &&
+          personDetailState.dataPersonDetail.anime_staff_positions.length >
+            0 && (
+            <div>
+              <h1 className="text-capitalize">Anime Staff Positions</h1>
+              <AnimeStaffPositions
+                history={history}
+                lazy={personDetailState.lazy}
+                updateStaffPosition={
+                  personDetailState.dataPersonDetail.anime_staff_positions
+                }
+              />
+            </div>
+          )}
         {updateVoiceActingRoles &&
           Object.keys(updateVoiceActingRoles).length !== 0 && (
             <div>
@@ -256,7 +269,11 @@ const PersonDetail = (props) => {
                       >
                         <img
                           className="person__image-character"
-                          src={updateVoiceActingRoles[key].image_url}
+                          src={
+                            updateVoiceActingRoles[key].images.jpg
+                              .large_image_url ||
+                            updateVoiceActingRoles[key].images.jpg.image_url
+                          }
                           alt="image_character"
                         />
                         <div className="pop-up-hover-character">
@@ -283,37 +300,36 @@ const PersonDetail = (props) => {
     );
 };
 
-function validateDataStaff(updateStaffPosition, personDetail) {
-  updateStaffPosition = personDetail.anime_staff_positions.reduce(
-    (ans, dataActor) => {
-      if (!ans[dataActor.anime.mal_id]) {
-        ans[dataActor.anime.mal_id] = {};
-      }
-      ans[dataActor.anime.mal_id] = {
-        ...ans[dataActor.anime.mal_id],
-        ...dataActor.anime,
-      };
-      if (!ans[dataActor.anime.mal_id].positions) {
-        ans[dataActor.anime.mal_id].positions = [];
-      }
-      ans[dataActor.anime.mal_id].positions = [
-        ...ans[dataActor.anime.mal_id].positions,
-        dataActor.position,
-      ];
-      return ans;
-    },
-    {}
-  );
-  return updateStaffPosition;
-}
-
-function fetchDataPerson(personId) {
+function fetchDataPerson$(personId) {
   navBarStore.updateIsShowBlockPopUp(true);
-  return ajax("https://api.jikan.moe/v3/person/" + personId).pipe(
-    pluck("response"),
-    timeout(3000),
-    retry(50),
-    catchError(() => {
+  return from([
+    ajax("https://api.jikan.moe/v4/people/" + personId).pipe(
+      pluck("response", "data"),
+      timeout(3000),
+      retry(50)
+    ),
+    ajax(`https://api.jikan.moe/v4/people/${personId}/anime`).pipe(
+      pluck("response", "data"),
+      timeout(3000),
+      retry(50)
+    ),
+    ajax(`https://api.jikan.moe/v4/people/${personId}/voices`).pipe(
+      pluck("response", "data"),
+      timeout(3000),
+      retry(50)
+    ),
+  ]).pipe(
+    combineAll(),
+    map(([dataPerson, dataStaffPositions, dataPersonVoiceActingRoles]) => {
+      return {
+        ...dataPerson,
+        image_url: dataPerson.images.jpg.image_url,
+        voice_acting_roles: dataPersonVoiceActingRoles,
+        anime_staff_positions: dataStaffPositions,
+      };
+    }),
+    catchError((error) => {
+      console.log(error);
       return of({ error: "Something went wrong" });
     })
   );

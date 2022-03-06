@@ -1,4 +1,3 @@
-import orderBy from "lodash/orderBy";
 import {
   animeListSeasonStream,
   changeCurrentPage$,
@@ -24,52 +23,19 @@ export const filterAnimeList = (
   animeListSeasonState = animeListSeasonStream.currentState()
 ) => {
   return () => {
-    const filterAnime = animeListSeasonState.dataDetailOriginal.filter(
-      (movie) => {
-        if (animeListSeasonState.modeFilter === "all") {
-          return (
-            movie.airing_start &&
-            (checkAnimeIncludeGenre(
-              movie.genres,
-              animeListSeasonStream.currentState().genreId
-            ) ||
-              checkAnimeIncludeGenre(
-                movie.explicit_genres,
-                animeListSeasonStream.currentState().genreId
-              )) &&
-            (movie.score > animeListSeasonState.score ||
-              animeListSeasonState.score === 0)
-          );
-        }
-        return (
-          movie.airing_start &&
-          limitAdultGenre(movie.explicit_genres) &&
-          (checkAnimeIncludeGenre(
-            movie.genres,
-            animeListSeasonStream.currentState().genreId
-          ) ||
-            checkAnimeIncludeGenre(
-              movie.explicit_genres,
-              animeListSeasonStream.currentState().genreId
-            )) &&
-          (movie.score > animeListSeasonState.score ||
-            animeListSeasonState.score === 0)
+    const { dataDetailOriginal } = animeListSeasonState;
+    const filteredData = dataDetailOriginal.filter(({ score, genres }) => {
+      let isContained = true;
+      if (parseInt(animeListSeasonState.genreId)) {
+        const malIdList = genres.map(({ mal_id }) => mal_id);
+        isContained = malIdList.includes(
+          parseInt(animeListSeasonState.genreId)
         );
       }
-    );
-    animeListSeasonStream.updateDataQuick({
-      maxPage: Math.ceil(
-        filterAnime.length /
-          animeListSeasonStream.currentState().numberOfProduct
-      ),
+      return score > animeListSeasonState.score && isContained;
     });
-    const sortedArray = orderBy(filterAnime, ["airing_start"], ["desc"]).slice(
-      (animeListSeasonState.currentPage - 1) *
-        animeListSeasonState.numberOfProduct,
-      animeListSeasonState.currentPage * animeListSeasonState.numberOfProduct
-    );
     animeListSeasonStream.updateData({
-      dataDetail: sortedArray,
+      dataDetail: filteredData,
     });
     if (
       animeListSeasonStream.currentState().maxPage <
@@ -84,7 +50,7 @@ export const filterAnimeList = (
 let subscription;
 export const fetchAnimeListSeason = (
   animeListSeasonState = animeListSeasonStream.currentState()
-  ) => {
+) => {
   return () => {
     if (
       animeListSeasonState.currentPage !==
@@ -98,7 +64,7 @@ export const fetchAnimeListSeason = (
       subscription = fetchAnimeSeason$(
         animeListSeasonState.year,
         animeListSeasonState.season,
-        1,
+        animeListSeasonState.currentPage,
         animeListSeasonState.numberOfProduct,
         animeListSeasonState.score
       ).subscribe((v) => {
@@ -108,20 +74,38 @@ export const fetchAnimeListSeason = (
             isInit: false,
           });
         }
+        console.log(animeListSeasonState.genreId);
+        const filteredData = v.filter(({ score, genres }) => {
+          let isContained = true;
+          if (parseInt(animeListSeasonState.genreId)) {
+            const malIdList = genres.map(({ mal_id }) => mal_id);
+            isContained = malIdList.includes(
+              parseInt(animeListSeasonState.genreId)
+            );
+          }
+          return score > animeListSeasonState.score && isContained;
+        });
         animeListSeasonStream.updateData({
-          dataDetail: v,
+          dataDetail: filteredData,
+          dataDetailOriginal: v,
           isFetching: false,
           isSmoothScroll: false,
         });
         animeListSeasonStream.updateDataQuick({ isInit: false });
+        if (
+          animeListSeasonStream.currentState().maxPage <
+          animeListSeasonStream.currentState().currentPage
+        ) {
+          animeListSeasonStream.updateData({ currentPage: 1 });
+        }
       });
     }
     return () => {
-      animeListSeasonStream.updateDataQuick({
-        currentPageOnDestroy: animeListSeasonStream.currentState().currentPage,
-        currentSeasonOnDestroy: animeListSeasonState.season,
-        currentYearOnDestroy: animeListSeasonState.year,
-      });
+      // animeListSeasonStream.updateDataQuick({
+      //   currentPageOnDestroy: animeListSeasonStream.currentState().currentPage,
+      //   currentSeasonOnDestroy: animeListSeasonState.season,
+      //   currentYearOnDestroy: animeListSeasonState.year,
+      // });
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   };
@@ -132,7 +116,6 @@ export const listenWhenOptionChange = (
   selectSeason,
   selectYear,
   selectScore,
-  selectFilterMode,
   selectGenre
 ) => {
   return () => {
@@ -150,29 +133,22 @@ export const listenWhenOptionChange = (
       selectYear.current &&
       selectSeason.current &&
       selectScore.current &&
-      selectFilterMode.current &&
       selectGenre.current
     )
       subscription4 = changeSeasonYear$(
         selectYear.current,
         selectSeason.current,
         selectScore.current,
-        selectFilterMode.current,
         selectGenre.current
-      ).subscribe(([year, season, score, modeFilter, genreId]) => {
+      ).subscribe(([year, season, score, genreId]) => {
+        console.log(genreId);
         if (!animeListSeasonStream.currentState().isInit)
           animeListSeasonStream.updateData({
             triggerScroll: !animeListSeasonStream.currentState().triggerScroll,
             isSmoothScroll: false,
             isInit: false,
           });
-        animeListSeasonStream.updateSeasonYear(
-          season,
-          year,
-          score,
-          modeFilter,
-          genreId
-        );
+        animeListSeasonStream.updateSeasonYear(season, year, score, genreId);
       });
     return () => {
       subscription4 && subscription4.unsubscribe();

@@ -22,14 +22,14 @@ function TopAnimeItem({ movie, lazy = false }) {
           >
             {lazy && (
               <LazyLoadImage
-                src={movie.image_url}
+                src={movie.images.webp.large_image_url}
                 alt="Preview"
                 effect="opacity"
                 height="100%"
                 width="100%"
               />
             )}
-            {!lazy && <img src={movie.image_url} alt="Preview" />}
+            {!lazy && <img src={movie.images.webp.large_image_url} alt="Preview" />}
           </Link>
           <div className="title">
             <span>{movie.title}</span>

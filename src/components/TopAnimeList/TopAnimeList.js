@@ -54,13 +54,14 @@ function TopAnimeList() {
             });
           }}
         >
-          <option value="">Score</option>
-          <option value="/bypopularity">Popularity</option>
-          <option value="/tv">Tv</option>
-          <option value="/movie">Movie</option>
-          <option value="/ova">Ova</option>
-          <option value="/special">Special</option>
-          <option value="/favorite">Favorite</option>
+          <option value="score">Score</option>
+          <option value="popularity">Popularity</option>
+          {/* <option value="/tv">Tv</option>
+          <option value="/movie">Movie</option> */}
+          {/* <option value="/ova">Ova</option>
+          <option value="/special">Special</option> */}
+          <option value="favorites">Favorite</option>
+          <option value="rank">Rank</option>
         </select>{" "}
       </div>
       <ul className="top-anime-list">

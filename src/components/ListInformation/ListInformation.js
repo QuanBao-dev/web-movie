@@ -131,8 +131,18 @@ function ListInformation({ arrKeys, history, isLoading }) {
                             href={anime.url}
                             target={"_blank"}
                             rel={"noopener noreferrer"}
+                            style={{
+                              textTransform: "capitalize",
+                            }}
                           >
-                            <li className="click-able-info">{anime.name}</li>
+                            <li className="click-able-info">
+                              {anime.name.length
+                                ? anime.name
+                                : anime.url
+                                    .replace("https://", "")
+                                    .replace(/\/[a-z/A-Z_(!@#$%^&*)]+/g, "")
+                                    .replace(/\./g, " ")}
+                            </li>
                           </a>
                         );
                       }

@@ -40,24 +40,26 @@ const SearchedList = (props) => {
       searchedListStore.updatePage(1);
     }
   }, [key]);
-  useEffect(() => {
-    const subscription = fetchDataApi$(key, 1).subscribe((data) => {
-      searchedListStore.updatePreviousKey(key);
-      if (data.last_page < maxPageDisplay) {
-        setMaxPageDisplay(data.last_page);
-      }
-      setLastPage(data.last_page);
-    });
-    return () => {
-      subscription.unsubscribe();
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [key]);
+  // useEffect(() => {
+  //   const subscription = fetchDataApi$(key, 1).subscribe((data) => {
+
+  //   });
+  //   return () => {
+  //     subscription.unsubscribe();
+  //   };
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [key]);
   useEffect(() => {
     let subscription;
     subscription = fetchDataApi$(key, searchedListState.page).subscribe(
-      (data) => {
-        setDataSearchedAnimeState(data.results);
+      ({ data, pagination }) => {
+        searchedListStore.updatePreviousKey(key);
+        if (pagination.last_visible_page < maxPageDisplay) {
+          setMaxPageDisplay(pagination.last_visible_page);
+        }
+        setLastPage(pagination.last_visible_page);
+
+        setDataSearchedAnimeState(data);
       }
     );
     return () => {
@@ -83,40 +85,44 @@ const SearchedList = (props) => {
           characters
         </h4>
       )}
-      <div className="page-list">
-        <div
-          className="page-item-search"
-          onClick={() => {
-            searchedListStore.updatePage(1);
-          }}
-        >
-          <i className="fas fa-chevron-left"></i>
-          <i className="fas fa-chevron-left"></i>
+      {lastPage > 1 && (
+        <div className="page-list">
+          <div
+            className="page-item-search"
+            onClick={() => {
+              searchedListStore.updatePage(1);
+            }}
+          >
+            <i className="fas fa-chevron-left"></i>
+            <i className="fas fa-chevron-left"></i>
+          </div>
+          {pageList &&
+            pageList.map((pageData, index) => (
+              <div
+                key={index}
+                className={`page-item-search${
+                  pageData === searchedListState.page
+                    ? " active-page-search"
+                    : ""
+                }`}
+                onClick={() => {
+                  searchedListStore.updatePage(pageData);
+                }}
+              >
+                {pageData}
+              </div>
+            ))}
+          <div
+            className="page-item-search"
+            onClick={() => {
+              searchedListStore.updatePage(lastPage);
+            }}
+          >
+            <i className="fas fa-chevron-right"></i>
+            <i className="fas fa-chevron-right"></i>
+          </div>
         </div>
-        {pageList &&
-          pageList.map((pageData, index) => (
-            <div
-              key={index}
-              className={`page-item-search${
-                pageData === searchedListState.page ? " active-page-search" : ""
-              }`}
-              onClick={() => {
-                searchedListStore.updatePage(pageData);
-              }}
-            >
-              {pageData}
-            </div>
-          ))}
-        <div
-          className="page-item-search"
-          onClick={() => {
-            searchedListStore.updatePage(lastPage);
-          }}
-        >
-          <i className="fas fa-chevron-right"></i>
-          <i className="fas fa-chevron-right"></i>
-        </div>
-      </div>
+      )}
     </div>
   );
 };
@@ -149,9 +155,7 @@ function fetchDataApi$(text, page) {
   return timer(0).pipe(
     tap(() => navBarStore.updateIsShowBlockPopUp(true)),
     switchMapTo(
-      ajax(
-        "https://api.jikan.moe/v3/search/anime?q=" + text + "&page=" + page
-      ).pipe(
+      ajax("https://api.jikan.moe/v4/anime?q=" + text + "&page=" + page).pipe(
         retry(20),
         tap(() => {
           navBarStore.updateIsShowBlockPopUp(false);

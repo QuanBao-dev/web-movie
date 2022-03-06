@@ -16,6 +16,10 @@
   margin: 10px 5px;
 }
 
+.anime-pagination .anime-item{
+  width: 18%;
+}
+
 .anime-item.relative{
   position: relative;
 }
@@ -138,7 +142,7 @@
   .anime-item{
     font-size: 0.8rem;
     height: 260px;
-    width: 150px;
+    width: 150px!important;
   }
   .anime-info-display_summary{
     font-size: 0.7rem;

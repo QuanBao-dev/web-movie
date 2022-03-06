@@ -7,37 +7,34 @@ import { Link } from "react-router-dom";
 
 function AnimeStaffPositionItem({
   updateStaffPosition,
-  keyData,
   lazy = false,
 }) {
   return (
     <div
       className={
-        updateStaffPosition[keyData].positions.includes(
+        updateStaffPosition.position.includes(
           "Theme Song Performance"
         )
           ? "anime-theme-song-performance-role"
           : ""
       }
     >
-      <Link to={"/anime/" + updateStaffPosition[keyData].mal_id}>
+      <Link to={"/anime/" + updateStaffPosition.anime.mal_id}>
         {!lazy && (
-          <img src={updateStaffPosition[keyData].image_url} alt="image_anime" />
+          <img src={updateStaffPosition.anime.images.webp.large_image_url} alt="image_anime" />
         )}
         {lazy && (
           <LazyLoadImage
-            src={updateStaffPosition[keyData].image_url}
+            src={updateStaffPosition.anime.images.webp.large_image_url}
             alt="image_anime"
             effect="opacity"
           />
         )}
         <div className="pop-up-hover">
-          <h3 title="name">{updateStaffPosition[keyData].name}</h3>
-          {updateStaffPosition[keyData].positions.map((theme, index) => (
-            <span title="role" key={index}>
-              ( {theme} )
-            </span>
-          ))}
+          <h3 title="name">{updateStaffPosition.anime.title}</h3>
+          <span title="role">
+            ( {updateStaffPosition.position} )
+          </span>
         </div>
       </Link>
     </div>

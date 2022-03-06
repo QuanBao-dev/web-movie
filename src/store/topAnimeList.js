@@ -7,7 +7,7 @@ const initialState = {
   pageSplitTopMovie: 1,
   allowFetchIncreasePageTopMovie: false,
   pageTopMovie: 1,
-  toggleFetchMode: "",
+  toggleFetchMode: "rank",
   positionScrollTop: 0
 };
 const behaviorSubject = new BehaviorSubject(initialState);

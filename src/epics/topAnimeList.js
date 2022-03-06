@@ -82,18 +82,25 @@ export const fetchTopMovie$ = () => {
     ),
     exhaustMap(() =>
       ajax({
-        url: `https://api.jikan.moe/v3/top/anime/${
-          topAnimeListStream.currentState().pageTopMovie
-        }${topAnimeListStream.currentState().toggleFetchMode}`,
+        url:
+          topAnimeListStream.currentState().toggleFetchMode === "rank"
+            ? `https://api.jikan.moe/v4/top/anime?page=${
+                topAnimeListStream.currentState().pageTopMovie
+              }`
+            : `https://api.jikan.moe/v4/anime?order_by=${
+                topAnimeListStream.currentState().toggleFetchMode
+              }&page=${
+                topAnimeListStream.currentState().pageTopMovie
+              }&sort=desc`,
       }).pipe(
-        pluck("response", "top"),
+        pluck("response", "data"),
         tap(() => {
           topAnimeListStream.updateData({
             allowFetchIncreasePageTopMovie: true,
           });
           topAnimeListStream.updateDataQuick({
-            pageTopMovieOnDestroy: topAnimeListStream.currentState()
-              .pageTopMovie,
+            pageTopMovieOnDestroy:
+              topAnimeListStream.currentState().pageTopMovie,
           });
         }),
         retry(5),

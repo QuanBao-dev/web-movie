@@ -80,16 +80,12 @@ const animeListSeasonStore = {
     };
     behaviorSubject.next(state);
   },
-  updateSeasonYear: (season, year, score, modeFilter, genreId) => {
-    if (genreId === "12" && modeFilter === "filter") {
-      genreId = "0";
-    }
+  updateSeasonYear: (season, year, score, genreId) => {
     state = {
       ...state,
       season: season,
       year: year,
       score,
-      modeFilter,
       genreId,
     };
     behaviorSubject.next(state);

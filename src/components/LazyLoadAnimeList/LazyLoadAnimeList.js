@@ -18,19 +18,25 @@ const AnimeList = loadable(() =>
   import("../../components/AnimeList/AnimeList")
 );
 
-const LazyLoadAnimeList = ({ genreId, url }) => {
+const LazyLoadAnimeList = ({ genreId, url, type }) => {
   const [lazyLoadState, setLazyLoadState] = useState(
     lazyLoadAnimeListStream.currentState()
   );
   const virtual = true;
   useEffect(() => {
     document.body.style.backgroundImage = `url(/background.jpg)`;
-    document.body.style.backgroundSize = "cover"
-  },[])
+    document.body.style.backgroundSize = "cover";
+  }, []);
   useInitLazyLoadAnimeList(virtual, setLazyLoadState);
   useGenreIdChange(parseInt(genreId), virtual, lazyLoadState);
   useUpdatePageScrollingWindow(virtual, lazyLoadState);
-  useFetchDataGenreAnimeList(lazyLoadState, parseInt(genreId), url, virtual);
+  useFetchDataGenreAnimeList(
+    lazyLoadState,
+    parseInt(genreId),
+    url,
+    virtual,
+    type
+  );
   return (
     <div className="container-genre-detail">
       <h1>

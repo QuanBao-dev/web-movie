@@ -1,9 +1,11 @@
 import { from } from "rxjs";
-import { combineAll, tap } from "rxjs/operators";
+import { concatAll, map, tap } from "rxjs/operators";
 
 import {
   animeDetailStream,
+  fetchAnimeExternal$,
   fetchAnimeRecommendation$,
+  fetchAnimeThemes$,
   fetchBoxMovieOneMovie$,
   fetchData$,
   fetchDataCharacter$,
@@ -34,26 +36,10 @@ export const fetchData = (
   history
 ) => {
   return () => {
-    const fetchDataInfo$ = fetchData$(malId).pipe(
-      tap((v) => {
-        animeDetailStream.updateIsLoading(false, "isLoadingInfoAnime");
-        animeDetailStream.updateData({
-          dataInformationAnime: v,
-        });
-        if (
-          (v.ending_themes && v.ending_themes.length > 3) ||
-          (v.opening_themes && v.opening_themes.length > 3)
-        ) {
-          setShowThemeMusic(false);
-        } else {
-          setShowThemeMusic(true);
-        }
-        document.title =
-          v.title || `My Anime Fun - Watch latest anime in high quality`;
-      })
-    );
+    const fetchDataInfo$ = fetchData$(malId).pipe(tap((v) => {}));
     const fetchDataVideoPromo$ = fetchDataVideo$(malId).pipe(
-      tap(({ promo }) => {
+      tap(({ promo, error }) => {
+        if (error) return;
         if (promo) {
           animeDetailStream.updateData({
             dataVideoPromo: promo,
@@ -72,7 +58,6 @@ export const fetchData = (
           animeDetailStream.updateData({
             dataLargePictureList: pictures
               .slice(0, Math.ceil(pictures.length / 2))
-              .map((picture) => picture.large)
               .reverse(),
             isLoadingLargePicture: false,
           });
@@ -107,9 +92,13 @@ export const fetchData = (
       .subscribe();
     const fetchAnimeAppears$ = fetchAnimeRecommendation$(malId).pipe(
       tap((data) => {
+        const handledData = data.map(({ entry, votes }) => ({
+          ...entry,
+          recommendation_count: votes,
+        }));
         animeDetailStream.updateIsLoading(false, "isLoadingRelated");
         animeDetailStream.updateData({
-          dataRelatedAnime: data,
+          dataRelatedAnime: handledData,
         });
       })
     );
@@ -122,6 +111,62 @@ export const fetchData = (
         });
       })
     );
+    const fetchInformation$ = from([
+      fetchDataInfo$.pipe(map((data) => ({ ...data, type_data: "data info" }))),
+      fetchAnimeThemes$(malId).pipe(
+        map((data) => ({ ...data, type_data: "themes" }))
+      ),
+      fetchAnimeExternal$(malId).pipe(
+        map((data) => ({ ...data, type_data: "externals" }))
+      ),
+    ]).pipe(
+      concatAll(),
+      tap((data) => {
+        if (data.error) return;
+        switch (data.type_data) {
+          case "data info":
+            animeDetailStream.updateData({
+              dataInformationAnime: {
+                ...data,
+                opening_themes: "",
+                ending_themes: "",
+                external_links: {},
+              },
+            });
+            document.title =
+              data.title || `My Anime Fun - Watch latest anime in high quality`;
+            break;
+          case "themes":
+            animeDetailStream.updateData({
+              dataInformationAnime: {
+                ...animeDetailStream.currentState().dataInformationAnime,
+                opening_themes: data.openings,
+                ending_themes: data.endings,
+              },
+            });
+            if (
+              (data && data.openings.length > 3) ||
+              (data && data.endings.length > 3)
+            ) {
+              setShowThemeMusic(false);
+            } else {
+              setShowThemeMusic(true);
+            }
+            break;
+          case "externals":
+            animeDetailStream.updateData({
+              dataInformationAnime: {
+                ...animeDetailStream.currentState().dataInformationAnime,
+                external_links: data,
+              },
+              isLoadingInfoAnime: false,
+            });
+            break;
+          default:
+            break;
+        }
+      })
+    );
     let subscription;
     if (animeDetailStream.currentState().malId !== malId) {
       window.scroll({
@@ -130,19 +175,19 @@ export const fetchData = (
       });
       animeDetailStream.resetState();
       subscription = from([
-        fetchDataInfo$,
-        fetchDataVideoPromo$,
         fetchLargePictureUrl$,
+        fetchInformation$,
         fetchAnimeAppears$,
         fetchCharacters$,
+        fetchDataVideoPromo$.pipe(
+          tap(() => {
+            characterStream.updateData({ page: 1 });
+            animeDetailStream.updateData({ malId });
+          })
+        ),
       ])
-        .pipe(combineAll())
-        .subscribe(() => {
-          characterStream.updateData({ page: 1 });
-          animeDetailStream.updateData({
-            malId: malId,
-          });
-        });
+        .pipe(concatAll())
+        .subscribe(() => {});
     }
     return () => {
       linkWatchingInputElement && (linkWatchingInputElement.value = "");
@@ -157,7 +202,7 @@ export const fetchBoxMovieOneMovie = (
   malId,
   idCartoonUser,
   addMovieRef,
-  deleteMovieRef,
+  deleteMovieRef
 ) => {
   return () => {
     const subscription = fetchBoxMovieOneMovie$(malId, idCartoonUser).subscribe(

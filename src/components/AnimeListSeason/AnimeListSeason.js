@@ -78,7 +78,6 @@ const AnimeListSeason = () => {
   }
   useInitAnimeListSeason(setAnimeListSeasonState);
   useFilterAnimeList(animeListSeasonState);
-
   useFetchAnimeListSeason(animeListSeasonState);
   useEffect(() => {
     if (!animeListSeasonState.isInit) {
@@ -95,13 +94,11 @@ const AnimeListSeason = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [animeListSeasonState.triggerScroll]);
   return (
-    <div>
+    <div style={{ width: "100%" }}>
       <h1 style={{ textAlign: "center" }}>
         {animeListSeasonState.genreId !== "0"
           ? genresData[parseInt(animeListSeasonState.genreId) - 1].genre + " "
-          : animeListSeasonState.modeFilter === "filter"
-          ? ""
-          : "All "}{" "}
+          : ""}
         Anime
         {animeListSeasonState.score !== 0
           ? " with score greater than " + animeListSeasonState.score
@@ -120,7 +117,7 @@ const AnimeListSeason = () => {
         animeListSeasonState={animeListSeasonState}
       />
       {animeListSeasonState.dataDetail.length === 0 && (
-        <h1 style={{ textAlign: "center" }}>Not updated yet...</h1>
+        <h1 style={{ textAlign: "center" }}>...</h1>
       )}
       <AnimeList
         lazy={
@@ -151,7 +148,6 @@ function SelectFilterAnime({
   const selectYear = useRef(null);
   const selectSeason = useRef(null);
   const selectScore = useRef(null);
-  const selectFilterMode = useRef(null);
   const selectGenre = useRef(null);
   const elementOptions = Array.from(Array(numberOfYears).keys()).map(
     (v) => new Date(Date.now()).getFullYear() + 1 - v
@@ -162,7 +158,6 @@ function SelectFilterAnime({
     selectSeason,
     selectYear,
     selectScore,
-    selectFilterMode,
     selectGenre
   );
   return (
@@ -221,15 +216,6 @@ function SelectFilterAnime({
               {score !== 0 ? score : "Score"}
             </option>
           ))}
-        </select>
-        <select
-          className="select-filter"
-          defaultValue={animeListSeasonStream.currentState().modeFilter}
-          ref={selectFilterMode}
-          // disabled={animeListSeasonState.isFetching}
-        >
-          <option value={`all`}>18+</option>
-          <option value={`filter`}>Filter</option>
         </select>
         <select
           className="select-filter"

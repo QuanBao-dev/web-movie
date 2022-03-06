@@ -20,9 +20,9 @@ export function fetchReviewsData$(malId, page) {
   return timer(0).pipe(
     tap(() => reviewsStream.updateData({ shouldUpdatePageReviewData: false })),
     switchMapTo(
-      ajax(`https://api.jikan.moe/v3/anime/${malId}/reviews/${page}`).pipe(
-        pluck("response", "reviews"),
-        timeout(5000), 
+      ajax(`https://api.jikan.moe/v4/anime/${malId}/reviews?page=${page}`).pipe(
+        pluck("response", "data"),
+        timeout(5000),
         retry(reviewsStream.currentState().reviewsData.length === 0 ? null : 3),
         tap(() => reviewsStream.updateData({ pageReviewsOnDestroy: page })),
         catchError((error) => {

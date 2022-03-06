@@ -13,7 +13,7 @@ import AnimeList from "../AnimeList/AnimeList";
 import { fromEvent } from "rxjs";
 import { debounceTime } from "rxjs/operators";
 
-let numberList = 50;
+let numberList = 25;
 let numberCloneList = 8;
 const UpcomingAnimeList = () => {
   const length =

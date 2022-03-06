@@ -160,7 +160,6 @@ const SliderSmallImage = ({
         <i
           className="fas fa-chevron-right small-carousel-next-button"
           onClick={() => {
-            console.log(smallPage, dataImageList.length);
             if (smallPage < dataImageList.length - 4) {
               setSmallPage(smallPage + 1);
             }

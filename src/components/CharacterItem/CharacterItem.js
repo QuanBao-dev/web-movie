@@ -22,14 +22,14 @@ function CharacterItem({ characterData, history, lazy }) {
       {!lazy && (
         <img
           className="character-image"
-          src={characterData.image_url}
+          src={characterData.images.webp.image_url}
           alt="image_character"
         />
       )}
       {lazy && (
         <LazyLoadImage
           className="character-image"
-          src={characterData.image_url}
+          src={characterData.images.webp.image_url}
           alt="image_character"
           effect="opacity"
         />

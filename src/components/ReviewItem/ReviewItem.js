@@ -7,17 +7,17 @@ function ReviewItem({ review }) {
     <div className="review-item">
       <div className="user-info-review-container">
         <div className="user-info-review">
-          <img src={review.reviewer.image_url} alt="Image_reviewer" />
+          <img src={review.user.images.webp.image_url} alt="Image_reviewer" />
           <div>
-            <div className="username">{review.reviewer.username}</div>
+            <div className="username">{review.user.username}</div>
             <div className="helpful-count">
-              {review.helpful_count} people found this review helpful
+              {review.votes} people found this review helpful
             </div>
           </div>
         </div>
         <div>
-          {review.reviewer.episodes_seen} episode
-          {review.reviewer.episodes_seen > 1 ? "s" : ""} seen
+          {review.episodes_watched} episode
+          {review.episodes_watched > 1 ? "s" : ""} seen
         </div>
       </div>
       <div className="time-since-review">
@@ -27,23 +27,23 @@ function ReviewItem({ review }) {
       </div>
       <div className="container-board-evaluate">
         <div>
-          {Object.keys(review.reviewer.scores).map((key, index) => (
+          {Object.keys(review.scores).map((key, index) => (
             <div className="section-evaluate" key={index}>
               <span>{key}</span>
             </div>
           ))}
         </div>
         <div>
-          {Object.keys(review.reviewer.scores).map((key, index) => (
+          {Object.keys(review.scores).map((key, index) => (
             <div key={index}>
-              <span className="score-section">{review.reviewer.scores[key]}</span>
+              <span className="score-section">{review.scores[key]}</span>
             </div>
           ))}
         </div>
       </div>
       <pre>
-        {review.content.replace(/\\n/g, "").split(" ").slice(0, 100).join(" ")}
-        {review.content.replace(/\\n/g, "").split(" ").length > 100 ? (
+        {review.review.replace(/\\n/g, "").split(" ").slice(0, 100).join(" ")}
+        {review.review.replace(/\\n/g, "").split(" ").length > 100 ? (
           <span
             className="show-more-text"
             onClick={(e) => {

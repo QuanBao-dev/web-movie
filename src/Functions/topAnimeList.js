@@ -50,7 +50,7 @@ export const pageScrollingUpdatePage = () => {
           )
             topAnimeListStream.updateData({
               pageTopMovie:
-                topAnimeListStream.currentState().dataTopMovie.length / 50 + 1,
+                topAnimeListStream.currentState().dataTopMovie.length / 25 + 1,
             });
         }
       );
@@ -79,8 +79,8 @@ export const fetchTopAnime = (topAnimeListState) => {
           ...topMovieList,
         ];
         if (
-          updatedAnime.length / 50 + 1 !==
-          parseInt(updatedAnime.length / 50 + 1)
+          updatedAnime.length / 25 + 1 !==
+          parseInt(updatedAnime.length / 25 + 1)
         ) {
           topAnimeListStream.updateData({
             isStopFetchTopMovie: true,

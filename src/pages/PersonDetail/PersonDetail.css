@@ -96,7 +96,7 @@
   position: -webkit-sticky; 
   position: sticky;
   top: 0;
-  max-width: 350px;
+  max-width: 125px;
   align-self: flex-start;  
   height: auto;
   text-decoration: none;

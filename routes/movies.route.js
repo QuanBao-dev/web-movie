@@ -588,7 +588,7 @@ async function crawl(start, end, url, serverWeb) {
     extra: {
       stealth: true,
     },
-    headless: true,
+    headless: false,
     args: ["--start-maximized", "--no-sandbox"],
     defaultViewport: null,
     timeout: 0,

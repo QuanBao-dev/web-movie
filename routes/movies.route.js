@@ -298,8 +298,8 @@ router.put("/:malId/episodes/crawl", verifyRole("Admin"), async (req, res) => {
       },
     });
   } catch (error) {
-    // console.error(error);
-    res.status(404).send({ error: "Something went wrong" });
+    console.error(error);
+    // res.status(404).send({ error: "Something went wrong" });
   }
 });
 
@@ -451,7 +451,7 @@ async function updateEpisodeCrawl(
       return;
     }
   }
-  console.log("Done");
+  // console.log("Done");
   addMovieUpdated(malId);
   if (isDub) {
     dataCrawl.forEach((data) => {

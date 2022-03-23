@@ -3,31 +3,22 @@ import {
   lazyLoadAnimeListStream,
   updatePageScrollingWindow$,
 } from "../epics/lazyLoadAnimeList";
-import {
-  resizedVirtual$,
-  virtualAnimeListStream,
-} from "../epics/virtualAnimeList";
 
-export const initLazyLoadAnimeList = (virtual, setLazyLoadState) => {
+export const initLazyLoadAnimeList = (setLazyLoadState) => {
   return () => {
     const subscription = lazyLoadAnimeListStream.subscribe(setLazyLoadState);
     lazyLoadAnimeListStream.init();
-    virtualAnimeListStream.updateDataQuick({ isVirtual: virtual });
     window.scroll({
       top: 0,
     });
     return () => {
-      if (virtual)
-        virtualAnimeListStream.updateDataQuick({
-          scrollY: window.scrollY,
-        });
       subscription.unsubscribe();
-      virtualAnimeListStream.updateDataQuick({ isVirtual: false });
+      lazyLoadAnimeListStream.updateDataQuick({ height: null });
     };
   };
 };
 
-export const genreIdChange = (genreId, virtual, currentGenreId) => {
+export const genreIdChange = (genreId, currentGenreId) => {
   return () => {
     if (
       lazyLoadAnimeListStream.currentState().genreDetailData.length === 0 ||
@@ -46,58 +37,27 @@ export const genreIdChange = (genreId, virtual, currentGenreId) => {
         isStopScrollingUpdated: false,
         currentGenreId: null,
       });
-      if (virtual)
-        virtualAnimeListStream.updateDataQuick({
-          scrollY: 0,
-        });
     }
-    const resizedSubscription = resizedVirtual$().subscribe(() => {
-      const screenWidth = document.querySelector(
-        ".container-genre-detail"
-      ).offsetWidth;
-      if (virtual)
-        virtualAnimeListStream.updateData({
-          screenWidth: screenWidth,
-        });
-    });
     const timeout = setTimeout(() => {
       if (window.scrollY === 0) {
         // console.log("start", virtualAnimeListStream.currentState().scrollY);
-        if (virtual)
-          window.scroll({
-            top: virtualAnimeListStream.currentState().scrollY,
-          });
       }
     }, 10);
     return () => {
       clearTimeout(timeout);
-      resizedSubscription.unsubscribe();
     };
   };
 };
 
 export const updatePageScrollingWindow = (
-  virtual,
-  allowFetchIncreaseGenrePage,
   genreDetailData,
   isStopScrollingUpdated
 ) => {
   return () => {
     const subscription1 = updatePageScrollingWindow$().subscribe(() => {
-      if (virtual)
-        virtualAnimeListStream.updateDataQuick({
-          numberShowMorePreviousAnime: 0,
-          numberShowMoreLaterAnime: 0,
-        });
-      if (
-        allowFetchIncreaseGenrePage &&
-        lazyLoadAnimeListStream.currentState().pageSplit *
-          lazyLoadAnimeListStream.currentState().numberAnimeShowMore >
-          genreDetailData.length
-      )
-        lazyLoadAnimeListStream.updateData({
-          pageGenre: genreDetailData.length / 25 + 1,
-        });
+      lazyLoadAnimeListStream.updateData({
+        pageGenre: genreDetailData.length / 25 + 1,
+      });
     });
     if (isStopScrollingUpdated) {
       subscription1 && subscription1.unsubscribe();
@@ -114,7 +74,6 @@ export const fetchDataGenreAnimeList = (
   genreDetailData,
   genreId,
   url,
-  virtual,
   type
 ) => {
   return () => {
@@ -137,11 +96,6 @@ export const fetchDataGenreAnimeList = (
             lazyLoadAnimeListStream.currentState().currentGenreId !== genreId
           ) {
             updatedAnime = v;
-            if (virtual)
-              virtualAnimeListStream.updateDataQuick({
-                numberShowMorePreviousAnime: 0,
-                numberShowMoreLaterAnime: 0,
-              });
           } else {
             updatedAnime = genreDetailData.concat(v);
           }

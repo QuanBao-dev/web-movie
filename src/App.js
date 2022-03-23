@@ -1,24 +1,17 @@
-import "./App.css";
+import './App.css';
 
-import loadable from "@loadable/component";
-import CircularProgress from "@material-ui/core/CircularProgress";
-import LinearProgress from "@material-ui/core/LinearProgress";
-import React, { useEffect, useState } from "react";
-import { useCookies } from "react-cookie";
-import {
-  BrowserRouter as Router,
-  Route,
-  Switch,
-  useHistory,
-} from "react-router-dom";
-import { ReplaySubject } from "rxjs";
+import loadable from '@loadable/component';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import LinearProgress from '@material-ui/core/LinearProgress';
+import React, { useEffect, useState } from 'react';
+import { useCookies } from 'react-cookie';
+import { BrowserRouter as Router, Route, Switch, useHistory } from 'react-router-dom';
 
-import NavBar from "./components/NavBar/NavBar";
-import { fetchingUser$, userStream } from "./epics/user";
-import navBarStore from "./store/navbar";
-import { virtualAnimeListStream } from "./epics/virtualAnimeList";
-import { lazyLoadAnimeListStream } from "./epics/lazyLoadAnimeList";
-import RequestedAnime from "./pages/RequestedAnime/RequestedAnime";
+import NavBar from './components/NavBar/NavBar';
+import { fetchingUser$, userStream } from './epics/user';
+import RequestedAnime from './pages/RequestedAnime/RequestedAnime';
+import navBarStore from './store/navbar';
+import StorageAnime from './pages/StorageAnime/StorageAnime';
 
 const Login = loadable(() => import("./pages/Login/Login"), {
   fallback: (
@@ -132,47 +125,6 @@ const PersonDetail = loadable(
   }
 );
 
-const scrollSaveSubject = new ReplaySubject(3);
-window.addEventListener("resize", () => {
-  const e = document.getElementsByClassName("child-nav-bar__app").item(0);
-  if (document.body.offsetWidth > 964) {
-    e.style.display = "flex";
-  } else {
-    e.style.display = "none";
-  }
-});
-
-window.addEventListener("scroll", () => {
-  scrollSaveSubject.next(window.scrollY);
-  scrollSaveSubject.subscribe((v) => {
-    const navBarE = document.querySelector(".nav-bar__app");
-    const buttonScrollTopE = document.querySelector(".button-scroll-top");
-    const e = document.getElementsByClassName("child-nav-bar__app").item(0);
-    if (navBarE)
-      if (window.scrollY < 50) {
-        navBarE.style.transform = "translateY(0)";
-        navBarE.style.backgroundColor = "rgba(2, 2, 2)";
-        buttonScrollTopE.style.transform = "translateY(500px)";
-      } else if (v - window.scrollY < -1) {
-        navBarE.style.transform = "translateY(-500px)";
-        if (e.style.display !== "flex" && document.body.offsetWidth <= 964)
-          navBarE.style.backgroundColor = "rgba(2, 2, 2, 0.3)";
-        if (e.style.display === "flex" && document.body.offsetWidth <= 964)
-          e.style.display = "none";
-        if (document.body.offsetWidth > 964) {
-          navBarE.style.backgroundColor = "rgba(2, 2, 2, 0.3)";
-        }
-        buttonScrollTopE.style.transform = "translateY(500px)";
-      } else if (v - window.scrollY > 1) {
-        navBarE.style.transform = "translateY(0)";
-        buttonScrollTopE.style.transform = "translateY(0)";
-        if (e.style.display !== "flex") {
-          navBarE.style.backgroundColor = "rgba(2, 2, 2, 0.3)";
-        }
-      }
-  });
-});
-
 function App() {
   const [userState, setUserState] = useState(userStream.currentState());
   // eslint-disable-next-line no-unused-vars
@@ -220,27 +172,6 @@ function App() {
           </div>
         </div>
       )}
-      <div
-        className="button-scroll-top"
-        onClick={() => {
-          const { genreDetailData, numberAnimeShowMore } =
-            lazyLoadAnimeListStream.currentState();
-          virtualAnimeListStream.updateData({
-            numberShowMorePreviousAnime: Math.ceil(
-              genreDetailData.length / numberAnimeShowMore - 1
-            ),
-            numberShowMoreLaterAnime: 0,
-          });
-          window.scroll({
-            top: 0,
-            behavior: !virtualAnimeListStream.currentState().isVirtual
-              ? "smooth"
-              : "auto",
-          });
-        }}
-      >
-        <i className="fas fa-arrow-up fa-2x"></i>
-      </div>
       <NavBar
         userState={userState}
         removeCookie={removeCookie}
@@ -248,6 +179,7 @@ function App() {
       />
       <Switch>
         <Route path="/" component={Home} exact />
+        <Route path="/storage" component={StorageAnime} exact />
         {userState && userState.role === "Admin" && (
           <Route path="/admin" component={AdminManager} exact />
         )}

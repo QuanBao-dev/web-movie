@@ -1,16 +1,18 @@
-import capitalize from "lodash/capitalize";
-import React, { useEffect, useRef, useState } from "react";
+import './AnimeListSeason.css';
 
-import { animeListSeasonStream } from "../../epics/animeListSeason";
+import CircularProgress from '@material-ui/core/CircularProgress';
+import capitalize from 'lodash/capitalize';
+import React, { useEffect, useRef, useState } from 'react';
+
+import { animeListSeasonStream } from '../../epics/animeListSeason';
 import {
   useFetchAnimeListSeason,
   useFilterAnimeList,
   useInitAnimeListSeason,
   useListenWhenOptionChange,
-} from "../../Hook/animeListSeason";
-import AnimeList from "../AnimeList/AnimeList";
-import PageNavList from "../PageNavList/PageNavList";
-import CircularProgress from "@material-ui/core/CircularProgress";
+} from '../../Hook/animeListSeason';
+import AnimeList from '../AnimeList/AnimeList';
+import PageNavList from '../PageNavList/PageNavList';
 
 const genresData = [
   { genreId: "1", genre: "Action" },
@@ -94,7 +96,7 @@ const AnimeListSeason = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [animeListSeasonState.triggerScroll]);
   return (
-    <div style={{ width: "100%" }}>
+    <div style={{ width: "100%" }} className="anime-list-season-container">
       <h1 style={{ textAlign: "center" }}>
         {animeListSeasonState.genreId !== "0"
           ? genresData[parseInt(animeListSeasonState.genreId) - 1].genre + " "

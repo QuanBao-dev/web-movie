@@ -61,3 +61,20 @@ export function updatePageScrollingWindow$() {
     })
   );
 }
+
+
+export function calculateRowStartEnd(containerListRef, heightItem) {
+  const offsetTopContainerList = containerListRef.current.offsetTop;
+  const currentRow = Math.ceil(
+    (-offsetTopContainerList + window.scrollY + window.innerHeight) / heightItem
+  );
+  const numberRowToFillTheScreen =
+    Math.ceil(window.innerHeight / heightItem) +
+    lazyLoadAnimeListStream.currentState().quantityItemPerRow;
+  const rowStart =
+    currentRow - numberRowToFillTheScreen >= 1
+      ? currentRow - numberRowToFillTheScreen
+      : 1;
+  const rowEnd = currentRow + numberRowToFillTheScreen;
+  return { rowStart, rowEnd };
+}

@@ -281,7 +281,17 @@ const PersonDetail = (props) => {
                         </div>
                       </Link>
                       <AllAnimeRelated
-                        animeList={updateVoiceActingRoles[key].animeList}
+                        animeList={updateVoiceActingRoles[key].animeList.map(
+                          ({ role, title, url, images, mal_id }) => ({
+                            role,
+                            anime: {
+                              title,
+                              url,
+                              images,
+                              mal_id,
+                            },
+                          })
+                        )}
                         history={history}
                         lazy={personDetailState.lazy}
                       />
@@ -323,7 +333,9 @@ function fetchDataPerson$(personId) {
     map(([dataPerson, dataStaffPositions, dataPersonVoiceActingRoles]) => {
       return {
         ...dataPerson,
-        image_url: dataPerson.images.jpg.image_url,
+        image_url: dataPerson.images.webp
+          ? dataPerson.images.webp.image_url
+          : dataPerson.images.jpg.image_url,
         voice_acting_roles: dataPersonVoiceActingRoles,
         anime_staff_positions: dataStaffPositions,
       };

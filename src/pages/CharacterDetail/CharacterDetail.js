@@ -6,7 +6,14 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { from, of } from "rxjs";
 import { ajax } from "rxjs/ajax";
-import { catchError, combineAll, pluck, retry, timeout, map } from "rxjs/operators";
+import {
+  catchError,
+  combineAll,
+  pluck,
+  retry,
+  timeout,
+  map,
+} from "rxjs/operators";
 
 import { characterStream } from "../../epics/character";
 import { LazyLoadImage } from "react-lazy-load-image-component";
@@ -155,16 +162,26 @@ function fetchVoiceActorByCharacterId$(characterId) {
     catchError(() => of([]))
   );
 }
+function fetchAnimeByCharacterId$(characterId) {
+  return ajax(`https://api.jikan.moe/v4/characters/${characterId}/anime`).pipe(
+    timeout(3000),
+    retry(20),
+    pluck("response", "data"),
+    catchError(() => of([]))
+  );
+}
 
 function fetchData$(characterId) {
   return from([
     fetchCharacterDetailData$(characterId),
     fetchVoiceActorByCharacterId$(characterId),
+    fetchAnimeByCharacterId$(characterId),
   ]).pipe(
     combineAll(),
-    map(([dataCharacter, dataVoiceActor]) => {
+    map(([dataCharacter, dataVoiceActor, dataAnime]) => {
       return {
         ...dataCharacter,
+        animeography: dataAnime,
         voice_actors: dataVoiceActor,
       };
     })

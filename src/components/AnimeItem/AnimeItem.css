@@ -3,7 +3,6 @@
   height: 350px;
   width: 220px;
   border-radius: 10px;
-  position: relative;
   box-shadow: 0 0 10px 5px rgba(0, 0, 0, 0.329);
   cursor: pointer;
   border: 2px solid rgba(255, 255, 255, 0);
@@ -11,7 +10,6 @@
   font-size: 0.87rem;
   overflow: hidden;
   flex: 1 1 auto;
-  max-width: 250px;
   background-color: black;
   margin: 10px 5px;
 }
@@ -142,7 +140,7 @@
   .anime-item{
     font-size: 0.8rem;
     height: 260px;
-    width: 150px!important;
+    width: 150px;
   }
   .anime-info-display_summary{
     font-size: 0.7rem;

@@ -8,33 +8,24 @@ import { useCookies } from "react-cookie";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import { Link } from "react-router-dom";
 
-import { updatedAnimeStream } from "../../epics/updatedAnime";
-import { virtualAnimeListStream } from "../../epics/virtualAnimeList";
-import { limitAdultGenre } from "../../Functions/animeListSeason";
-import { updateVirtualStyle } from "../../Functions/virtualAnimeList";
-import { useUpdateVirtualAnimeItem } from "../../Hook/virtualAnimeList";
-import navBarStore from "../../store/navbar";
 import { upcomingAnimeListStream } from "../../epics/upcomingAnimeList";
+import { updatedAnimeStream } from "../../epics/updatedAnime";
+import { limitAdultGenre } from "../../Functions/animeListSeason";
+import navBarStore from "../../store/navbar";
 
 const AnimeItem = ({
   anime,
   lazy = false,
   virtual = false,
-  index,
   isAllowDelete,
+  styleAnimeItem = {},
 }) => {
   const animeItemRef = useRef();
   const [cookies] = useCookies(["idCartoonUser"]);
-  useUpdateVirtualAnimeItem(
-    animeItemRef,
-    virtual,
-    virtualAnimeListStream.currentState()
-  );
-  let virtualStyle = updateVirtualStyle(virtual, index);
   return (
     <div
       ref={animeItemRef}
-      style={virtualStyle}
+      style={styleAnimeItem}
       className="anime-item"
       onMouseDown={mouseDownAnimeItem(animeItemRef)}
       onMouseLeave={mouseLeaveAnimeItem(animeItemRef)}
@@ -108,7 +99,7 @@ const AnimeItem = ({
           )}
         {anime.aired && anime.aired.prop.from.day && (
           <div
-            title="start_date_airing"
+            title={"Airing at " + new Date(anime.aired.from).toUTCString()}
             className="anime-info-display_summary top-left_summary color-green"
           >
             {anime.aired.prop.from.day}
@@ -120,7 +111,7 @@ const AnimeItem = ({
         )}
         {anime.aired && anime.aired.prop.to.day && (
           <div
-            title={"End_Airing"}
+            title={"Ending at " + new Date(anime.aired.to).toUTCString()}
             className="anime-info-display_summary top-left_summary color-yellow"
           >
             {anime.aired.prop.to.day}
@@ -257,8 +248,8 @@ function mouseMoveAnimeItem(animeItemRef, virtual) {
       } else if (virtual) {
         yVal =
           e.pageY -
-          (animeItemRef.current.parentElement.offsetTop +
-            animeItemRef.current.offsetTop);
+          (animeItemRef.current.parentElement.parentElement.offsetTop +
+            animeItemRef.current.parentElement.offsetTop);
       } else {
         yVal = e.pageY - animeItemRef.current.offsetTop;
       }

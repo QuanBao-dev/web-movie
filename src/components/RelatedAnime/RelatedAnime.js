@@ -37,9 +37,9 @@ const RelatedAnime = ({ isLoading }) => {
   ]);
   return (
     recommendationState.dataRelatedAnime.length > 0 && (
-      <div>
+      <div className="recommendation-anime-container">
         <h1 className="title">You might like...</h1>
-        {isLoading !== null && isLoading === true && (
+        {isLoading === true && (
           <CircularProgress color="secondary" size="4rem" />
         )}
         {isLoading === false && (

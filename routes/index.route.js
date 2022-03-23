@@ -30,23 +30,27 @@ router.get("/anime/character/:characterId", async (req, res) => {
   const titleReg = new RegExp(titleHTML, "g");
   const descriptionReg = new RegExp(descriptionHTML, "g");
   const imageReg = new RegExp(imageHTML, "g");
-  const { data } = await Axios(
-    "https://api.jikan.moe/v4/characters/" + parseInt(req.params.characterId)
-  );
-  const { name } = data.data;
-  const image_url = data.data.images.jpg.image_url;
-  const filePath = path.join(__dirname, "../build", "index.html");
-  fs.readFile(filePath, "utf8", (error, data) => {
-    if (!error) {
-      data = data
-        .replace(titleReg, name)
-        .replace(imageReg, image_url)
-        .replace(descriptionReg, "Who is " + name + " ?");
-      res.send(data);
-    } else {
-      res.sendFile(path.join(__dirname, "../build", "index.html"));
-    }
-  });
+  try {
+    const { data } = await Axios(
+      "https://api.jikan.moe/v4/characters/" + parseInt(req.params.characterId)
+    );
+    const { name } = data.data;
+    const image_url = data.data.images.jpg.image_url;
+    const filePath = path.join(__dirname, "../build", "index.html");
+    fs.readFile(filePath, "utf8", (error, data) => {
+      if (!error) {
+        data = data
+          .replace(titleReg, name)
+          .replace(imageReg, image_url)
+          .replace(descriptionReg, "Who is " + name + " ?");
+        res.send(data);
+      } else {
+        res.sendFile(path.join(__dirname, "../build", "index.html"));
+      }
+    });
+  } catch (error) {
+    res.status(404).send({ error: "Something went wrong" });
+  }
 });
 
 router.get("/anime/person/:personId", async (req, res) => {
@@ -57,23 +61,27 @@ router.get("/anime/person/:personId", async (req, res) => {
   const titleReg = new RegExp(titleHTML, "g");
   const descriptionReg = new RegExp(descriptionHTML, "g");
   const imageReg = new RegExp(imageHTML, "g");
-  const { data } = await Axios(
-    "https://api.jikan.moe/v4/people/" + parseInt(req.params.personId)
-  );
-  const { name } = data.data;
-  const image_url = data.data.images.jpg.image_url;
-  const filePath = path.join(__dirname, "../build", "index.html");
-  fs.readFile(filePath, "utf8", (error, data) => {
-    if (!error) {
-      data = data
-        .replace(titleReg, name)
-        .replace(imageReg, image_url)
-        .replace(descriptionReg, "Who is " + name + " ?");
-      res.send(data);
-    } else {
-      res.sendFile(path.join(__dirname, "../build", "index.html"));
-    }
-  });
+  try {
+    const { data } = await Axios(
+      "https://api.jikan.moe/v4/people/" + parseInt(req.params.personId)
+    );
+    const { name } = data.data;
+    const image_url = data.data.images.jpg.image_url;
+    const filePath = path.join(__dirname, "../build", "index.html");
+    fs.readFile(filePath, "utf8", (error, data) => {
+      if (!error) {
+        data = data
+          .replace(titleReg, name)
+          .replace(imageReg, image_url)
+          .replace(descriptionReg, "Who is " + name + " ?");
+        res.send(data);
+      } else {
+        res.sendFile(path.join(__dirname, "../build", "index.html"));
+      }
+    });
+  } catch (error) {
+    res.status(404).send({ error: "Something went wrong" });
+  }
 });
 
 router.get("/anime/:malId/watch/:episode/:mode", (req, res) => {
@@ -87,24 +95,29 @@ router.get("/anime/:id", async (req, res) => {
   const titleReg = new RegExp(titleHTML, "g");
   const descriptionReg = new RegExp(descriptionHTML, "g");
   const imageReg = new RegExp(imageHTML, "g");
-  const { data } = await Axios(
-    "https://api.jikan.moe/v4/anime/" + parseInt(req.params.id)
-  );
-  const { title, synopsis } = data.data;
-  const image_url =
-    data.data.images.jpg.large_image_url || data.data.images.jpg.image_url;
-  const filePath = path.join(__dirname, "../build", "index.html");
-  fs.readFile(filePath, "utf8", (error, data) => {
-    if (!error) {
-      data = data
-        .replace(titleReg, title)
-        .replace(imageReg, image_url)
-        .replace(descriptionReg, synopsis);
-      res.send(data);
-    } else {
-      res.sendFile(path.join(__dirname, "../build", "index.html"));
-    }
-  });
+  try {
+    const { data } = await Axios(
+      "https://api.jikan.moe/v4/anime/" + parseInt(req.params.id)
+    );
+    const { title, synopsis } = data.data;
+    const image_url =
+      data.data.images.jpg.large_image_url || data.data.images.jpg.image_url;
+    console.log(image_url, title, synopsis);
+    const filePath = path.join(__dirname, "../build", "index.html");
+    fs.readFile(filePath, "utf8", (error, data) => {
+      if (!error) {
+        data = data
+          .replace(titleReg, title)
+          .replace(imageReg, image_url)
+          .replace(descriptionReg, synopsis);
+        res.send(data);
+      } else {
+        res.sendFile(path.join(__dirname, "../build", "index.html"));
+      }
+    });
+  } catch (error) {
+    res.status(404).send({ error: "Something went wrong" });
+  }
 });
 
 router.get("/genre/:genreId", (req, res) => {
@@ -129,6 +142,10 @@ router.get("/theater", (req, res) => {
 });
 
 router.get("/theater/:groupId", (req, res) => {
+  res.sendFile(path.join(__dirname, "../build", "index.html"));
+});
+
+router.get("/storage", (req, res) => {
   res.sendFile(path.join(__dirname, "../build", "index.html"));
 });
 

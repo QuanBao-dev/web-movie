@@ -47,7 +47,7 @@ function ReviewItem({ review }) {
           <span
             className="show-more-text"
             onClick={(e) => {
-              e.target.parentElement.innerHTML = review.content.replace(
+              e.target.parentElement.innerHTML = review.review.replace(
                 /\\n/g,
                 ""
               );

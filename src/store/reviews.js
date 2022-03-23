@@ -3,7 +3,7 @@ const initialState = {
   reviewsData: [],
   pageReviewsData: 1,
   pageReviewsOnDestroy: null,
-  isStopFetchingReviews: false,
+  isStopFetchingReviews: null,
   shouldUpdatePageReviewData: false,
   previousMalId: null,
   pageSplit: 1,

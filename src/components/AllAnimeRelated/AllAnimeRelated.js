@@ -10,9 +10,10 @@ function AllAnimeRelated({ animeList, lazy = false }) {
   return (
     <div className="all-anime-related">
       {animeList &&
-        animeList.map((anime, index) => (
+        animeList.map(({anime, role}, index) => (
           <AnimeRelatedItem
             anime={anime}
+            role={role}
             key={index}
             lazy={lazy}
           />

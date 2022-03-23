@@ -16,6 +16,7 @@ import {
   handleDeleteBoxMovie,
 } from "../epics/animeDetail";
 import { characterStream } from "../epics/character";
+import { fetchReviewsData$, reviewsStream } from "../epics/reviews";
 
 export const initAnimeDetailState = (setNameState) => {
   return () => {
@@ -36,10 +37,11 @@ export const fetchData = (
   history
 ) => {
   return () => {
-    const fetchDataInfo$ = fetchData$(malId).pipe(tap((v) => {}));
+    const fetchDataInfo$ = fetchData$(malId, history).pipe(tap((v) => {}));
     const fetchDataVideoPromo$ = fetchDataVideo$(malId).pipe(
-      tap(({ promo, error }) => {
-        if (error) return;
+      tap((data) => {
+        if (!data || data.error) return;
+        const { promo } = data;
         if (promo) {
           animeDetailStream.updateData({
             dataVideoPromo: promo,
@@ -48,7 +50,7 @@ export const fetchData = (
         animeDetailStream.updateIsLoading(false, "isLoadingVideoAnime");
       })
     );
-    const fetchLargePictureUrl$ = fetchLargePicture$(malId, history).pipe(
+    const fetchLargePictureUrl$ = fetchLargePicture$(malId).pipe(
       tap(({ pictures, error }) => {
         if (error) {
           animeDetailStream.updateData({ isLoadingLargePicture: false });
@@ -56,16 +58,18 @@ export const fetchData = (
         }
         try {
           animeDetailStream.updateData({
-            dataLargePictureList: pictures
-              .slice(0, Math.ceil(pictures.length / 2))
-              .reverse(),
+            dataLargePictureList: pictures.reverse(),
             isLoadingLargePicture: false,
           });
-          document.body.style.backgroundImage = `url(${
-            animeDetailStream.currentState().dataLargePictureList[0]
-          })`;
+          if (animeDetailStream.currentState().dataLargePictureList[0])
+            document.body.style.backgroundImage = `url(${
+              animeDetailStream.currentState().dataLargePictureList[0]
+            })`;
+          else document.body.style.backgroundImage = `url(/background.jpg)`;
+
           document.body.style.backgroundSize = "contain";
         } catch (error) {
+          document.body.style.backgroundImage = `url(/background.jpg)`;
           animeDetailStream.updateData({ isLoadingLargePicture: false });
           console.log(error);
         }
@@ -92,11 +96,12 @@ export const fetchData = (
       .subscribe();
     const fetchAnimeAppears$ = fetchAnimeRecommendation$(malId).pipe(
       tap((data) => {
+        animeDetailStream.updateIsLoading(false, "isLoadingRelated");
+        if (!data || data.error) return;
         const handledData = data.map(({ entry, votes }) => ({
           ...entry,
           recommendation_count: votes,
         }));
-        animeDetailStream.updateIsLoading(false, "isLoadingRelated");
         animeDetailStream.updateData({
           dataRelatedAnime: handledData,
         });
@@ -105,6 +110,7 @@ export const fetchData = (
     const fetchCharacters$ = fetchDataCharacter$(malId).pipe(
       tap((data) => {
         animeDetailStream.updateIsLoading(false, "isLoadingCharacter");
+        if (!data || data.error) return;
         characterStream.updateData({
           dataCharacter: data,
           dataCharacterRaw: data,
@@ -122,7 +128,7 @@ export const fetchData = (
     ]).pipe(
       concatAll(),
       tap((data) => {
-        if (data.error) return;
+        if (!data || data.error) return;
         switch (data.type_data) {
           case "data info":
             animeDetailStream.updateData({
@@ -145,8 +151,8 @@ export const fetchData = (
               },
             });
             if (
-              (data && data.openings.length > 3) ||
-              (data && data.endings.length > 3)
+              (data && data.openings && data.openings.length > 3) ||
+              (data && data.endings && data.endings.length > 3)
             ) {
               setShowThemeMusic(false);
             } else {
@@ -179,12 +185,52 @@ export const fetchData = (
         fetchInformation$,
         fetchAnimeAppears$,
         fetchCharacters$,
-        fetchDataVideoPromo$.pipe(
-          tap(() => {
-            characterStream.updateData({ page: 1 });
-            animeDetailStream.updateData({ malId });
-          })
-        ),
+        fetchDataVideoPromo$,
+        fetchReviewsData$(malId, reviewsStream.currentState().pageReviewsData)
+          .pipe(
+            tap((v) => {
+              if (v && !v.error) {
+                let updatedAnime;
+                if (
+                  reviewsStream.currentState().reviewsData.length === 0 ||
+                  reviewsStream.currentState().previousMalId !== malId
+                ) {
+                  updatedAnime = v;
+                } else {
+                  updatedAnime = reviewsStream
+                    .currentState()
+                    .reviewsData.concat(v);
+                }
+                if (v.length === 0) {
+                  reviewsStream.updateData({ isStopFetchingReviews: true });
+                  return;
+                }
+                reviewsStream.updateData({
+                  reviewsData: updatedAnime,
+                  previousMalId: malId,
+                  pageReviewsOnDestroy:
+                    reviewsStream.currentState().pageReviewsData,
+                  shouldUpdatePageReviewData: true,
+                });
+                if (updatedAnime.length > 0)
+                  animeDetailStream.updateData({
+                    malId: animeDetailStream.currentState().malId,
+                  });
+              } else {
+                reviewsStream.updateData({
+                  isStopFetchingReviews: true,
+                  shouldUpdatePageReviewData: false,
+                });
+              }
+            })
+          )
+          .pipe(
+            tap(() => {
+              // console.log("done");
+              characterStream.updateData({ page: 1 });
+              animeDetailStream.updateData({ malId });
+            })
+          ),
       ])
         .pipe(concatAll())
         .subscribe(() => {});

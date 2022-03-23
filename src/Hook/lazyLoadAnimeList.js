@@ -8,18 +8,16 @@ import {
   fetchDataGenreAnimeList,
 } from "../Functions/lazyLoadAnimeList";
 
-export const useInitLazyLoadAnimeList = (virtual, setLazyLoadState) => {
-  useEffect(initLazyLoadAnimeList(virtual, setLazyLoadState), []);
+export const useInitLazyLoadAnimeList = (setLazyLoadState) => {
+  useEffect(initLazyLoadAnimeList(setLazyLoadState), []);
 };
 
-export const useGenreIdChange = (genreId, virtual, { currentGenreId }) => {
-  useEffect(genreIdChange(genreId, virtual, currentGenreId), [currentGenreId]);
+export const useGenreIdChange = (genreId, { currentGenreId }) => {
+  useEffect(genreIdChange(genreId, currentGenreId), [currentGenreId]);
 };
 
 export const useUpdatePageScrollingWindow = (
-  virtual,
   {
-    allowFetchIncreaseGenrePage,
     pageGenre,
     genreDetailData,
     isStopScrollingUpdated,
@@ -27,12 +25,10 @@ export const useUpdatePageScrollingWindow = (
 ) => {
   useEffect(
     updatePageScrollingWindow(
-      virtual,
-      allowFetchIncreaseGenrePage,
       genreDetailData,
       isStopScrollingUpdated
     ),
-    [genreDetailData.length, allowFetchIncreaseGenrePage, pageGenre]
+    [genreDetailData.length, pageGenre]
   );
 };
 
@@ -45,7 +41,6 @@ export const useFetchDataGenreAnimeList = (
   } = lazyLoadAnimeListStream.currentState(),
   genreId,
   url,
-  virtual,
   type
 ) => {
   useEffect(
@@ -55,7 +50,6 @@ export const useFetchDataGenreAnimeList = (
       genreDetailData,
       genreId,
       url,
-      virtual,
       type
     ),
     [pageGenre, genreId, currentGenreId]

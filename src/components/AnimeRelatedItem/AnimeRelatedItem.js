@@ -5,11 +5,11 @@ import React from "react";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import { Link } from "react-router-dom";
 
-function AnimeRelatedItem({ anime, lazy = false }) {
+function AnimeRelatedItem({ anime, role, lazy = false }) {
   return (
     <div
       title={anime.title}
-      className={anime.role === "Main" ? "anime-main-role" : ""}
+      className={role === "Main" ? "anime-main-role" : ""}
     >
       <Link
         to={
@@ -21,7 +21,7 @@ function AnimeRelatedItem({ anime, lazy = false }) {
       >
         {lazy && (
           <LazyLoadImage
-            src={anime.images.jpg.large_image_url || anime.images.jpg.image_url}
+            src={(anime.images.jpg.large_image_url || anime.images.jpg.image_url)}
             alt="image_anime"
             effect="opacity"
           />
@@ -29,7 +29,7 @@ function AnimeRelatedItem({ anime, lazy = false }) {
         {!lazy && <img src={anime.images.jpg.large_image_url ||anime.images.jpg.image_url} alt="image_anime" />}
         <div className="pop-up-hover">
           <h3>{anime.title}</h3>
-          <div title={anime.role + " role"}>({anime.role})</div>
+          <div title={anime.role + " role"}>({role})</div>
         </div>
       </Link>
     </div>

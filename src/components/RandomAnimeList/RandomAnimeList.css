@@ -1,0 +1,21 @@
+.random-anime-list{
+  background-color: black;
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
+  min-height: 520px;
+  align-items: center;
+  justify-content: center;
+}
+
+@media (max-width: 800px){
+  .random-anime-list{
+    flex-direction: column;
+    margin-top: 4rem;
+  }
+
+  .random-anime-list .random-anime-item{
+    width: 100%!important;
+    max-width: 100%!important;
+  }
+}

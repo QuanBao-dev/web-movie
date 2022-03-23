@@ -40,15 +40,7 @@ const SearchedList = (props) => {
       searchedListStore.updatePage(1);
     }
   }, [key]);
-  // useEffect(() => {
-  //   const subscription = fetchDataApi$(key, 1).subscribe((data) => {
 
-  //   });
-  //   return () => {
-  //     subscription.unsubscribe();
-  //   };
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [key]);
   useEffect(() => {
     let subscription;
     subscription = fetchDataApi$(key, searchedListState.page).subscribe(
@@ -65,6 +57,7 @@ const SearchedList = (props) => {
     return () => {
       subscription && subscription.unsubscribe();
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [key, searchedListState.page]);
   let dataSearchDisplay;
   if (dataSearchedAnimeState) dataSearchDisplay = dataSearchedAnimeState;

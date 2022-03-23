@@ -22,6 +22,7 @@ export const useFetchAnimeList = (
     if (subNavToggle === 0) {
       setIsEmpty(true);
       subscription8 = fetchUpdatedMovie$().subscribe(({ data, lastPage }) => {
+        console.log(data);
         updatedAnimeStream.updateData({
           updatedMovie: data,
           lastPageUpdatedMovie: lastPage,

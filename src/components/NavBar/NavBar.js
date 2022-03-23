@@ -1,28 +1,101 @@
 import "./NavBar.css";
 
 import Axios from "axios";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useRef } from "react";
 import { NavLink as Link, useHistory, withRouter } from "react-router-dom";
 
 import { userStream } from "../../epics/user";
+import { fromEvent } from "rxjs";
 
 const NavBar = ({ userState, removeCookie, cookies }) => {
+  const [isShowToggleNav, setIsShowToggleNav] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   const navLoginRef = useRef();
   const navRegisterRef = useRef();
+  const buttonScrollTopRef = useRef();
   const history = useHistory();
+  const navBarAppRef = useRef();
+  const childNavBarAppRef = useRef();
+  const posY1 = useRef(0);
+  const posY2 = useRef(0);
+  useEffect(() => {
+    if (document.body.offsetWidth > 964) {
+      setIsMobile(false);
+    } else {
+      setIsMobile(true);
+    }
+    const subscription = fromEvent(window, "resize").subscribe(() => {
+      if (document.body.offsetWidth > 964) {
+        setIsMobile(false);
+      } else {
+        setIsMobile(true);
+      }
+    });
+    const subscription2 = fromEvent(window, "scroll").subscribe(() => {
+      posY2.current = posY1.current - window.scrollY;
+      if (window.scrollY < 50) {
+        navBarAppRef.current.style.transform = "translateY(0)";
+        navBarAppRef.current.style.backgroundColor = "rgba(2, 2, 2)";
+        buttonScrollTopRef.current.style.transform = "translateY(500px)";
+      }
+      if (posY1.current) {
+        if (posY2.current < -1 && window.scrollY >= 50) {
+          navBarAppRef.current.style.transform = "translateY(-500px)";
+          if (
+            childNavBarAppRef.current.style.display !== "flex" &&
+            document.body.offsetWidth <= 964
+          )
+            navBarAppRef.current.style.backgroundColor = "rgba(2, 2, 2, 0.3)";
+          if (
+            childNavBarAppRef.current.style.display === "flex" &&
+            document.body.offsetWidth <= 964
+          )
+            childNavBarAppRef.current.style.display = "none";
+          if (document.body.offsetWidth > 964) {
+            navBarAppRef.current.style.backgroundColor = "rgba(2, 2, 2, 0.3)";
+          }
+          buttonScrollTopRef.current.style.transform = "translateY(500px)";
+        }
+
+        if (posY2.current > 1 && window.scrollY >= 50) {
+          navBarAppRef.current.style.transform = "translateY(0)";
+          buttonScrollTopRef.current.style.transform = "translateY(0)";
+          if (childNavBarAppRef.current.style.display !== "flex") {
+            navBarAppRef.current.style.backgroundColor = "rgba(2, 2, 2, 0.3)";
+          }
+        }
+      }
+      posY1.current = window.scrollY;
+    });
+    return () => {
+      subscription.unsubscribe();
+      subscription2.unsubscribe();
+    };
+  }, []);
   return (
     <nav className="nav-bar">
+      <div
+        ref={buttonScrollTopRef}
+        className="button-scroll-top"
+        onClick={() => {
+          window.scroll({
+            top: 0,
+            behavior: "smooth",
+          });
+        }}
+      >
+        <i className="fas fa-arrow-up fa-2x"></i>
+      </div>
       <ul
         className="nav-bar__app"
+        ref={navBarAppRef}
         onMouseMove={() => {
-          document.querySelector(".nav-bar__app").style.backgroundColor =
-            "black";
+          navBarAppRef.current.style.backgroundColor = "black";
         }}
         onMouseLeave={() => {
           if (window.scrollY >= 50)
-            document.querySelector(".nav-bar__app").style.backgroundColor =
-              "rgb(2,2,2,0.2)";
+            navBarAppRef.current.style.backgroundColor = "rgb(2,2,2,0.2)";
         }}
       >
         <div
@@ -32,7 +105,12 @@ const NavBar = ({ userState, removeCookie, cookies }) => {
             paddingTop: "0.3rem",
           }}
         >
-          <div className="logo">
+          <div
+            className="logo"
+            onClick={() => {
+              setIsShowToggleNav(false);
+            }}
+          >
             <Link to="/">
               <div className="logo-wrapper">
                 <img
@@ -47,33 +125,66 @@ const NavBar = ({ userState, removeCookie, cookies }) => {
           </div>
           <div
             className="toggle-show__nav"
+            style={{
+              backgroundColor: isShowToggleNav
+                ? "rgb(2,2,2)"
+                : "rgb(2,2,2,0.2)",
+            }}
             onClick={() => {
-              const e = document
-                .getElementsByClassName("child-nav-bar__app")
-                .item(0);
-              const navBarApp = document.querySelector(".nav-bar__app");
-              if (e.style.display === "none") {
-                e.style.display = "flex";
-                navBarApp.style.backgroundColor = "rgb(2,2,2)";
-              } else {
-                e.style.display = "none";
-                if (window.scrollY >= 50)
-                  navBarApp.style.backgroundColor = "rgb(2,2,2,0.2)";
-              }
+              setIsShowToggleNav(!isShowToggleNav);
+              // const e = document
+              //   .getElementsByClassName("child-nav-bar__app")
+              //   .item(0);
+              // const navBarApp = document.querySelector(".nav-bar__app");
+              // if (e.style.display === "none") {
+              //   e.style.display = "flex";
+              //   navBarApp.style.backgroundColor = "rgb(2,2,2)";
+              // } else {
+              //   e.style.display = "none";
+              //   if (window.scrollY >= 50)
+              //     navBarApp.style.backgroundColor = "rgb(2,2,2,0.2)";
+              // }
             }}
           >
             <i className="fas fa-bars fa-2x"></i>
           </div>
         </div>
-        <ul className="child-nav-bar__app">
-          <li className="left-nav-item nav-bar__item">
+        <ul
+          ref={childNavBarAppRef}
+          className="child-nav-bar__app"
+          style={{
+            display: !isMobile || isShowToggleNav ? "flex" : "none",
+          }}
+        >
+          <li
+            className="left-nav-item nav-bar__item"
+            onClick={() => {
+              setIsShowToggleNav(false);
+            }}
+          >
             <Link to="/" activeClassName="active" exact>
               Home
             </Link>
           </li>
 
+          <li
+            className="nav-bar__item"
+            onClick={() => {
+              setIsShowToggleNav(false);
+            }}
+          >
+            <Link to="/storage" activeClassName="active" exact>
+              Anime
+            </Link>
+          </li>
+
           {userState && userState.role === "Admin" && (
-            <li className="nav-bar__item">
+            <li
+              className="nav-bar__item"
+              onClick={() => {
+                setIsShowToggleNav(false);
+              }}
+            >
               <Link to="/requests" activeClassName="active">
                 Request
               </Link>
@@ -88,7 +199,12 @@ const NavBar = ({ userState, removeCookie, cookies }) => {
             </li>
           )}
 
-          <li className="nav-bar__item">
+          <li
+            className="nav-bar__item"
+            onClick={() => {
+              setIsShowToggleNav(false);
+            }}
+          >
             {userState && (
               <Link to="/theater" activeClassName="active">
                 Theater
@@ -108,12 +224,21 @@ const NavBar = ({ userState, removeCookie, cookies }) => {
           <li
             style={{ color: "white", cursor: "pointer" }}
             className="nav-bar__item"
+            onClick={() => {
+              setIsShowToggleNav(false);
+            }}
           >
             <Link to="/faq" activeClassName="active">
               FAQ
             </Link>
           </li>
-          <li className="nav-bar__item" ref={navLoginRef}>
+          <li
+            className="nav-bar__item"
+            ref={navLoginRef}
+            onClick={() => {
+              setIsShowToggleNav(false);
+            }}
+          >
             {!userState && (
               <Link to="/auth/login" activeClassName="active">
                 Login
@@ -138,7 +263,13 @@ const NavBar = ({ userState, removeCookie, cookies }) => {
           </li>
 
           {!userState && (
-            <li ref={navRegisterRef} className="nav-bar__item">
+            <li
+              ref={navRegisterRef}
+              className="nav-bar__item"
+              onClick={() => {
+                setIsShowToggleNav(false);
+              }}
+            >
               <Link to="/auth/register" activeClassName="active">
                 Register
               </Link>
@@ -148,12 +279,20 @@ const NavBar = ({ userState, removeCookie, cookies }) => {
             <li
               style={{ color: "white", cursor: "pointer" }}
               className="nav-bar__item"
+              onClick={() => {
+                setIsShowToggleNav(false);
+              }}
             >
               <Link to={`/edit`}>{userState.username}</Link>
             </li>
           )}
           {userState && (
-            <li className="nav-bar__item">
+            <li
+              className="nav-bar__item"
+              onClick={() => {
+                setIsShowToggleNav(false);
+              }}
+            >
               <div
                 style={{
                   color: "white",

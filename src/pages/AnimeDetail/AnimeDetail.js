@@ -6,6 +6,7 @@ import Axios from "axios";
 import React, { useEffect, useRef, useState } from "react";
 import { useCookies } from "react-cookie";
 import { Link, useHistory } from "react-router-dom";
+import { ajax } from "rxjs/ajax";
 
 import FormSubmit from "../../components/FormSubmit/FormSubmit";
 import FormSubmitCrawl from "../../components/FormSubmitCrawl/FormSubmitCrawl";
@@ -18,7 +19,6 @@ import {
   useFetchData,
   useInitAnimeDetailState,
 } from "../../Hook/animeDetail";
-import { ajax } from "rxjs/ajax";
 
 const ListInformation = loadable(() =>
   import("../../components/ListInformation/ListInformation")
@@ -132,6 +132,19 @@ const AnimeDetail = (props) => {
               }}
             ></img>
           )}
+          {animeDetailState.dataLargePictureList.length < 1 &&
+            animeDetailState.dataInformationAnime.images && (
+              <img
+                src={
+                  animeDetailState.dataInformationAnime.images.jpg
+                    .large_image_url
+                }
+                alt={"image_anime"}
+                style={{
+                  width: "100%",
+                }}
+              ></img>
+            )}
         </div>
         <MenuTable
           elementTitle={elementTitle}
@@ -388,9 +401,13 @@ function deformData(animeDetailState, showThemeMusic) {
         "external_links",
         "opening_themes",
         "ending_themes",
-        "type_data"
+        "type_data",
       ];
-      if (animeDetailState.dataInformationAnime)
+      if (
+        animeDetailState.dataInformationAnime &&
+        animeDetailState.dataInformationAnime.opening_themes &&
+        animeDetailState.dataInformationAnime.ending_themes
+      )
         if (
           document.querySelector(".button-show-more-information") &&
           animeDetailState.dataInformationAnime.opening_themes.length === 0 &&

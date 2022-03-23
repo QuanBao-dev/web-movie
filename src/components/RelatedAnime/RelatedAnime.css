@@ -14,3 +14,7 @@
 .see-more-movie:active{
   background-color: rgb(38, 65, 107);
 }
+
+.recommendation-anime-container .anime-item{
+  max-width: 350px;
+}

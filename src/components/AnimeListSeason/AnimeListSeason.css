@@ -1,0 +1,9 @@
+.anime-list-season-container .anime-item{
+  min-width: 200px;
+}
+
+@media (max-width:380px) {
+  .anime-list-season-container .anime-item{
+    min-width: 40%;
+  }
+}

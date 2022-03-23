@@ -21,6 +21,7 @@ const moviesRoute = require("./routes/movies.route");
 const usersRoute = require("./routes/users.route");
 const tokenRoute = require("./routes/token.route");
 const boxMovieRoute = require("./routes/boxMovie.route");
+const producersRoute = require("./routes/producer.route");
 const renderRoute = require("./routes/index.route");
 const theaterRoute = require("./routes/theaterRoom.route");
 const faqRoute = require("./routes/faq.route");
@@ -225,6 +226,7 @@ app.use("/api/movies/request", requestAnimeRoute);
 app.use("/api/movies/box", boxMovieRoute);
 app.use("/api/movies", moviesRoute);
 app.use("/api/users", usersRoute);
+app.use("/api/producers",producersRoute)
 app.use("/api/", tokenRoute);
 app.use("/", renderRoute);
 server.listen(port, () =>

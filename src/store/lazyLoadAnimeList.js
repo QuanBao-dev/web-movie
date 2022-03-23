@@ -9,8 +9,16 @@ const initialState = {
   currentGenreId: null,
   genre: null,
   pageGenre: 1,
-  pageSplit: 1,
   numberAnimeShowMore: (parseInt(window.innerHeight / 376) + 1) * 5,
+  width: null,
+  height: null,
+  quantityItemPerRow: 5,
+  widthItem: null,
+  heightItem: null,
+  rowStart: 0,
+  rowEnd: 0,
+  widthContainerList: "100%",
+  trigger:true,
 };
 
 const subject = new BehaviorSubject(initialState);

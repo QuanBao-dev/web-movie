@@ -1,9 +1,8 @@
-import { animeDetailStream } from "../epics/animeDetail";
-import {
-  reviewsStream,
-  updatePageScrolling$,
-  fetchReviewsData$,
-} from "../epics/reviews";
+import { timer } from 'rxjs';
+import { filter, switchMapTo, takeWhile } from 'rxjs/operators';
+
+import { animeDetailStream } from '../epics/animeDetail';
+import { fetchReviewsData$, reviewsStream, updatePageScrolling$ } from '../epics/reviews';
 
 export const initReviewState = (setReviewState) => {
   return () => {
@@ -26,7 +25,7 @@ export const resetReviewsState = (malId) => {
         reviewsData: [],
         pageReviewsData: 1,
         pageSplit: 1,
-        isStopFetchingReviews: false,
+        isStopFetchingReviews: null,
         pageReviewsOnDestroy: null,
       });
     }
@@ -64,16 +63,21 @@ export const updatePageScrolling = (shouldUpdatePageReviewData) => {
 
 export const fetchReviewsData = (pageReviewsData, reviewsData, malId) => {
   return () => {
-    let subscription;
-    if (
-      reviewsStream.currentState().pageReviewsOnDestroy !== pageReviewsData &&
-      reviewsStream.currentState().isStopFetchingReviews === false
-    )
-      subscription = fetchReviewsData$(
-        malId,
-        reviewsStream.currentState().pageReviewsData
-      ).subscribe((v) => {
-        if (!v.error) {
+    const subscription = timer(0)
+      .pipe(
+        takeWhile(
+          () =>
+            reviewsStream.currentState().pageReviewsOnDestroy !==
+              pageReviewsData &&
+            reviewsStream.currentState().isStopFetchingReviews === false
+        ),
+        filter(() => reviewsStream.currentState().pageReviewsData > 1),
+        switchMapTo(
+          fetchReviewsData$(malId, reviewsStream.currentState().pageReviewsData)
+        )
+      )
+      .subscribe((v) => {
+        if (v && !v.error) {
           let updatedAnime;
           if (
             reviewsStream.currentState().reviewsData.length === 0 ||
@@ -105,7 +109,7 @@ export const fetchReviewsData = (pageReviewsData, reviewsData, malId) => {
         }
       });
     return () => {
-      subscription && subscription.unsubscribe();
+      subscription.unsubscribe();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   };

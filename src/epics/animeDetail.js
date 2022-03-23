@@ -1,5 +1,5 @@
 import capitalize from "lodash/capitalize";
-import { fromEvent, of, timer } from "rxjs";
+import { fromEvent, of, throwError, timer } from "rxjs";
 import { ajax } from "rxjs/ajax";
 import {
   catchError,
@@ -15,10 +15,11 @@ import {
 } from "rxjs/operators";
 
 import animeDetailStore from "../store/animeDetail";
+import storageAnimeStore from "../store/storageAnime";
 
 export const animeDetailStream = animeDetailStore;
 
-export const fetchData$ = (name) => {
+export const fetchData$ = (name, history) => {
   return timer(0).pipe(
     tap(() => {
       animeDetailStream.updateIsLoading(true, "isLoadingInfoAnime");
@@ -27,7 +28,20 @@ export const fetchData$ = (name) => {
       ajax(`https://api.jikan.moe/v4/anime/${name}`).pipe(
         pluck("response", "data"),
         retry(6),
-        catchError(() => of({ error: "something went wrong" }))
+        switchMap((data) => {
+          if ([404, 500].includes(data.status)) {
+            return throwError("404 error");
+          }
+          return of(data);
+        }),
+        catchError(() => {
+          history.push(
+            "/storage/?page=" + storageAnimeStore.currentState().page
+          );
+          // history.goBack();
+          alert("Anime not found");
+          of({ error: "something went wrong" });
+        })
       )
     )
   );
@@ -82,7 +96,7 @@ export const fetchEpisodeDataVideo$ = (malId) => {
   );
 };
 
-export function fetchLargePicture$(name, history) {
+export function fetchLargePicture$(name) {
   return timer(0).pipe(
     tap(() => {
       document.body.style.backgroundImage = `url(/background.jpg)`;
@@ -92,12 +106,13 @@ export function fetchLargePicture$(name, history) {
     mergeMapTo(
       ajax(`https://api.jikan.moe/v4/anime/${name}/pictures`).pipe(
         pluck("response", "data"),
+        retry(5),
         map((pictures) => ({
-          pictures: pictures.map(({ webp }) => webp.large_image_url),
+          pictures: pictures.map(
+            ({ jpg, webp }) => webp.large_image_url || jpg.large_image_url
+          ),
         })),
         catchError(() => {
-          history.push("/");
-          alert("Anime not found");
           return of({ error: "cancel request" });
         })
       )
@@ -133,7 +148,7 @@ export function fetchAnimeRecommendation$(malId) {
       }).pipe(
         retry(6),
         pluck("response", "data"),
-        catchError(() => of([]))
+        catchError((error) => of({ error }))
       )
     )
   );
@@ -148,7 +163,7 @@ export function fetchDataCharacter$(malId) {
       ajax(`https://api.jikan.moe/v4/anime/${malId}/characters`).pipe(
         retry(20),
         pluck("response", "data"),
-        catchError(() => of([]))
+        catchError((error) => of({ error }))
       )
     )
   );

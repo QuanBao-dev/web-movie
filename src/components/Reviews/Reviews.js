@@ -27,12 +27,13 @@ const Reviews = ({ malId }) => {
         boxShadow: reviewState.reviewsData.length === 0 && "none",
       }}
     >
-      {reviewState && reviewState.reviewsData.length > 0 && (
+      {(reviewState.isStopFetchingReviews === false ||
+        (reviewState && reviewState.reviewsData.length > 0)) && (
         <h1 className="title">Reviews</h1>
       )}
       {reviewState &&
         reviewState.reviewsData.length === 0 &&
-        !reviewState.isStopFetchingReviews && (
+        reviewState.isStopFetchingReviews === false && (
           <div className="loading-symbol-review">
             <CircularProgress color="secondary" size="3rem" />
           </div>

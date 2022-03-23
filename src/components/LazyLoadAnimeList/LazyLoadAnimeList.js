@@ -1,18 +1,18 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import "./LazyLoadAnimeList.css";
+import './LazyLoadAnimeList.css';
 
-import loadable from "@loadable/component";
-import CircularProgress from "@material-ui/core/CircularProgress";
-import React, { useState } from "react";
+import loadable from '@loadable/component';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import React, { useRef, useState } from 'react';
+import { useEffect } from 'react';
 
-import { lazyLoadAnimeListStream } from "../../epics/lazyLoadAnimeList";
+import { lazyLoadAnimeListStream } from '../../epics/lazyLoadAnimeList';
 import {
   useFetchDataGenreAnimeList,
   useGenreIdChange,
   useInitLazyLoadAnimeList,
   useUpdatePageScrollingWindow,
-} from "../../Hook/lazyLoadAnimeList";
-import { useEffect } from "react";
+} from '../../Hook/lazyLoadAnimeList';
 
 const AnimeList = loadable(() =>
   import("../../components/AnimeList/AnimeList")
@@ -22,19 +22,18 @@ const LazyLoadAnimeList = ({ genreId, url, type }) => {
   const [lazyLoadState, setLazyLoadState] = useState(
     lazyLoadAnimeListStream.currentState()
   );
-  const virtual = true;
+  const animeListRef = useRef();
   useEffect(() => {
     document.body.style.backgroundImage = `url(/background.jpg)`;
     document.body.style.backgroundSize = "cover";
   }, []);
-  useInitLazyLoadAnimeList(virtual, setLazyLoadState);
-  useGenreIdChange(parseInt(genreId), virtual, lazyLoadState);
-  useUpdatePageScrollingWindow(virtual, lazyLoadState);
+  useInitLazyLoadAnimeList(setLazyLoadState);
+  useGenreIdChange(parseInt(genreId), lazyLoadState);
+  useUpdatePageScrollingWindow(lazyLoadState);
   useFetchDataGenreAnimeList(
     lazyLoadState,
     parseInt(genreId),
     url,
-    virtual,
     type
   );
   return (
@@ -47,13 +46,10 @@ const LazyLoadAnimeList = ({ genreId, url, type }) => {
         )}
       </h1>
       <AnimeList
-        virtual={virtual}
-        data={lazyLoadState.genreDetailData.slice(
-          0,
-          lazyLoadState.pageSplit *
-            lazyLoadAnimeListStream.currentState().numberAnimeShowMore
-        )}
+        virtual={true}
+        data={lazyLoadState.genreDetailData}
         error={null}
+        animeListRef={animeListRef}
       />
       {!lazyLoadState.isStopScrollingUpdated && (
         <div className="loading-symbol">

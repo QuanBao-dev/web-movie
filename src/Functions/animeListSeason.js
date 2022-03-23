@@ -74,7 +74,6 @@ export const fetchAnimeListSeason = (
             isInit: false,
           });
         }
-        console.log(animeListSeasonState.genreId);
         const filteredData = v.filter(({ score, genres }) => {
           let isContained = true;
           if (parseInt(animeListSeasonState.genreId)) {
@@ -141,7 +140,6 @@ export const listenWhenOptionChange = (
         selectScore.current,
         selectGenre.current
       ).subscribe(([year, season, score, genreId]) => {
-        console.log(genreId);
         if (!animeListSeasonStream.currentState().isInit)
           animeListSeasonStream.updateData({
             triggerScroll: !animeListSeasonStream.currentState().triggerScroll,

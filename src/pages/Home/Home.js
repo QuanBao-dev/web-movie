@@ -4,6 +4,7 @@ import loadable from "@loadable/component";
 import React, { useEffect, useState } from "react";
 
 import { stream } from "../../epics/home";
+import RandomAnimeList from "../../components/RandomAnimeList/RandomAnimeList";
 const SearchTool = loadable(
   () => import("../../components/SearchTool/SearchTool"),
   {
@@ -124,6 +125,7 @@ function Home() {
         </div>
         <Genres />
         <UpcomingAnimeList />
+        <RandomAnimeList />
         <UpdatedAnime />
       </div>
       <AnimeSchedule />

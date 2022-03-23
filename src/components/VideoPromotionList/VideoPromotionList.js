@@ -13,7 +13,7 @@ const VideoPromotionItem = loadable(
 function VideoPromotionList({ data, lazy = false, isLoading }) {
   return (
     <div className="video-promotion-list">
-      {isLoading !== null && isLoading === true && (
+      {isLoading === true && (
         <div>
           <h1 className="title">Video</h1>
           <CircularProgress color="secondary" size="4rem" />

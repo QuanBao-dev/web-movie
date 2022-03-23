@@ -102,7 +102,6 @@ router.get("/anime/:id", async (req, res) => {
     const { title, synopsis } = data.data;
     const image_url =
       data.data.images.jpg.large_image_url || data.data.images.jpg.image_url;
-    console.log(image_url, title, synopsis);
     const filePath = path.join(__dirname, "../build", "index.html");
     fs.readFile(filePath, "utf8", (error, data) => {
       if (!error) {

@@ -1,18 +1,31 @@
-import './App.css';
+import "./App.css";
 
-import loadable from '@loadable/component';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import LinearProgress from '@material-ui/core/LinearProgress';
-import React, { useEffect, useState } from 'react';
-import { useCookies } from 'react-cookie';
-import { BrowserRouter as Router, Route, Switch, useHistory } from 'react-router-dom';
+import loadable from "@loadable/component";
+import CircularProgress from "@material-ui/core/CircularProgress";
+import LinearProgress from "@material-ui/core/LinearProgress";
+import React, { useEffect, useState } from "react";
+import { useCookies } from "react-cookie";
+import {
+  BrowserRouter as Router,
+  Route,
+  Switch,
+  useHistory,
+} from "react-router-dom";
 
-import NavBar from './components/NavBar/NavBar';
-import { fetchingUser$, userStream } from './epics/user';
-import RequestedAnime from './pages/RequestedAnime/RequestedAnime';
-import navBarStore from './store/navbar';
-import StorageAnime from './pages/StorageAnime/StorageAnime';
-
+import NavBar from "./components/NavBar/NavBar";
+import { fetchingUser$, userStream } from "./epics/user";
+import RequestedAnime from "./pages/RequestedAnime/RequestedAnime";
+import navBarStore from "./store/navbar";
+const StorageAnime = loadable(
+  () => import("./pages/StorageAnime/StorageAnime"),
+  {
+    fallback: (
+      <section style={{ position: "fixed", width: "100%", zIndex: "2000" }}>
+        <LinearProgress color="secondary" />
+      </section>
+    ),
+  }
+);
 const Login = loadable(() => import("./pages/Login/Login"), {
   fallback: (
     <section style={{ position: "fixed", width: "100%", zIndex: "2000" }}>

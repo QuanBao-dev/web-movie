@@ -1,8 +1,30 @@
 import "./StorageAnime.css";
 
+import loadable from "@loadable/component";
+import { LinearProgress } from "@material-ui/core";
 import React from "react";
-import FilterAnime from "../../components/FilterAnime/FilterAnime";
-import StorageAnimeList from "../../components/StorageAnimeList/StorageAnimeList";
+const FilterAnime = loadable(
+  () => import("../../components/FilterAnime/FilterAnime"),
+  {
+    fallback: (
+      <section style={{ position: "fixed", width: "100%", zIndex: "2000" }}>
+        <LinearProgress color="secondary" />
+      </section>
+    ),
+  }
+);
+
+const StorageAnimeList = loadable(
+  () => import("../../components/StorageAnimeList/StorageAnimeList"),
+  {
+    fallback: (
+      <section style={{ position: "fixed", width: "100%", zIndex: "2000" }}>
+        <LinearProgress color="secondary" />
+      </section>
+    ),
+  }
+);
+
 const StorageAnime = (props) => {
   const query = props.location.search;
   return (

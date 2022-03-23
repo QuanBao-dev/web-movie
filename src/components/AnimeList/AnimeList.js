@@ -179,7 +179,7 @@ const AnimeList = ({
                   lazy={lazy}
                   virtual={true}
                   isAllowDelete={isAllowDelete}
-                  styleAnimeItem={{ width: "100px" }}
+                  styleAnimeItem={{ width: "90%", height: "95%" }}
                 />
               </div>
             );

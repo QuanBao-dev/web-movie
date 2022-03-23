@@ -172,7 +172,8 @@ const AnimeItem = ({
             src={
               anime.imageUrl ||
               anime.image_url ||
-              anime.images.webp.large_image_url
+              anime.images.webp.large_image_url ||
+              anime.images.jpg.large_image_url
             }
             alt={anime.title}
           />

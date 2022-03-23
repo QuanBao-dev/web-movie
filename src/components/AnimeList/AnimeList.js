@@ -46,7 +46,10 @@ const AnimeList = ({
   const lazyLoadState = lazyLoadAnimeListStream.currentState();
   useEffect(() => {
     const subscription = fromEvent(window, "scroll")
-      .pipe(takeWhile(() => virtual))
+      .pipe(
+        takeWhile(() => virtual),
+        debounceTime(100)
+      )
       .subscribe(() => {
         const { rowStart, rowEnd } = calculateRowStartEnd(
           animeListRef,

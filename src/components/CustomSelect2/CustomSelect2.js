@@ -3,7 +3,7 @@ import "./CustomSelect2.css";
 import React, { useEffect, useRef, useState } from "react";
 import { fromEvent, of } from "rxjs";
 import { ajax } from "rxjs/ajax";
-import { catchError, debounceTime, filter, pluck } from "rxjs/operators";
+import { catchError, debounceTime, filter, pluck, tap } from "rxjs/operators";
 
 const CustomSelect2 = ({
   url,
@@ -36,7 +36,6 @@ const CustomSelect2 = ({
     setAllSelectedOptions(defaultValue);
   }, [defaultValue]);
   useEffect(() => {
-    isDoneFetchingRef.current = false;
     if (!url) {
       setActiveIndex(0);
       setDataSuggestions(
@@ -46,6 +45,7 @@ const CustomSelect2 = ({
       );
       return;
     }
+    isDoneFetchingRef.current = false;
     const subscription = ajax(
       url + `?page=${page}` + (textSearch !== "" ? `&q=${textSearch}` : "")
     )
@@ -65,33 +65,6 @@ const CustomSelect2 = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [textSearch, page]);
   useEffect(() => {
-    isDoneFetchingRef.current = false;
-    listSuggestionRef.current.scroll({
-      top: 0,
-    });
-    if (!url) return;
-    const subscription = ajax(
-      url + `?page=${1}` + (textSearch !== "" ? `&q=${textSearch}` : "")
-    )
-      .pipe(
-        pluck("response"),
-        debounceTime(300),
-        catchError((error) => of({ error }))
-      )
-      .subscribe((data) => {
-        setActiveIndex(0);
-        isDoneFetchingRef.current = true;
-        if (data.error) return;
-        setMaxPage(data.pagination.last_visible_page);
-        setDataSuggestions(data.data);
-      });
-    return () => {
-      subscription.unsubscribe();
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [textSearch, triggerFetch, page]);
-
-  useEffect(() => {
     if (!url) return;
     const subscription = fromEvent(listSuggestionRef.current, "scroll")
       .pipe(
@@ -99,9 +72,9 @@ const CustomSelect2 = ({
           () =>
             listSuggestionRef.current.scrollHeight -
               listSuggestionRef.current.scrollTop <=
-              200 && isDoneFetchingRef.current
+              200 && isDoneFetchingRef.current === true
         ),
-        debounceTime(500)
+        debounceTime(300)
       )
       .subscribe(() => {
         if (maxPage >= page + 1) setPage(page + 1);
@@ -136,7 +109,7 @@ const CustomSelect2 = ({
       subscription2.unsubscribe();
       subscription3.unsubscribe();
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   valueRef.current = allSelectedOptions;
   return (

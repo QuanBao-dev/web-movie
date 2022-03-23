@@ -87,6 +87,7 @@ const FilterAnime = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     storageAnimeState.status,
+    storageAnimeState.dataAnime,
     storageAnimeState.rating,
     storageAnimeState.orderBy,
     storageAnimeState.sfw,

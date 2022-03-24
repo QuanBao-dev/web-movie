@@ -23,7 +23,7 @@
   text-transform: capitalize;
   font-family: 'Roboto', sans-serif, Arial, Helvetica;
   text-align: center;
-  background-color: transparent;
+  background-color: rgb(48, 47, 47);
   border-radius: 5px;
   color: white;
   padding: 0.2rem 0.5rem;

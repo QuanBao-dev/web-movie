@@ -174,7 +174,7 @@ const NavBar = ({ userState, removeCookie, cookies }) => {
             }}
           >
             <Link to="/storage" activeClassName="active" exact>
-              Anime
+              Storage
             </Link>
           </li>
 

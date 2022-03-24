@@ -67,6 +67,11 @@ const CustomSelect2 = ({
         if (pageRef.current !== page) {
           setDataSuggestions([...dataSuggestions, ...data.data]);
         }
+        if(textSearchRef.current === textSearch && pageRef.current === page){
+          setDataSuggestions([...data.data]);
+          setPage(1);
+          setActiveIndex(0);
+        }
         pageRef.current = page;
         textSearchRef.current = textSearch;
       });
@@ -74,7 +79,7 @@ const CustomSelect2 = ({
       subscription.unsubscribe();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [textSearch, page, url]);
+  }, [textSearch, page, url, triggerFetch]);
 
   useEffect(() => {
     if (!url) return;

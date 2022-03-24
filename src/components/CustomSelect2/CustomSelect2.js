@@ -3,7 +3,7 @@ import "./CustomSelect2.css";
 import React, { useEffect, useRef, useState } from "react";
 import { fromEvent, of } from "rxjs";
 import { ajax } from "rxjs/ajax";
-import { catchError, debounceTime, filter, pluck, tap } from "rxjs/operators";
+import { catchError, debounceTime, filter, pluck } from "rxjs/operators";
 
 const CustomSelect2 = ({
   url,
@@ -24,6 +24,8 @@ const CustomSelect2 = ({
   const [textSearch, setTextSearch] = useState("");
   const [activeIndex, setActiveIndex] = useState(0);
   const [triggerFetch, setTriggerFetch] = useState(0);
+  const pageRef = useRef();
+  const textSearchRef = useRef();
   useEffect(() => {
     valueRef.current = defaultValue;
     setAllSelectedOptions(defaultValue);
@@ -57,13 +59,23 @@ const CustomSelect2 = ({
         isDoneFetchingRef.current = true;
         if (data.error) return;
         setMaxPage(data.pagination.last_visible_page);
-        setDataSuggestions([...dataSuggestions, ...data.data]);
+        if (textSearchRef.current !== textSearch) {
+          setDataSuggestions([...data.data]);
+          setPage(1);
+          setActiveIndex(0);
+        }
+        if (pageRef.current !== page) {
+          setDataSuggestions([...dataSuggestions, ...data.data]);
+        }
+        pageRef.current = page;
+        textSearchRef.current = textSearch;
       });
     return () => {
       subscription.unsubscribe();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [textSearch, page]);
+  }, [textSearch, page, url]);
+
   useEffect(() => {
     if (!url) return;
     const subscription = fromEvent(listSuggestionRef.current, "scroll")

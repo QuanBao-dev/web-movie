@@ -31,7 +31,6 @@ const Carousel = () => {
   useInitCarousel(setCarouselState);
   useFetchCarousel();
   useAutoSlidingNextPage(pageCarousel, setPageCarousel);
-  // console.log(pageCarousel);
   const { dataCarousel } = carouselState;
   useEffect(() => {
     if (pageCarousel === dataCarousel.length) {

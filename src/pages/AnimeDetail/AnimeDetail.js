@@ -217,7 +217,10 @@ const AnimeDetail = (props) => {
                     body: {
                       malId: malId.toString(),
                       title: dataInformationAnime.title,
-                      imageUrl: dataInformationAnime.image_url,
+                      imageUrl:
+                        dataInformationAnime.images.webp.large_image_url ||
+                        dataInformationAnime.images.jpg.large_image_url ||
+                        dataInformationAnime.image_url,
                       score: dataInformationAnime.score,
                       synopsis: dataInformationAnime.synopsis,
                     },

@@ -187,7 +187,7 @@ const AnimeList = ({
               </div>
             );
           })}
-      {data.length === 0 && empty && (
+      {data && data.length === 0 && empty && (
         <div className="empty">
           <CircularProgress color="secondary" size="4rem" />
         </div>

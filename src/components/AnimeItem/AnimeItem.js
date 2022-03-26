@@ -30,6 +30,7 @@ const AnimeItem = ({
       onMouseDown={mouseDownAnimeItem(animeItemRef)}
       onMouseLeave={mouseLeaveAnimeItem(animeItemRef)}
       onMouseMove={mouseMoveAnimeItem(animeItemRef, virtual)}
+      title={anime.title}
     >
       <div className="layer-upcoming-anime"></div>
       {isAllowDelete && (
@@ -102,10 +103,10 @@ const AnimeItem = ({
             title={"Airing at " + new Date(anime.aired.from).toUTCString()}
             className="anime-info-display_summary top-left_summary color-green"
           >
-            {anime.aired.prop.from.day}
-            {anime.aired.prop.from.day && "/"}
             {anime.aired.prop.from.month}
             {anime.aired.prop.from.month && "/"}
+            {anime.aired.prop.from.day}
+            {anime.aired.prop.from.day && "/"}
             {anime.aired.prop.from.year}
           </div>
         )}
@@ -114,10 +115,10 @@ const AnimeItem = ({
             title={"Ending at " + new Date(anime.aired.to).toUTCString()}
             className="anime-info-display_summary top-left_summary color-yellow"
           >
-            {anime.aired.prop.to.day}
-            {anime.aired.prop.to.day && "/"}
             {anime.aired.prop.to.month}
             {anime.aired.prop.to.month && "/"}
+            {anime.aired.prop.to.day}
+            {anime.aired.prop.to.day && "/"}
             {anime.aired.prop.to.year}{" "}
           </div>
         )}

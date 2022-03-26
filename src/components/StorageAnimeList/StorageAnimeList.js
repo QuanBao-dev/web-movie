@@ -25,7 +25,8 @@ const StorageAnimeList = ({ query }) => {
       q: query.match(/q=[a-zA-Z0-9 \~\!\@\#\$\%\^\*\(\)\_\-\+\=\`\\\.]+/g)
         ? query
             .match(/q=[a-zA-Z0-9 \~\!\@\#\$\%\^\*\(\)\_\-\+\=\`\\\.]+/g)[0]
-            .replace("q=", "").replace(/%20/g," ")
+            .replace("q=", "")
+            .replace(/%20/g, " ")
         : "",
       page: query.match(/page=[0-9]+/g)
         ? parseInt(query.match(/page=[0-9]+/g)[0].replace("page=", ""))
@@ -67,6 +68,14 @@ const StorageAnimeList = ({ query }) => {
       producers: query.match(/producers=[0-9,]+/g)
         ? query.match(/producers=[0-9,]+/g)[0].replace("producers=", "")
         : "",
+      letter: query.match(
+        /letter=[a-zA-Z0-9 \~\!\@\#\$\%\^\*\(\)\_\-\+\=\`\\\.]+/g
+      )
+        ? query
+            .match(/letter=[a-zA-Z0-9 \~\!\@\#\$\%\^\*\(\)\_\-\+\=\`\\\.]+/g)[0]
+            .replace("letter=", "")
+            .replace(/%20/g, " ")
+        : "",
     });
     window.scroll({ top: 0 });
     setIsLoading(true);
@@ -102,7 +111,12 @@ const StorageAnimeList = ({ query }) => {
         />
       )}
       {isLoading && <CircularProgress color="secondary" size="4rem" />}
-      {!isLoading && <AnimeList data={storageAnimeState.dataAnime} />}
+      {!isLoading && storageAnimeState.dataAnime.length > 0 && (
+        <AnimeList data={storageAnimeState.dataAnime} />
+      )}
+      {!isLoading && storageAnimeState.dataAnime.length === 0 && (
+        <h1>No results</h1>
+      )}
       {!isLoading && maxPage > 1 && (
         <PageStorageAnimeList
           maxPage={maxPage}

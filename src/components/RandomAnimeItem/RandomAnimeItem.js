@@ -17,6 +17,7 @@ const RandomAnimeItem = ({
 }) => {
   return (
     <Link
+      title={title}
       to={`/anime/${malId}-${title
         .replace(/[ /%^&*():.$]/g, "-")
         .toLocaleLowerCase()}`}

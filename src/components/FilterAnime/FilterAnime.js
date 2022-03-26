@@ -24,6 +24,7 @@ const FilterAnime = () => {
   const ratingValueRef = useRef("");
   const orderByValueRef = useRef("");
 
+  const letterRef = useRef("");
   const textRef = useRef("");
   const minScoreRef = useRef("");
   const maxScoreRef = useRef("");
@@ -56,6 +57,8 @@ const FilterAnime = () => {
           setMinScoreState(storageAnimeState.min_score);
           setMaxScoreState(storageAnimeState.max_score);
           setOrderByState(storageAnimeState.orderBy);
+          letterRef.current &&
+            (letterRef.current.value = storageAnimeState.letter);
           textRef.current && (textRef.current.value = storageAnimeState.q);
           genresValueRef.current =
             storageAnimeState.genresDataOptionsList.filter(({ mal_id }) =>
@@ -102,11 +105,6 @@ const FilterAnime = () => {
     storageAnimeState.q,
   ]);
 
-  // useEffect(() => {
-  //   if (producerValueRef.current && producerValueRef.current.length > 0)
-  //     setActiveIndex(1);
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [triggerReset]);
   useEffect(() => {
     const subscriptionInit = storageAnimeStore.subscribe(setStorageAnimeState);
     const subscription = fromEvent(buttonFilterRef.current, "click").subscribe(
@@ -134,6 +132,7 @@ const FilterAnime = () => {
           maxScore: maxScoreRef.current,
           minScore: minScoreRef.current,
           isSfw: sfwRef.current.checked,
+          letter: letterRef.current ? letterRef.current.value : "",
         };
         const {
           page,
@@ -149,6 +148,7 @@ const FilterAnime = () => {
           status,
           type,
           score,
+          letter,
           isSfw,
         } = ans;
         history.push(
@@ -164,7 +164,7 @@ const FilterAnime = () => {
             genres ? `&genres=${genres}` : ""
           }${genresExclude ? `&genres_exclude=${genresExclude}` : ""}${
             producer ? `&producers=${producer}` : ""
-          }`
+          }${letter ? `&letter=${letter}` : ""}`
         );
       }
     );
@@ -187,9 +187,42 @@ const FilterAnime = () => {
               textRef.current.focus();
             }}
           >
-            <input ref={textRef} placeholder={"Search key"} />
+            <input
+              ref={textRef}
+              placeholder={"Search key"}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  buttonFilterRef.current.dispatchEvent(
+                    new CustomEvent("click")
+                  );
+                }
+              }}
+            />
           </div>
         </fieldset>
+
+        <fieldset className="filter-anime-input-container">
+          <legend className="label-select2">Entry</legend>
+          <div
+            className="input-section-container"
+            onClick={() => {
+              letterRef.current.focus();
+            }}
+          >
+            <input
+              ref={letterRef}
+              placeholder={"Search entry"}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  buttonFilterRef.current.dispatchEvent(
+                    new CustomEvent("click")
+                  );
+                }
+              }}
+            />
+          </div>
+        </fieldset>
+
         <CustomSelect2
           url={"https://api.jikan.moe/v4/producers"}
           valueRef={producerValueRef}
@@ -261,6 +294,7 @@ const FilterAnime = () => {
           <legend className="label-select">Sfw</legend>
           <input className="filter-check-box" ref={sfwRef} type={"checkbox"} />
         </fieldset>
+
         <fieldset className="custom-select-container">
           <CustomSelect
             dataOptions={storageAnimeStore.currentState().orderByOptionsList}
@@ -289,12 +323,18 @@ const FilterAnime = () => {
             onClick={() => {
               typeValueRef.current = "";
               statusValueRef.current = "";
-              sortValueRef.current = "";
+              sortValueRef.current = "asc";
               ratingValueRef.current = "";
               orderByValueRef.current = "";
+              letterRef.current.value = "";
+              textRef.current.value = "";
+              minScoreRef.current = "";
+              maxScoreRef.current = "";
+              sfwRef.current.checked = false;
               producerValueRef.current = [];
               genresExcludeValueRef.current = [];
               genresValueRef.current = [];
+              setOrderByState(false);
               setTriggerReset(!triggerReset);
             }}
           >

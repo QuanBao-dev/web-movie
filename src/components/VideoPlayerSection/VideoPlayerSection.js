@@ -37,7 +37,7 @@ function VideoPlayerSection({ currentEpisode, user }) {
             width="100%"
             height="100%"
             src={currentEpisode.embedUrl}
-            title={currentEpisode.episode}
+            title={"Episode " + currentEpisode.episode}
             allowFullScreen
           />
         )}

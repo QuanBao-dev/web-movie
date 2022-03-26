@@ -253,29 +253,7 @@ function ListInformation({ arrKeys, history, isLoading }) {
                   >
                     {v}
                   </span>{" "}
-                  {aired.prop.from.month &&
-                    aired.prop.from.day &&
-                    aired.prop.from.year && (
-                      <span>
-                        {aired.prop.from.month}/{aired.prop.from.day}/
-                        {aired.prop.from.year}
-                      </span>
-                    )}
-                  {(!aired.prop.from.month ||
-                    !aired.prop.from.day ||
-                    !aired.prop.from.year) && <span>??</span>}{" "}
-                  -{" "}
-                  {aired.prop.to.month &&
-                    aired.prop.to.day &&
-                    aired.prop.to.year && (
-                      <span>
-                        {aired.prop.to.month}/{aired.prop.to.day}/
-                        {aired.prop.to.year}
-                      </span>
-                    )}
-                  {(!aired.prop.to.month ||
-                    !aired.prop.to.day ||
-                    !aired.prop.to.year) && <span>??</span>}
+                  {aired.string ? aired.string : "Unknown"}
                 </li>
               );
             }

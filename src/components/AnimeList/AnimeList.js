@@ -48,7 +48,7 @@ const AnimeList = ({
     const subscription = fromEvent(window, "scroll")
       .pipe(
         takeWhile(() => virtual),
-        debounceTime(100)
+        debounceTime(300)
       )
       .subscribe(() => {
         const { rowStart, rowEnd } = calculateRowStartEnd(
@@ -149,7 +149,11 @@ const AnimeList = ({
           .map((anime, index) => {
             return (
               <div
-                key={index}
+                key={
+                  (lazyLoadState.rowStart - 1) *
+                    lazyLoadState.quantityItemPerRow +
+                  index
+                }
                 style={
                   virtual
                     ? {

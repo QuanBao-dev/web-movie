@@ -75,7 +75,7 @@ const RandomAnimeList = () => {
           index
         ) => (
           <RandomAnimeItem
-            key={mal_id}
+            key={index}
             title={title}
             duration={duration}
             aired={aired}

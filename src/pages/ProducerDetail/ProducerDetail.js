@@ -14,7 +14,9 @@ const ProducerDetail = (props) => {
   return (
     <LazyLoadAnimeList
       genreId={producerId}
-      url={`https://api.jikan.moe/v4/anime?${type}s={genreId}&page={page}`}
+      url={`https://api.jikan.moe/v4/anime?${
+        type === "genre" ? "genre" : "producer"
+      }s={genreId}&page={page}`}
       type={producerId.split("-").slice(1).join(" ")}
     />
   );

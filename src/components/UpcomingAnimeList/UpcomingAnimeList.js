@@ -12,6 +12,7 @@ import {
 import AnimeList from "../AnimeList/AnimeList";
 import { fromEvent } from "rxjs";
 import { debounceTime } from "rxjs/operators";
+import { Link } from "react-router-dom";
 
 let numberList = 25;
 let numberCloneList = 8;
@@ -63,7 +64,14 @@ const UpcomingAnimeList = () => {
       }}
     >
       <div className="container-upcoming-anime-main">
-        <h1 className="title-upcoming-anime">Upcoming anime</h1>
+        <h1 className="title-upcoming-anime">
+          <Link
+            style={{ textDecoration: "none" }}
+            to={`/storage?status=upcoming&order_by=favorites&sort=desc&page=1`}
+          >
+            Upcoming anime
+          </Link>
+        </h1>
         {upcomingAnimeListState.screenWidth >= 700 && (
           <i
             className="button-scrolling left fas fa-arrow-alt-circle-left fa-3x"

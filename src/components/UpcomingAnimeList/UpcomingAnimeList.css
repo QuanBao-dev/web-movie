@@ -9,6 +9,10 @@
   margin: auto;
   margin-top: 10px;
   border-radius: 10px;
+  transition: 0.5s;
+}
+
+.title-upcoming-anime a{
   animation: colorChanging 1s infinite forwards;
 }
 

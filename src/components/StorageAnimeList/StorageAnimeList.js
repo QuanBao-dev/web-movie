@@ -3,8 +3,15 @@ import "./StorageAnimeList.css";
 
 import React, { useEffect, useState } from "react";
 import { ajax } from "rxjs/ajax";
-import { catchError, pluck, retry } from "rxjs/operators";
-import { of } from "rxjs";
+import {
+  catchError,
+  pluck,
+  retry,
+  switchMapTo,
+  tap,
+  filter,
+} from "rxjs/operators";
+import { of, timer } from "rxjs";
 import storageAnimeStore from "../../store/storageAnime";
 import AnimeList from "../AnimeList/AnimeList";
 import { CircularProgress } from "@material-ui/core";
@@ -13,8 +20,6 @@ const StorageAnimeList = ({ query }) => {
   const [storageAnimeState, setStorageAnimeState] = useState(
     storageAnimeStore.currentState()
   );
-  const [isLoading, setIsLoading] = useState(true);
-  const [maxPage, setMaxPage] = useState(1);
   const history = useHistory();
   useEffect(() => {
     const subscription = storageAnimeStore.subscribe(setStorageAnimeState);
@@ -77,23 +82,33 @@ const StorageAnimeList = ({ query }) => {
             .replace(/%20/g, " ")
         : "",
     });
-    window.scroll({ top: 0 });
-    setIsLoading(true);
-    const subscription = ajax(`https://api.jikan.moe/v4/anime${query}`)
+    const subscription = timer(0)
       .pipe(
-        pluck("response"),
-        retry(10),
-        catchError((error) => of({ error }))
+        filter(() => query !== storageAnimeStore.currentState().query),
+        tap(() => {
+          storageAnimeStore.updateData({
+            isLoading: true,
+          });
+          window.scroll({ top: 0 });
+        }),
+        switchMapTo(
+          ajax(`https://api.jikan.moe/v4/anime${query}`).pipe(
+            pluck("response"),
+            retry(10),
+            catchError((error) => of({ error }))
+          )
+        )
       )
       .subscribe((response) => {
-        setIsLoading(false);
         if (response.error) return;
-        setMaxPage(response.pagination.last_visible_page);
         // const data = response.data.filter(({ title }) =>
         //   title.match(new RegExp(storageAnimeStore.currentState().q, "i"))
         // );
         storageAnimeStore.updateData({
           dataAnime: response.data,
+          query,
+          isLoading: false,
+          maxPage: response.pagination.last_visible_page,
         });
       });
     return () => {
@@ -101,6 +116,7 @@ const StorageAnimeList = ({ query }) => {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [query]);
+  const { isLoading, maxPage } = storageAnimeState;
   return (
     <div className="storage-anime-list-container">
       {!isLoading && maxPage > 1 && (

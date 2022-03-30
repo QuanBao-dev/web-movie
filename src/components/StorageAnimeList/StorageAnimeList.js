@@ -101,9 +101,6 @@ const StorageAnimeList = ({ query }) => {
       )
       .subscribe((response) => {
         if (response.error) return;
-        // const data = response.data.filter(({ title }) =>
-        //   title.match(new RegExp(storageAnimeStore.currentState().q, "i"))
-        // );
         storageAnimeStore.updateData({
           dataAnime: response.data,
           query,

@@ -18,6 +18,7 @@ const ProducerDetail = (props) => {
         type === "genre" ? "genre" : "producer"
       }s={genreId}&page={page}`}
       type={producerId.split("-").slice(1).join(" ")}
+      type2={type}
     />
   );
 };

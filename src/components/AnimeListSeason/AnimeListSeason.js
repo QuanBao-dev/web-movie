@@ -85,9 +85,6 @@ const AnimeListSeason = () => {
     if (!animeListSeasonState.isInit) {
       window.scroll({
         top: targetScroll.current.offsetTop - 170,
-        behavior: animeListSeasonStream.currentState().isSmoothScroll
-          ? "smooth"
-          : "auto",
       });
       animeListSeasonStream.updateDataQuick({
         isSmoothScroll: true,

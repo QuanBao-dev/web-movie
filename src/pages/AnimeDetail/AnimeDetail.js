@@ -259,7 +259,6 @@ const AnimeDetail = (props) => {
             </h1>
             <ListInformation
               arrKeys={arrKeys}
-              history={history}
               isLoading={animeDetailState.isLoadingInfoAnime}
             />
             {!showThemeMusic && (

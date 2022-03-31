@@ -12,7 +12,7 @@ const dataLinkList = [
   { name: "themes", route: "/genre/" },
   { name: "demographics", route: "/genre/" },
 ];
-function ListInformation({ arrKeys, history, isLoading }) {
+function ListInformation({ arrKeys, isLoading }) {
   return (
     <ul>
       {isLoading !== null && isLoading === true && (

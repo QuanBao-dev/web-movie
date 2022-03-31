@@ -59,7 +59,8 @@
   },
   "devDependencies": {
     "concurrently": "^5.2.0",
-    "nodemon": "^2.0.4"
+    "nodemon": "^2.0.4",
+    "react-error-overlay": "6.0.9"
   },
   "nodemonConfig": {
     "ignore": [

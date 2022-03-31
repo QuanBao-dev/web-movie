@@ -137,6 +137,15 @@ export const fetchData = (
                 opening_themes: "",
                 ending_themes: "",
                 external_links: {},
+                broadcast:
+                  data.broadcast && data.broadcast.day
+                    ? [
+                        `Day: ${data.broadcast.day}`,
+                        `Time: ${data.broadcast.time}`,
+                        `Timezone: ${data.broadcast.timezone}`,
+                        `String: ${data.broadcast.string}`,
+                      ]
+                    : null,
               },
             });
             document.title =

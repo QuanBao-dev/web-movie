@@ -32,7 +32,11 @@ export const filterAnimeList = (
           parseInt(animeListSeasonState.genreId)
         );
       }
-      return score > animeListSeasonState.score && isContained;
+      return (
+        ((score === null && animeListSeasonState.score === 0) ||
+          score > animeListSeasonState.score) &&
+        isContained
+      );
     });
     animeListSeasonStream.updateData({
       dataDetail: filteredData,
@@ -54,10 +58,11 @@ export const fetchAnimeListSeason = (
   return () => {
     if (
       animeListSeasonState.currentPage !==
-        animeListSeasonState.currentPageOnDestroy ||
+        animeListSeasonStream.currentState().currentPageOnDestroy ||
       animeListSeasonState.season !==
-        animeListSeasonState.currentSeasonOnDestroy ||
-      animeListSeasonState.year !== animeListSeasonState.currentYearOnDestroy
+        animeListSeasonStream.currentState().currentSeasonOnDestroy ||
+      animeListSeasonState.year !==
+        animeListSeasonStream.currentState().currentYearOnDestroy
     ) {
       animeListSeasonStream.updateData({ isFetching: true });
       subscription && subscription.unsubscribe();
@@ -82,7 +87,11 @@ export const fetchAnimeListSeason = (
               parseInt(animeListSeasonState.genreId)
             );
           }
-          return score > animeListSeasonState.score && isContained;
+          return (
+            ((score === null && animeListSeasonState.score === 0) ||
+              score > animeListSeasonState.score) &&
+            isContained
+          );
         });
         animeListSeasonStream.updateData({
           dataDetail: filteredData,
@@ -97,15 +106,14 @@ export const fetchAnimeListSeason = (
         ) {
           animeListSeasonStream.updateData({ currentPage: 1 });
         }
+        animeListSeasonStream.updateDataQuick({
+          currentPageOnDestroy:
+            animeListSeasonStream.currentState().currentPage,
+          currentSeasonOnDestroy: animeListSeasonStream.currentState().season,
+          currentYearOnDestroy: animeListSeasonStream.currentState().year,
+        });
       });
     }
-    return () => {
-      // animeListSeasonStream.updateDataQuick({
-      //   currentPageOnDestroy: animeListSeasonStream.currentState().currentPage,
-      //   currentSeasonOnDestroy: animeListSeasonState.season,
-      //   currentYearOnDestroy: animeListSeasonState.year,
-      // });
-    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   };
 };

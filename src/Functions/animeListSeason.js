@@ -93,6 +93,16 @@ export const fetchAnimeListSeason = (
             isContained
           );
         });
+        if (
+          animeListSeasonState.season !==
+            animeListSeasonStream.currentState().currentSeasonOnDestroy ||
+          animeListSeasonState.year !==
+            animeListSeasonStream.currentState().currentYearOnDestroy
+        ) {
+          animeListSeasonStream.updateData({
+            currentPage: 1,
+          });
+        }
         animeListSeasonStream.updateData({
           dataDetail: filteredData,
           dataDetailOriginal: v,

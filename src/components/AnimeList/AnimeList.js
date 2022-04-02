@@ -3,13 +3,14 @@ import "./AnimeList.css";
 import loadable from "@loadable/component";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import React, { useEffect, useRef } from "react";
-import { fromEvent } from "rxjs";
+import { fromEvent, iif } from "rxjs";
 
 import {
   calculateRowStartEnd,
   lazyLoadAnimeListStream,
 } from "../../epics/lazyLoadAnimeList";
 import { debounceTime, takeWhile } from "rxjs/operators";
+import { mobileAndTabletCheck } from "../../util/checkMobileDevice";
 const responsiveObject = [
   {
     maxWidth: 100000,
@@ -45,26 +46,28 @@ const AnimeList = ({
   const animeListRef = useRef();
   const lazyLoadState = lazyLoadAnimeListStream.currentState();
   useEffect(() => {
-    const subscription = fromEvent(window, "scroll")
-      .pipe(
+    const subscription = iif(
+      () => mobileAndTabletCheck(),
+      fromEvent(window, "scroll").pipe(takeWhile(() => virtual)),
+      fromEvent(window, "scroll").pipe(
         takeWhile(() => virtual),
         debounceTime(300)
       )
-      .subscribe(() => {
-        const { rowStart, rowEnd } = calculateRowStartEnd(
-          animeListRef,
-          lazyLoadState.heightItem
-        );
-        if (
-          rowStart !== lazyLoadState.rowStart &&
-          rowEnd !== lazyLoadState.rowEnd
-        ) {
-          lazyLoadAnimeListStream.updateData({
-            rowStart,
-            rowEnd,
-          });
-        }
-      });
+    ).subscribe(() => {
+      const { rowStart, rowEnd } = calculateRowStartEnd(
+        animeListRef,
+        lazyLoadState.heightItem
+      );
+      if (
+        rowStart !== lazyLoadState.rowStart &&
+        rowEnd !== lazyLoadState.rowEnd
+      ) {
+        lazyLoadAnimeListStream.updateData({
+          rowStart,
+          rowEnd,
+        });
+      }
+    });
     return () => {
       subscription.unsubscribe();
     };

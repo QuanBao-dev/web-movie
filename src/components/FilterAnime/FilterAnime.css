@@ -14,6 +14,8 @@
 
 .filter-anime-title{
   text-align: center;
+  font-family: "Roboto", sans-serif;
+  width: 100%;
   border-bottom: 1px solid #454545;
   padding-bottom: 0.4rem;
   color: rgb(255, 111, 135);

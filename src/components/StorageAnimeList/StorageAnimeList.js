@@ -1,21 +1,23 @@
 /* eslint-disable no-useless-escape */
 import "./StorageAnimeList.css";
 
+import { CircularProgress } from "@material-ui/core";
 import React, { useEffect, useState } from "react";
+import { Link, useHistory } from "react-router-dom";
+import { of, timer } from "rxjs";
 import { ajax } from "rxjs/ajax";
 import {
   catchError,
+  filter,
   pluck,
   retry,
   switchMapTo,
   tap,
-  filter,
 } from "rxjs/operators";
-import { of, timer } from "rxjs";
+
 import storageAnimeStore from "../../store/storageAnime";
 import AnimeList from "../AnimeList/AnimeList";
-import { CircularProgress } from "@material-ui/core";
-import { Link, useHistory } from "react-router-dom";
+
 const StorageAnimeList = ({ query }) => {
   const [storageAnimeState, setStorageAnimeState] = useState(
     storageAnimeStore.currentState()
@@ -65,6 +67,9 @@ const StorageAnimeList = ({ query }) => {
       genres: query.match(/genres=[0-9,]+/g)
         ? query.match(/genres=[0-9,]+/g)[0].replace("genres=", "")
         : "",
+      themes: query.match(/genres=[0-9,]+/g)
+        ? query.match(/genres=[0-9,]+/g)[0].replace("genres=", "")
+        : "",
       genres_exclude: query.match(/genres_exclude=[0-9,]+/g)
         ? query
             .match(/genres_exclude=[0-9,]+/g)[0]
@@ -110,12 +115,25 @@ const StorageAnimeList = ({ query }) => {
       });
     return () => {
       subscription.unsubscribe();
+      if (window.location.href.includes("storage"))
+        storageAnimeStore.updateData({
+          query: null,
+        });
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [query]);
   const { isLoading, maxPage } = storageAnimeState;
   return (
     <div className="storage-anime-list-container">
+      <h2 className="filter-anime-title">Storage</h2>
+      {!isLoading && (
+        <Link
+          className="storage-anime-list-vertical-icon"
+          to={`/storage/vertical${query.replace(/page=[0-9]+(&)?/g, ``)}`}
+        >
+          Change view
+        </Link>
+      )}
       {!isLoading && maxPage > 1 && (
         <PageStorageAnimeList
           maxPage={maxPage}
@@ -147,7 +165,7 @@ function PageStorageAnimeList({ maxPage, query, history }) {
     query !== ""
       ? parseInt(query.match(/page=[0-9]+/g)[0].replace("page=", ""))
       : 1;
-  const amount = parseInt(maxPage / 2) < 6 ? parseInt(maxPage / 2) : 6;
+  const amount = 6;
   let tempRight = 0;
   let tempLeft = 0;
   if (page - amount < 0) {

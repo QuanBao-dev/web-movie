@@ -39,8 +39,7 @@ export const changeCurrentPage$ = () => {
 export const changeSeasonYear$ = (
   selectYearElement,
   selectSeasonElement,
-  selectScoreElement,
-  selectGenreElement
+  selectScoreElement
 ) => {
   // console.log("change")
   const listenEventYear$ = fromEvent(selectYearElement, "change").pipe(
@@ -54,9 +53,7 @@ export const changeSeasonYear$ = (
     pluck("target", "value"),
     map((v) => parseInt(v))
   );
-  const listenEventGenre$ = fromEvent(selectGenreElement, "change").pipe(
-    pluck("target", "value")
-  );
+
   return from([
     listenEventYear$.pipe(startWith(animeListSeasonStream.currentState().year)),
     listenEventSeason$.pipe(
@@ -65,18 +62,13 @@ export const changeSeasonYear$ = (
     listenEventScore$.pipe(
       startWith(animeListSeasonStream.currentState().score)
     ),
-    listenEventGenre$.pipe(
-      startWith(animeListSeasonStream.currentState().genreId)
-    ),
   ]).pipe(combineAll());
 };
 
 export const fetchAnimeSeason$ = (
   year,
   season,
-  page,
-  numberOfProducts,
-  score
+  page
 ) => {
   return timer(0).pipe(
     switchMapTo(

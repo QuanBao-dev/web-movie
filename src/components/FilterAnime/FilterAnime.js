@@ -14,9 +14,10 @@ const FilterAnime = () => {
   const buttonFilterRef = useRef();
   const history = useHistory();
 
+  const genresExcludeValueRef = useRef([]);
   const producerValueRef = useRef([]);
   const genresValueRef = useRef([]);
-  const genresExcludeValueRef = useRef([]);
+  const themesValueRef = useRef([]);
 
   const typeValueRef = useRef("");
   const statusValueRef = useRef("");
@@ -63,6 +64,10 @@ const FilterAnime = () => {
           genresValueRef.current =
             storageAnimeState.genresDataOptionsList.filter(({ mal_id }) =>
               storageAnimeState.genres.split(",").includes(mal_id.toString())
+            );
+          themesValueRef.current =
+            storageAnimeState.themesDataOptionsList.filter(({ mal_id }) =>
+              storageAnimeState.themes.split(",").includes(mal_id.toString())
             );
           genresExcludeValueRef.current =
             storageAnimeState.genresDataOptionsList.filter(({ mal_id }) =>
@@ -112,7 +117,10 @@ const FilterAnime = () => {
         const producerMalIdListString = producerValueRef.current
           ? producerValueRef.current.map(({ mal_id }) => mal_id).join(",")
           : [];
-        const genresMalIdListString = genresValueRef.current
+        const genresMalIdListString = [
+          ...genresValueRef.current,
+          ...themesValueRef.current,
+        ]
           .map(({ mal_id }) => mal_id)
           .join(",");
         const genresExcludeMalIdListString = genresExcludeValueRef.current
@@ -178,7 +186,6 @@ const FilterAnime = () => {
     <div className="filter-anime-container">
       <div className="filter-anime-wrapper">
         <h2 className="filter-anime-title">Filter</h2>
-
         <fieldset className="filter-anime-input-container">
           <legend className="label-select2">Key</legend>
           <div
@@ -237,6 +244,14 @@ const FilterAnime = () => {
           valueRef={genresValueRef}
           triggerReset={triggerReset}
           defaultValue={genresValueRef.current}
+        />
+
+        <CustomSelect2
+          dataOptions={storageAnimeStore.currentState().themesDataOptionsList}
+          label={"Themes"}
+          valueRef={themesValueRef}
+          triggerReset={triggerReset}
+          defaultValue={themesValueRef.current}
         />
 
         <CustomSelect2

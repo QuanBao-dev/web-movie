@@ -1,25 +1,25 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import "./LazyLoadAnimeList.css";
+import './LazyLoadAnimeList.css';
 
-import loadable from "@loadable/component";
-import CircularProgress from "@material-ui/core/CircularProgress";
-import React, { useRef, useState } from "react";
-import { useEffect } from "react";
+import loadable from '@loadable/component';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import React, { useRef, useState } from 'react';
+import { useEffect } from 'react';
+import { Link } from 'react-router-dom';
 
-import { lazyLoadAnimeListStream } from "../../epics/lazyLoadAnimeList";
+import { lazyLoadAnimeListStream } from '../../epics/lazyLoadAnimeList';
 import {
   useFetchDataGenreAnimeList,
   useGenreIdChange,
   useInitLazyLoadAnimeList,
   useUpdatePageScrollingWindow,
-} from "../../Hook/lazyLoadAnimeList";
-import { Link } from "react-router-dom";
+} from '../../Hook/lazyLoadAnimeList';
 
 const AnimeList = loadable(() =>
   import("../../components/AnimeList/AnimeList")
 );
 
-const LazyLoadAnimeList = ({ genreId, url, type, type2 }) => {
+const LazyLoadAnimeList = ({ url, query, title }) => {
   const [lazyLoadState, setLazyLoadState] = useState(
     lazyLoadAnimeListStream.currentState()
   );
@@ -29,26 +29,20 @@ const LazyLoadAnimeList = ({ genreId, url, type, type2 }) => {
     document.body.style.backgroundSize = "cover";
   }, []);
   useInitLazyLoadAnimeList(setLazyLoadState);
-  useGenreIdChange(parseInt(genreId), lazyLoadState);
+  useGenreIdChange(query, lazyLoadState);
   useUpdatePageScrollingWindow(lazyLoadState);
-  useFetchDataGenreAnimeList(lazyLoadState, parseInt(genreId), url, type);
+  useFetchDataGenreAnimeList(lazyLoadState, query, url);
   return (
     <div className="container-genre-detail">
       <Link
-        to={`/storage?page=1&${
-          type2 === "genre" ? "genre" : "producer"
-        }s=${parseInt(genreId)}`}
+        to={`/storage?page=${parseInt(
+          lazyLoadAnimeListStream.currentState().pageGenre
+        )}${query ? `&${query.replace("?", "")}` : ""}`}
         className="filter-icon"
       >
         <i className="fas fa-filter"></i>
       </Link>
-      <h1>
-        {!lazyLoadState.genre ? (
-          <CircularProgress color="secondary" size="5rem" />
-        ) : (
-          lazyLoadState.genre
-        )}
-      </h1>
+      <h1>Storage</h1>
       <AnimeList
         virtual={true}
         data={lazyLoadState.genreDetailData}

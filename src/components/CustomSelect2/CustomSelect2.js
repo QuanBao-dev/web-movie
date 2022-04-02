@@ -32,7 +32,6 @@ const CustomSelect2 = ({
     inputRef.current.value = "";
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [triggerReset]);
-
   useEffect(() => {
     if (!defaultValue) return;
     setAllSelectedOptions(defaultValue);
@@ -67,7 +66,7 @@ const CustomSelect2 = ({
         if (pageRef.current !== page) {
           setDataSuggestions([...dataSuggestions, ...data.data]);
         }
-        if(textSearchRef.current === textSearch && pageRef.current === page){
+        if (textSearchRef.current === textSearch && pageRef.current === page) {
           setDataSuggestions([...data.data]);
           setPage(1);
           setActiveIndex(0);
@@ -215,6 +214,7 @@ const CustomSelect2 = ({
               if (e.key === "Enter") {
                 inputRef.current.value = "";
                 listSuggestionRef.current.style.display = "none";
+                setTextSearch("");
                 if (!listSuggestionRef.current.children[activeIndex]) return;
                 if (
                   listSuggestionRef.current.children[activeIndex].className !==

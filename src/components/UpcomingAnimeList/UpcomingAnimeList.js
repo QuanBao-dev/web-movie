@@ -1,6 +1,6 @@
 import "./UpcomingAnimeList.css";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 import { scrollAnimeUser$ } from "../../epics/upcomingAnimeList";
 import { upcomingAnimeListStream } from "../../epics/upcomingAnimeList";
@@ -22,6 +22,7 @@ const UpcomingAnimeList = () => {
   const [upcomingAnimeListState, setUpcomingAnimeListState] = useState(
     upcomingAnimeListStream.currentState()
   );
+  const upcomingAnimeContainerRef = useRef();
   useInitUpcomingAnimeList(setUpcomingAnimeListState);
   useKeepDragMoveAnimeList(length, numberList);
   useFetchUpcomingAnimeList(numberList, numberCloneList);
@@ -31,13 +32,32 @@ const UpcomingAnimeList = () => {
       .subscribe(() => {
         upcomingAnimeListStream.updateData({ screenWidth: window.innerWidth });
       });
+    const subscription2 = fromEvent(window, "scroll").subscribe(() => {
+      const { y, height } =
+        upcomingAnimeContainerRef.current.getBoundingClientRect();
+      const { offsetHeight } = upcomingAnimeContainerRef.current;
+      if (y < height && y > -offsetHeight) {
+        if (upcomingAnimeListStream.currentState().modeScrolling !== "interval")
+          upcomingAnimeListStream.updateDataQuick({
+            modeScrolling: "interval",
+          });
+      } else {
+        if (upcomingAnimeListStream.currentState().modeScrolling !== "enter")
+          upcomingAnimeListStream.updateDataQuick({
+            modeScrolling: "enter",
+          });
+      }
+    });
     return () => {
       subscription.unsubscribe();
+      subscription2.unsubscribe();
     };
   }, []);
+
   return (
     <section
       className="upcoming-anime-container"
+      ref={upcomingAnimeContainerRef}
       onTouchMove={() => {
         // updateModeScrolling("enter");
         upcomingAnimeListStream.updateDataQuick({

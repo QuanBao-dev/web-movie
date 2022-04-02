@@ -15,7 +15,6 @@ export const useFilterAnimeList = (animeListSeasonState) => {
   useEffect(filterAnimeList(animeListSeasonState), [
     animeListSeasonState.score,
     animeListSeasonState.modeFilter,
-    animeListSeasonState.genreId,
   ]);
 };
 
@@ -33,7 +32,6 @@ export const useListenWhenOptionChange = (
   selectSeason,
   selectYear,
   selectScore,
-  selectGenre
 ) => {
   useEffect(
     listenWhenOptionChange(
@@ -41,7 +39,6 @@ export const useListenWhenOptionChange = (
       selectSeason,
       selectYear,
       selectScore,
-      selectGenre
     ),
     [animeListSeasonState.screenWidth]
   );

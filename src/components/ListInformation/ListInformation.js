@@ -4,13 +4,13 @@ import { Link } from "react-router-dom";
 import { animeDetailStream, capitalizeString } from "../../epics/animeDetail";
 
 const dataLinkList = [
-  { name: "explicit_genres", route: "/genre/" },
-  { name: "genres", route: "/genre/" },
-  { name: "producers", route: "/producer/" },
-  { name: "licensors", route: "/licensor/" },
-  { name: "studios", route: "/studio/" },
-  { name: "themes", route: "/genre/" },
-  { name: "demographics", route: "/genre/" },
+  { name: "explicit_genres", route: "?genre=" },
+  { name: "genres", route: "?genres=" },
+  { name: "producers", route: "?producers=" },
+  { name: "licensors", route: "?producers=" },
+  { name: "studios", route: "?producers=" },
+  { name: "themes", route: "?genres=" },
+  { name: "demographics", route: "?genres=" },
 ];
 function ListInformation({ arrKeys, isLoading }) {
   return (
@@ -153,13 +153,7 @@ function ListInformation({ arrKeys, isLoading }) {
                           return (
                             <Link
                               key={index}
-                              to={
-                                route +
-                                anime.mal_id +
-                                `-${anime.name
-                                  .replace(/[ /%^&*(),]/g, "-")
-                                  .toLocaleLowerCase()}`
-                              }
+                              to={`/storage/vertical${route}${anime.mal_id}`}
                             >
                               <li className="click-able-info">{anime.name}</li>
                             </Link>

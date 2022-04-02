@@ -80,13 +80,12 @@ const animeListSeasonStore = {
     };
     behaviorSubject.next(state);
   },
-  updateSeasonYear: (season, year, score, genreId) => {
+  updateSeasonYear: (season, year, score) => {
     state = {
       ...state,
       season: season,
       year: year,
       score,
-      genreId,
     };
     behaviorSubject.next(state);
   },

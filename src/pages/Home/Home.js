@@ -48,8 +48,6 @@ const AnimeSchedule = loadable(
   { fallback: <i className="fas fa-spinner fa-9x fa-spin"></i> }
 );
 
-const Genres = loadable(() => import("../../components/Genres/Genres"));
-
 const UpcomingAnimeList = loadable(
   () =>
     /* webpackPrefetch: true */ import(
@@ -123,7 +121,6 @@ function Home() {
         <div className="wrapper-search-anime-list">
           <SearchTool />
         </div>
-        <Genres />
         <UpcomingAnimeList />
         <RandomAnimeList />
         <UpdatedAnime />

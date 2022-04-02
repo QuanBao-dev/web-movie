@@ -12,22 +12,17 @@ export const useInitLazyLoadAnimeList = (setLazyLoadState) => {
   useEffect(initLazyLoadAnimeList(setLazyLoadState), []);
 };
 
-export const useGenreIdChange = (genreId, { currentGenreId }) => {
-  useEffect(genreIdChange(genreId, currentGenreId), [currentGenreId]);
+export const useGenreIdChange = (query, lazyLoadState) => {
+  useEffect(genreIdChange(query, lazyLoadState.query), [lazyLoadState.query]);
 };
 
-export const useUpdatePageScrollingWindow = (
-  {
-    pageGenre,
-    genreDetailData,
-    isStopScrollingUpdated,
-  }
-) => {
+export const useUpdatePageScrollingWindow = ({
+  pageGenre,
+  genreDetailData,
+  isStopScrollingUpdated,
+}) => {
   useEffect(
-    updatePageScrollingWindow(
-      genreDetailData,
-      isStopScrollingUpdated
-    ),
+    updatePageScrollingWindow(genreDetailData, isStopScrollingUpdated),
     [genreDetailData.length, pageGenre]
   );
 };
@@ -39,19 +34,17 @@ export const useFetchDataGenreAnimeList = (
     genreDetailData,
     currentGenreId,
   } = lazyLoadAnimeListStream.currentState(),
-  genreId,
-  url,
-  type
+  query,
+  url
 ) => {
   useEffect(
     fetchDataGenreAnimeList(
       pageGenre,
       isStopScrollingUpdated,
       genreDetailData,
-      genreId,
-      url,
-      type
+      query,
+      url
     ),
-    [pageGenre, genreId, currentGenreId]
+    [pageGenre, query, currentGenreId]
   );
 };

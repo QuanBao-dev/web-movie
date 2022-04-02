@@ -18,34 +18,23 @@ export const initLazyLoadAnimeList = (setLazyLoadState) => {
   };
 };
 
-export const genreIdChange = (genreId, currentGenreId) => {
+export const genreIdChange = (query, currentQuery) => {
   return () => {
     if (
       lazyLoadAnimeListStream.currentState().genreDetailData.length === 0 ||
-      currentGenreId !== genreId
+      currentQuery !== query
     ) {
-      // window.scroll({
-      //   top: 0,
-      // });
       lazyLoadAnimeListStream.updateData({
         allowFetchIncreaseGenrePage: false,
         genreDetailData: [],
         pageGenre: 1,
         pageSplit: 1,
-        genre: null,
+        query: null,
         pageOnDestroy: null,
         isStopScrollingUpdated: false,
         currentGenreId: null,
       });
     }
-    const timeout = setTimeout(() => {
-      if (window.scrollY === 0) {
-        // console.log("start", virtualAnimeListStream.currentState().scrollY);
-      }
-    }, 10);
-    return () => {
-      clearTimeout(timeout);
-    };
   };
 };
 
@@ -72,9 +61,8 @@ export const fetchDataGenreAnimeList = (
   pageGenre,
   isStopScrollingUpdated,
   genreDetailData,
-  genreId,
-  url,
-  type
+  query,
+  url
 ) => {
   return () => {
     let subscription;
@@ -83,28 +71,21 @@ export const fetchDataGenreAnimeList = (
         lazyLoadAnimeListStream.currentState().genreDetailData.length === 0) &&
       isStopScrollingUpdated === false
     ) {
-      subscription = fetchDataGenreAnimeList$(
-        genreId,
-        pageGenre,
-        url
-      ).subscribe((v) => {
+      subscription = fetchDataGenreAnimeList$(pageGenre, url).subscribe((v) => {
         if (!v.error) {
           let updatedAnime;
           if (
             lazyLoadAnimeListStream.currentState().genreDetailData.length ===
               0 ||
-            lazyLoadAnimeListStream.currentState().currentGenreId !== genreId
+            lazyLoadAnimeListStream.currentState().query !== query
           ) {
             updatedAnime = v;
           } else {
             updatedAnime = genreDetailData.concat(v);
           }
-          if (type) {
-            lazyLoadAnimeListStream.updateData({ genre: type });
-          }
-          if (v.meta) {
-            lazyLoadAnimeListStream.updateData({ genre: v.meta.name });
-          }
+          // if (type) {
+          //   lazyLoadAnimeListStream.updateData({ genre: type });
+          // }
           if (
             updatedAnime.length <
             lazyLoadAnimeListStream.currentState().numberAnimeShowMore
@@ -117,7 +98,7 @@ export const fetchDataGenreAnimeList = (
             genreDetailData: updatedAnime,
             pageOnDestroy: lazyLoadAnimeListStream.currentState().pageGenre,
             allowFetchIncreaseGenrePage: true,
-            currentGenreId: genreId,
+            query,
           });
         } else {
           lazyLoadAnimeListStream.updateData({

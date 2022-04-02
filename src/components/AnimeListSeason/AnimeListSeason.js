@@ -1,62 +1,18 @@
-import './AnimeListSeason.css';
+import "./AnimeListSeason.css";
 
-import CircularProgress from '@material-ui/core/CircularProgress';
-import capitalize from 'lodash/capitalize';
-import React, { useEffect, useRef, useState } from 'react';
+import CircularProgress from "@material-ui/core/CircularProgress";
+import capitalize from "lodash/capitalize";
+import React, { useEffect, useRef, useState } from "react";
 
-import { animeListSeasonStream } from '../../epics/animeListSeason';
+import { animeListSeasonStream } from "../../epics/animeListSeason";
 import {
   useFetchAnimeListSeason,
   useFilterAnimeList,
   useInitAnimeListSeason,
   useListenWhenOptionChange,
-} from '../../Hook/animeListSeason';
-import AnimeList from '../AnimeList/AnimeList';
-import PageNavList from '../PageNavList/PageNavList';
-
-const genresData = [
-  { genreId: "1", genre: "Action" },
-  { genreId: "2", genre: "Adventure" },
-  { genreId: "3", genre: "Cars" },
-  { genreId: "4", genre: "Comedy" },
-  { genreId: "5", genre: "Dementia" },
-  { genreId: "6", genre: "Demons" },
-  { genreId: "7", genre: "Mystery" },
-  { genreId: "8", genre: "Drama" },
-  { genreId: "9", genre: "Ecchi" },
-  { genreId: "10", genre: "Fantasy" },
-  { genreId: "11", genre: "Game" },
-  { genreId: "12", genre: "Hentai" },
-  { genreId: "13", genre: "Historical" },
-  { genreId: "14", genre: "Horror" },
-  { genreId: "15", genre: "Kids" },
-  { genreId: "16", genre: "Magic" },
-  { genreId: "17", genre: "Martial Arts" },
-  { genreId: "18", genre: "Mecha" },
-  { genreId: "19", genre: "Music" },
-  { genreId: "20", genre: "Parody" },
-  { genreId: "21", genre: "Samurai" },
-  { genreId: "22", genre: "Romance" },
-  { genreId: "23", genre: "School" },
-  { genreId: "24", genre: "Sci Fi" },
-  { genreId: "25", genre: "Shoujo" },
-  { genreId: "26", genre: "Shoujo Ai" },
-  { genreId: "27", genre: "Shounen" },
-  { genreId: "28", genre: "Shounen Ai" },
-  { genreId: "29", genre: "Space" },
-  { genreId: "30", genre: "Sports" },
-  { genreId: "31", genre: "Super Power" },
-  { genreId: "32", genre: "Vampire" },
-  { genreId: "35", genre: "Harem" },
-  { genreId: "36", genre: "Slice Of Life" },
-  { genreId: "37", genre: "Supernatural" },
-  { genreId: "38", genre: "Military" },
-  { genreId: "39", genre: "Police" },
-  { genreId: "40", genre: "Psychological" },
-  { genreId: "41", genre: "Thriller" },
-  { genreId: "42", genre: "Seinen" },
-  { genreId: "43", genre: "Josei" },
-];
+} from "../../Hook/animeListSeason";
+import AnimeList from "../AnimeList/AnimeList";
+import PageNavList from "../PageNavList/PageNavList";
 
 const AnimeListSeason = () => {
   const [animeListSeasonState, setAnimeListSeasonState] = useState(
@@ -95,9 +51,6 @@ const AnimeListSeason = () => {
   return (
     <div style={{ width: "100%" }} className="anime-list-season-container">
       <h1 style={{ textAlign: "center" }}>
-        {animeListSeasonState.genreId !== "0"
-          ? genresData[parseInt(animeListSeasonState.genreId) - 1].genre + " "
-          : ""}
         Anime
         {animeListSeasonState.score !== 0
           ? " with score greater than " + animeListSeasonState.score
@@ -147,7 +100,6 @@ function SelectFilterAnime({
   const selectYear = useRef(null);
   const selectSeason = useRef(null);
   const selectScore = useRef(null);
-  const selectGenre = useRef(null);
   const elementOptions = Array.from(Array(numberOfYears).keys()).map(
     (v) => new Date(Date.now()).getFullYear() + 1 - v
   );
@@ -156,8 +108,7 @@ function SelectFilterAnime({
     animeListSeasonState,
     selectSeason,
     selectYear,
-    selectScore,
-    selectGenre
+    selectScore
   );
   return (
     <div ref={targetScroll}>
@@ -215,31 +166,6 @@ function SelectFilterAnime({
               {score !== 0 ? score : "Score"}
             </option>
           ))}
-        </select>
-        <select
-          className="select-filter"
-          ref={selectGenre}
-          defaultValue={animeListSeasonStream.currentState().genreId}
-          // disabled={animeListSeasonState.isFetching}
-        >
-          <option value={0}>Genre</option>
-          {genresData.map((data) => {
-            if (data.genreId !== "12") {
-              return (
-                <option key={data.genreId} value={data.genreId}>
-                  {data.genre}
-                </option>
-              );
-            }
-            if (animeListSeasonStream.currentState().modeFilter === "all") {
-              return (
-                <option key={data.genreId} value={data.genreId}>
-                  {data.genre}
-                </option>
-              );
-            }
-            return undefined;
-          })}
         </select>
       </div>
     </div>

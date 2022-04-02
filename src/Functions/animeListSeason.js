@@ -24,18 +24,10 @@ export const filterAnimeList = (
 ) => {
   return () => {
     const { dataDetailOriginal } = animeListSeasonState;
-    const filteredData = dataDetailOriginal.filter(({ score, genres }) => {
-      let isContained = true;
-      if (parseInt(animeListSeasonState.genreId)) {
-        const malIdList = genres.map(({ mal_id }) => mal_id);
-        isContained = malIdList.includes(
-          parseInt(animeListSeasonState.genreId)
-        );
-      }
+    const filteredData = dataDetailOriginal.filter(({ score }) => {
       return (
-        ((score === null && animeListSeasonState.score === 0) ||
-          score > animeListSeasonState.score) &&
-        isContained
+        (score === null && animeListSeasonState.score === 0) ||
+        score > animeListSeasonState.score
       );
     });
     animeListSeasonStream.updateData({
@@ -70,8 +62,6 @@ export const fetchAnimeListSeason = (
         animeListSeasonState.year,
         animeListSeasonState.season,
         animeListSeasonState.currentPage,
-        animeListSeasonState.numberOfProduct,
-        animeListSeasonState.score
       ).subscribe((v) => {
         if (!animeListSeasonStream.currentState().isInit) {
           animeListSeasonStream.updateData({
@@ -79,18 +69,10 @@ export const fetchAnimeListSeason = (
             isInit: false,
           });
         }
-        const filteredData = v.filter(({ score, genres }) => {
-          let isContained = true;
-          if (parseInt(animeListSeasonState.genreId)) {
-            const malIdList = genres.map(({ mal_id }) => mal_id);
-            isContained = malIdList.includes(
-              parseInt(animeListSeasonState.genreId)
-            );
-          }
+        const filteredData = v.filter(({ score }) => {
           return (
-            ((score === null && animeListSeasonState.score === 0) ||
-              score > animeListSeasonState.score) &&
-            isContained
+            (score === null && animeListSeasonState.score === 0) ||
+            score > animeListSeasonState.score
           );
         });
         if (
@@ -132,8 +114,7 @@ export const listenWhenOptionChange = (
   animeListSeasonState,
   selectSeason,
   selectYear,
-  selectScore,
-  selectGenre
+  selectScore
 ) => {
   return () => {
     if (selectSeason.current && selectYear.current) {
@@ -146,25 +127,19 @@ export const listenWhenOptionChange = (
 
     const subscription3 = changeCurrentPage$().subscribe();
     let subscription4;
-    if (
-      selectYear.current &&
-      selectSeason.current &&
-      selectScore.current &&
-      selectGenre.current
-    )
+    if (selectYear.current && selectSeason.current && selectScore.current)
       subscription4 = changeSeasonYear$(
         selectYear.current,
         selectSeason.current,
-        selectScore.current,
-        selectGenre.current
-      ).subscribe(([year, season, score, genreId]) => {
+        selectScore.current
+      ).subscribe(([year, season, score]) => {
         if (!animeListSeasonStream.currentState().isInit)
           animeListSeasonStream.updateData({
             triggerScroll: !animeListSeasonStream.currentState().triggerScroll,
             isSmoothScroll: false,
             isInit: false,
           });
-        animeListSeasonStream.updateSeasonYear(season, year, score, genreId);
+        animeListSeasonStream.updateSeasonYear(season, year, score);
       });
     return () => {
       subscription4 && subscription4.unsubscribe();

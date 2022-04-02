@@ -41,8 +41,8 @@ const Register = loadable(() => import("./pages/Register/Register"), {
   ),
 });
 
-const ProducerDetail = loadable(
-  () => import("./pages/ProducerDetail/ProducerDetail"),
+const StorageVertical = loadable(
+  () => import("./pages/StorageVertical/StorageVertical"),
   {
     fallback: (
       <section style={{ position: "fixed", width: "100%", zIndex: "2000" }}>
@@ -192,10 +192,8 @@ function App() {
       />
       <Switch>
         <Route path="/" component={Home} exact />
+        <Route path="/storage/vertical" component={StorageVertical} />
         <Route path="/storage" component={StorageAnime} exact />
-        {userState && userState.role === "Admin" && (
-          <Route path="/admin" component={AdminManager} exact />
-        )}
         <Route path="/faq" component={FAQ} />
         <Route path="/anime/search" component={SearchedList} />
         <Route
@@ -208,10 +206,9 @@ function App() {
           component={CharacterDetail}
         />
         <Route path="/anime/:name" component={AnimeDetail} />
-        <Route path="/genre/:producerId" component={ProducerDetail} />
-        <Route path="/producer/:producerId" component={ProducerDetail} />
-        <Route path="/studio/:producerId" component={ProducerDetail} />
-        <Route path="/licensor/:producerId" component={ProducerDetail} />
+        {userState && userState.role === "Admin" && (
+          <Route path="/admin" component={AdminManager} exact />
+        )}
         {userState && <Route path="/theater" component={Theater} />}
         {userState && <Route path="/edit" component={EditUser} />}
         {userState && <Route path="/requests" component={RequestedAnime} />}

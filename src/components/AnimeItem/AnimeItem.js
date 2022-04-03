@@ -100,7 +100,9 @@ const AnimeItem = ({
           )}
         {anime.aired && anime.aired.prop.from.day && (
           <div
-            title={"Started airing on " + new Date(anime.aired.from).toUTCString()}
+            title={
+              "Started airing on " + new Date(anime.aired.from).toUTCString()
+            }
             className="anime-info-display_summary top-left_summary color-green"
           >
             {anime.aired.prop.from.month}

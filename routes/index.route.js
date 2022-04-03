@@ -2,26 +2,6 @@ const router = require("express").Router();
 const { default: Axios } = require("axios");
 const fs = require("fs");
 const path = require("path");
-router.get("/", function (req, res) {
-  res.sendFile(path.join(__dirname, "../build", "index.html"));
-});
-
-router.get("/producer/:producerId", (req, res) => {
-  res.sendFile(path.join(__dirname, "../build", "index.html"));
-});
-
-router.get("/studio/:producerId", (req, res) => {
-  res.sendFile(path.join(__dirname, "../build", "index.html"));
-});
-
-router.get("/licensor/:producerId", (req, res) => {
-  res.sendFile(path.join(__dirname, "../build", "index.html"));
-});
-
-router.get("/anime/search", (req, res) => {
-  res.sendFile(path.join(__dirname, "../build", "index.html"));
-});
-
 router.get("/anime/character/:characterId", async (req, res) => {
   const descriptionHTML =
     "Watch latest anime in high quality and discuss about them with other people. Update daily, No tracking, No paying, No registration required. Just enjoy your anime";
@@ -84,9 +64,6 @@ router.get("/anime/person/:personId", async (req, res) => {
   }
 });
 
-router.get("/anime/:malId/watch/:episode/:mode", (req, res) => {
-  res.sendFile(path.join(__dirname, "../build", "index.html"));
-});
 router.get("/anime/:id", async (req, res) => {
   const descriptionHTML =
     "Watch latest anime in high quality and discuss about them with other people. Update daily, No tracking, No paying, No registration required. Just enjoy your anime";
@@ -117,39 +94,6 @@ router.get("/anime/:id", async (req, res) => {
   } catch (error) {
     res.status(404).send({ error: "Something went wrong" });
   }
-});
-
-router.get("/genre/:genreId", (req, res) => {
-  res.sendFile(path.join(__dirname, "../build", "index.html"));
-});
-
-router.get("/edit", (req, res) => {
-  res.sendFile(path.join(__dirname, "../build", "index.html"));
-});
-router.get("/admin", (req, res) => {
-  res.sendFile(path.join(__dirname, "../build", "index.html"));
-});
-router.get("/auth/register", (req, res) => {
-  res.sendFile(path.join(__dirname, "../build", "index.html"));
-});
-router.get("/auth/login", (req, res) => {
-  res.sendFile(path.join(__dirname, "../build", "index.html"));
-});
-
-router.get("/theater", (req, res) => {
-  res.sendFile(path.join(__dirname, "../build", "index.html"));
-});
-
-router.get("/theater/:groupId", (req, res) => {
-  res.sendFile(path.join(__dirname, "../build", "index.html"));
-});
-
-router.get("/storage", (req, res) => {
-  res.sendFile(path.join(__dirname, "../build", "index.html"));
-});
-
-router.get("/faq", (req, res) => {
-  res.sendFile(path.join(__dirname, "../build", "index.html"));
 });
 
 router.get("/*", (req, res) => {

@@ -16,6 +16,7 @@
   height: -webkit-fit-content;
   height: -moz-fit-content;
   height: fit-content;
+  min-height: 300px;
 }
 
 .carousel-slide-item img{

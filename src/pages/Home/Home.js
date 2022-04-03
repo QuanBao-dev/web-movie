@@ -4,7 +4,17 @@ import loadable from "@loadable/component";
 import React, { useEffect, useState } from "react";
 
 import { stream } from "../../epics/home";
-import RandomAnimeList from "../../components/RandomAnimeList/RandomAnimeList";
+// const   from "../../components/RandomAnimeList/RandomAnimeList";
+const RandomAnimeList = loadable(
+  () => import("../../components/RandomAnimeList/RandomAnimeList"),
+  {
+    fallback: (
+      <div style={{ textAlign: "center" }}>
+        <i className="fas fa-spinner fa-9x fa-spin"></i>
+      </div>
+    ),
+  }
+);
 const SearchTool = loadable(
   () => import("../../components/SearchTool/SearchTool"),
   {

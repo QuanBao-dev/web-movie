@@ -1,6 +1,6 @@
 import "./SliderLargeImage.css";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 
 import {
   updatePageActiveSlide,
@@ -33,6 +33,7 @@ const SliderLargeImage = ({
   const carouselSlideListWrapperRef = listProductsWrapperRef;
   const isIntervalMode = isIntervalModeRef;
   const timeout = timeoutRef;
+  const timeout2 = useRef();
   const updatePageActive = (page, isAnimation) => {
     updatePageActiveSlide(
       carouselSlideListWrapperRef,
@@ -57,6 +58,7 @@ const SliderLargeImage = ({
   }, [isLoading]);
 
   useEffect(() => {
+    carouselSlideListWrapperRef.current.style.transition = "0.5s";
     carouselSlideListWrapperRef.current.style.height = `${
       carouselSlideListWrapperRef.current.children[realPage - 1].offsetHeight
     }px`;
@@ -83,7 +85,6 @@ const SliderLargeImage = ({
     realPage,
     isDisplayLayerBlock
   );
-
   return (
     <div className="carousel-slide-list">
       <i
@@ -92,10 +93,15 @@ const SliderLargeImage = ({
           if (pageActive - dataImageList.length > 1) {
             updatePageActive(pageActive - 1, true);
           }
-          if (pageActive - dataImageList.length === 1) {
-            updatePageActive(pageActive - 1, true);
-            setTimeout(() => {
+          if (pageActive - dataImageList.length === 1 && !timeout2.current) {
+            carouselSlideListWrapperRef.current.style.transition = "0.5s";
+            carouselSlideListWrapperRef.current.style.transform = `translateX(${
+              carouselSlideListWrapperRef.current.children[0].offsetWidth *
+              (amountProductsEachPage - (pageActive - 1))
+            }px)`;
+            timeout2.current = setTimeout(() => {
               updatePageActive(dataImageList.length * 2);
+              timeout2.current = null;
             }, 500);
           }
         }}
@@ -107,10 +113,18 @@ const SliderLargeImage = ({
             updatePageActive(pageActive + 1, true);
           }
 
-          if (pageActive - dataImageList.length === dataImageList.length) {
-            updatePageActive(pageActive + 1, true);
-            setTimeout(() => {
+          if (
+            pageActive - dataImageList.length === dataImageList.length &&
+            !timeout2.current
+          ) {
+            carouselSlideListWrapperRef.current.style.transition = "0.5s";
+            carouselSlideListWrapperRef.current.style.transform = `translateX(${
+              carouselSlideListWrapperRef.current.children[0].offsetWidth *
+              (amountProductsEachPage - (pageActive + 1))
+            }px)`;
+            timeout2.current = setTimeout(() => {
               updatePageActive(1 + dataImageList.length);
+              timeout2.current = null;
             }, 500);
           }
         }}
@@ -121,7 +135,16 @@ const SliderLargeImage = ({
       >
         {dataList.map((imageUrl, key) => (
           <div key={key} className="carousel-slide-item">
-            <img src={imageUrl} alt="" />
+            <img
+              src={imageUrl}
+              alt="Not found"
+              onError={() => {
+                carouselSlideListWrapperRef.current.children[key].querySelector(
+                  "img"
+                ).src =
+                  "https://cdn.myanimelist.net/img/sp/icon/apple-touch-icon-256.png";
+              }}
+            />
           </div>
         ))}
       </div>

@@ -80,7 +80,11 @@ const AnimeListSeason = () => {
           animeListSeasonState.year !==
             animeListSeasonState.currentYearOnDestroy
         }
-        data={animeListSeasonState.dataDetail}
+        data={animeListSeasonState.dataDetail.sort(
+          (a, b) =>
+            -(a.aired.prop.from.month * 30 + a.aired.prop.from.day) +
+            (b.aired.prop.from.month * 30 + b.aired.prop.from.day)
+        )}
         error={animeListSeasonState.error || null}
         empty={false}
       />

@@ -12,6 +12,7 @@
   flex: 1 1 auto;
   background-color: black;
   margin: 10px 5px;
+  max-width: 440px;
 }
 
 .anime-pagination .anime-item{
@@ -72,6 +73,7 @@
   position: absolute;
   z-index: 2;
   font-size: 1rem;
+  font-size:0.9rem;
   border-radius: 10px;
   margin: 3px;
   padding: 0.5rem;

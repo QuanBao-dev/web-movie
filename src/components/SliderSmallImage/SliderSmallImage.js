@@ -180,13 +180,19 @@ const SliderSmallImage = ({
           >
             <img
               src={imageUrl}
-              alt=""
+              alt="Not found"
               style={{
                 opacity: key === page - 1 ? "1" : "0.3",
               }}
               onClick={() => {
                 setPage(key + 1);
                 setTriggerSlideSmallImage(!triggerSlideSmallImage);
+              }}
+              onError={() => {
+                carouselSmallImageListWrapperRef.current.children[
+                  key
+                ].querySelector("img").src =
+                  "https://cdn.myanimelist.net/img/sp/icon/apple-touch-icon-256.png";
               }}
             />
           </div>

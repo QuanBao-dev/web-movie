@@ -58,7 +58,6 @@ const SliderLargeImage = ({
   }, [isLoading]);
 
   useEffect(() => {
-    carouselSlideListWrapperRef.current.style.transition = "0.5s";
     carouselSlideListWrapperRef.current.style.height = `${
       carouselSlideListWrapperRef.current.children[realPage - 1].offsetHeight
     }px`;
@@ -99,6 +98,11 @@ const SliderLargeImage = ({
               carouselSlideListWrapperRef.current.children[0].offsetWidth *
               (amountProductsEachPage - (pageActive - 1))
             }px)`;
+            carouselSlideListWrapperRef.current.style.height = `${
+              carouselSlideListWrapperRef.current.children[pageActive - 1 - 1]
+                .offsetHeight
+            }px`;
+            console.log(carouselSlideListWrapperRef.current.children);
             timeout2.current = setTimeout(() => {
               updatePageActive(dataImageList.length * 2);
               timeout2.current = null;
@@ -122,6 +126,10 @@ const SliderLargeImage = ({
               carouselSlideListWrapperRef.current.children[0].offsetWidth *
               (amountProductsEachPage - (pageActive + 1))
             }px)`;
+            carouselSlideListWrapperRef.current.style.height = `${
+              carouselSlideListWrapperRef.current.children[pageActive]
+                .offsetHeight
+            }px`;
             timeout2.current = setTimeout(() => {
               updatePageActive(1 + dataImageList.length);
               timeout2.current = null;

@@ -126,10 +126,7 @@ const SliderLargeImage = ({
               carouselSlideListWrapperRef.current.children[0].offsetWidth *
               (amountProductsEachPage - (pageActive + 1))
             }px)`;
-            carouselSlideListWrapperRef.current.style.height = `${
-              carouselSlideListWrapperRef.current.children[pageActive]
-                .offsetHeight
-            }px`;
+            carouselSlideListWrapperRef.current.style.height = `${carouselSlideListWrapperRef.current.children[pageActive].offsetHeight}px`;
             timeout2.current = setTimeout(() => {
               updatePageActive(1 + dataImageList.length);
               timeout2.current = null;
@@ -147,6 +144,9 @@ const SliderLargeImage = ({
               src={imageUrl}
               alt="Not found"
               onError={() => {
+                if (key === 0) {
+                  document.body.style.backgroundImage = `url(${dataImageList[1]})`;
+                }
                 carouselSlideListWrapperRef.current.children[key].querySelector(
                   "img"
                 ).src =

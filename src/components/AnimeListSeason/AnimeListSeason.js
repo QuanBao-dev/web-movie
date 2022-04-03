@@ -20,7 +20,7 @@ const AnimeListSeason = () => {
   );
   const targetScroll = useRef(null);
 
-  const startYear = 1963;
+  const startYear = 1964;
   const endYear = new Date(Date.now()).getFullYear() + 1;
   const numberOfYears = endYear - startYear + 1;
   let numberOfPagesDisplay;

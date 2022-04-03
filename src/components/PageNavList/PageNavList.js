@@ -25,7 +25,7 @@ const PageNavList = ({ numberOfPagesDisplay, animeListSeasonState }) => {
     );
   });
   return (
-    elementsLi.length !== 0 && (
+    elementsLi.length > 1 && (
       <ul className="page-nav-list">
         <li
           className={`page-nav-item`}

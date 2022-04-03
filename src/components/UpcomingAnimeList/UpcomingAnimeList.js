@@ -33,10 +33,9 @@ const UpcomingAnimeList = () => {
         upcomingAnimeListStream.updateData({ screenWidth: window.innerWidth });
       });
     const subscription2 = fromEvent(window, "scroll").subscribe(() => {
-      const { y, height } =
-        upcomingAnimeContainerRef.current.getBoundingClientRect();
+      const { y } = upcomingAnimeContainerRef.current.getBoundingClientRect();
       const { offsetHeight } = upcomingAnimeContainerRef.current;
-      if (y < height && y > -offsetHeight) {
+      if (-offsetHeight < y && y < window.innerHeight) {
         if (upcomingAnimeListStream.currentState().modeScrolling !== "interval")
           upcomingAnimeListStream.updateDataQuick({
             modeScrolling: "interval",

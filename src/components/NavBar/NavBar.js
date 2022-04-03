@@ -20,13 +20,13 @@ const NavBar = ({ userState, removeCookie, cookies }) => {
   const posY1 = useRef(0);
   const posY2 = useRef(0);
   useEffect(() => {
-    if (document.body.offsetWidth > 964) {
+    if (document.body.offsetWidth > 1186) {
       setIsMobile(false);
     } else {
       setIsMobile(true);
     }
     const subscription = fromEvent(window, "resize").subscribe(() => {
-      if (document.body.offsetWidth > 964) {
+      if (document.body.offsetWidth > 1186) {
         setIsMobile(false);
       } else {
         setIsMobile(true);
@@ -44,15 +44,15 @@ const NavBar = ({ userState, removeCookie, cookies }) => {
           navBarAppRef.current.style.transform = "translateY(-500px)";
           if (
             childNavBarAppRef.current.style.display !== "flex" &&
-            document.body.offsetWidth <= 964
+            document.body.offsetWidth <= 1186
           )
             navBarAppRef.current.style.backgroundColor = "rgba(2, 2, 2, 0.3)";
           if (
             childNavBarAppRef.current.style.display === "flex" &&
-            document.body.offsetWidth <= 964
+            document.body.offsetWidth <= 1186
           )
             childNavBarAppRef.current.style.display = "none";
-          if (document.body.offsetWidth > 964) {
+          if (document.body.offsetWidth > 1186) {
             navBarAppRef.current.style.backgroundColor = "rgba(2, 2, 2, 0.3)";
           }
           buttonScrollTopRef.current.style.transform = "translateY(500px)";

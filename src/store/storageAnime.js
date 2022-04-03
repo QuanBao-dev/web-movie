@@ -79,10 +79,6 @@ const initialState = {
       name: "Hentai",
     },
     {
-      mal_id: 13,
-      name: "Historical",
-    },
-    {
       mal_id: 14,
       name: "Horror",
     },
@@ -97,10 +93,6 @@ const initialState = {
     {
       mal_id: 19,
       name: "Music",
-    },
-    {
-      mal_id: 20,
-      name: "Parody",
     },
     {
       mal_id: 22,
@@ -125,10 +117,6 @@ const initialState = {
     {
       mal_id: 28,
       name: "Boys Love",
-    },
-    {
-      mal_id: 29,
-      name: "Space",
     },
     {
       mal_id: 30,

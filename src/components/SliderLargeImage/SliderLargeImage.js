@@ -102,7 +102,6 @@ const SliderLargeImage = ({
               carouselSlideListWrapperRef.current.children[pageActive - 1 - 1]
                 .offsetHeight
             }px`;
-            console.log(carouselSlideListWrapperRef.current.children);
             timeout2.current = setTimeout(() => {
               updatePageActive(dataImageList.length * 2);
               timeout2.current = null;

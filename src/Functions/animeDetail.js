@@ -114,6 +114,7 @@ export const fetchData = (
         characterStream.updateData({
           dataCharacter: data,
           dataCharacterRaw: data,
+          page: 1,
         });
       })
     );
@@ -236,7 +237,6 @@ export const fetchData = (
           .pipe(
             tap(() => {
               // console.log("done");
-              characterStream.updateData({ page: 1 });
               animeDetailStream.updateData({ malId });
             })
           ),

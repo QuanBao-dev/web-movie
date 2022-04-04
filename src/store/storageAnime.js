@@ -123,14 +123,6 @@ const initialState = {
       name: "Sports",
     },
     {
-      mal_id: 31,
-      name: "Super Power",
-    },
-    {
-      mal_id: 35,
-      name: "Harem",
-    },
-    {
       mal_id: 36,
       name: "Slice of Life",
     },

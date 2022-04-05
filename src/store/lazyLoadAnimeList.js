@@ -3,7 +3,8 @@ import { BehaviorSubject } from "rxjs";
 const initialState = {
   genreDetailData: [],
   pageOnDestroy: null,
-  allowFetchIncreaseGenrePage: false,
+  pageIsLoaded:null,
+  isChangeView: false,
   isStopScrollingUpdated: false,
   currentPageOnDestroy: null,
   query:null,

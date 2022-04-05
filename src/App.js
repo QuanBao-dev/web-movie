@@ -14,8 +14,18 @@ import {
 
 import NavBar from "./components/NavBar/NavBar";
 import { fetchingUser$, userStream } from "./epics/user";
-import RequestedAnime from "./pages/RequestedAnime/RequestedAnime";
 import navBarStore from "./store/navbar";
+
+const RequestedAnime = loadable(
+  () => import("./pages/RequestedAnime/RequestedAnime"),
+  {
+    fallback: (
+      <section style={{ position: "fixed", width: "100%", zIndex: "2000" }}>
+        <LinearProgress color="secondary" />
+      </section>
+    ),
+  }
+);
 const StorageAnime = loadable(
   () => import("./pages/StorageAnime/StorageAnime"),
   {

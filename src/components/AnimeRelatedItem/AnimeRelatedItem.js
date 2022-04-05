@@ -21,12 +21,17 @@ function AnimeRelatedItem({ anime, role, lazy = false }) {
       >
         {lazy && (
           <LazyLoadImage
-            src={(anime.images.jpg.large_image_url || anime.images.jpg.image_url)}
+            src={anime.images.jpg.large_image_url || anime.images.jpg.image_url}
             alt="image_anime"
             effect="opacity"
           />
         )}
-        {!lazy && <img src={anime.images.jpg.large_image_url ||anime.images.jpg.image_url} alt="image_anime" />}
+        {!lazy && (
+          <img
+            src={anime.images.jpg.large_image_url || anime.images.jpg.image_url}
+            alt="image_anime"
+          />
+        )}
         <div className="pop-up-hover">
           <h3>{anime.title}</h3>
           <div title={anime.role + " role"}>({role})</div>

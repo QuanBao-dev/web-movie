@@ -29,8 +29,10 @@ const FilterAnime = () => {
   const textRef = useRef("");
   const minScoreRef = useRef("");
   const maxScoreRef = useRef("");
+  const searchByRef = useRef("");
 
   const sfwRef = useRef(false);
+  const [searchByState, setSearchByState] = useState("anime");
   const [triggerReset, setTriggerReset] = useState(false);
   const [orderByState, setOrderByState] = useState("");
   const [maxScoreState, setMaxScoreState] = useState(10);
@@ -39,6 +41,24 @@ const FilterAnime = () => {
   const [storageAnimeState, setStorageAnimeState] = useState(
     storageAnimeStore.currentState()
   );
+  useEffect(() => {
+    typeValueRef.current = "";
+    statusValueRef.current = "";
+    sortValueRef.current = "asc";
+    ratingValueRef.current = "";
+    orderByValueRef.current = "";
+    letterRef.current.value = "";
+    textRef.current.value = "";
+    minScoreRef.current = "";
+    maxScoreRef.current = "";
+    sfwRef.current && (sfwRef.current.checked = false);
+    producerValueRef.current = [];
+    genresExcludeValueRef.current = [];
+    genresValueRef.current = [];
+    setOrderByState(false);
+    setTriggerReset(!triggerReset);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  },[searchByState])
   useEffect(() => {
     if (minScoreState === "") setMinScoreState(0);
     if (maxScoreState === "") setMaxScoreState(10);
@@ -51,8 +71,11 @@ const FilterAnime = () => {
           statusValueRef.current = storageAnimeState.status;
           typeValueRef.current = storageAnimeState.type;
           sortValueRef.current = storageAnimeState.sort;
+          searchByRef.current = storageAnimeState.searchBy;
+          setSearchByState(searchByRef.current);
           orderByValueRef.current = storageAnimeState.orderBy;
-          sfwRef.current.checked = storageAnimeState.sfw === "sfw";
+          sfwRef.current &&
+            (sfwRef.current.checked = storageAnimeState.sfw === "sfw");
           minScoreRef.current = storageAnimeState.min_score;
           maxScoreRef.current = storageAnimeState.max_score;
           setMinScoreState(storageAnimeState.min_score);
@@ -107,6 +130,7 @@ const FilterAnime = () => {
     storageAnimeState.genres_exclude,
     storageAnimeState.type,
     storageAnimeState.sort,
+    storageAnimeState.searchBy,
     storageAnimeState.q,
   ]);
 
@@ -139,8 +163,9 @@ const FilterAnime = () => {
           genres: genresMalIdListString,
           maxScore: maxScoreRef.current,
           minScore: minScoreRef.current,
-          isSfw: sfwRef.current.checked,
+          isSfw: sfwRef.current ? sfwRef.current.checked : "",
           letter: letterRef.current ? letterRef.current.value : "",
+          searchBy: searchByRef.current,
         };
         const {
           page,
@@ -158,11 +183,12 @@ const FilterAnime = () => {
           score,
           letter,
           isSfw,
+          searchBy,
         } = ans;
         history.push(
-          `/storage?page=${page}${q ? `&q=${q}` : ""}${
-            type ? `&type=${type}` : ""
-          }${rating ? `&rating=${rating}` : ""}${
+          `/storage?page=${page}${searchBy !== "anime" ? `&${searchBy}` : ""}${
+            q ? `&q=${q}` : ""
+          }${type ? `&type=${type}` : ""}${rating ? `&rating=${rating}` : ""}${
             status ? `&status=${status}` : ""
           }${orderBy ? `&order_by=${orderBy}` : ""}${
             orderBy && sort ? `&sort=${sort}` : ""
@@ -186,6 +212,18 @@ const FilterAnime = () => {
     <div className="filter-anime-container">
       <div className="filter-anime-wrapper">
         <h2 className="filter-anime-title">Filter</h2>
+        <CustomSelect
+          label={"Search by"}
+          dataOptions={[
+            "anime",
+            "characters",
+            { mal_id: "people", name: "voice actors" },
+          ]}
+          valueRef={searchByRef}
+          defaultValue={searchByRef.current}
+          triggerReset={triggerReset}
+          setValue={setSearchByState}
+        />
         <fieldset className="filter-anime-input-container">
           <legend className="label-select2">Key</legend>
           <div
@@ -230,89 +268,119 @@ const FilterAnime = () => {
           </div>
         </fieldset>
 
-        <CustomSelect2
-          url={"https://api.jikan.moe/v4/producers"}
-          valueRef={producerValueRef}
-          label={"Producers"}
-          triggerReset={triggerReset}
-          defaultValue={producerValueRef.current}
-        />
+        {!["characters", "people"].includes(searchByState) && (
+          <CustomSelect2
+            url={"https://api.jikan.moe/v4/producers"}
+            valueRef={producerValueRef}
+            label={"Producers"}
+            triggerReset={triggerReset}
+            defaultValue={producerValueRef.current}
+          />
+        )}
 
-        <CustomSelect2
-          dataOptions={storageAnimeStore.currentState().genresDataOptionsList}
-          label={"Genres"}
-          valueRef={genresValueRef}
-          triggerReset={triggerReset}
-          defaultValue={genresValueRef.current}
-        />
+        {!["characters", "people"].includes(searchByState) && (
+          <CustomSelect2
+            dataOptions={storageAnimeStore.currentState().genresDataOptionsList}
+            label={"Genres"}
+            valueRef={genresValueRef}
+            triggerReset={triggerReset}
+            defaultValue={genresValueRef.current}
+          />
+        )}
 
-        <CustomSelect2
-          dataOptions={storageAnimeStore.currentState().themesDataOptionsList}
-          label={"Themes"}
-          valueRef={themesValueRef}
-          triggerReset={triggerReset}
-          defaultValue={themesValueRef.current}
-        />
+        {!["characters", "people"].includes(searchByState) && (
+          <CustomSelect2
+            dataOptions={storageAnimeStore.currentState().themesDataOptionsList}
+            label={"Themes"}
+            valueRef={themesValueRef}
+            triggerReset={triggerReset}
+            defaultValue={themesValueRef.current}
+          />
+        )}
 
-        <CustomSelect2
-          dataOptions={storageAnimeStore.currentState().genresDataOptionsList}
-          label={"Genres Exclude"}
-          valueRef={genresExcludeValueRef}
-          triggerReset={triggerReset}
-          defaultValue={genresExcludeValueRef.current}
-        />
+        {!["characters", "people"].includes(searchByState) && (
+          <CustomSelect2
+            dataOptions={storageAnimeStore.currentState().genresDataOptionsList}
+            label={"Genres Exclude"}
+            valueRef={genresExcludeValueRef}
+            triggerReset={triggerReset}
+            defaultValue={genresExcludeValueRef.current}
+          />
+        )}
 
-        <CustomSelect
-          dataOptions={storageAnimeStore.currentState().ratingOptionsList}
-          label={"Rating"}
-          valueRef={ratingValueRef}
-          triggerReset={triggerReset}
-        />
+        {!["characters", "people"].includes(searchByState) && (
+          <CustomSelect
+            dataOptions={storageAnimeStore.currentState().ratingOptionsList}
+            label={"Rating"}
+            valueRef={ratingValueRef}
+            triggerReset={triggerReset}
+          />
+        )}
 
-        <CustomSelect
-          dataOptions={Array.from(Array(10).keys())
-            .map((key) => (key + 1).toString())
-            .slice(0, maxScoreState - 1)}
-          label={"Min score"}
-          valueRef={minScoreRef}
-          triggerReset={triggerReset}
-          setValue={setMinScoreState}
-          defaultOption={"0"}
-        />
+        {!["characters", "people"].includes(searchByState) && (
+          <CustomSelect
+            dataOptions={Array.from(Array(10).keys())
+              .map((key) => (key + 1).toString())
+              .slice(0, maxScoreState - 1)}
+            label={"Min score"}
+            valueRef={minScoreRef}
+            triggerReset={triggerReset}
+            setValue={setMinScoreState}
+            defaultOption={"0"}
+          />
+        )}
 
-        <CustomSelect
-          dataOptions={Array.from(Array(9).keys())
-            .map((key) => (key + 1).toString())
-            .slice(minScoreState, 10)}
-          label={"Max score"}
-          valueRef={maxScoreRef}
-          triggerReset={triggerReset}
-          setValue={setMaxScoreState}
-          defaultOption={"10"}
-        />
+        {!["characters", "people"].includes(searchByState) && (
+          <CustomSelect
+            dataOptions={Array.from(Array(9).keys())
+              .map((key) => (key + 1).toString())
+              .slice(minScoreState, 10)}
+            label={"Max score"}
+            valueRef={maxScoreRef}
+            triggerReset={triggerReset}
+            setValue={setMaxScoreState}
+            defaultOption={"10"}
+          />
+        )}
 
-        <CustomSelect
-          dataOptions={storageAnimeStore.currentState().statusOptionsList}
-          label={"Status"}
-          valueRef={statusValueRef}
-          triggerReset={triggerReset}
-        />
+        {!["characters", "people"].includes(searchByState) && (
+          <CustomSelect
+            dataOptions={storageAnimeStore.currentState().statusOptionsList}
+            label={"Status"}
+            valueRef={statusValueRef}
+            triggerReset={triggerReset}
+          />
+        )}
 
-        <CustomSelect
-          dataOptions={storageAnimeStore.currentState().typeOptionsList}
-          label={"Type"}
-          valueRef={typeValueRef}
-          triggerReset={triggerReset}
-        />
+        {!["characters", "people"].includes(searchByState) && (
+          <CustomSelect
+            dataOptions={storageAnimeStore.currentState().typeOptionsList}
+            label={"Type"}
+            valueRef={typeValueRef}
+            triggerReset={triggerReset}
+          />
+        )}
 
-        <fieldset className="fieldset-filter-button">
-          <legend className="label-select">Sfw</legend>
-          <input className="filter-check-box" ref={sfwRef} type={"checkbox"} />
-        </fieldset>
+        {!["characters", "people"].includes(searchByState) && (
+          <fieldset className="fieldset-filter-button">
+            <legend className="label-select">Sfw</legend>
+            <input
+              className="filter-check-box"
+              ref={sfwRef}
+              type={"checkbox"}
+            />
+          </fieldset>
+        )}
 
         <fieldset className="custom-select-container">
           <CustomSelect
-            dataOptions={storageAnimeStore.currentState().orderByOptionsList}
+            dataOptions={
+              "characters" === searchByState
+                ? storageAnimeStore.currentState().orderByCharacterOptionsList
+                : searchByState === "people"
+                ? storageAnimeStore.currentState().orderByVoiceActorOptionsList
+                : storageAnimeStore.currentState().orderByOptionsList
+            }
             label={"Order By"}
             valueRef={orderByValueRef}
             triggerReset={triggerReset}
@@ -345,7 +413,7 @@ const FilterAnime = () => {
               textRef.current.value = "";
               minScoreRef.current = "";
               maxScoreRef.current = "";
-              sfwRef.current.checked = false;
+              sfwRef.current && (sfwRef.current.checked = false);
               producerValueRef.current = [];
               genresExcludeValueRef.current = [];
               genresValueRef.current = [];

@@ -6,12 +6,14 @@ import { characterStream } from "../../epics/character";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import { Link } from "react-router-dom";
 
-function CharacterItem({ characterData, history, lazy }) {
+function CharacterItem({ characterData, lazy }) {
+  if (!characterData.name) return <div />;
+
   return (
     <Link
-      to={`/anime/character/${
-        characterData.mal_id
-      }-${characterData.name.replace(/[ /%^&*(),]/g, "-").toLocaleLowerCase()}`}
+      to={`/anime/character/${characterData.mal_id}-${characterData.name
+        .replace(/[ /%^&*(),]/g, "-")
+        .toLocaleLowerCase()}`}
       className={`character-item${
         characterData.role === "Main" ? " border-yellow" : ""
       }`}
@@ -34,7 +36,9 @@ function CharacterItem({ characterData, history, lazy }) {
           effect="opacity"
         />
       )}
-      <div className="name-character">{characterData.name.replace(",","")}</div>
+      <div className="name-character">
+        {characterData.name.replace(",", "")}
+      </div>
     </Link>
   );
 }

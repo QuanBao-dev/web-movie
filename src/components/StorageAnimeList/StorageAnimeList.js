@@ -35,6 +35,9 @@ const StorageAnimeList = ({ query }) => {
             .replace("q=", "")
             .replace(/%20/g, " ")
         : "",
+      searchBy: query.match(/anime|characters|people/g)
+        ? query.match(/anime|characters|people/g)[0]
+        : "anime",
       page: query.match(/page=[0-9]+/g)
         ? parseInt(query.match(/page=[0-9]+/g)[0].replace("page=", ""))
         : 1,
@@ -97,7 +100,11 @@ const StorageAnimeList = ({ query }) => {
           window.scroll({ top: 0 });
         }),
         switchMapTo(
-          ajax(`https://api.jikan.moe/v4/anime${query}`).pipe(
+          ajax(
+            `https://api.jikan.moe/v4/${
+              storageAnimeStore.currentState().searchBy
+            }${query.replace("&characters", "")}`
+          ).pipe(
             pluck("response"),
             retry(10),
             catchError((error) => of({ error }))
@@ -121,7 +128,7 @@ const StorageAnimeList = ({ query }) => {
         });
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [query]);
+  }, [query, storageAnimeState.searchBy]);
   const { isLoading, maxPage } = storageAnimeState;
   return (
     <div className="storage-anime-list-container">
@@ -129,7 +136,7 @@ const StorageAnimeList = ({ query }) => {
       {!isLoading && (
         <Link
           className="storage-anime-list-vertical-icon"
-          to={`/storage/vertical${query.replace(/page=[0-9]+(&)?/g, ``)}`}
+          to={`/storage/vertical${query}`}
         >
           Change view
         </Link>
@@ -143,7 +150,11 @@ const StorageAnimeList = ({ query }) => {
       )}
       {isLoading && <CircularProgress color="secondary" size="4rem" />}
       {!isLoading && storageAnimeState.dataAnime.length > 0 && (
-        <AnimeList data={storageAnimeState.dataAnime} />
+        <AnimeList
+          data={storageAnimeState.dataAnime}
+          isCharacter={storageAnimeState.searchBy === "characters"}
+          lazy={true}
+        />
       )}
       {!isLoading && storageAnimeState.dataAnime.length === 0 && (
         <h1>No results</h1>
@@ -162,7 +173,7 @@ const StorageAnimeList = ({ query }) => {
 export default StorageAnimeList;
 function PageStorageAnimeList({ maxPage, query, history }) {
   const page =
-    query !== ""
+    query !== "" && query.match(/page=[0-9]+/g)
       ? parseInt(query.match(/page=[0-9]+/g)[0].replace("page=", ""))
       : 1;
   const amount = 6;
@@ -177,6 +188,19 @@ function PageStorageAnimeList({ maxPage, query, history }) {
   }
   return (
     <ul className="storage-anime-page-list">
+      <Link
+        className="storage-anime-page-item-container"
+        to={`/storage${
+          query !== ""
+            ? query.replace(/page=[0-9]+/g, `page=${1}`)
+            : `?page=${1}`
+        }`}
+      >
+        <li className="storage-anime-page-item">
+          <i className="fas fa-chevron-left"></i>
+          <i className="fas fa-chevron-left"></i>
+        </li>
+      </Link>
       {Array.from(Array(maxPage).keys())
         .slice(
           page - amount > 0 ? page - amount - tempLeft : 0,
@@ -226,6 +250,19 @@ function PageStorageAnimeList({ maxPage, query, history }) {
           </option>
         ))}
       </select>
+      <Link
+        className="storage-anime-page-item-container"
+        to={`/storage${
+          query !== ""
+            ? query.replace(/page=[0-9]+/g, `page=${maxPage}`)
+            : `?page=${maxPage}`
+        }`}
+      >
+        <li className="storage-anime-page-item">
+          <i className="fas fa-chevron-right"></i>
+          <i className="fas fa-chevron-right"></i>
+        </li>
+      </Link>
     </ul>
   );
 }

@@ -7,6 +7,7 @@ const initialState = {
   dataAnime: [],
   type: "",
   limit: null,
+  searchBy: "anime",
   q: "",
   page: 1,
   score: "",
@@ -26,6 +27,8 @@ const initialState = {
   statusOptionsList: ["airing", "complete", "upcoming"],
   ratingOptionsList: ["g", "pg", "pg13", "r17", "r", "rx"],
   sortOptionsList: ["desc", "asc"],
+  orderByCharacterOptionsList: ["mal_id", "name", "favorites"],
+  orderByVoiceActorOptionsList: ["mal_id", "name", "favorites", "birthday"],
   orderByOptionsList: [
     "mal_id",
     "title",

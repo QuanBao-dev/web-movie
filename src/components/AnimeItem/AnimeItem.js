@@ -19,6 +19,7 @@ const AnimeItem = ({
   virtual = false,
   isAllowDelete,
   styleAnimeItem = {},
+  isCharacter,
 }) => {
   const animeItemRef = useRef();
   const [cookies] = useCookies(["idCartoonUser"]);
@@ -30,7 +31,7 @@ const AnimeItem = ({
       onMouseDown={mouseDownAnimeItem(animeItemRef)}
       onMouseLeave={mouseLeaveAnimeItem(animeItemRef)}
       onMouseMove={mouseMoveAnimeItem(animeItemRef, virtual)}
-      title={anime.title}
+      title={anime.title || anime.name}
     >
       <div className="layer-upcoming-anime"></div>
       {isAllowDelete && (
@@ -54,9 +55,13 @@ const AnimeItem = ({
         </div>
       )}
       <Link
-        to={`/anime/${anime.malId || anime.mal_id}-${anime.title
-          .replace(/[ /%^&*():.$]/g, "-")
-          .toLocaleLowerCase()}`}
+        to={`/${isCharacter ? "anime/character" : "anime"}/${
+          anime.malId || anime.mal_id
+        }-${
+          anime.title
+            ? anime.title.replace(/[ /%^&*():.$]/g, "-").toLocaleLowerCase()
+            : anime.name.replace(/[ /%^&*():.$]/g, "-").toLocaleLowerCase()
+        }`}
       >
         {anime.airing_start &&
           new Date(anime.airing_start).getTime() <=
@@ -129,14 +134,10 @@ const AnimeItem = ({
 
         {!anime.recommendation_count && (
           <div
-            title={`${anime.score} out of 10`}
+            title={anime.score ? `${anime.score} out of 10` : "Favorites"}
             className="anime-info-display_summary top-right_summary color-red"
-            style={{
-              display:
-                !anime.score || anime.score === "null" ? "none" : "block",
-            }}
           >
-            {anime.score}/10
+            {anime.score ? `${anime.score}/10` : anime.favorites}
           </div>
         )}
         {anime.recommendation_count && (
@@ -159,10 +160,13 @@ const AnimeItem = ({
             effect="opacity"
             src={
               anime.imageUrl ||
-              anime.image_url ||
-              anime.images.webp.large_image_url
+              (anime.images.webp && anime.images.webp.large_image_url) ||
+              (anime.images.jpg && anime.images.jpg.large_image_url) ||
+              (anime.images.webp && anime.images.webp.image_url) ||
+              (anime.images.jpg && anime.images.jpg.image_url) ||
+              anime.image_url
             }
-            alt={anime.title}
+            alt={anime.title || anime.name}
           />
         )}
         {lazy === false && (
@@ -176,16 +180,18 @@ const AnimeItem = ({
             }}
             src={
               anime.imageUrl ||
-              anime.image_url ||
-              anime.images.webp.large_image_url ||
-              anime.images.jpg.large_image_url
+              (anime.images.webp && anime.images.webp.large_image_url) ||
+              (anime.images.jpg && anime.images.jpg.large_image_url) ||
+              (anime.images.webp && anime.images.webp.image_url) ||
+              (anime.images.jpg && anime.images.jpg.image_url) ||
+              anime.image_url
             }
-            alt={anime.title}
+            alt={anime.title || anime.name}
           />
         )}
         <div className="anime-item-info">
           <h3 style={{ margin: "5px" }} title={anime.title}>
-            {anime.title}
+            {anime.title || anime.name}
           </h3>
           {anime.genres && !limitAdultGenre(anime.genres) && (
             <h3 title={`age_limited`} style={{ color: "red", margin: "0" }}>

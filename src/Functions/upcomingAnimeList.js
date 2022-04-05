@@ -119,6 +119,9 @@ export const keepDragMoveAnimeList = (elementScroll, length, numberList) => {
         );
         subscriptionMouseMove = fromEvent(elementScroll, "mousemove").subscribe(
           (e) => {
+            upcomingAnimeListStream.updateDataQuick({
+              modeScrolling: "enter",
+            });
             if (upcomingAnimeListStream.currentState().mouseStartX) {
               posX2 = posX1 - e.clientX;
 

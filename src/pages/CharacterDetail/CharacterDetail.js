@@ -79,6 +79,12 @@ const CharacterDetail = (props) => {
               <span>{dataCharacterDetail.name_kanji}</span>
             </div>
           )}
+          {dataCharacterDetail.favorites && (
+            <div className="wrapper-text">
+              <span className="text-capitalize">favorites</span>
+              <span>{dataCharacterDetail.favorites}</span>
+            </div>
+          )}
           {dataCharacterDetail.nicknames &&
             dataCharacterDetail.nicknames.length > 0 && (
               <div className="wrapper-text">

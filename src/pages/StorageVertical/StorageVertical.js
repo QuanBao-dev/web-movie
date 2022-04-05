@@ -25,6 +25,7 @@ const StorageVertical = (props) => {
     sort,
     status,
     type,
+    searchBy,
   } = {
     q: query.match(/q=[a-zA-Z0-9 \~\!\@\#\$\%\^\*\(\)\_\-\+\=\`\\\.]+/g)
       ? query
@@ -32,6 +33,9 @@ const StorageVertical = (props) => {
           .replace("q=", "")
           .replace(/%20/g, " ")
       : "",
+    searchBy: query.match(/anime|characters|people/g)
+      ? query.match(/anime|characters|people/g)[0]
+      : "anime",
     page: query.match(/page=[0-9]+/g)
       ? parseInt(query.match(/page=[0-9]+/g)[0].replace("page=", ""))
       : 1,
@@ -78,12 +82,11 @@ const StorageVertical = (props) => {
           .replace(/%20/g, " ")
       : "",
   };
-  // console.log(dataQuery);
   return (
     <LazyLoadAnimeList
-      url={`https://api.jikan.moe/v4/anime?page={page}${q ? `&q=${q}` : ""}${
-        type ? `&type=${type}` : ""
-      }${rating ? `&rating=${rating}` : ""}${
+      url={`https://api.jikan.moe/v4/${searchBy}?page={page}${
+        q ? `&q=${q}` : ""
+      }${type ? `&type=${type}` : ""}${rating ? `&rating=${rating}` : ""}${
         status ? `&status=${status}` : ""
       }${orderBy ? `&order_by=${orderBy}` : ""}${
         orderBy && sort ? `&sort=${sort}` : ""
@@ -96,6 +99,7 @@ const StorageVertical = (props) => {
       }`}
       query={query}
       title={"Filter"}
+      isCharacter={searchBy === "characters"}
     />
   );
 };

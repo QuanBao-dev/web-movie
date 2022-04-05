@@ -42,6 +42,7 @@ const AnimeList = ({
   empty = false,
   virtual = false,
   isAllowDelete = false,
+  isCharacter
 }) => {
   const animeListRef = useRef();
   const lazyLoadState = lazyLoadAnimeListStream.currentState();
@@ -51,7 +52,7 @@ const AnimeList = ({
       fromEvent(window, "scroll").pipe(takeWhile(() => virtual)),
       fromEvent(window, "scroll").pipe(
         takeWhile(() => virtual),
-        debounceTime(300)
+        debounceTime(100)
       )
     ).subscribe(() => {
       const { rowStart, rowEnd } = calculateRowStartEnd(
@@ -136,6 +137,7 @@ const AnimeList = ({
               key={index}
               anime={anime}
               lazy={lazy}
+              isCharacter={isCharacter}
               virtual={false}
               isAllowDelete={isAllowDelete}
             />
@@ -190,6 +192,7 @@ const AnimeList = ({
                   virtual={true}
                   isAllowDelete={isAllowDelete}
                   styleAnimeItem={{ width: "90%", height: "95%" }}
+                  isCharacter={isCharacter}
                 />
               </div>
             );

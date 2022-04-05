@@ -33,7 +33,7 @@ const CustomSelect = ({
             <option value={""}>{defaultOption || "All"}</option>
           )}
           {dataOptions.map((value) => (
-            <option key={value || value.mal_id} value={value || value.mal_id}>
+            <option key={value.mal_id || value} value={value.mal_id || value}>
               {value.name
                 ? value.name.replace(/[_]/g, " ")
                 : value.replace(/[_]/g, " ")}

@@ -4,10 +4,11 @@ import loadable from "@loadable/component";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import React, { useEffect, useRef, useState } from "react";
 import { useHistory } from "react-router-dom";
-import { fromEvent } from "rxjs";
+import { fromEvent, timer } from "rxjs";
 
 import { characterStream } from "../../epics/character";
 import Input from "../Input/Input";
+import { filter, switchMapTo } from "rxjs/operators";
 
 const CharacterItem = loadable(() => import("../CharacterItem/CharacterItem"));
 const Characters = ({ lazy = false, isLoading }) => {
@@ -40,34 +41,38 @@ const Characters = ({ lazy = false, isLoading }) => {
   }, [charactersState.dataCharacter.length, charactersState.page]);
 
   useEffect(() => {
-    const subscription = fromEvent(
-      searchCharacterRef.current,
-      "input"
-    ).subscribe((e) => {
-      characterStream.updateData({
-        dataCharacter: characterStream
-          .currentState()
-          .dataCharacterRaw.filter(
-            (characterData) =>
-              !!characterData.character.name.match(
-                new RegExp(e.target.value, "i")
-              )
-          ),
+    const subscription = timer(0)
+      .pipe(
+        filter(() => searchCharacterRef.current),
+        switchMapTo(fromEvent(searchCharacterRef.current, "input"))
+      )
+      .subscribe((e) => {
+        characterStream.updateData({
+          dataCharacter: characterStream
+            .currentState()
+            .dataCharacterRaw.filter(
+              (characterData) =>
+                !!characterData.character.name.match(
+                  new RegExp(e.target.value, "i")
+                )
+            ),
+        });
       });
-    });
     return () => {
       characterStream.updateData({
         dataCharacter: characterStream.currentState().dataCharacterRaw,
       });
       subscription.unsubscribe();
     };
-  }, []);
+  }, [isLoading]);
   return (
     <div>
       <h1 className="title">Characters</h1>
-      <div style={{ width: "100%", maxWidth: 800, margin: "auto" }}>
-        <Input label={"Search Character"} input={searchCharacterRef} />
-      </div>
+      {isLoading === false && (
+        <div style={{ width: "100%", maxWidth: 800, margin: "auto" }}>
+          <Input label={"Search Character"} input={searchCharacterRef} />
+        </div>
+      )}
       {isLoading !== null && isLoading === true && (
         <CircularProgress color="secondary" size="4rem" />
       )}

@@ -29,10 +29,10 @@ const StorageVertical = (props) => {
     type,
     searchBy,
   } = {
-    q: query.match(/q=[a-zA-Z0-9 \~\!\@\#\$\%\^\*\(\)\_\-\+\=\`\\\.\<\>\*]+/g)
+    q: query.match(/q=[a-zA-Z0-9 \~\!\@\#\$\%\^\*\(\)\_\-\+\=\`\\\.\<\>\*,]+/g)
       ? decode(
           query
-            .match(/q=[a-zA-Z0-9 \~\!\@\#\$\%\^\*\(\)\_\-\+\=\`\\\.\<\>\*]+/g)[0]
+            .match(/q=[a-zA-Z0-9 \~\!\@\#\$\%\^\*\(\)\_\-\+\=\`\\\.\<\>\*,]+/g)[0]
             .replace("q=", "")
         )
       : "",
@@ -77,10 +77,10 @@ const StorageVertical = (props) => {
       ? query.match(/producers=[0-9,]+/g)[0].replace("producers=", "")
       : "",
     letter: query.match(
-      /letter=[a-zA-Z0-9 \~\!\@\#\$\%\^\*\(\)\_\-\+\=\`\\\.\<\>\*]+/g
+      /letter=[a-zA-Z0-9 \~\!\@\#\$\%\^\*\(\)\_\-\+\=\`\\\.\<\>\*,]+/g
     )
       ? decode(query
-          .match(/letter=[a-zA-Z0-9 \~\!\@\#\$\%\^\*\(\)\_\-\+\=\`\\\.\<\>\*]+/g)[0]
+          .match(/letter=[a-zA-Z0-9 \~\!\@\#\$\%\^\*\(\)\_\-\+\=\`\\\.\<\>\*,]+/g)[0]
           .replace("letter=", ""))
       : "",
   };
@@ -101,7 +101,7 @@ const StorageVertical = (props) => {
       }`}
       query={query}
       title={"Filter"}
-      isCharacter={searchBy === "characters"}
+      searchBy={searchBy}
     />
   );
 };

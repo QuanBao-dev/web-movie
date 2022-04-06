@@ -45,6 +45,7 @@ const AnimeScheduleItem = ({ index, animeScheduleState, date }) => {
             empty={true}
             data={animeScheduleState.dataScheduleMovie[date]}
             lazy={true}
+            searchBy={"anime"}
           />
         )}
       </div>

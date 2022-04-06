@@ -139,7 +139,7 @@ function Home() {
       <div className="container-anime-list">
         <div className="container-display-anime__home">
           <div className="anime-pagination">
-            <AnimeListSeason />
+            <AnimeListSeason  />
           </div>
           <TopAnimeList homeState={homeState} />
         </div>

@@ -8,7 +8,7 @@ function CarouselItem({ data }) {
   return (
     <Link
       to={`/anime/${data.malId || data.mal_id}-${data.title
-        .replace(/[ /%^&*():.$]/g, "-")
+        .replace(/[ /%^&*():.$,]/g, "-")
         .toLocaleLowerCase()}`}
       className="item"
       title={data.title}

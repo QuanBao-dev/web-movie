@@ -125,7 +125,14 @@ const CharacterDetail = (props) => {
               {dataCharacterDetail.voice_actors.map((actor, index) => {
                 return (
                   <Link
-                    to={"/anime/person/" + actor.person.mal_id}
+                    to={
+                      "/anime/person/" +
+                      actor.person.mal_id +
+                      "-" +
+                      actor.person.name
+                        .replace(/[ /%^&*():.$,]/g, "-")
+                        .toLocaleLowerCase()
+                    }
                     className="actor-item"
                     key={index}
                   >

@@ -87,6 +87,7 @@ const AnimeListSeason = () => {
         )}
         error={animeListSeasonState.error || null}
         empty={false}
+        searchBy={"anime"}
       />
       <PageNavList
         numberOfPagesDisplay={numberOfPagesDisplay}

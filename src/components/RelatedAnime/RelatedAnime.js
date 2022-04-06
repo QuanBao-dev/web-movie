@@ -51,6 +51,7 @@ const RelatedAnime = ({ isLoading }) => {
               )}
               error={null}
               lazy={true}
+              searchBy={"anime"}
             />
             <div
               className="see-more-movie"

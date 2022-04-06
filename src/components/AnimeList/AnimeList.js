@@ -42,7 +42,7 @@ const AnimeList = ({
   empty = false,
   virtual = false,
   isAllowDelete = false,
-  isCharacter
+  searchBy
 }) => {
   const animeListRef = useRef();
   const lazyLoadState = lazyLoadAnimeListStream.currentState();
@@ -137,7 +137,7 @@ const AnimeList = ({
               key={index}
               anime={anime}
               lazy={lazy}
-              isCharacter={isCharacter}
+              searchBy={searchBy}
               virtual={false}
               isAllowDelete={isAllowDelete}
             />
@@ -192,7 +192,7 @@ const AnimeList = ({
                   virtual={true}
                   isAllowDelete={isAllowDelete}
                   styleAnimeItem={{ width: "90%", height: "95%" }}
-                  isCharacter={isCharacter}
+                  searchBy={searchBy}
                 />
               </div>
             );

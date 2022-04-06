@@ -40,6 +40,7 @@ const PaginationAnime = ({
         lazy={true}
         data={updatedMovie}
         isAllowDelete={subNavToggle === 1 ? true : false}
+        searchBy={"anime"}
       />
       {pageList.length > 1 && (
         <div className="home__page-list">

@@ -125,6 +125,7 @@ const UpcomingAnimeList = () => {
           empty={true}
           data={upcomingAnimeListState.upcomingAnimeList}
           isWrap={false}
+          searchBy={"anime"}
         />
       </div>
     </section>

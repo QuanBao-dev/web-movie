@@ -205,7 +205,7 @@ function ListInformation({ arrKeys, isLoading }) {
                               anime.mal_id +
                               "-" +
                               anime.name
-                                .replace(/[ /%^&*():.$]/g, "-")
+                                .replace(/[ /%^&*():.$,]/g, "-")
                                 .toLocaleLowerCase()
                             }
                           >

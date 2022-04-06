@@ -19,7 +19,7 @@ const AnimeList = loadable(() =>
   import("../../components/AnimeList/AnimeList")
 );
 
-const LazyLoadAnimeList = ({ url, query, isCharacter }) => {
+const LazyLoadAnimeList = ({ url, query, searchBy }) => {
   const [lazyLoadState, setLazyLoadState] = useState(
     lazyLoadAnimeListStream.currentState()
   );
@@ -54,7 +54,7 @@ const LazyLoadAnimeList = ({ url, query, isCharacter }) => {
         error={null}
         lazy={true}
         animeListRef={animeListRef}
-        isCharacter={isCharacter}
+        searchBy={searchBy}
       />
 
       {!lazyLoadState.isStopScrollingUpdated && (

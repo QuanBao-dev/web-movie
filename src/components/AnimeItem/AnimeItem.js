@@ -19,7 +19,7 @@ const AnimeItem = ({
   virtual = false,
   isAllowDelete,
   styleAnimeItem = {},
-  isCharacter,
+  searchBy,
 }) => {
   const animeItemRef = useRef();
   const [cookies] = useCookies(["idCartoonUser"]);
@@ -55,12 +55,14 @@ const AnimeItem = ({
         </div>
       )}
       <Link
-        to={`/${isCharacter ? "anime/character" : "anime"}/${
-          anime.malId || anime.mal_id
-        }-${
+        to={`/${
+          searchBy !== "anime"
+            ? `anime/${searchBy === "people" ? "person" : searchBy}`
+            : "anime"
+        }/${anime.malId || anime.mal_id}-${
           anime.title
-            ? anime.title.replace(/[ /%^&*():.$]/g, "-").toLocaleLowerCase()
-            : anime.name.replace(/[ /%^&*():.$]/g, "-").toLocaleLowerCase()
+            ? anime.title.replace(/[ /%^&*():.$,]/g, "-").toLocaleLowerCase()
+            : anime.name.replace(/[ /%^&*():.$,]/g, "-").toLocaleLowerCase()
         }`}
       >
         {anime.airing_start &&

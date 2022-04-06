@@ -57,7 +57,7 @@ const SearchedList = (props) => {
     return () => {
       subscription && subscription.unsubscribe();
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [key, searchedListState.page]);
   let dataSearchDisplay;
   if (dataSearchedAnimeState) dataSearchDisplay = dataSearchedAnimeState;
@@ -70,7 +70,12 @@ const SearchedList = (props) => {
     <div className="container-search-anime">
       <h1 style={{ color: "white" }}>Results searched for "{key}"</h1>
       {dataSearchDisplay && (
-        <AnimeList lazy={true} data={dataSearchDisplay} error={null} />
+        <AnimeList
+          lazy={true}
+          data={dataSearchDisplay}
+          error={null}
+          searchBy={"anime"}
+        />
       )}
       {dataSearchDisplay && dataSearchDisplay.length === 0 && (
         <h4 style={{ color: "white" }}>

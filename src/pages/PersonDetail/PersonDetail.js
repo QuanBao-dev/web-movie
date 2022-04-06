@@ -92,7 +92,8 @@ const personDetailStore = {
   },
 };
 const PersonDetail = (props) => {
-  const { personId } = props.match.params;
+  let { personId } = props.match.params;
+  personId = parseInt(personId);
   const history = useHistory();
   // const [personDetail, setPersonDetail] = useState({});
   const [personDetailState, setPersonDetailState] = useState(
@@ -161,12 +162,7 @@ const PersonDetail = (props) => {
       "images",
     ]
   );
-  // if (personDetailState.dataPersonDetail.anime_staff_positions) {
-  //   updateStaffPosition = validateDataStaff(
-  //     updateStaffPosition,
-  //     personDetailState.dataPersonDetail
-  //   );
-  // }
+
   if (personDetailState.dataPersonDetail.voice_acting_roles) {
     updateVoiceActingRoles =
       personDetailState.dataPersonDetail.voice_acting_roles.reduce(
@@ -261,10 +257,11 @@ const PersonDetail = (props) => {
                   .map((key, index) => (
                     <div key={index} className="person-voice-item">
                       <Link
-                        to={
-                          "/anime/character/" +
+                        to={`/anime/character/${
                           updateVoiceActingRoles[key].mal_id
-                        }
+                        }-${updateVoiceActingRoles[key].name
+                          .replace(/[ /%^&*():.$,]/g, "-")
+                          .toLocaleLowerCase()}`}
                         className="character-item-voice"
                       >
                         <img

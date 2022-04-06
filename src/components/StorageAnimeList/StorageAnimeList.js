@@ -17,7 +17,7 @@ import {
 
 import storageAnimeStore from "../../store/storageAnime";
 import AnimeList from "../AnimeList/AnimeList";
-
+import { decode } from "url-encode-decode";
 const StorageAnimeList = ({ query }) => {
   const [storageAnimeState, setStorageAnimeState] = useState(
     storageAnimeStore.currentState()
@@ -29,11 +29,12 @@ const StorageAnimeList = ({ query }) => {
   }, []);
   useEffect(() => {
     storageAnimeStore.updateData({
-      q: query.match(/q=[a-zA-Z0-9 \~\!\@\#\$\%\^\*\(\)\_\-\+\=\`\\\.]+/g)
-        ? query
-            .match(/q=[a-zA-Z0-9 \~\!\@\#\$\%\^\*\(\)\_\-\+\=\`\\\.]+/g)[0]
-            .replace("q=", "")
-            .replace(/%20/g, " ")
+      q: query.match(/q=[a-zA-Z0-9 \~\!\@\#\$\%\^\*\(\)\_\-\+\=\`\\\.\<\>\*]+/g)
+        ? decode(
+            query
+              .match(/q=[a-zA-Z0-9 \~\!\@\#\$\%\^\*\(\)\_\-\+\=\`\\\.\<\>\*]+/g)[0]
+              .replace("q=", "")
+          )
         : "",
       searchBy: query.match(/anime|characters|people/g)
         ? query.match(/anime|characters|people/g)[0]
@@ -82,12 +83,15 @@ const StorageAnimeList = ({ query }) => {
         ? query.match(/producers=[0-9,]+/g)[0].replace("producers=", "")
         : "",
       letter: query.match(
-        /letter=[a-zA-Z0-9 \~\!\@\#\$\%\^\*\(\)\_\-\+\=\`\\\.]+/g
+        /letter=[a-zA-Z0-9 \~\!\@\#\$\%\^\*\(\)\_\-\+\=\`\\\.\<\>\*]+/g
       )
-        ? query
-            .match(/letter=[a-zA-Z0-9 \~\!\@\#\$\%\^\*\(\)\_\-\+\=\`\\\.]+/g)[0]
-            .replace("letter=", "")
-            .replace(/%20/g, " ")
+        ? decode(
+            query
+              .match(
+                /letter=[a-zA-Z0-9 \~\!\@\#\$\%\^\*\(\)\_\-\+\=\`\\\.\<\>\*]+/g
+              )[0]
+              .replace("letter=", "")
+          )
         : "",
     });
     const subscription = timer(0)

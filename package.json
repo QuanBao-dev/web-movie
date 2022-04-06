@@ -32,6 +32,7 @@
     "rxjs": "^6.6.7",
     "socket.io": "^4.4.1",
     "socket.io-client": "^4.4.1",
+    "url-encode-decode": "^1.0.0",
     "uuid": "^8.3.2"
   },
   "scripts": {

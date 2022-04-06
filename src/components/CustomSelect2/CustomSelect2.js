@@ -170,9 +170,8 @@ const CustomSelect2 = ({
             placeholder="Click to add tags"
             ref={inputRef}
             onKeyDown={(e) => {
-              listSuggestionRef.current.style.display = "block";
-
               if (e.key === "Escape") {
+                listSuggestionRef.current.style.display = "block";
                 e.preventDefault();
                 listSuggestionRef.current.scroll({
                   top: 0,
@@ -182,6 +181,7 @@ const CustomSelect2 = ({
               }
 
               if (e.key === "ArrowUp") {
+                listSuggestionRef.current.style.display = "block";
                 e.preventDefault();
                 if (activeIndex > 0) setActiveIndex(activeIndex - 1);
                 const startIndex = Math.round(
@@ -196,6 +196,7 @@ const CustomSelect2 = ({
               }
 
               if (e.key === "ArrowDown") {
+                listSuggestionRef.current.style.display = "block";
                 e.preventDefault();
                 // if (activeIndex === null) setActiveIndex(0);
                 if (activeIndex < dataSuggestions.length - 1)
@@ -213,6 +214,13 @@ const CustomSelect2 = ({
 
               if (e.key === "Enter") {
                 inputRef.current.value = "";
+                if (listSuggestionRef.current.style.display === "none") {
+                  const searchButton = document.querySelector(
+                    ".button-filter-anime"
+                  );
+                  searchButton.dispatchEvent(new CustomEvent("click"));
+                  return;
+                }
                 listSuggestionRef.current.style.display = "none";
                 setTextSearch("");
                 if (!listSuggestionRef.current.children[activeIndex]) return;
@@ -238,6 +246,7 @@ const CustomSelect2 = ({
                 inputRef.current.value === "" &&
                 allSelectedOptions.length > 0
               ) {
+                listSuggestionRef.current.style.display = "block";
                 inputRef.current.value =
                   allSelectedOptions[allSelectedOptions.length - 1].name + " ";
                 setAllSelectedOptions(
@@ -248,6 +257,7 @@ const CustomSelect2 = ({
           />
         </div>
         <ul className="list-suggestion" ref={listSuggestionRef}>
+          {dataSuggestions.length === 0 && <div>No Results</div>}
           {dataSuggestions.map((data, index) => (
             <li
               style={{

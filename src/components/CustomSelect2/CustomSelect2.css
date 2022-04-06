@@ -44,7 +44,8 @@
   overflow-x: hidden;
 }
 
-.list-suggestion li{
+.list-suggestion li,
+.list-suggestion div{
   padding: 0.5rem;
   padding-left: 1rem;
   white-space: nowrap;

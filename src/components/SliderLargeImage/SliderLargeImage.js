@@ -45,17 +45,15 @@ const SliderLargeImage = ({
     );
   };
 
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      carouselSlideListWrapperRef.current.style.height = `${
-        carouselSlideListWrapperRef.current.children[realPage - 1].offsetHeight
-      }px`;
-    }, 1000);
-    return () => {
-      clearTimeout(timeout);
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isLoading]);
+  // useEffect(() => {
+  //   const timeout = setTimeout(() => {
+
+  //   }, 1000);
+  //   return () => {
+  //     clearTimeout(timeout);
+  //   };
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [isLoading]);
 
   useEffect(() => {
     carouselSlideListWrapperRef.current.style.height = `${
@@ -142,6 +140,12 @@ const SliderLargeImage = ({
             <img
               src={imageUrl}
               alt="Not found"
+              onLoad={() => {
+                carouselSlideListWrapperRef.current.style.height = `${
+                  carouselSlideListWrapperRef.current.children[realPage - 1]
+                    .offsetHeight
+                }px`;
+              }}
               onError={() => {
                 if (key === 0) {
                   document.body.style.backgroundImage = `url(${dataImageList[1]})`;

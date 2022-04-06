@@ -57,7 +57,7 @@ const AnimeItem = ({
       <Link
         to={`/${
           searchBy !== "anime"
-            ? `anime/${searchBy === "people" ? "person" : searchBy}`
+            ? `anime/${searchBy === "people" ? "person" : searchBy.replace("s","")}`
             : "anime"
         }/${anime.malId || anime.mal_id}-${
           anime.title

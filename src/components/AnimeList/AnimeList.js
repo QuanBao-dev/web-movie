@@ -52,7 +52,7 @@ const AnimeList = ({
       fromEvent(window, "scroll").pipe(takeWhile(() => virtual)),
       fromEvent(window, "scroll").pipe(
         takeWhile(() => virtual),
-        debounceTime(100)
+        debounceTime(50)
       )
     ).subscribe(() => {
       const { rowStart, rowEnd } = calculateRowStartEnd(

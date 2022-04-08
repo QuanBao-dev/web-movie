@@ -18,6 +18,8 @@ const FilterAnime = () => {
   const producerValueRef = useRef([]);
   const genresValueRef = useRef([]);
   const themesValueRef = useRef([]);
+  const explicitGenresValueRef = useRef([]);
+  const demographicsValueRef = useRef([]);
 
   const typeValueRef = useRef("");
   const statusValueRef = useRef("");
@@ -53,12 +55,17 @@ const FilterAnime = () => {
     maxScoreRef.current = "";
     sfwRef.current && (sfwRef.current.checked = false);
     producerValueRef.current = [];
-    genresExcludeValueRef.current = [];
     genresValueRef.current = [];
+    genresExcludeValueRef.current = [];
+    explicitGenresValueRef.current = [];
+    themesValueRef.current = [];
+    demographicsValueRef.current = [];
     setOrderByState(false);
+    setMinScoreState(0);
+    setMaxScoreState(10);
     setTriggerReset(!triggerReset);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  },[searchByState])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchByState]);
   useEffect(() => {
     if (minScoreState === "") setMinScoreState(0);
     if (maxScoreState === "") setMaxScoreState(10);
@@ -98,13 +105,28 @@ const FilterAnime = () => {
                 .split(",")
                 .includes(mal_id.toString())
             );
+          explicitGenresValueRef.current =
+            storageAnimeState.explicitGenresOptionsList.filter(({ mal_id }) =>
+              storageAnimeState.explicit_genres
+                .split(",")
+                .includes(mal_id.toString())
+            );
+          demographicsValueRef.current =
+            storageAnimeState.demographicsOptionsList.filter(({ mal_id }) =>
+              storageAnimeState.demographics
+                .split(",")
+                .includes(mal_id.toString())
+            );
+
           if (!storageAnimeState.producers) setTriggerReset(!triggerReset);
         }),
         filter(() => storageAnimeState.producers),
         switchMapTo(
-          ajax("/api/producers/" + storageAnimeState.producers).pipe(
-            pluck("response", "message")
-          )
+          ajax(
+            `/api/${
+              storageAnimeState.searchBy === "anime" ? "producers" : "magazines"
+            }/` + storageAnimeState.producers
+          ).pipe(pluck("response", "message"))
         )
       )
       .subscribe((data) => {
@@ -116,23 +138,7 @@ const FilterAnime = () => {
       subscription.unsubscribe();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    storageAnimeState.status,
-    storageAnimeState.dataAnime,
-    storageAnimeState.rating,
-    storageAnimeState.orderBy,
-    storageAnimeState.sfw,
-    storageAnimeState.max_score,
-    storageAnimeState.min_score,
-    storageAnimeState.score,
-    storageAnimeState.producers,
-    storageAnimeState.genres,
-    storageAnimeState.genres_exclude,
-    storageAnimeState.type,
-    storageAnimeState.sort,
-    storageAnimeState.searchBy,
-    storageAnimeState.q,
-  ]);
+  }, [storageAnimeState]);
 
   useEffect(() => {
     const subscriptionInit = storageAnimeStore.subscribe(setStorageAnimeState);
@@ -144,6 +150,8 @@ const FilterAnime = () => {
         const genresMalIdListString = [
           ...genresValueRef.current,
           ...themesValueRef.current,
+          ...demographicsValueRef.current,
+          ...explicitGenresValueRef.current,
         ]
           .map(({ mal_id }) => mal_id)
           .join(",");
@@ -197,7 +205,13 @@ const FilterAnime = () => {
           }${minScore ? `&min_score=${minScore}` : ""}${isSfw ? `&sfw` : ""}${
             genres ? `&genres=${genres}` : ""
           }${genresExclude ? `&genres_exclude=${genresExclude}` : ""}${
-            producer ? `&producers=${producer}` : ""
+            searchBy === "anime"
+              ? producer
+                ? `&producers=${producer}`
+                : ""
+              : producer
+              ? `&magazines=${producer}`
+              : ""
           }${letter ? `&letter=${letter}` : ""}`
         );
       }
@@ -217,7 +231,8 @@ const FilterAnime = () => {
           dataOptions={[
             "anime",
             "characters",
-            { mal_id: "people", name: "voice actors" },
+            "people",
+            "manga",
           ]}
           valueRef={searchByRef}
           defaultValue={searchByRef.current}
@@ -270,9 +285,14 @@ const FilterAnime = () => {
 
         {!["characters", "people"].includes(searchByState) && (
           <CustomSelect2
-            url={"https://api.jikan.moe/v4/producers"}
+            searchByState={searchByState}
+            url={
+              searchByState === "anime"
+                ? "https://api.jikan.moe/v4/producers"
+                : "https://api.jikan.moe/v4/magazines"
+            }
             valueRef={producerValueRef}
-            label={"Producers"}
+            label={searchByState === "anime" ? "Producers" : "Magazines"}
             triggerReset={triggerReset}
             defaultValue={producerValueRef.current}
           />
@@ -290,6 +310,16 @@ const FilterAnime = () => {
 
         {!["characters", "people"].includes(searchByState) && (
           <CustomSelect2
+            dataOptions={storageAnimeStore.currentState().genresDataOptionsList}
+            label={"Genres Exclude"}
+            valueRef={genresExcludeValueRef}
+            triggerReset={triggerReset}
+            defaultValue={genresExcludeValueRef.current}
+          />
+        )}
+
+        {!["characters", "people"].includes(searchByState) && (
+          <CustomSelect2
             dataOptions={storageAnimeStore.currentState().themesDataOptionsList}
             label={"Themes"}
             valueRef={themesValueRef}
@@ -300,11 +330,25 @@ const FilterAnime = () => {
 
         {!["characters", "people"].includes(searchByState) && (
           <CustomSelect2
-            dataOptions={storageAnimeStore.currentState().genresDataOptionsList}
-            label={"Genres Exclude"}
-            valueRef={genresExcludeValueRef}
+            dataOptions={
+              storageAnimeStore.currentState().demographicsOptionsList
+            }
+            label={"Demographics"}
+            valueRef={demographicsValueRef}
             triggerReset={triggerReset}
-            defaultValue={genresExcludeValueRef.current}
+            defaultValue={demographicsValueRef.current}
+          />
+        )}
+
+        {!["characters", "people"].includes(searchByState) && (
+          <CustomSelect2
+            dataOptions={
+              storageAnimeStore.currentState().explicitGenresOptionsList
+            }
+            label={"Explicit Genres"}
+            valueRef={explicitGenresValueRef}
+            triggerReset={triggerReset}
+            defaultValue={explicitGenresValueRef.current}
           />
         )}
 
@@ -345,7 +389,11 @@ const FilterAnime = () => {
 
         {!["characters", "people"].includes(searchByState) && (
           <CustomSelect
-            dataOptions={storageAnimeStore.currentState().statusOptionsList}
+            dataOptions={
+              searchByState === "anime"
+                ? storageAnimeStore.currentState().statusOptionsList
+                : storageAnimeStore.currentState().statusMangaOptionsList
+            }
             label={"Status"}
             valueRef={statusValueRef}
             triggerReset={triggerReset}
@@ -354,7 +402,11 @@ const FilterAnime = () => {
 
         {!["characters", "people"].includes(searchByState) && (
           <CustomSelect
-            dataOptions={storageAnimeStore.currentState().typeOptionsList}
+            dataOptions={
+              searchByState === "anime"
+                ? storageAnimeStore.currentState().typeOptionsList
+                : storageAnimeStore.currentState().typeMangaOptionsList
+            }
             label={"Type"}
             valueRef={typeValueRef}
             triggerReset={triggerReset}
@@ -379,7 +431,9 @@ const FilterAnime = () => {
                 ? storageAnimeStore.currentState().orderByCharacterOptionsList
                 : searchByState === "people"
                 ? storageAnimeStore.currentState().orderByVoiceActorOptionsList
-                : storageAnimeStore.currentState().orderByOptionsList
+                : searchByState === "anime"
+                ? storageAnimeStore.currentState().orderByOptionsList
+                : storageAnimeStore.currentState().orderByMangaOptionsList
             }
             label={"Order By"}
             valueRef={orderByValueRef}

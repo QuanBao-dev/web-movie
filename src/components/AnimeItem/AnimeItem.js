@@ -20,6 +20,7 @@ const AnimeItem = ({
   isAllowDelete,
   styleAnimeItem = {},
   searchBy,
+  type,
 }) => {
   const animeItemRef = useRef();
   const [cookies] = useCookies(["idCartoonUser"]);
@@ -56,9 +57,13 @@ const AnimeItem = ({
       )}
       <Link
         to={`/${
-          searchBy !== "anime"
-            ? `anime/${searchBy === "people" ? "person" : searchBy.replace("s","")}`
-            : "anime"
+          type !== "manga"
+            ? searchBy !== "anime"
+              ? `${
+                  searchBy === "people" ? "person" : searchBy.replace("s", "")
+                }`
+              : "anime"
+            : "manga"
         }/${anime.malId || anime.mal_id}-${
           anime.title
             ? anime.title.replace(/[ /%^&*():.$,]/g, "-").toLocaleLowerCase()

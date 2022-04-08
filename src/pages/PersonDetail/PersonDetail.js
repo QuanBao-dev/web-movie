@@ -8,16 +8,14 @@ import { BehaviorSubject, from, fromEvent, of, timer } from "rxjs";
 import { ajax } from "rxjs/ajax";
 import {
   catchError,
+  concatAll,
   filter,
+  map,
   mergeMapTo,
   pluck,
   retry,
   timeout,
-  map,
-  combineAll,
 } from "rxjs/operators";
-
-import navBarStore from "../../store/navbar";
 
 const AnimeStaffPositions = loadable(
   () => import("../../components/AnimeStaffPositions/AnimeStaffPositions"),
@@ -36,9 +34,13 @@ let updateVoiceActingRoles;
 let numberDisplay = 1;
 const initialState = {
   pageSplit: 1,
-  dataPersonDetail: {},
+  dataPersonDetail: {
+    manga_staff_positions: [],
+    anime_staff_positions: [],
+  },
   malId: null,
   lazy: true,
+  isDoneInit: false,
 };
 let state = initialState;
 const behaviorSubject = new BehaviorSubject();
@@ -69,13 +71,6 @@ const personDetailStore = {
     };
     behaviorSubject.next(state);
   },
-  updateMalId: (malId) => {
-    state = {
-      ...state,
-      malId,
-    };
-    behaviorSubject.next(state);
-  },
   currentState: () => {
     let ans;
     behaviorSubject.subscribe((v) => (ans = v));
@@ -95,32 +90,49 @@ const PersonDetail = (props) => {
   let { personId } = props.match.params;
   personId = parseInt(personId);
   const history = useHistory();
-  // const [personDetail, setPersonDetail] = useState({});
   const [personDetailState, setPersonDetailState] = useState(
     personDetailStore.currentState() || personDetailStore.initialState
   );
+  const [isDoneLoadingVoices, setIsDoneLoadingVoices] = useState(false);
+  if (
+    personDetailState.malId !== personId &&
+    personDetailStore.currentState().isDoneInit === false
+  ) {
+    personDetailStore.updateData({
+      lazy: true,
+      pageSplit: 1,
+      malId: null,
+      dataPersonDetail: {},
+      isDoneInit: true,
+    });
+  }
   useEffect(() => {
     const subscription = personDetailStore.subscribe(setPersonDetailState);
-    personDetailStore.init();
     window.scroll({ top: 0 });
+
     return () => {
-      personDetailStore.updateData({ lazy: false });
+      personDetailStore.updateData({ lazy: false, isDoneInit: false });
       subscription.unsubscribe();
-      navBarStore.updateIsShowBlockPopUp(false);
     };
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [personId]);
   useEffect(() => {
     let subscription;
     if (personDetailState.malId !== personId) {
-      personDetailStore.updateData({ lazy: true });
-      personDetailStore.resetData();
-      subscription = fetchDataPerson$(personId).subscribe((v) => {
-        navBarStore.updateIsShowBlockPopUp(false);
-        personDetailStore.updateDataPersonDetail(v);
-        personDetailStore.updateMalId(personId);
-        window.scroll({
-          top: 0,
+      subscription = fetchDataPerson$(
+        personId,
+        setIsDoneLoadingVoices
+      ).subscribe((v) => {
+        if (v.error) return;
+        personDetailStore.updateData({
+          dataPersonDetail: {
+            ...personDetailStore.currentState().dataPersonDetail,
+            ...v,
+          },
         });
+        if (v.typeResponse === "voices") {
+          personDetailStore.updateData({ malId: personId });
+        }
       });
     }
     return () => {
@@ -147,6 +159,7 @@ const PersonDetail = (props) => {
   const keyPersonInformation = ignoreKeys(
     Object.keys(personDetailState.dataPersonDetail),
     [
+      "typeResponse",
       "request_hash",
       "request_cached",
       "request_cache_expiry",
@@ -154,6 +167,7 @@ const PersonDetail = (props) => {
       "published_manga",
       "voice_acting_roles",
       "anime_staff_positions",
+      "manga_staff_positions",
       "alternate_names",
       "about",
       "image_url",
@@ -204,7 +218,9 @@ const PersonDetail = (props) => {
                     {key.replace("_", " ")}
                   </span>
                   {key !== "birthday" && (
-                    <span>{personDetailState.dataPersonDetail[key]}</span>
+                    <span>
+                      {personDetailState.dataPersonDetail[key] || "Unknown"}
+                    </span>
                   )}
                   {key === "birthday" && (
                     <span>
@@ -244,6 +260,21 @@ const PersonDetail = (props) => {
               />
             </div>
           )}
+        {personDetailState.dataPersonDetail.manga_staff_positions &&
+          personDetailState.dataPersonDetail.manga_staff_positions.length >
+            0 && (
+            <div>
+              <h1 className="text-capitalize">Manga Staff Positions</h1>
+              <AnimeStaffPositions
+                history={history}
+                lazy={personDetailState.lazy}
+                updateStaffPosition={
+                  personDetailState.dataPersonDetail.manga_staff_positions
+                }
+                isManga={true}
+              />
+            </div>
+          )}
         {updateVoiceActingRoles &&
           Object.keys(updateVoiceActingRoles).length !== 0 && (
             <div>
@@ -257,7 +288,7 @@ const PersonDetail = (props) => {
                   .map((key, index) => (
                     <div key={index} className="person-voice-item">
                       <Link
-                        to={`/anime/character/${
+                        to={`/character/${
                           updateVoiceActingRoles[key].mal_id
                         }-${updateVoiceActingRoles[key].name
                           .replace(/[ /%^&*():.$,]/g, "-")
@@ -297,6 +328,11 @@ const PersonDetail = (props) => {
               </div>
             </div>
           )}
+        {!isDoneLoadingVoices && (
+          <div style={{ display: "flex", justifyContent: "center" }}>
+            <CircularProgress color="secondary" size="4rem" />
+          </div>
+        )}
       </div>
     );
   else
@@ -307,38 +343,60 @@ const PersonDetail = (props) => {
     );
 };
 
-function fetchDataPerson$(personId) {
-  navBarStore.updateIsShowBlockPopUp(true);
+function fetchDataPerson$(personId, setIsDoneLoading) {
   return from([
     ajax("https://api.jikan.moe/v4/people/" + personId).pipe(
       pluck("response", "data"),
+      map((data) => ({ data, typeResponse: "info" })),
       timeout(3000),
-      retry(50)
+      retry(10)
     ),
     ajax(`https://api.jikan.moe/v4/people/${personId}/anime`).pipe(
       pluck("response", "data"),
+      map((data) => ({ data, typeResponse: "anime" })),
       timeout(3000),
-      retry(50)
+      retry(10)
+    ),
+    ajax(`https://api.jikan.moe/v4/people/${personId}/manga`).pipe(
+      pluck("response", "data"),
+      map((data) => ({ data, typeResponse: "manga" })),
+      timeout(3000),
+      retry(10)
     ),
     ajax(`https://api.jikan.moe/v4/people/${personId}/voices`).pipe(
       pluck("response", "data"),
+      map((data) => ({ data, typeResponse: "voices" })),
       timeout(3000),
-      retry(50)
+      retry(10)
     ),
   ]).pipe(
-    combineAll(),
-    map(([dataPerson, dataStaffPositions, dataPersonVoiceActingRoles]) => {
-      return {
-        ...dataPerson,
-        image_url: dataPerson.images.webp
-          ? dataPerson.images.webp.image_url
-          : dataPerson.images.jpg.image_url,
-        voice_acting_roles: dataPersonVoiceActingRoles,
-        anime_staff_positions: dataStaffPositions,
-      };
+    concatAll(),
+    map((response) => {
+      if (!response.data) return;
+      switch (response.typeResponse) {
+        case "info":
+          return {
+            ...response.data,
+            image_url: response.data.images.webp
+              ? response.data.images.webp.image_url
+              : response.data.images.jpg.image_url,
+          };
+        case "anime":
+          return {
+            anime_staff_positions: response.data,
+          };
+        case "manga":
+          return { manga_staff_positions: response.data };
+        default:
+          setIsDoneLoading(true);
+          return {
+            voice_acting_roles: response.data,
+            typeResponse: "voices",
+          };
+      }
     }),
     catchError((error) => {
-      console.log(error);
+      console.error(error);
       return of({ error: "Something went wrong" });
     })
   );

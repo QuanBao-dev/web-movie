@@ -338,7 +338,7 @@ const NavBar = ({ userState, removeCookie, cookies }) => {
                       );
                       userStream.updateAvatarUser(res.data.message);
                     } catch (error) {
-                      console.log(error);
+                      console.error(error);
                     }
                   }}
                 />

@@ -26,6 +26,7 @@ const renderRoute = require("./routes/index.route");
 const theaterRoute = require("./routes/theaterRoom.route");
 const faqRoute = require("./routes/faq.route");
 const requestAnimeRoute = require("./routes/requestAnime.route");
+const magazinesRoute = require("./routes/magazine.route");
 const TheaterRoomMember = require("./models/theaterRoomMember.model");
 
 // const peerServer = ExpressPeerServer(server, {
@@ -226,7 +227,8 @@ app.use("/api/movies/request", requestAnimeRoute);
 app.use("/api/movies/box", boxMovieRoute);
 app.use("/api/movies", moviesRoute);
 app.use("/api/users", usersRoute);
-app.use("/api/producers",producersRoute)
+app.use("/api/producers", producersRoute);
+app.use("/api/magazines", magazinesRoute);
 app.use("/api/", tokenRoute);
 app.use("/", renderRoute);
 server.listen(port, () =>

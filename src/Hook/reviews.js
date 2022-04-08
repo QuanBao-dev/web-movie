@@ -25,9 +25,10 @@ export const useUpdatePageScrolling = ({
 
 export const useFetchReviewsData = (
   { pageReviewsData, reviewsData },
-  malId
+  malId,
+  type
 ) => {
-  useEffect(fetchReviewsData(pageReviewsData, reviewsData, malId), [
+  useEffect(fetchReviewsData(pageReviewsData, reviewsData, malId, type), [
     malId,
     pageReviewsData,
   ]);

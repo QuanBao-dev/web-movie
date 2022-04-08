@@ -78,7 +78,7 @@ const Characters = ({ lazy = false, isLoading }) => {
       )}
 
       {isLoading === false && charactersState.dataCharacter.length === 0 && (
-        <h3>No Character has been found</h3>
+        <h3 style={{textAlign:"center"}}>No Character has been found</h3>
       )}
 
       {isLoading === false && charactersState.dataCharacter.length > 0 && (

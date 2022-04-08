@@ -42,6 +42,7 @@ const Reviews = loadable(() => import("../../components/Reviews/Reviews"));
 
 const AnimeDetail = (props) => {
   const { name } = props.match.params;
+  const type = props.match.path.split("/")[1];
   const malId = parseInt(name);
   const history = useHistory();
   const user = userStream.currentState();
@@ -78,7 +79,7 @@ const AnimeDetail = (props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   useInitAnimeDetailState(setAnimeDetailState);
-  useFetchData(setShowThemeMusic, linkWatchingInputRef, malId, history);
+  useFetchData(setShowThemeMusic, linkWatchingInputRef, malId, history, type);
   useFetchBoxMovieOneMovie(
     cookies,
     malId,
@@ -260,17 +261,20 @@ const AnimeDetail = (props) => {
             <ListInformation
               arrKeys={arrKeys}
               isLoading={animeDetailState.isLoadingInfoAnime}
+              type={type}
             />
-            {!showThemeMusic && (
-              <button
-                className="button-show-more-information"
-                onClick={() => {
-                  setShowThemeMusic(true);
-                }}
-              >
-                Show More Information
-              </button>
-            )}
+            {!showThemeMusic &&
+              animeDetailState.isLoadingInfoAnime === false &&
+              type === "anime" && (
+                <button
+                  className="button-show-more-information"
+                  onClick={() => {
+                    setShowThemeMusic(true);
+                  }}
+                >
+                  Show More Information
+                </button>
+              )}
           </div>
           <div className="box-content">
             <h1 style={{ margin: "0" }} className="title">
@@ -297,6 +301,7 @@ const AnimeDetail = (props) => {
                 </div>
               )}
             {animeDetailState.isLoadingEpisode === false &&
+              type === "anime" &&
               episodeDataDisplay &&
               episodeDataDisplay.episodeList.length > 0 && (
                 <div>
@@ -373,14 +378,17 @@ const AnimeDetail = (props) => {
           lazy={true}
           isLoading={animeDetailState.isLoadingCharacter}
         />
-        <RelatedAnime isLoading={animeDetailState.isLoadingRelated} />
+        <RelatedAnime
+          isLoading={animeDetailState.isLoadingRelated}
+          type={type}
+        />
         {animeDetailState.dataVideoPromo && (
           <VideoPromotionList
             data={animeDetailState.dataVideoPromo}
             isLoading={animeDetailState.isLoadingVideoAnime}
           />
         )}
-        <Reviews malId={malId} />
+        <Reviews malId={malId} type={type} />
       </div>
     )
   );

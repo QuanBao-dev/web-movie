@@ -34,11 +34,14 @@ export const fetchData = (
   malId,
   linkWatchingInputElement,
   setShowThemeMusic,
-  history
+  history,
+  type
 ) => {
   return () => {
-    const fetchDataInfo$ = fetchData$(malId, history).pipe(tap((v) => {}));
-    const fetchDataVideoPromo$ = fetchDataVideo$(malId).pipe(
+    const fetchDataInfo$ = fetchData$(malId, history, type).pipe(
+      tap((v) => {})
+    );
+    const fetchDataVideoPromo$ = fetchDataVideo$(malId, type).pipe(
       tap((data) => {
         if (!data || data.error) return;
         const { promo } = data;
@@ -50,7 +53,7 @@ export const fetchData = (
         animeDetailStream.updateIsLoading(false, "isLoadingVideoAnime");
       })
     );
-    const fetchLargePictureUrl$ = fetchLargePicture$(malId).pipe(
+    const fetchLargePictureUrl$ = fetchLargePicture$(malId, type).pipe(
       tap(({ pictures, error }) => {
         if (error) {
           animeDetailStream.updateData({ isLoadingLargePicture: false });
@@ -75,7 +78,7 @@ export const fetchData = (
         }
       })
     );
-    const fetchEpisodesUrlSub = fetchEpisodeDataVideo$(malId)
+    const fetchEpisodesUrlSub = fetchEpisodeDataVideo$(malId, type)
       .pipe(
         tap((api) => {
           if (!api.error) {
@@ -94,7 +97,7 @@ export const fetchData = (
         })
       )
       .subscribe();
-    const fetchAnimeAppears$ = fetchAnimeRecommendation$(malId).pipe(
+    const fetchAnimeAppears$ = fetchAnimeRecommendation$(malId, type).pipe(
       tap((data) => {
         animeDetailStream.updateIsLoading(false, "isLoadingRelated");
         if (!data || data.error) return;
@@ -107,7 +110,7 @@ export const fetchData = (
         });
       })
     );
-    const fetchCharacters$ = fetchDataCharacter$(malId).pipe(
+    const fetchCharacters$ = fetchDataCharacter$(malId, type).pipe(
       tap((data) => {
         animeDetailStream.updateIsLoading(false, "isLoadingCharacter");
         if (!data || data.error) return;
@@ -120,10 +123,10 @@ export const fetchData = (
     );
     const fetchInformation$ = from([
       fetchDataInfo$.pipe(map((data) => ({ ...data, type_data: "data info" }))),
-      fetchAnimeThemes$(malId).pipe(
+      fetchAnimeThemes$(malId, type).pipe(
         map((data) => ({ ...data, type_data: "themes" }))
       ),
-      fetchAnimeExternal$(malId).pipe(
+      fetchAnimeExternal$(malId, type).pipe(
         map((data) => ({ ...data, type_data: "externals" }))
       ),
     ]).pipe(
@@ -196,7 +199,11 @@ export const fetchData = (
         fetchAnimeAppears$,
         fetchCharacters$,
         fetchDataVideoPromo$,
-        fetchReviewsData$(malId, reviewsStream.currentState().pageReviewsData)
+        fetchReviewsData$(
+          malId,
+          reviewsStream.currentState().pageReviewsData,
+          type
+        )
           .pipe(
             tap((v) => {
               if (v && !v.error) {

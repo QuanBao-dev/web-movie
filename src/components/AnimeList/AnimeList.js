@@ -42,7 +42,8 @@ const AnimeList = ({
   empty = false,
   virtual = false,
   isAllowDelete = false,
-  searchBy
+  searchBy,
+  type
 }) => {
   const animeListRef = useRef();
   const lazyLoadState = lazyLoadAnimeListStream.currentState();
@@ -140,6 +141,7 @@ const AnimeList = ({
               searchBy={searchBy}
               virtual={false}
               isAllowDelete={isAllowDelete}
+              type={type}
             />
           );
         })}
@@ -187,6 +189,7 @@ const AnimeList = ({
                 }
               >
                 <AnimeItem
+                type={type}
                   anime={anime}
                   lazy={lazy}
                   virtual={true}

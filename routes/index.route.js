@@ -2,7 +2,7 @@ const router = require("express").Router();
 const { default: Axios } = require("axios");
 const fs = require("fs");
 const path = require("path");
-router.get("/anime/character/:characterId", async (req, res) => {
+router.get("/character/:characterId", async (req, res) => {
   const descriptionHTML =
     "Watch latest anime in high quality and discuss about them with other people. Update daily, No tracking, No paying, No registration required. Just enjoy your anime";
   const titleHTML = "My Anime Fun - Watch latest anime in high quality";
@@ -33,7 +33,7 @@ router.get("/anime/character/:characterId", async (req, res) => {
   }
 });
 
-router.get("/anime/person/:personId", async (req, res) => {
+router.get("/person/:personId", async (req, res) => {
   const descriptionHTML =
     "Watch latest anime in high quality and discuss about them with other people. Update daily, No tracking, No paying, No registration required. Just enjoy your anime";
   const titleHTML = "My Anime Fun - Watch latest anime in high quality";

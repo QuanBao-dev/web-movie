@@ -5,15 +5,16 @@ import React from "react";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import { Link } from "react-router-dom";
 
-function AnimeRelatedItem({ anime, role, lazy = false }) {
+function AnimeRelatedItem({ anime, role, lazy = false, type }) {
   return (
     <div
       title={anime.title}
       className={role === "Main" ? "anime-main-role" : ""}
+      style={type === "manga" ? { cursor: "initial" } : null}
     >
       <Link
         to={
-          "/anime/" +
+          `/${type === "manga" ? "manga" : "anime"}/` +
           anime.mal_id +
           "-" +
           anime.title.replace(/[ /%^&*()]/g, "-").toLocaleLowerCase()

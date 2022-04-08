@@ -8,7 +8,7 @@ import { animeDetailStream } from "../../epics/animeDetail";
 import AnimeList from "../AnimeList/AnimeList";
 import CircularProgress from "@material-ui/core/CircularProgress";
 
-const RelatedAnime = ({ isLoading }) => {
+const RelatedAnime = ({ isLoading, type }) => {
   const [recommendationState, setRecommendationState] = useState(
     animeDetailStream.currentState() || animeDetailStream.initialState
   );
@@ -52,6 +52,7 @@ const RelatedAnime = ({ isLoading }) => {
               error={null}
               lazy={true}
               searchBy={"anime"}
+              type={type}
             />
             <div
               className="see-more-movie"

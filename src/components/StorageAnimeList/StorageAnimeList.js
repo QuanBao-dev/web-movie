@@ -28,17 +28,22 @@ const StorageAnimeList = ({ query }) => {
     return () => subscription.unsubscribe();
   }, []);
   useEffect(() => {
+    const searchBy = query.match(/anime|characters|people|manga/g)
+      ? query.match(/anime|characters|people|manga/g)[0]
+      : "anime";
     storageAnimeStore.updateData({
-      q: query.match(/q=[a-zA-Z0-9 \~\!\@\#\$\%\^\*\(\)\_\-\+\=\`\\\.\<\>\*,]+/g)
+      q: query.match(
+        /q=[a-zA-Z0-9 \~\!\@\#\$\%\^\*\(\)\_\-\+\=\`\\\.\<\>\*,]+/g
+      )
         ? decode(
             query
-              .match(/q=[a-zA-Z0-9 \~\!\@\#\$\%\^\*\(\)\_\-\+\=\`\\\.\<\>\*,]+/g)[0]
+              .match(
+                /q=[a-zA-Z0-9 \~\!\@\#\$\%\^\*\(\)\_\-\+\=\`\\\.\<\>\*,]+/g
+              )[0]
               .replace("q=", "")
           )
         : "",
-      searchBy: query.match(/anime|characters|people/g)
-        ? query.match(/anime|characters|people/g)[0]
-        : "anime",
+      searchBy: searchBy,
       page: query.match(/page=[0-9]+/g)
         ? parseInt(query.match(/page=[0-9]+/g)[0].replace("page=", ""))
         : 1,
@@ -71,17 +76,28 @@ const StorageAnimeList = ({ query }) => {
       genres: query.match(/genres=[0-9,]+/g)
         ? query.match(/genres=[0-9,]+/g)[0].replace("genres=", "")
         : "",
-      themes: query.match(/genres=[0-9,]+/g)
-        ? query.match(/genres=[0-9,]+/g)[0].replace("genres=", "")
-        : "",
       genres_exclude: query.match(/genres_exclude=[0-9,]+/g)
         ? query
             .match(/genres_exclude=[0-9,]+/g)[0]
             .replace("genres_exclude=", "")
         : "",
-      producers: query.match(/producers=[0-9,]+/g)
-        ? query.match(/producers=[0-9,]+/g)[0].replace("producers=", "")
+      demographics: query.match(/genres=[0-9,]+/g)
+        ? query.match(/genres=[0-9,]+/g)[0].replace("genres=", "")
         : "",
+      explicit_genres: query.match(/genres=[0-9,]+/g)
+        ? query.match(/genres=[0-9,]+/g)[0].replace("genres=", "")
+        : "",
+      themes: query.match(/genres=[0-9,]+/g)
+        ? query.match(/genres=[0-9,]+/g)[0].replace("genres=", "")
+        : "",
+      producers:
+        searchBy !== "manga"
+          ? query.match(/producers=[0-9,]+/g)
+            ? query.match(/producers=[0-9,]+/g)[0].replace("producers=", "")
+            : ""
+          : query.match(/magazines=[0-9,]+/g)
+          ? query.match(/magazines=[0-9,]+/g)[0].replace("magazines=", "")
+          : "",
       letter: query.match(
         /letter=[a-zA-Z0-9 \~\!\@\#\$\%\^\*\(\)\_\-\+\=\`\\\.\<\>\*,]+/g
       )

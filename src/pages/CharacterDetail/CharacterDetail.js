@@ -2,22 +2,22 @@ import "./CharacterDetail.css";
 import "react-lazy-load-image-component/src/effects/opacity.css";
 
 import loadable from "@loadable/component";
+import CircularProgress from "@material-ui/core/CircularProgress";
 import React, { useEffect, useState } from "react";
+import { LazyLoadImage } from "react-lazy-load-image-component";
 import { Link } from "react-router-dom";
 import { from, of } from "rxjs";
 import { ajax } from "rxjs/ajax";
 import {
   catchError,
-  combineAll,
+  concatAll,
+  map,
   pluck,
   retry,
   timeout,
-  map,
 } from "rxjs/operators";
 
 import { characterStream } from "../../epics/character";
-import { LazyLoadImage } from "react-lazy-load-image-component";
-import navBarStore from "../../store/navbar";
 
 const AllAnimeRelated = loadable(() =>
   import("../../components/AllAnimeRelated/AllAnimeRelated")
@@ -30,23 +30,23 @@ const CharacterDetail = (props) => {
     window.scroll({
       top: 0,
     });
-    return () => {
-      navBarStore.updateIsShowBlockPopUp(false);
-    };
   }, []);
+
+  const [isDoneLoadingVoices, setIsDoneLoadingVoices] = useState(false);
   useEffect(() => {
-    const subscription = fetchData$(characterId).subscribe((data) => {
-      window.scroll({
-        top: 0,
-      });
-      navBarStore.updateIsShowBlockPopUp(false);
-      setDataCharacterDetail(data);
+    const subscription = fetchData$(
+      characterId,
+      setIsDoneLoadingVoices
+    ).subscribe((v) => {
+      if (v.error) return;
+      setDataCharacterDetail({ ...dataCharacterDetail, ...v });
     });
     return () => {
       subscription.unsubscribe();
       characterStream.updateData({ role: null });
     };
-  }, [characterId]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [characterId, Object.keys(dataCharacterDetail).length]);
   return (
     <div className="character-detail-container">
       <div className="character-information-wrapper">
@@ -110,23 +110,37 @@ const CharacterDetail = (props) => {
       {dataCharacterDetail.animeography &&
         dataCharacterDetail.animeography.length !== 0 && (
           <div className="character-appear-container">
-            <h1 className="text-capitalize">Character appears in...</h1>
+            <h1 className="text-capitalize">Related Anime</h1>
             <AllAnimeRelated
               animeList={dataCharacterDetail.animeography}
               lazy={true}
             />
           </div>
         )}
+      {dataCharacterDetail.mangagraphy &&
+        dataCharacterDetail.mangagraphy.length !== 0 && (
+          <div className="character-appear-container">
+            <h1 className="text-capitalize">Related Manga</h1>
+            <AllAnimeRelated
+              animeList={dataCharacterDetail.mangagraphy}
+              lazy={true}
+            />
+          </div>
+        )}
+
       {dataCharacterDetail.voice_actors &&
         dataCharacterDetail.voice_actors.length > 0 && (
           <div className="voice-actor-container">
-            <h1 className="text-capitalize">Voice actor</h1>
+            <h1 className="text-capitalize">
+              Voice actor
+              {dataCharacterDetail.voice_actors.length > 1 ? "s" : ""}
+            </h1>
             <div className="voice-actor-list">
               {dataCharacterDetail.voice_actors.map((actor, index) => {
                 return (
                   <Link
                     to={
-                      "/anime/person/" +
+                      "/person/" +
                       actor.person.mal_id +
                       "-" +
                       actor.person.name
@@ -153,12 +167,16 @@ const CharacterDetail = (props) => {
             </div>
           </div>
         )}
+      {!isDoneLoadingVoices && (
+        <div style={{ display: "flex", justifyContent: "center" }}>
+          <CircularProgress color="secondary" size="4rem" />
+        </div>
+      )}
     </div>
   );
 };
 
 function fetchCharacterDetailData$(characterId) {
-  navBarStore.updateIsShowBlockPopUp(true);
   return ajax(`https://api.jikan.moe/v4/characters/${characterId}`).pipe(
     timeout(3000),
     retry(20),
@@ -183,20 +201,63 @@ function fetchAnimeByCharacterId$(characterId) {
     catchError(() => of([]))
   );
 }
+function fetchMangaByCharacterId$(characterId) {
+  return ajax(`https://api.jikan.moe/v4/characters/${characterId}/manga`).pipe(
+    timeout(3000),
+    retry(20),
+    pluck("response", "data"),
+    catchError(() => of([]))
+  );
+}
 
-function fetchData$(characterId) {
+function fetchData$(characterId, setIsDoneLoadingVoices) {
   return from([
-    fetchCharacterDetailData$(characterId),
-    fetchVoiceActorByCharacterId$(characterId),
-    fetchAnimeByCharacterId$(characterId),
+    fetchCharacterDetailData$(characterId).pipe(
+      map((data) => ({ data, typeResponse: "info" }))
+    ),
+    fetchAnimeByCharacterId$(characterId).pipe(
+      map((data) => ({ data, typeResponse: "anime" }))
+    ),
+    fetchMangaByCharacterId$(characterId).pipe(
+      map((data) => ({ data, typeResponse: "manga" }))
+    ),
+    fetchVoiceActorByCharacterId$(characterId).pipe(
+      map((data) => ({ data, typeResponse: "voice actor" }))
+    ),
   ]).pipe(
-    combineAll(),
-    map(([dataCharacter, dataVoiceActor, dataAnime]) => {
-      return {
-        ...dataCharacter,
-        animeography: dataAnime,
-        voice_actors: dataVoiceActor,
-      };
+    concatAll(),
+    map((response) => {
+      // [dataCharacter, dataVoiceActor, dataAnime, dataManga]
+      switch (response.typeResponse) {
+        case "info":
+          return {
+            ...response.data,
+          };
+        case "anime":
+          return {
+            animeography: [...response.data],
+          };
+        case "manga":
+          return {
+            mangagraphy: [
+              ...response.data.map(({ manga, role }) => ({
+                anime: manga,
+                role,
+                type: "manga",
+              })),
+            ],
+            typeResponse: "manga",
+          };
+        default:
+          setIsDoneLoadingVoices(true);
+          return {
+            voice_actors: response.data,
+          };
+      }
+    }),
+    catchError((error) => {
+      console.error(error);
+      return of({ error: "Something went wrong" });
     })
   );
 }

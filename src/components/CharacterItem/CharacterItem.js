@@ -11,7 +11,7 @@ function CharacterItem({ characterData, lazy }) {
 
   return (
     <Link
-      to={`/anime/character/${characterData.mal_id}-${characterData.name
+      to={`/character/${characterData.mal_id}-${characterData.name
         .replace(/[ /%^&*(),]/g, "-")
         .toLocaleLowerCase()}`}
       className={`character-item${

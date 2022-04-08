@@ -6,12 +6,13 @@ import { ajax } from "rxjs/ajax";
 import { catchError, debounceTime, filter, pluck } from "rxjs/operators";
 
 const CustomSelect2 = ({
-  url,
   dataOptions,
   valueRef,
   label,
   triggerReset,
   defaultValue,
+  searchByState,
+  url,
 }) => {
   const customSelectContainerRef = useRef();
   const listSuggestionRef = useRef();
@@ -24,6 +25,7 @@ const CustomSelect2 = ({
   const [textSearch, setTextSearch] = useState("");
   const [activeIndex, setActiveIndex] = useState(0);
   const [triggerFetch, setTriggerFetch] = useState(0);
+  const searchByRef = useRef();
   const pageRef = useRef();
   const textSearchRef = useRef();
   useEffect(() => {
@@ -58,27 +60,29 @@ const CustomSelect2 = ({
         isDoneFetchingRef.current = true;
         if (data.error) return;
         setMaxPage(data.pagination.last_visible_page);
-        if (textSearchRef.current !== textSearch) {
+
+        if (
+          searchByRef.current !== searchByState ||
+          textSearchRef.current !== textSearch
+        ) {
           setDataSuggestions([...data.data]);
           setPage(1);
           setActiveIndex(0);
         }
+
         if (pageRef.current !== page) {
           setDataSuggestions([...dataSuggestions, ...data.data]);
         }
-        if (textSearchRef.current === textSearch && pageRef.current === page) {
-          setDataSuggestions([...data.data]);
-          setPage(1);
-          setActiveIndex(0);
-        }
+
         pageRef.current = page;
         textSearchRef.current = textSearch;
+        searchByRef.current = searchByState;
       });
     return () => {
       subscription.unsubscribe();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [textSearch, page, url, triggerFetch]);
+  }, [searchByState, textSearch, page, url, triggerFetch]);
 
   useEffect(() => {
     if (!url) return;
@@ -93,7 +97,8 @@ const CustomSelect2 = ({
         debounceTime(300)
       )
       .subscribe(() => {
-        if (maxPage >= page + 1) setPage(page + 1);
+        if (maxPage >= page + 1 && listSuggestionRef.current.scrollHeight)
+          setPage(page + 1);
       });
     return () => {
       subscription.unsubscribe();

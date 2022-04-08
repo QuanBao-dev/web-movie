@@ -18,11 +18,79 @@ const initialState = {
   sfw: null,
   genres: "",
   themes: "",
+  explicit_genres:"",
+  demographics:"",
   genres_exclude: "",
   sort: "asc",
   letter: "",
   orderBy: "",
   producers: "",
+  typeMangaOptionsList: [
+    "manga",
+    "novel",
+    "lightnovel",
+    "oneshot",
+    "doujin",
+    "manhwa",
+    "manhua",
+  ],
+  statusMangaOptionsList: [
+    "publishing",
+    "complete",
+    "hiatus",
+    "discontinued",
+    "upcoming",
+  ],
+  orderByMangaOptionsList: [
+    "mal_id",
+    "title",
+    "start_date",
+    "end_date",
+    "chapters",
+    "volumes",
+    "score",
+    "scored_by",
+    "rank",
+    "popularity",
+    "members",
+    "favorites",
+  ],
+  explicitGenresOptionsList: [
+    {
+      mal_id: 12,
+      name: "Hentai",
+    },
+    {
+      mal_id: 49,
+      name: "Erotica",
+    },
+    {
+      mal_id: 9,
+      name: "Ecchi",
+    },
+  ],
+  demographicsOptionsList: [
+    {
+      mal_id: 27,
+      name: "Shounen",
+    },
+    {
+      mal_id: 25,
+      name: "Shoujo",
+    },
+    {
+      mal_id: 42,
+      name: "Seinen",
+    },
+    {
+      mal_id: 15,
+      name: "Kids",
+    },
+    {
+      mal_id: 43,
+      name: "Josei",
+    },
+  ],
   typeOptionsList: ["tv", "movie", "ova", "special", "ona", "music"],
   statusOptionsList: ["airing", "complete", "upcoming"],
   ratingOptionsList: ["g", "pg", "pg13", "r17", "r", "rx"],
@@ -69,26 +137,17 @@ const initialState = {
       mal_id: 8,
       name: "Drama",
     },
-    {
-      mal_id: 9,
-      name: "Ecchi",
-    },
+
     {
       mal_id: 10,
       name: "Fantasy",
     },
-    {
-      mal_id: 12,
-      name: "Hentai",
-    },
+
     {
       mal_id: 14,
       name: "Horror",
     },
-    {
-      mal_id: 15,
-      name: "Kids",
-    },
+
     {
       mal_id: 18,
       name: "Mecha",
@@ -105,18 +164,12 @@ const initialState = {
       mal_id: 24,
       name: "Sci-Fi",
     },
-    {
-      mal_id: 25,
-      name: "Shoujo",
-    },
+
     {
       mal_id: 26,
       name: "Girls Love",
     },
-    {
-      mal_id: 27,
-      name: "Shounen",
-    },
+
     {
       mal_id: 28,
       name: "Boys Love",
@@ -149,14 +202,7 @@ const initialState = {
       mal_id: 41,
       name: "Suspense",
     },
-    {
-      mal_id: 42,
-      name: "Seinen",
-    },
-    {
-      mal_id: 43,
-      name: "Josei",
-    },
+
     {
       mal_id: 46,
       name: "Award Winning",
@@ -164,10 +210,6 @@ const initialState = {
     {
       mal_id: 47,
       name: "Gourmet",
-    },
-    {
-      mal_id: 49,
-      name: "Erotica",
     },
   ],
   themesDataOptionsList: [

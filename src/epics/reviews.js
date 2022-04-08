@@ -16,13 +16,14 @@ import reviewsStore from "../store/reviews";
 
 export const reviewsStream = reviewsStore;
 
-export function fetchReviewsData$(malId, page) {
+export function fetchReviewsData$(malId, page, type) {
   return timer(0).pipe(
+    filter(() => type),
     tap(() => reviewsStream.updateData({ isStopFetchingReviews: false })),
     switchMapTo(
-      ajax(`https://api.jikan.moe/v4/anime/${malId}/reviews?page=${page}`).pipe(
+      ajax(`https://api.jikan.moe/v4/${type}/${malId}/reviews?page=${page}`).pipe(
         pluck("response", "data"),
-        retry(10),
+        retry(3),
         timeout(5000),
         retry(reviewsStream.currentState().reviewsData.length === 0 ? null : 3),
         tap(() => reviewsStream.updateData({ pageReviewsOnDestroy: page })),

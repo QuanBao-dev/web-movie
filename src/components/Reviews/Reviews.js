@@ -14,12 +14,12 @@ import {
 
 const ReviewItem = loadable(() => import("../ReviewItem/ReviewItem"));
 
-const Reviews = ({ malId }) => {
+const Reviews = ({ malId, type }) => {
   const [reviewState, setReviewState] = useState(reviewsStream.currentState());
   useInitReviewsState(setReviewState);
   useResetReviewsState(malId, reviewState);
   useUpdatePageScrolling(reviewState);
-  useFetchReviewsData(reviewState, malId);
+  useFetchReviewsData(reviewState, malId, type);
   return (
     <div
       className="container-reviews"

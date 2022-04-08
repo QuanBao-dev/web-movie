@@ -61,7 +61,7 @@ export const updatePageScrolling = (shouldUpdatePageReviewData) => {
   };
 };
 
-export const fetchReviewsData = (pageReviewsData, reviewsData, malId) => {
+export const fetchReviewsData = (pageReviewsData, reviewsData, malId, type) => {
   return () => {
     const subscription = timer(0)
       .pipe(
@@ -73,7 +73,7 @@ export const fetchReviewsData = (pageReviewsData, reviewsData, malId) => {
         ),
         filter(() => reviewsStream.currentState().pageReviewsData > 1),
         switchMapTo(
-          fetchReviewsData$(malId, reviewsStream.currentState().pageReviewsData)
+          fetchReviewsData$(malId, reviewsStream.currentState().pageReviewsData, type)
         )
       )
       .subscribe((v) => {

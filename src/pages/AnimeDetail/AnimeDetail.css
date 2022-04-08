@@ -168,14 +168,6 @@
   background-color: #584b4b;
 }
 
-.anime-name-info .box-info div{
-  border-bottom: 5px solid #a31212;
-  background-color: #444547;
-  border-top: 5px solid #a31212;
-  padding: 10px;
-  font-family: Arial, Helvetica, sans-serif;
-}
-
 .anime-name-info .box-info ul{
   list-style-type: none;
   padding: 0;

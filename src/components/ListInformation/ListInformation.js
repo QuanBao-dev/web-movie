@@ -1,4 +1,4 @@
-import { CircularProgress } from "@material-ui/core";
+import CircularProgress from "@material-ui/core/CircularProgress";
 import React from "react";
 import { Link } from "react-router-dom";
 import { animeDetailStream, capitalizeString } from "../../epics/animeDetail";
@@ -11,8 +11,9 @@ const dataLinkList = [
   { name: "studios", route: "?producers=" },
   { name: "themes", route: "?genres=" },
   { name: "demographics", route: "?genres=" },
+  { name: "serializations", route: "?magazines=" },
 ];
-function ListInformation({ arrKeys, isLoading }) {
+function ListInformation({ arrKeys, isLoading, type }) {
   return (
     <ul>
       {isLoading !== null && isLoading === true && (
@@ -31,12 +32,12 @@ function ListInformation({ arrKeys, isLoading }) {
                   <span
                     style={{
                       fontFamily: "Arial",
-                      padding: "10px",
+                      padding: "8px",
                       backgroundColor: "#353940",
                       borderRadius: "10px",
                     }}
                   >
-                    {capitalizeString(v)}
+                    {capitalizeString(v)}:
                   </span>{" "}
                   {`${
                     animeDetailStream.currentState().dataInformationAnime[v]
@@ -49,12 +50,12 @@ function ListInformation({ arrKeys, isLoading }) {
                   <span
                     style={{
                       fontFamily: "Arial",
-                      padding: "10px",
+                      padding: "8px",
                       backgroundColor: "#353940",
                       borderRadius: "10px",
                     }}
                   >
-                    {capitalizeString(v)}
+                    {capitalizeString(v)}:
                   </span>{" "}
                   <span
                     style={
@@ -124,6 +125,15 @@ function ListInformation({ arrKeys, isLoading }) {
                       {capitalizeString(v)}
                     </span>
                     {array.map((anime, index) => {
+                      if (v === "authors") {
+                        return (
+                          <Link to={"/person/" + anime.mal_id} key={index}>
+                            <li className="click-able-info" key={index}>
+                              {anime.name}
+                            </li>
+                          </Link>
+                        );
+                      }
                       if (v === "external_links") {
                         return (
                           <a
@@ -146,21 +156,20 @@ function ListInformation({ arrKeys, isLoading }) {
                           </a>
                         );
                       }
-
                       for (let i = 0; i < dataLinkList.length; i++) {
                         const { name, route } = dataLinkList[i];
                         if (v === name) {
                           return (
                             <Link
                               key={index}
-                              to={`/storage/vertical${route}${anime.mal_id}`}
+                              to={`/storage/vertical${route}${anime.mal_id}&${type}`}
                             >
                               <li className="click-able-info">{anime.name}</li>
                             </Link>
                           );
                         }
                       }
-                      return <li>{anime.name}</li>;
+                      return <li key={index}>{anime.name}</li>;
                     })}
                   </ul>
                 </li>
@@ -196,36 +205,26 @@ function ListInformation({ arrKeys, isLoading }) {
                       {capitalizeString(key)}
                     </span>
                     {related[key].map((anime, index) => {
-                      if (anime.type === "anime")
-                        return (
-                          <Link
-                            key={index}
-                            to={
-                              "/anime/" +
-                              anime.mal_id +
-                              "-" +
-                              anime.name
-                                .replace(/[ /%^&*():.$,]/g, "-")
-                                .toLocaleLowerCase()
-                            }
-                          >
-                            <li className={"click-able-info"}>
-                              {anime.name}{" "}
-                              {anime.type !== "anime" && (
-                                <span>({capitalizeString(anime.type)})</span>
-                              )}
-                            </li>
-                          </Link>
-                        );
-                      else
-                        return (
-                          <li key={index}>
+                      return (
+                        <Link
+                          key={index}
+                          to={
+                            `/${type}/` +
+                            anime.mal_id +
+                            "-" +
+                            anime.name
+                              .replace(/[ /%^&*():.$,]/g, "-")
+                              .toLocaleLowerCase()
+                          }
+                        >
+                          <li className={"click-able-info"}>
                             {anime.name}{" "}
                             {anime.type !== "anime" && (
                               <span>({capitalizeString(anime.type)})</span>
                             )}
                           </li>
-                        );
+                        </Link>
+                      );
                     })}
                   </ul>
                 </li>

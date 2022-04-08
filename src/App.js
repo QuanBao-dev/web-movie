@@ -210,12 +210,13 @@ function App() {
           path="/anime/:malId/watch/:episode/:mode"
           component={EpisodePage}
         />
-        <Route path="/anime/person/:personId" component={PersonDetail} />
+        <Route path="/person/:personId" component={PersonDetail} />
         <Route
-          path="/anime/character/:characterId"
+          path="/character/:characterId"
           component={CharacterDetail}
         />
         <Route path="/anime/:name" component={AnimeDetail} />
+        <Route path="/manga/:name" component={AnimeDetail} />
         {userState && userState.role === "Admin" && (
           <Route path="/admin" component={AdminManager} exact />
         )}

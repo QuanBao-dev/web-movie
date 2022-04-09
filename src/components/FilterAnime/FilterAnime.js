@@ -195,7 +195,7 @@ const FilterAnime = () => {
         } = ans;
         history.push(
           `/storage?page=${page}${searchBy !== "anime" ? `&${searchBy}` : ""}${
-            q ? `&q=${q}` : ""
+            q ? `&q=${q.replace(/&/g, "%26")}` : ""
           }${type ? `&type=${type}` : ""}${rating ? `&rating=${rating}` : ""}${
             status ? `&status=${status}` : ""
           }${orderBy ? `&order_by=${orderBy}` : ""}${
@@ -212,7 +212,7 @@ const FilterAnime = () => {
               : producer
               ? `&magazines=${producer}`
               : ""
-          }${letter ? `&letter=${letter}` : ""}`
+          }${letter ? `&letter=${letter.replace(/&/g, "%26")}` : ""}`
         );
       }
     );
@@ -228,12 +228,7 @@ const FilterAnime = () => {
         <h2 className="filter-anime-title">Filter</h2>
         <CustomSelect
           label={"Search by"}
-          dataOptions={[
-            "anime",
-            "characters",
-            "people",
-            "manga",
-          ]}
+          dataOptions={["anime", "characters", "people", "manga"]}
           valueRef={searchByRef}
           defaultValue={searchByRef.current}
           triggerReset={triggerReset}

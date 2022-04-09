@@ -123,7 +123,7 @@ const StorageAnimeList = ({ query }) => {
           ajax(
             `https://api.jikan.moe/v4/${
               storageAnimeStore.currentState().searchBy
-            }${query.replace("&characters", "")}`
+            }${query}`
           ).pipe(
             pluck("response"),
             retry(10),

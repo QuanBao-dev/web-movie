@@ -110,7 +110,7 @@ const AnimeItem = ({
               {new Date(anime.airing_start).getFullYear()}
             </div>
           )}
-        {anime.aired && anime.aired.prop.from.day && (
+        {anime.aired && anime.aired.prop.from.day && !anime.aired.prop.to.day && (
           <div
             title={
               "Started airing on " + new Date(anime.aired.from).toUTCString()
@@ -253,17 +253,21 @@ function mouseMoveAnimeItem(animeItemRef, virtual) {
       if (x === 0) {
         x = animeItemRef.current.getBoundingClientRect().x;
       }
-      const isHalf =
-        e.pageX - ((x + e.movementX) % e.pageX) >
+      const axisX =
+        e.pageX -
+        ((x + e.movementX) % e.pageX) -
         animeItemRef.current.offsetWidth / 2;
-      xVal = isHalf ? animeItemRef.current.offsetWidth : 0;
+      if (axisX * 1.5 < animeItemRef.current.offsetWidth * 1.5)
+        xVal = axisX * 1.5 + animeItemRef.current.offsetWidth / 2;
       if (
         animeItemRef.current.parentElement.className.includes(
           "list-anime-nowrap"
         )
       ) {
         yVal =
-          e.pageY - animeItemRef.current.parentElement.parentElement.offsetTop;
+          e.pageY -
+          animeItemRef.current.parentElement.parentElement.offsetTop -
+          animeItemRef.current.offsetWidth / 2;
       } else if (virtual) {
         yVal =
           e.pageY -

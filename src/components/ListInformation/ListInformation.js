@@ -129,7 +129,7 @@ function ListInformation({ arrKeys, isLoading, type }) {
                         return (
                           <Link to={"/person/" + anime.mal_id} key={index}>
                             <li className="click-able-info" key={index}>
-                              {anime.name}
+                              {anime.name.replace(",", "")}
                             </li>
                           </Link>
                         );

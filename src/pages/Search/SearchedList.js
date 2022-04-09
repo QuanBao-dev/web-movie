@@ -7,6 +7,7 @@ import { fromEvent, of, timer } from "rxjs";
 import navBarStore from "../../store/navbar";
 import searchedListStore from "../../store/searchedList";
 import loadable from "@loadable/component";
+import { decode } from "url-encode-decode";
 const AnimeList = loadable(
   () => import("../../components/AnimeList/AnimeList"),
   {
@@ -68,7 +69,7 @@ const SearchedList = (props) => {
   );
   return (
     <div className="container-search-anime">
-      <h1 style={{ color: "white" }}>Results searched for "{key}"</h1>
+      <h1 style={{ color: "white" }}>Results searched for "{decode(key)}"</h1>
       {dataSearchDisplay && (
         <AnimeList
           lazy={true}

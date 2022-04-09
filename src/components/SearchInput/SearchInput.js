@@ -23,7 +23,7 @@ const SearchInput = ({ textSearch }) => {
         setError("Require at least 3 character to search");
         return;
       }
-      history.push("/anime/search?key=" + v);
+      history.push("/anime/search?key=" + v.replace(/&/g, "%26"));
       setError(null);
     });
     return () => {

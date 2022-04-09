@@ -1,8 +1,16 @@
-import { fromEvent, of } from 'rxjs';
-import { ajax } from 'rxjs/ajax';
-import { catchError, debounceTime, filter, pluck, retry, switchMap, tap } from 'rxjs/operators';
+import { fromEvent, of } from "rxjs";
+import { ajax } from "rxjs/ajax";
+import {
+  catchError,
+  debounceTime,
+  filter,
+  pluck,
+  retry,
+  switchMap,
+  tap,
+} from "rxjs/operators";
 
-import searchToolStore from '../store/searchTool';
+import searchToolStore from "../store/searchTool";
 
 export const searchToolStream = searchToolStore;
 
@@ -11,14 +19,18 @@ export const changeSearchInput$ = (searchInputElement) => {
   return searchedInput$.pipe(
     debounceTime(300),
     pluck("target", "value"),
-    tap((text) => searchToolStream.updateDataQuick({ textSearch: text })),
+    tap((text) => {
+      searchToolStream.updateDataQuick({ textSearch: text });
+    }),
     retry(20),
     catchError(() => {
       return of("");
     }),
     switchMap((text) =>
       text
-        ? ajax("https://api.jikan.moe/v4/anime?q=" + text).pipe(
+        ? ajax(
+            "https://api.jikan.moe/v4/anime?q=" + text.replace(/&/g, "%26")
+          ).pipe(
             pluck("response", "data"),
             retry(20),
             catchError((error) => {

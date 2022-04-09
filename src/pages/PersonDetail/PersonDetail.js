@@ -2,7 +2,7 @@ import "./PersonDetail.css";
 
 import loadable from "@loadable/component";
 import CircularProgress from "@material-ui/core/CircularProgress";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { Link, useHistory } from "react-router-dom";
 import { BehaviorSubject, from, fromEvent, of, timer } from "rxjs";
 import { ajax } from "rxjs/ajax";
@@ -30,17 +30,12 @@ const AllAnimeRelated = loadable(
     fallback: <CircularProgress color="primary" size="7rem" />,
   }
 );
-let updateVoiceActingRoles;
 let numberDisplay = 1;
 const initialState = {
   pageSplit: 1,
-  dataPersonDetail: {
-    manga_staff_positions: [],
-    anime_staff_positions: [],
-  },
+  dataPersonDetail: {},
   malId: null,
   lazy: true,
-  isDoneInit: false,
 };
 let state = initialState;
 const behaviorSubject = new BehaviorSubject();
@@ -89,36 +84,32 @@ const personDetailStore = {
 const PersonDetail = (props) => {
   let { personId } = props.match.params;
   personId = parseInt(personId);
+  const updateVoiceActingRoles = useRef();
   const history = useHistory();
   const [personDetailState, setPersonDetailState] = useState(
     personDetailStore.currentState() || personDetailStore.initialState
   );
   const [isDoneLoadingVoices, setIsDoneLoadingVoices] = useState(false);
-  if (
-    personDetailState.malId !== personId &&
-    personDetailStore.currentState().isDoneInit === false
-  ) {
-    personDetailStore.updateData({
-      lazy: true,
-      pageSplit: 1,
-      malId: null,
-      dataPersonDetail: {},
-      isDoneInit: true,
-    });
-  }
   useEffect(() => {
     const subscription = personDetailStore.subscribe(setPersonDetailState);
     window.scroll({ top: 0 });
-
     return () => {
-      personDetailStore.updateData({ lazy: false, isDoneInit: false });
+      personDetailStore.updateData({ lazy: false });
       subscription.unsubscribe();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [personId]);
+  }, []);
   useEffect(() => {
     let subscription;
     if (personDetailState.malId !== personId) {
+      personDetailStore.updateData({
+        lazy: true,
+        pageSplit: 1,
+        malId: null,
+        dataPersonDetail: {},
+      });
+
+      updateVoiceActingRoles.current = null;
       subscription = fetchDataPerson$(
         personId,
         setIsDoneLoadingVoices
@@ -131,9 +122,12 @@ const PersonDetail = (props) => {
           },
         });
         if (v.typeResponse === "voices") {
+          // console.log("done");
           personDetailStore.updateData({ malId: personId });
         }
       });
+    } else {
+      setIsDoneLoadingVoices(true);
     }
     return () => {
       subscription && subscription.unsubscribe();
@@ -145,10 +139,10 @@ const PersonDetail = (props) => {
         personDetailStore.currentState().pageSplit + 1
       );
     });
-    if (updateVoiceActingRoles)
+    if (updateVoiceActingRoles.current)
       if (
         personDetailState.pageSplit * numberDisplay >
-        Object.keys(updateVoiceActingRoles).length
+        Object.keys(updateVoiceActingRoles.current).length
       ) {
         subscription.unsubscribe();
       }
@@ -178,7 +172,7 @@ const PersonDetail = (props) => {
   );
 
   if (personDetailState.dataPersonDetail.voice_acting_roles) {
-    updateVoiceActingRoles =
+    updateVoiceActingRoles.current =
       personDetailState.dataPersonDetail.voice_acting_roles.reduce(
         (ans, dataVoiceActor) => {
           if (!ans[dataVoiceActor.character.mal_id])
@@ -275,12 +269,12 @@ const PersonDetail = (props) => {
               />
             </div>
           )}
-        {updateVoiceActingRoles &&
-          Object.keys(updateVoiceActingRoles).length !== 0 && (
+        {updateVoiceActingRoles.current &&
+          Object.keys(updateVoiceActingRoles.current).length !== 0 && (
             <div>
               <h1 className="text-capitalize">Voice Acting Roles</h1>
               <div className="list-anime-voice-acting">
-                {Object.keys(updateVoiceActingRoles)
+                {Object.keys(updateVoiceActingRoles.current)
                   .slice(
                     0,
                     numberDisplay * (personDetailState.pageSplit - 1) + 1
@@ -289,8 +283,8 @@ const PersonDetail = (props) => {
                     <div key={index} className="person-voice-item">
                       <Link
                         to={`/character/${
-                          updateVoiceActingRoles[key].mal_id
-                        }-${updateVoiceActingRoles[key].name
+                          updateVoiceActingRoles.current[key].mal_id
+                        }-${updateVoiceActingRoles.current[key].name
                           .replace(/[ /%^&*():.$,]/g, "-")
                           .toLocaleLowerCase()}`}
                         className="character-item-voice"
@@ -298,18 +292,21 @@ const PersonDetail = (props) => {
                         <img
                           className="person__image-character"
                           src={
-                            updateVoiceActingRoles[key].images.jpg
+                            updateVoiceActingRoles.current[key].images.jpg
                               .large_image_url ||
-                            updateVoiceActingRoles[key].images.jpg.image_url
+                            updateVoiceActingRoles.current[key].images.jpg
+                              .image_url
                           }
                           alt="image_character"
                         />
                         <div className="pop-up-hover-character">
-                          <h3>{updateVoiceActingRoles[key].name}</h3>
+                          <h3>{updateVoiceActingRoles.current[key].name}</h3>
                         </div>
                       </Link>
                       <AllAnimeRelated
-                        animeList={updateVoiceActingRoles[key].animeList.map(
+                        animeList={updateVoiceActingRoles.current[
+                          key
+                        ].animeList.map(
                           ({ role, title, url, images, mal_id }) => ({
                             role,
                             anime: {

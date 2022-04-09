@@ -38,9 +38,7 @@ export const fetchData = (
   type
 ) => {
   return () => {
-    const fetchDataInfo$ = fetchData$(malId, history, type).pipe(
-      tap((v) => {})
-    );
+    const fetchDataInfo$ = fetchData$(malId, history, type);
     const fetchDataVideoPromo$ = fetchDataVideo$(malId, type).pipe(
       tap((data) => {
         if (!data || data.error) return;
@@ -196,8 +194,8 @@ export const fetchData = (
       subscription = from([
         fetchLargePictureUrl$,
         fetchInformation$,
-        fetchAnimeAppears$,
         fetchCharacters$,
+        fetchAnimeAppears$,
         fetchDataVideoPromo$,
         fetchReviewsData$(
           malId,

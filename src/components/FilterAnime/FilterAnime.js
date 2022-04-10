@@ -349,6 +349,32 @@ const FilterAnime = () => {
 
         {!["characters", "people"].includes(searchByState) && (
           <CustomSelect
+            dataOptions={
+              searchByState === "anime"
+                ? storageAnimeStore.currentState().typeOptionsList
+                : storageAnimeStore.currentState().typeMangaOptionsList
+            }
+            label={"Type"}
+            valueRef={typeValueRef}
+            triggerReset={triggerReset}
+          />
+        )}
+
+        {!["characters", "people"].includes(searchByState) && (
+          <CustomSelect
+            dataOptions={
+              searchByState === "anime"
+                ? storageAnimeStore.currentState().statusOptionsList
+                : storageAnimeStore.currentState().statusMangaOptionsList
+            }
+            label={"Status"}
+            valueRef={statusValueRef}
+            triggerReset={triggerReset}
+          />
+        )}
+
+        {!["characters", "people", "manga"].includes(searchByState) && (
+          <CustomSelect
             dataOptions={storageAnimeStore.currentState().ratingOptionsList}
             label={"Rating"}
             valueRef={ratingValueRef}
@@ -382,43 +408,6 @@ const FilterAnime = () => {
           />
         )}
 
-        {!["characters", "people"].includes(searchByState) && (
-          <CustomSelect
-            dataOptions={
-              searchByState === "anime"
-                ? storageAnimeStore.currentState().statusOptionsList
-                : storageAnimeStore.currentState().statusMangaOptionsList
-            }
-            label={"Status"}
-            valueRef={statusValueRef}
-            triggerReset={triggerReset}
-          />
-        )}
-
-        {!["characters", "people"].includes(searchByState) && (
-          <CustomSelect
-            dataOptions={
-              searchByState === "anime"
-                ? storageAnimeStore.currentState().typeOptionsList
-                : storageAnimeStore.currentState().typeMangaOptionsList
-            }
-            label={"Type"}
-            valueRef={typeValueRef}
-            triggerReset={triggerReset}
-          />
-        )}
-
-        {!["characters", "people"].includes(searchByState) && (
-          <fieldset className="fieldset-filter-button">
-            <legend className="label-select">Sfw</legend>
-            <input
-              className="filter-check-box"
-              ref={sfwRef}
-              type={"checkbox"}
-            />
-          </fieldset>
-        )}
-
         <fieldset className="custom-select-container">
           <CustomSelect
             dataOptions={
@@ -445,6 +434,17 @@ const FilterAnime = () => {
             />
           )}
         </fieldset>
+
+        {!["characters", "people"].includes(searchByState) && (
+          <fieldset className="fieldset-filter-button">
+            <legend className="label-select">Sfw</legend>
+            <input
+              className="filter-check-box"
+              ref={sfwRef}
+              type={"checkbox"}
+            />
+          </fieldset>
+        )}
 
         <fieldset className="fieldset-filter-button">
           <button className="button-filter-anime" ref={buttonFilterRef}>

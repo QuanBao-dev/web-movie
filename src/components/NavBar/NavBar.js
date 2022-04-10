@@ -126,24 +126,10 @@ const NavBar = ({ userState, removeCookie, cookies }) => {
           <div
             className="toggle-show__nav"
             style={{
-              backgroundColor: isShowToggleNav
-                ? "rgb(2,2,2)"
-                : "rgb(2,2,2,0.2)",
+              backgroundColor: "transparent",
             }}
             onClick={() => {
               setIsShowToggleNav(!isShowToggleNav);
-              // const e = document
-              //   .getElementsByClassName("child-nav-bar__app")
-              //   .item(0);
-              // const navBarApp = document.querySelector(".nav-bar__app");
-              // if (e.style.display === "none") {
-              //   e.style.display = "flex";
-              //   navBarApp.style.backgroundColor = "rgb(2,2,2)";
-              // } else {
-              //   e.style.display = "none";
-              //   if (window.scrollY >= 50)
-              //     navBarApp.style.backgroundColor = "rgb(2,2,2,0.2)";
-              // }
             }}
           >
             <i className="fas fa-bars fa-2x"></i>

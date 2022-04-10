@@ -1,5 +1,4 @@
 .filter-anime-container{
-  width: 100%;
   flex: 1 1 10%;
   min-width: 288px;
   border-right: 3px solid rgba(128, 128, 128, 0.411);

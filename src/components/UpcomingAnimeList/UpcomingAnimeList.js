@@ -11,7 +11,7 @@ import {
 } from "../../Hook/upcomingAnimeList";
 import AnimeList from "../AnimeList/AnimeList";
 import { fromEvent } from "rxjs";
-import { debounceTime } from "rxjs/operators";
+import { debounceTime, tap } from "rxjs/operators";
 import { Link } from "react-router-dom";
 
 let numberList = 25;
@@ -32,21 +32,27 @@ const UpcomingAnimeList = () => {
       .subscribe(() => {
         upcomingAnimeListStream.updateData({ screenWidth: window.innerWidth });
       });
-    const subscription2 = fromEvent(window, "scroll").subscribe(() => {
-      const { y } = upcomingAnimeContainerRef.current.getBoundingClientRect();
-      const { offsetHeight } = upcomingAnimeContainerRef.current;
-      if (-offsetHeight < y && y < window.innerHeight) {
-        if (upcomingAnimeListStream.currentState().modeScrolling !== "interval")
-          upcomingAnimeListStream.updateDataQuick({
-            modeScrolling: "interval",
-          });
-      } else {
-        if (upcomingAnimeListStream.currentState().modeScrolling !== "enter")
+    const subscription2 = fromEvent(window, "scroll")
+      .pipe(
+        tap(() =>
           upcomingAnimeListStream.updateDataQuick({
             modeScrolling: "enter",
-          });
-      }
-    });
+          })
+        ),
+        debounceTime(500)
+      )
+      .subscribe(() => {
+        const { y } = upcomingAnimeContainerRef.current.getBoundingClientRect();
+        const { offsetHeight } = upcomingAnimeContainerRef.current;
+        if (-offsetHeight < y && y < window.innerHeight) {
+          if (
+            upcomingAnimeListStream.currentState().modeScrolling !== "interval"
+          )
+            upcomingAnimeListStream.updateDataQuick({
+              modeScrolling: "interval",
+            });
+        }
+      });
     return () => {
       subscription.unsubscribe();
       subscription2.unsubscribe();

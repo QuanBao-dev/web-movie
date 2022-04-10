@@ -8,3 +8,13 @@
   background-color: hsl(240, 5%, 13%);
   display: flex;
 }
+
+@media (max-width:831px) {
+  .storage-anime-container{
+    flex-direction: column-reverse;
+  }
+
+  .filter-anime-container{
+    border-right: none!important;
+  }
+}

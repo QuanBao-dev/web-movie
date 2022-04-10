@@ -2,7 +2,7 @@
 import "./StorageAnimeList.css";
 
 import { CircularProgress } from "@material-ui/core";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Link, useHistory } from "react-router-dom";
 import { of, timer } from "rxjs";
 import { ajax } from "rxjs/ajax";
@@ -23,10 +23,12 @@ const StorageAnimeList = ({ query }) => {
     storageAnimeStore.currentState()
   );
   const history = useHistory();
+  const pageStorageAnimeListRef = useRef();
   useEffect(() => {
     const subscription = storageAnimeStore.subscribe(setStorageAnimeState);
     return () => subscription.unsubscribe();
   }, []);
+
   useEffect(() => {
     const searchBy = query.match(/anime|characters|people|manga/g)
       ? query.match(/anime|characters|people|manga/g)[0]
@@ -58,8 +60,8 @@ const StorageAnimeList = ({ query }) => {
           )
         : "",
       sfw: query.match(/sfw/g) ? query.match(/sfw/g)[0] : "",
-      rating: query.match(/rating=[a-zA-Z]+/g)
-        ? query.match(/rating=[a-zA-Z]+/g)[0].replace("rating=", "")
+      rating: query.match(/rating=[a-zA-Z0-9]+/g)
+        ? query.match(/rating=[a-zA-Z0-9]+/g)[0].replace("rating=", "")
         : "",
       status: query.match(/status=[a-zA-Z]+/g)
         ? query.match(/status=[a-zA-Z]+/g)[0].replace("status=", "")
@@ -153,6 +155,14 @@ const StorageAnimeList = ({ query }) => {
   return (
     <div className="storage-anime-list-container">
       <h2 className="filter-anime-title">Storage</h2>
+      {!isLoading && maxPage > 1 && (
+        <PageStorageAnimeList
+          maxPage={maxPage}
+          query={query}
+          history={history}
+          pageStorageAnimeListRef={pageStorageAnimeListRef}
+        />
+      )}
       {!isLoading && (
         <Link
           className="storage-anime-list-vertical-icon"
@@ -160,13 +170,6 @@ const StorageAnimeList = ({ query }) => {
         >
           Change view
         </Link>
-      )}
-      {!isLoading && maxPage > 1 && (
-        <PageStorageAnimeList
-          maxPage={maxPage}
-          query={query}
-          history={history}
-        />
       )}
       {isLoading && <CircularProgress color="secondary" size="4rem" />}
       {!isLoading && storageAnimeState.dataAnime.length > 0 && (
@@ -191,12 +194,17 @@ const StorageAnimeList = ({ query }) => {
 };
 
 export default StorageAnimeList;
-function PageStorageAnimeList({ maxPage, query, history }) {
+function PageStorageAnimeList({
+  maxPage,
+  query,
+  history,
+  pageStorageAnimeListRef,
+}) {
   const page =
     query !== "" && query.match(/page=[0-9]+/g)
       ? parseInt(query.match(/page=[0-9]+/g)[0].replace("page=", ""))
       : 1;
-  const amount = 6;
+  const amount = 5;
   let tempRight = 0;
   let tempLeft = 0;
   if (page - amount < 0) {
@@ -207,7 +215,7 @@ function PageStorageAnimeList({ maxPage, query, history }) {
     tempLeft += Math.abs(page + amount - maxPage);
   }
   return (
-    <ul className="storage-anime-page-list">
+    <ul className="storage-anime-page-list" ref={pageStorageAnimeListRef}>
       <Link
         className="storage-anime-page-item-container"
         to={`/storage${

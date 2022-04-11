@@ -6,6 +6,8 @@
 
 .anime-main-role a{
   text-decoration: none;
+  width:100%;
+  display: block;
 }
 
 .all-anime-related span{
@@ -13,6 +15,7 @@
   width: 100%;
   display: flex!important;
   align-items: center;
+  justify-content: center;
 }
 
 .pop-up-hover{

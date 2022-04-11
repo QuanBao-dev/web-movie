@@ -59,40 +59,42 @@ const CharacterDetail = (props) => {
           }
           alt="image_character"
         ></img>
-        <div className="character-information">
-          {dataCharacterDetail.name && (
-            <div className="wrapper-text">
-              <span className="text-capitalize">name</span>
-              <span>{dataCharacterDetail.name}</span>
-            </div>
-          )}
-          {characterStream.currentState() &&
-            characterStream.currentState().role && (
+        {dataCharacterDetail.name && (
+          <div className="character-information">
+            {dataCharacterDetail.name && (
               <div className="wrapper-text">
-                <span className="text-capitalize">role</span>
-                <span>{characterStream.currentState().role}</span>
+                <span className="text-capitalize">name</span>
+                <span>{dataCharacterDetail.name}</span>
               </div>
             )}
-          {dataCharacterDetail.name_kanji && (
-            <div className="wrapper-text">
-              <span className="text-capitalize">name kanji</span>
-              <span>{dataCharacterDetail.name_kanji}</span>
-            </div>
-          )}
-          {dataCharacterDetail.favorites && (
-            <div className="wrapper-text">
-              <span className="text-capitalize">favorites</span>
-              <span>{dataCharacterDetail.favorites}</span>
-            </div>
-          )}
-          {dataCharacterDetail.nicknames &&
-            dataCharacterDetail.nicknames.length > 0 && (
+            {characterStream.currentState() &&
+              characterStream.currentState().role && (
+                <div className="wrapper-text">
+                  <span className="text-capitalize">role</span>
+                  <span>{characterStream.currentState().role}</span>
+                </div>
+              )}
+            {dataCharacterDetail.name_kanji && (
               <div className="wrapper-text">
-                <span className="text-capitalize">nicknames</span>
-                <span>{dataCharacterDetail.nicknames.join(", ")}</span>
+                <span className="text-capitalize">name kanji</span>
+                <span>{dataCharacterDetail.name_kanji}</span>
               </div>
             )}
-        </div>
+            {dataCharacterDetail.favorites && (
+              <div className="wrapper-text">
+                <span className="text-capitalize">favorites</span>
+                <span>{dataCharacterDetail.favorites}</span>
+              </div>
+            )}
+            {dataCharacterDetail.nicknames &&
+              dataCharacterDetail.nicknames.length > 0 && (
+                <div className="wrapper-text">
+                  <span className="text-capitalize">nicknames</span>
+                  <span>{dataCharacterDetail.nicknames.join(", ")}</span>
+                </div>
+              )}
+          </div>
+        )}
       </div>
       {dataCharacterDetail.about && (
         <div

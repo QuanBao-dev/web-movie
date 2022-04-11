@@ -204,28 +204,30 @@ const PersonDetail = (props) => {
             }
             alt="image_person"
           ></img>
-          <div className="person-information">
-            {keyPersonInformation &&
-              keyPersonInformation.map((key, index) => (
-                <div className="wrapper-text" key={index}>
-                  <span className="text-capitalize">
-                    {key.replace("_", " ")}
-                  </span>
-                  {key !== "birthday" && (
-                    <span>
-                      {personDetailState.dataPersonDetail[key] || "Unknown"}
+          {keyPersonInformation.length > 0 && (
+            <div className="person-information">
+              {keyPersonInformation &&
+                keyPersonInformation.map((key, index) => (
+                  <div className="wrapper-text" key={index}>
+                    <span className="text-capitalize">
+                      {key.replace("_", " ")}
                     </span>
-                  )}
-                  {key === "birthday" && (
-                    <span>
-                      {new Date(personDetailState.dataPersonDetail[key])
-                        .toUTCString()
-                        .slice(0, 12)}
-                    </span>
-                  )}
-                </div>
-              ))}
-          </div>
+                    {key !== "birthday" && (
+                      <span>
+                        {personDetailState.dataPersonDetail[key] || "Unknown"}
+                      </span>
+                    )}
+                    {key === "birthday" && (
+                      <span>
+                        {new Date(personDetailState.dataPersonDetail[key])
+                          .toUTCString()
+                          .slice(0, 12)}
+                      </span>
+                    )}
+                  </div>
+                ))}
+            </div>
+          )}
         </div>
         {personDetailState.dataPersonDetail.about && (
           <div

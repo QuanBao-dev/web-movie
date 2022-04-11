@@ -139,7 +139,7 @@ const AnimeItem = ({
           </div>
         )}
 
-        {!anime.recommendation_count && (
+        {!anime.recommendation_count && (anime.score || anime.favorites) && (
           <div
             title={anime.score ? `${anime.score} out of 10` : "Favorites"}
             className="anime-info-display_summary top-right_summary color-red"

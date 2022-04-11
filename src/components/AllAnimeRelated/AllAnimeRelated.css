@@ -16,9 +16,11 @@
     align-items: center;
     box-shadow: 0 0 10px 1px black;
     position: relative;
+    background-color: black;
     border-radius: 10px;
     transition: 0.1s;
     max-width: 225px;
+    justify-content:center;
     flex: 1 1 auto;
   }
   @media (max-width:655px){
@@ -49,7 +51,7 @@
     .all-anime-related div img{
       border-radius: 10px;
       width: 100%;
-      object-fit: contain;
+      object-fit: cover;
       background-color: black;
       height: 100%;
     }

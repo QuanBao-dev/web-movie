@@ -6,6 +6,7 @@ const { verifyRole } = require("../middleware/verify-role");
 const { default: Axios } = require("axios");
 const puppeteer = require("@scaleleap/puppeteer");
 const CarouselMovie = require("../models/carouselMovie.model");
+const LengthLatestMovie = require("../models/lengthLatestMovie.model");
 const User = require("../models/user.model");
 const router = require("express").Router();
 
@@ -26,25 +27,34 @@ router.get("/", verifyRole("Admin"), async (req, res) => {
 router.get("/latest", async (req, res) => {
   const page = req.query.page || "1";
   try {
-    let movies, lastPage;
-    const updatedMovies = await UpdatedMovie.find();
-    lastPage = Math.ceil(updatedMovies.length / 18);
-    if (page) {
-      movies = updatedMovies.sort(
-        (moviePrev, movieCurrent) =>
-          -new Date(moviePrev.updatedAt).getTime() +
-          new Date(movieCurrent.updatedAt).getTime()
-      );
-      movies = updatedMovies.slice(
-        (parseInt(page) - 1) * 18,
-        parseInt(page) * 18
-      );
-    }
+    let lastPage;
+    const [updatedMovies, { length }] = await Promise.all([
+      UpdatedMovie.aggregate([
+        { $sort: { updatedAt: -1 } },
+        { $skip: (parseInt(page) - 1) * 18 },
+        { $limit: 18 },
+        {
+          $project: {
+            _id: 0,
+            createdAt: 1,
+            updatedAt: 1,
+            malId: 1,
+            title: 1,
+            imageUrl: 1,
+            numEpisodes: 1,
+            score: 1,
+            synopsis: 1,
+          },
+        },
+      ]),
+      LengthLatestMovie.findOne({
+        name: "length",
+      }).lean(),
+    ]);
+    lastPage = Math.ceil(length / 18);
     res.json({
       message: {
-        data: movies.map((movie) => {
-          return ignoreProps(["_id", "__v"], movie.toJSON());
-        }),
+        data: updatedMovies,
         lastPage,
       },
     });
@@ -545,12 +555,16 @@ function updateComment(movie, newMessage, index, isPush = true) {
 router.delete("/:malId", verifyRole("Admin"), async (req, res) => {
   const { malId } = req.params;
   try {
-    const [movie, updatedMovie] = await Promise.all([
-      Movie.findOne({ malId }),
-      UpdatedMovie.findOne({ malId }),
+    const [movie] = await Promise.all([
+      Movie.findOneAndDelete({ malId }),
+      UpdatedMovie.findOneAndDelete({ malId }),
     ]);
-    movie && movie.remove();
-    updatedMovie && updatedMovie.remove();
+    const length = await UpdatedMovie.countDocuments({});
+    await LengthLatestMovie.findOneAndUpdate(
+      { name: "length" },
+      { length },
+      { upsert: true, new: true }
+    );
     res.send({ message: ignoreProps(["_id", "__v"], movie.toJSON()) });
   } catch {
     res.status(404).send({ error: "Something went wrong" });
@@ -577,6 +591,12 @@ async function addMovieUpdated(malId) {
         upsert: true,
       }
     ).lean();
+    const length = await UpdatedMovie.countDocuments({});
+    await LengthLatestMovie.findOneAndUpdate(
+      { name: "length" },
+      { length },
+      { upsert: true, new: true }
+    );
     return movie;
   } catch (error) {
     throw Error("Can't add updated movie");
@@ -588,7 +608,7 @@ async function crawl(start, end, url, serverWeb) {
     extra: {
       stealth: true,
     },
-    headless: true,
+    headless: false,
     args: ["--start-maximized", "--no-sandbox"],
     defaultViewport: null,
     timeout: 0,

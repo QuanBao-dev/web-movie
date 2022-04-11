@@ -13,7 +13,6 @@ const SliderLargeImage = ({
   setPage,
   page,
   triggerSlideSmallImage,
-  isLoading,
 }) => {
   const {
     amountProductsEachPageStateList,
@@ -44,16 +43,6 @@ const SliderLargeImage = ({
       setRealPage
     );
   };
-
-  // useEffect(() => {
-  //   const timeout = setTimeout(() => {
-
-  //   }, 1000);
-  //   return () => {
-  //     clearTimeout(timeout);
-  //   };
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [isLoading]);
 
   useEffect(() => {
     carouselSlideListWrapperRef.current.style.height = `${

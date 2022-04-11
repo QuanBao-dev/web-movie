@@ -12,9 +12,9 @@ const LazyLoadAnimeList = loadable(
 
 const StorageVertical = (props) => {
   const query = props.location.search;
-  const searchBy = query.match(/&(anime|characters|people|manga)/g)
-    ? query.match(/&(anime|characters|people|manga)/g)[0]
-    : "anime";
+  const searchBy = query.match(/&(characters|people|manga)/g)
+    ? query.match(/&(characters|people|manga)/g)[0]
+    : "&anime";
   return (
     <LazyLoadAnimeList
       url={`https://api.jikan.moe/v4/${searchBy.replace(
@@ -25,7 +25,7 @@ const StorageVertical = (props) => {
         .replace(/&$/g, "")}
       query={query}
       title={"Filter"}
-      searchBy={searchBy}
+      searchBy={searchBy.replace("&", "")}
     />
   );
 };

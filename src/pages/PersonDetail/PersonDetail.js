@@ -14,6 +14,7 @@ import {
   mergeMapTo,
   pluck,
   retry,
+  tap,
   timeout,
 } from "rxjs/operators";
 
@@ -347,6 +348,11 @@ function fetchDataPerson$(personId, setIsDoneLoading) {
     ajax("https://api.jikan.moe/v4/people/" + personId).pipe(
       pluck("response", "data"),
       map((data) => ({ data, typeResponse: "info" })),
+      tap(({ status }) => {
+        if (status === 500) {
+          throw Error("Something went wrong");
+        }
+      }),
       timeout(3000),
       retry(10)
     ),
@@ -354,18 +360,33 @@ function fetchDataPerson$(personId, setIsDoneLoading) {
       pluck("response", "data"),
       map((data) => ({ data, typeResponse: "anime" })),
       timeout(3000),
+      tap(({ status }) => {
+        if (status === 500) {
+          throw Error("Something went wrong");
+        }
+      }),
       retry(10)
     ),
     ajax(`https://api.jikan.moe/v4/people/${personId}/manga`).pipe(
       pluck("response", "data"),
       map((data) => ({ data, typeResponse: "manga" })),
       timeout(3000),
+      tap(({ status }) => {
+        if (status === 500) {
+          throw Error("Something went wrong");
+        }
+      }),
       retry(10)
     ),
     ajax(`https://api.jikan.moe/v4/people/${personId}/voices`).pipe(
       pluck("response", "data"),
       map((data) => ({ data, typeResponse: "voices" })),
       timeout(3000),
+      tap(({ status }) => {
+        if (status === 500) {
+          throw Error("Something went wrong");
+        }
+      }),
       retry(10)
     ),
   ]).pipe(

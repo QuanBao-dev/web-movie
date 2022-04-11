@@ -14,6 +14,7 @@ import {
   map,
   pluck,
   retry,
+  tap,
   timeout,
 } from "rxjs/operators";
 
@@ -181,8 +182,13 @@ const CharacterDetail = (props) => {
 function fetchCharacterDetailData$(characterId) {
   return ajax(`https://api.jikan.moe/v4/characters/${characterId}`).pipe(
     timeout(3000),
-    retry(20),
+    retry(10),
     pluck("response", "data"),
+    tap(({ status }) => {
+      if (status === 500) {
+        throw Error("Something went wrong");
+      }
+    }),
     catchError(() => of({}))
   );
 }
@@ -190,7 +196,12 @@ function fetchCharacterDetailData$(characterId) {
 function fetchVoiceActorByCharacterId$(characterId) {
   return ajax(`https://api.jikan.moe/v4/characters/${characterId}/voices`).pipe(
     timeout(3000),
-    retry(20),
+    retry(10),
+    tap(({ status }) => {
+      if (status === 500) {
+        throw Error("Something went wrong");
+      }
+    }),
     pluck("response", "data"),
     catchError(() => of([]))
   );
@@ -198,16 +209,26 @@ function fetchVoiceActorByCharacterId$(characterId) {
 function fetchAnimeByCharacterId$(characterId) {
   return ajax(`https://api.jikan.moe/v4/characters/${characterId}/anime`).pipe(
     timeout(3000),
-    retry(20),
+    retry(10),
     pluck("response", "data"),
+    tap(({ status }) => {
+      if (status === 500) {
+        throw Error("Something went wrong");
+      }
+    }),
     catchError(() => of([]))
   );
 }
 function fetchMangaByCharacterId$(characterId) {
   return ajax(`https://api.jikan.moe/v4/characters/${characterId}/manga`).pipe(
     timeout(3000),
-    retry(20),
+    retry(10),
     pluck("response", "data"),
+    tap(({ status }) => {
+      if (status) {
+        throw Error("Something went wrong");
+      }
+    }),
     catchError(() => of([]))
   );
 }

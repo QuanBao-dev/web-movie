@@ -2,7 +2,7 @@ import "./ReviewItem.css";
 import React from "react";
 import { timeSince } from "../../epics/comment";
 
-function ReviewItem({ review }) {
+function ReviewItem({ review, type }) {
   return (
     <div className="review-item">
       <div className="user-info-review-container">
@@ -16,8 +16,13 @@ function ReviewItem({ review }) {
           </div>
         </div>
         <div>
-          {review.episodes_watched} episode
-          {review.episodes_watched > 1 ? "s" : ""} seen
+          {type === "anime"
+            ? `${review.episodes_watched} episode${
+                review.episodes_watched > 1 ? "s" : ""
+              } watched`
+            : `${review.chapters_read} chapter${
+                review.chapters_read > 1 ? "s" : ""
+              } read`}
         </div>
       </div>
       <div className="time-since-review">

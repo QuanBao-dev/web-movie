@@ -14,6 +14,7 @@ import {
   useInitLazyLoadAnimeList,
   useUpdatePageScrollingWindow,
 } from "../../Hook/lazyLoadAnimeList";
+import { useCookies } from "react-cookie";
 
 const AnimeList = loadable(() =>
   import("../../components/AnimeList/AnimeList")
@@ -23,6 +24,7 @@ const LazyLoadAnimeList = ({ url, query, searchBy }) => {
   const [lazyLoadState, setLazyLoadState] = useState(
     lazyLoadAnimeListStream.currentState()
   );
+  const [cookie] = useCookies(["idCartoonUser"]);
   const animeListRef = useRef();
   useEffect(() => {
     document.body.style.backgroundImage = `url(/background.jpg)`;
@@ -31,18 +33,25 @@ const LazyLoadAnimeList = ({ url, query, searchBy }) => {
   useInitLazyLoadAnimeList(setLazyLoadState);
   useGenreIdChange(query, lazyLoadState);
   useUpdatePageScrollingWindow(lazyLoadState.isStopScrollingUpdated);
-  useFetchDataGenreAnimeList(lazyLoadState, query, url);
+  useFetchDataGenreAnimeList(lazyLoadState, query, url, searchBy, cookie.idCartoonUser);
   return (
     <div className="container-genre-detail">
       <Link
-        to={`/storage?${
-          query.match(/page=[0-9]+/g)
-            ? query
-                .replace(/page=[0-9]+/g, `page=${lazyLoadState.pageGenre}`)
-                .replace("?", "")
-            : query.replace("?", "") +
-              `${query !== "" ? "&" : ""}page=${lazyLoadState.pageGenre}`
-        }`}
+        to={
+          !["latest", "box"].includes(searchBy)
+            ? `/storage?${
+                query.match(/page=[0-9]+/g)
+                  ? query
+                      .replace(
+                        /page=[0-9]+/g,
+                        `page=${lazyLoadState.pageGenre}`
+                      )
+                      .replace("?", "")
+                  : query.replace("?", "") +
+                    `${query !== "" ? "&" : ""}page=${lazyLoadState.pageGenre}`
+              }`
+            : "/"
+        }
         className="filter-icon"
       >
         <i className="fas fa-filter"></i>
@@ -54,7 +63,7 @@ const LazyLoadAnimeList = ({ url, query, searchBy }) => {
         error={null}
         lazy={true}
         animeListRef={animeListRef}
-        searchBy={searchBy}
+        searchBy={["anime", "latest", "box"].includes(searchBy) ? "anime" : searchBy}
       />
 
       {!lazyLoadState.isStopScrollingUpdated && (

@@ -34,7 +34,9 @@ export const useFetchDataGenreAnimeList = (
     trigger
   } = lazyLoadAnimeListStream.currentState(),
   query,
-  url
+  url,
+  searchBy,
+  idCartoonUser
 ) => {
   useEffect(
     fetchDataGenreAnimeList(
@@ -42,7 +44,9 @@ export const useFetchDataGenreAnimeList = (
       isStopScrollingUpdated,
       genreDetailData,
       query,
-      url
+      url,
+      searchBy,
+      idCartoonUser
     ),
     [pageGenre, query, currentGenreId, trigger]
   );

@@ -1,3 +1,5 @@
+import "./UpdatedAnime.css";
+
 import loadable from "@loadable/component";
 import React, { useState } from "react";
 import { useCookies } from "react-cookie";
@@ -38,7 +40,7 @@ const UpdatedAnime = () => {
         paddingBottom: "1.2rem",
         boxShadow: "0 0 3px 3px rgb(51, 57, 92)",
         backgroundColor: "#212541",
-        marginBottom:"0.7rem"
+        marginBottom: "0.7rem",
       }}
     >
       <SubNavBar

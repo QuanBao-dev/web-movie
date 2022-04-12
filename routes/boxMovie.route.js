@@ -21,6 +21,9 @@ router.get("/", verifyRole("Admin", "User"), async (req, res) => {
           .slice((parseInt(page) - 1) * 18, parseInt(page) * 18)
           .map((movie) => ignoreProps(["_id", "__v", "user"], movie.toJSON())),
         lastPage,
+        pagination: {
+          has_next_page: lastPage > parseInt(page),
+        },
       },
     });
   } catch (error) {

@@ -9,6 +9,7 @@ import { ajax } from "rxjs/ajax";
 import {
   catchError,
   concatAll,
+  delay,
   filter,
   map,
   mergeMapTo,
@@ -353,6 +354,7 @@ function fetchDataPerson$(personId, setIsDoneLoading) {
           throw Error("Something went wrong");
         }
       }),
+      delay(1500),
       timeout(3000),
       retry(10)
     ),
@@ -360,6 +362,7 @@ function fetchDataPerson$(personId, setIsDoneLoading) {
       pluck("response", "data"),
       map((data) => ({ data, typeResponse: "anime" })),
       timeout(3000),
+      delay(1500),
       tap(({ status }) => {
         if (status === 500) {
           throw Error("Something went wrong");
@@ -371,6 +374,7 @@ function fetchDataPerson$(personId, setIsDoneLoading) {
       pluck("response", "data"),
       map((data) => ({ data, typeResponse: "manga" })),
       timeout(3000),
+      delay(1500),
       tap(({ status }) => {
         if (status === 500) {
           throw Error("Something went wrong");

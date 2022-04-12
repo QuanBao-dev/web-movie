@@ -44,7 +44,7 @@ const Reviews = ({ malId, type }) => {
             reviewState.reviewsData
               .slice(0, reviewState.pageSplit)
               .map((review, index) => (
-                <ReviewItem key={index} review={review} />
+                <ReviewItem type={type} key={index} review={review} />
               ))}
           {reviewState && !reviewState.isStopFetchingReviews && (
             <div className="loading-symbol-review">

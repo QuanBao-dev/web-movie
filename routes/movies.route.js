@@ -6,7 +6,7 @@ const { verifyRole } = require("../middleware/verify-role");
 const { default: Axios } = require("axios");
 const puppeteer = require("@scaleleap/puppeteer");
 const CarouselMovie = require("../models/carouselMovie.model");
-const LengthLatestMovie = require("../models/lengthLatestMovie.model");
+const LengthMovie = require("../models/lengthMovie.model");
 const User = require("../models/user.model");
 const router = require("express").Router();
 
@@ -28,7 +28,7 @@ router.get("/latest", async (req, res) => {
   const page = req.query.page || "1";
   try {
     let lastPage;
-    const [updatedMovies, { length }] = await Promise.all([
+    const [updatedMovies, { length_updated_movies }] = await Promise.all([
       UpdatedMovie.aggregate([
         { $sort: { updatedAt: -1 } },
         { $skip: (parseInt(page) - 1) * 18 },
@@ -47,15 +47,18 @@ router.get("/latest", async (req, res) => {
           },
         },
       ]),
-      LengthLatestMovie.findOne({
+      LengthMovie.findOne({
         name: "length",
       }).lean(),
     ]);
-    lastPage = Math.ceil(length / 18);
+    lastPage = Math.ceil(length_updated_movies / 18);
     res.json({
       message: {
         data: updatedMovies,
         lastPage,
+        pagination: {
+          has_next_page: parseInt(page) < lastPage,
+        },
       },
     });
   } catch (error) {
@@ -560,9 +563,9 @@ router.delete("/:malId", verifyRole("Admin"), async (req, res) => {
       UpdatedMovie.findOneAndDelete({ malId }),
     ]);
     const length = await UpdatedMovie.countDocuments({});
-    await LengthLatestMovie.findOneAndUpdate(
+    await LengthMovie.findOneAndUpdate(
       { name: "length" },
-      { length },
+      { length_updated_movies: length },
       { upsert: true, new: true }
     );
     res.send({ message: ignoreProps(["_id", "__v"], movie.toJSON()) });
@@ -592,9 +595,9 @@ async function addMovieUpdated(malId) {
       }
     ).lean();
     const length = await UpdatedMovie.countDocuments({});
-    await LengthLatestMovie.findOneAndUpdate(
+    await LengthMovie.findOneAndUpdate(
       { name: "length" },
-      { length },
+      { length_updated_movies: length },
       { upsert: true, new: true }
     );
     return movie;

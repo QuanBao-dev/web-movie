@@ -3,7 +3,7 @@ import "react-lazy-load-image-component/src/effects/opacity.css";
 
 import loadable from "@loadable/component";
 import CircularProgress from "@material-ui/core/CircularProgress";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import { Link } from "react-router-dom";
 import { from, of } from "rxjs";
@@ -11,6 +11,7 @@ import { ajax } from "rxjs/ajax";
 import {
   catchError,
   concatAll,
+  delay,
   map,
   pluck,
   retry,
@@ -27,10 +28,14 @@ const AllAnimeRelated = loadable(() =>
 const CharacterDetail = (props) => {
   const characterId = parseInt(props.match.params.characterId);
   const [dataCharacterDetail, setDataCharacterDetail] = useState({});
+  const dataCharacterDetailRef = useRef({});
   useEffect(() => {
     window.scroll({
       top: 0,
     });
+    return () => {
+      characterStream.updateData({ role: null });
+    };
   }, []);
 
   const [isDoneLoadingVoices, setIsDoneLoadingVoices] = useState(false);
@@ -40,14 +45,17 @@ const CharacterDetail = (props) => {
       setIsDoneLoadingVoices
     ).subscribe((v) => {
       if (v.error) return;
-      setDataCharacterDetail({ ...dataCharacterDetail, ...v });
+      setDataCharacterDetail({ ...dataCharacterDetailRef.current, ...v });
+      dataCharacterDetailRef.current = {
+        ...dataCharacterDetailRef.current,
+        ...v,
+      };
     });
     return () => {
       subscription.unsubscribe();
-      characterStream.updateData({ role: null });
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [characterId, Object.keys(dataCharacterDetail).length]);
+  }, [characterId]);
   return (
     <div className="character-detail-container">
       <div className="character-information-wrapper">
@@ -81,7 +89,7 @@ const CharacterDetail = (props) => {
                 <span>{dataCharacterDetail.name_kanji}</span>
               </div>
             )}
-            {dataCharacterDetail.favorites && (
+            {!!dataCharacterDetail.favorites && (
               <div className="wrapper-text">
                 <span className="text-capitalize">favorites</span>
                 <span>{dataCharacterDetail.favorites}</span>
@@ -196,13 +204,13 @@ function fetchCharacterDetailData$(characterId) {
 function fetchVoiceActorByCharacterId$(characterId) {
   return ajax(`https://api.jikan.moe/v4/characters/${characterId}/voices`).pipe(
     timeout(3000),
-    retry(10),
     tap(({ status }) => {
       if (status === 500) {
         throw Error("Something went wrong");
       }
     }),
     pluck("response", "data"),
+    retry(10),
     catchError(() => of([]))
   );
 }
@@ -236,13 +244,16 @@ function fetchMangaByCharacterId$(characterId) {
 function fetchData$(characterId, setIsDoneLoadingVoices) {
   return from([
     fetchCharacterDetailData$(characterId).pipe(
-      map((data) => ({ data, typeResponse: "info" }))
+      map((data) => ({ data, typeResponse: "info" })),
+      delay(1500)
     ),
     fetchAnimeByCharacterId$(characterId).pipe(
-      map((data) => ({ data, typeResponse: "anime" }))
+      map((data) => ({ data, typeResponse: "anime" })),
+      delay(1500)
     ),
     fetchMangaByCharacterId$(characterId).pipe(
-      map((data) => ({ data, typeResponse: "manga" }))
+      map((data) => ({ data, typeResponse: "manga" })),
+      delay(1500)
     ),
     fetchVoiceActorByCharacterId$(characterId).pipe(
       map((data) => ({ data, typeResponse: "voice actor" }))

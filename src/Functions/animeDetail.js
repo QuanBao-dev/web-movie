@@ -1,5 +1,5 @@
 import { from } from "rxjs";
-import { concatAll, map, tap } from "rxjs/operators";
+import { concatAll, delay, map, tap } from "rxjs/operators";
 
 import {
   animeDetailStream,
@@ -192,11 +192,11 @@ export const fetchData = (
       });
       animeDetailStream.resetState();
       subscription = from([
-        fetchLargePictureUrl$,
-        fetchInformation$,
-        fetchCharacters$,
-        fetchAnimeAppears$,
-        fetchDataVideoPromo$,
+        fetchLargePictureUrl$.pipe(delay(1500)),
+        fetchInformation$.pipe(delay(1500)),
+        fetchCharacters$.pipe(delay(1500)),
+        fetchAnimeAppears$.pipe(delay(1500)),
+        fetchDataVideoPromo$.pipe(delay(1500)),
         fetchReviewsData$(
           malId,
           reviewsStream.currentState().pageReviewsData,

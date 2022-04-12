@@ -5,6 +5,7 @@ import { fromEvent } from "rxjs";
 
 import loadable from "@loadable/component";
 import { updatedAnimeStream } from "../../epics/updatedAnime";
+import { Link } from "react-router-dom";
 const AnimeList = loadable(() => import("../AnimeList/AnimeList"), {
   fallback: (
     <div>
@@ -161,6 +162,15 @@ const PaginationAnime = ({
               <option key={key}>{page + 1}</option>
             ))}
           </select>
+          <Link
+            to={`/storage/vertical?page=${
+              subNavToggle === 0
+                ? updatedAnimeStream.currentState().currentPageUpdatedMovie
+                : updatedAnimeStream.currentState().currentPageBoxMovie
+            }&${subNavToggle === 0 ? "latest" : "box"}`}
+          >
+            <button className="button-infinite-scroll">Change view</button>
+          </Link>
         </div>
       )}
     </div>

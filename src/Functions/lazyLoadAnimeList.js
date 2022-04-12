@@ -3,6 +3,7 @@ import {
   lazyLoadAnimeListStream,
   updatePageScrollingWindow$,
 } from "../epics/lazyLoadAnimeList";
+import { updatedAnimeStream } from "../epics/updatedAnime";
 
 export const initLazyLoadAnimeList = (setLazyLoadState) => {
   return () => {
@@ -36,7 +37,7 @@ export const genreIdChange = (query, currentQuery) => {
         pageOnDestroy: null,
         isStopScrollingUpdated: false,
         currentGenreId: null,
-        trigger: !lazyLoadAnimeListStream.currentState().trigger
+        trigger: !lazyLoadAnimeListStream.currentState().trigger,
       });
     }
   };
@@ -67,7 +68,9 @@ export const fetchDataGenreAnimeList = (
   isStopScrollingUpdated,
   genreDetailData,
   query,
-  url
+  url,
+  searchBy,
+  idCartoonUser
 ) => {
   return () => {
     let subscription;
@@ -76,7 +79,13 @@ export const fetchDataGenreAnimeList = (
         lazyLoadAnimeListStream.currentState().genreDetailData.length === 0) &&
       isStopScrollingUpdated === false
     ) {
-      subscription = fetchDataGenreAnimeList$(pageGenre, url).subscribe((v) => {
+      subscription = fetchDataGenreAnimeList$(
+        pageGenre,
+        url,
+        idCartoonUser,
+        searchBy
+      ).subscribe((v) => {
+        if (v.error) alert("Something went wrong");
         if (!v.error) {
           let updatedAnime;
           if (
@@ -84,16 +93,33 @@ export const fetchDataGenreAnimeList = (
               0 ||
             lazyLoadAnimeListStream.currentState().query !== query
           ) {
-            updatedAnime = v.data;
+            updatedAnime = !["latest", "box"].includes(searchBy)
+              ? v.data
+              : v.message.data;
           } else {
-            updatedAnime = genreDetailData.concat(v.data);
+            updatedAnime = !["latest", "box"].includes(searchBy)
+              ? genreDetailData.concat(v.data)
+              : genreDetailData.concat(v.message.data);
           }
-          // if (type) {
-          //   lazyLoadAnimeListStream.updateData({ genre: type });
-          // }
-          if (!v.pagination.has_next_page) {
+
+          if (
+            (!["latest", "box"].includes(searchBy) &&
+              !v.pagination.has_next_page) ||
+            (["latest", "box"].includes(searchBy) &&
+              !v.message.pagination.has_next_page)
+          ) {
             lazyLoadAnimeListStream.updateData({
               isStopScrollingUpdated: true,
+            });
+          }
+          if (searchBy === "latest") {
+            updatedAnimeStream.updateData({
+              currentPageUpdatedMovie: pageGenre,
+            });
+          }
+          if (searchBy === "box") {
+            updatedAnimeStream.updateData({
+              currentPageBoxMovie: pageGenre,
             });
           }
           lazyLoadAnimeListStream.updateData({
@@ -103,7 +129,6 @@ export const fetchDataGenreAnimeList = (
             query,
           });
         } else {
-          console.log("hsa");
           lazyLoadAnimeListStream.updateData({
             isStopScrollingUpdated: true,
           });

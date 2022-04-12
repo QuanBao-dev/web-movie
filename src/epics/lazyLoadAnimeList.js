@@ -15,7 +15,16 @@ import lazyLoadAnimeListStore from "../store/lazyLoadAnimeList";
 
 export const lazyLoadAnimeListStream = lazyLoadAnimeListStore;
 
-export function fetchDataGenreAnimeList$(page, url) {
+export function fetchDataGenreAnimeList$(page, url, idCartoonUser, searchBy) {
+  let obj = {
+    method: "GET",
+    url: url.replace("{page}", page),
+  };
+  if (["latest", "box"].includes(searchBy)) {
+    obj.headers = {
+      authorization: `Bearer ${idCartoonUser}`,
+    };
+  }
   return timer(0).pipe(
     filter(() => page === parseInt(page)),
     tap(() => {
@@ -24,13 +33,8 @@ export function fetchDataGenreAnimeList$(page, url) {
       });
     }),
     mergeMap(() =>
-      ajax(url.replace("{page}", page)).pipe(
+      ajax(obj).pipe(
         timeout(5000),
-        retry(
-          lazyLoadAnimeListStream.currentState().genreDetailData.length > 0
-            ? 5
-            : null
-        ),
         pluck("response"),
         catchError(() => {
           return of({ error: true });

@@ -1,12 +1,16 @@
 const mongoose = require("mongoose");
+const { nanoid } = require("nanoid");
 const lengthMovieSchema = new mongoose.Schema({
   name: {
     type: String,
-    require: true,
   },
-  length_updated_movies: {
+  length: {
     type: Number,
     require: true,
+  },
+  userId: {
+    type: String,
+    default: nanoid,
   },
 });
 

@@ -139,12 +139,13 @@ const AnimeItem = ({
           </div>
         )}
 
-        {!anime.recommendation_count && (anime.score || anime.favorites) ? (
+        {!anime.recommendation_count &&
+        (parseFloat(anime.score) || anime.favorites) ? (
           <div
             title={anime.score ? `${anime.score} out of 10` : "Favorites"}
             className="anime-info-display_summary top-right_summary color-red"
           >
-            {anime.score ? `${anime.score}/10` : anime.favorites}
+            {parseFloat(anime.score) ? `${anime.score}/10` : anime.favorites}
           </div>
         ) : null}
         {anime.recommendation_count && (

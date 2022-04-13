@@ -28,7 +28,7 @@ router.get("/latest", async (req, res) => {
   const page = req.query.page || "1";
   try {
     let lastPage;
-    const [updatedMovies, { length_updated_movies }] = await Promise.all([
+    const [updatedMovies, { length }] = await Promise.all([
       UpdatedMovie.aggregate([
         { $sort: { updatedAt: -1 } },
         { $skip: (parseInt(page) - 1) * 18 },
@@ -51,7 +51,7 @@ router.get("/latest", async (req, res) => {
         name: "length",
       }).lean(),
     ]);
-    lastPage = Math.ceil(length_updated_movies / 18);
+    lastPage = Math.ceil(length / 18);
     res.json({
       message: {
         data: updatedMovies,
@@ -565,7 +565,7 @@ router.delete("/:malId", verifyRole("Admin"), async (req, res) => {
     const length = await UpdatedMovie.countDocuments({});
     await LengthMovie.findOneAndUpdate(
       { name: "length" },
-      { length_updated_movies: length },
+      { length },
       { upsert: true, new: true }
     );
     res.send({ message: ignoreProps(["_id", "__v"], movie.toJSON()) });
@@ -597,7 +597,7 @@ async function addMovieUpdated(malId) {
     const length = await UpdatedMovie.countDocuments({});
     await LengthMovie.findOneAndUpdate(
       { name: "length" },
-      { length_updated_movies: length },
+      { length },
       { upsert: true, new: true }
     );
     return movie;

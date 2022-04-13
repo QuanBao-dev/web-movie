@@ -1,6 +1,7 @@
 const router = require("express").Router();
 const User = require("../models/user.model");
 const BoxMovie = require("../models/boxMovie.model");
+const LengthMovie = require("../models/lengthMovie.model");
 const ignoreProps = require("../validations/ignore.validation");
 const { verifyRole } = require("../middleware/verify-role");
 router.get("/", verifyRole("Admin", "User"), async (req, res) => {
@@ -9,17 +10,34 @@ router.get("/", verifyRole("Admin", "User"), async (req, res) => {
   const user = await User.findOne({ userId: req.user.userId });
   const userId = user._id;
   try {
-    const boxMovie = await BoxMovie.find({ user: userId });
-    const lastPage = Math.ceil(boxMovie.length / 18);
+    const [boxMovie, { length }] = await Promise.all([
+      BoxMovie.aggregate([
+        { $sort: { dateAdded: -1 } },
+        { $match: { user: userId } },
+        { $skip: (parseInt(page) - 1) * 18 },
+        { $limit: 18 },
+        {
+          $project: {
+            _id: 0,
+            malId: 1,
+            title: 1,
+            imageUrl: 1,
+            episodes: 1,
+            score: 1,
+            synopsis: 1,
+            airing: 1,
+            dateAdded: 1,
+          },
+        },
+      ]),
+      LengthMovie.findOne({ userId: req.user.userId })
+        .select({ _id: 0, length: 1 })
+        .lean(),
+    ]);
+    const lastPage = Math.ceil(length / 18);
     res.send({
       message: {
-        data: boxMovie
-          .sort(
-            (a, b) =>
-              -new Date(a.dateAdded).getTime() + new Date(b.dateAdded).getTime()
-          )
-          .slice((parseInt(page) - 1) * 18, parseInt(page) * 18)
-          .map((movie) => ignoreProps(["_id", "__v", "user"], movie.toJSON())),
+        data: boxMovie,
         lastPage,
         pagination: {
           has_next_page: lastPage > parseInt(page),
@@ -73,6 +91,18 @@ router.post("/", verifyRole("Admin", "User"), async (req, res) => {
         new: true,
       }
     ).lean();
+    const length = await BoxMovie.countDocuments({user: userId});
+    await LengthMovie.findOneAndUpdate(
+      { userId: req.user.userId },
+      {
+        name: req.user.userId,
+        length,
+      },
+      {
+        new: true,
+        upsert: true,
+      }
+    );
     res.send({
       message: ignoreProps(["_id", "__v", "user"], movie),
     });
@@ -90,6 +120,18 @@ router.delete("/:malId", verifyRole("Admin", "User"), async (req, res) => {
   });
   try {
     const removedMovie = await movie.remove();
+    const length = await BoxMovie.countDocuments({user:userId});
+    await LengthMovie.findOneAndUpdate(
+      { userId: req.user.userId },
+      {
+        name: req.user.userId,
+        length,
+      },
+      {
+        new: true,
+        upsert: true,
+      }
+    );
     res.send({
       message: ignoreProps(["_id", "__v", "user"], removedMovie.toJSON()),
     });

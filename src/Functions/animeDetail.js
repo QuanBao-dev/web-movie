@@ -1,5 +1,12 @@
-import { from } from "rxjs";
-import { concatAll, delay, map, tap } from "rxjs/operators";
+import { from, of } from "rxjs";
+import {
+  concatAll,
+  delay,
+  map,
+  tap,
+  catchError,
+  switchMap,
+} from "rxjs/operators";
 
 import {
   animeDetailStream,
@@ -120,12 +127,23 @@ export const fetchData = (
       })
     );
     const fetchInformation$ = from([
-      fetchDataInfo$.pipe(map((data) => ({ ...data, type_data: "data info" }))),
+      fetchDataInfo$.pipe(
+        map((data) => ({ ...data, type_data: "data info" })),
+        catchError(() => {
+          return of({ error: "something went wrong" });
+        })
+      ),
       fetchAnimeThemes$(malId, type).pipe(
-        map((data) => ({ ...data, type_data: "themes" }))
+        map((data) => ({ ...data, type_data: "themes" })),
+        catchError(() => {
+          return of({ error: "something went wrong" });
+        })
       ),
       fetchAnimeExternal$(malId, type).pipe(
-        map((data) => ({ ...data, type_data: "externals" }))
+        map((data) => ({ ...data, type_data: "externals" })),
+        catchError(() => {
+          return of({ error: "something went wrong" });
+        })
       ),
     ]).pipe(
       concatAll(),
@@ -262,29 +280,36 @@ export const fetchBoxMovieOneMovie = (
   malId,
   idCartoonUser,
   addMovieRef,
-  deleteMovieRef
+  deleteMovieRef,
+  isAddMode
 ) => {
   return () => {
-    const subscription = fetchBoxMovieOneMovie$(malId, idCartoonUser).subscribe(
-      (api) => {
-        if (!api.error) {
-          animeDetailStream.updateData({
-            boxMovie: api.message === null ? null : { ...api.message },
-          });
-          handleDeleteBoxMovie(
-            addMovieRef,
-            deleteMovieRef,
-            idCartoonUser,
-            malId
-          );
-        } else {
-          animeDetailStream.updateData({
-            boxMovie: null,
-          });
-          handleAddBoxMovie(addMovieRef, deleteMovieRef, idCartoonUser, malId);
+    const subscription = fetchBoxMovieOneMovie$(malId, idCartoonUser)
+      .pipe(
+        switchMap((api) => {
+          if (!api.error) {
+            animeDetailStream.updateData({ isAddMode: false });
+            return handleDeleteBoxMovie(deleteMovieRef, idCartoonUser, malId, isAddMode);
+          } else {
+            animeDetailStream.updateData({ isAddMode: true });
+            return handleAddBoxMovie(addMovieRef, idCartoonUser, isAddMode);
+          }
+        })
+      )
+      .subscribe((api) => {
+        switch (api.typeResponse) {
+          case "handle add box":
+            animeDetailStream.updateData({
+              isAddMode: false,
+            });
+            break;
+          default:
+            animeDetailStream.updateData({
+              isAddMode: true,
+            });
+            break;
         }
-      }
-    );
+      });
     return () => {
       subscription && subscription.unsubscribe();
       // eslint-disable-next-line react-hooks/exhaustive-deps

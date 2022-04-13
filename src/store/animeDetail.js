@@ -6,7 +6,7 @@ const initialState = {
   dataEpisodesAnime: {},
   dataLargePicture: "",
   dataLargePictureList: [],
-  boxMovie: null,
+  isAddMode: null,
   malId: null,
   dataRelatedAnime: [],
   pageRelated: 1,

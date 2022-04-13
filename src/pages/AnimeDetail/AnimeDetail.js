@@ -85,8 +85,7 @@ const AnimeDetail = (props) => {
     malId,
     addMovieRef,
     deleteMovieRef,
-    linkWatchingInputRef,
-    animeDetailState.isLoadingLargePicture
+    animeDetailState.isAddMode
   );
   useEffect(() => {
     const { dataInformationAnime } = animeDetailStream.currentState();
@@ -169,12 +168,12 @@ const AnimeDetail = (props) => {
           )}
           {user && !animeDetailState.isLoadingLargePicture && (
             <span style={{ display: "inline" }}>
-              {!animeDetailState.boxMovie && (
+              {animeDetailState.isAddMode === true && (
                 <button className="btn btn-primary" ref={addMovieRef}>
                   Add to Box
                 </button>
               )}
-              {animeDetailState.boxMovie && (
+              {animeDetailState.isAddMode === false && (
                 <button ref={deleteMovieRef} className="btn btn-danger">
                   Delete from Box
                 </button>

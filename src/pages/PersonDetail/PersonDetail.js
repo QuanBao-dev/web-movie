@@ -4,7 +4,7 @@ import loadable from "@loadable/component";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import React, { useEffect, useState, useRef } from "react";
 import { Link, useHistory } from "react-router-dom";
-import { BehaviorSubject, from, fromEvent, of, timer } from "rxjs";
+import { BehaviorSubject, from, fromEvent, of, timer, throwError } from "rxjs";
 import { ajax } from "rxjs/ajax";
 import {
   catchError,
@@ -12,6 +12,7 @@ import {
   delay,
   filter,
   map,
+  mergeMap,
   mergeMapTo,
   pluck,
   retry,
@@ -136,11 +137,13 @@ const PersonDetail = (props) => {
     };
   }, [personId, personDetailState.malId]);
   useEffect(() => {
-    const subscription = updatePageLazyLoad$().subscribe((v) => {
-      personDetailStore.updatePageSplit(
-        personDetailStore.currentState().pageSplit + 1
-      );
-    });
+    const subscription = updatePageLazyLoad$()
+      .pipe(filter(() => personDetailStore.currentState().malId === personId))
+      .subscribe((v) => {
+        personDetailStore.updatePageSplit(
+          personDetailStore.currentState().pageSplit + 1
+        );
+      });
     if (updateVoiceActingRoles.current)
       if (
         personDetailState.pageSplit * numberDisplay >
@@ -151,6 +154,7 @@ const PersonDetail = (props) => {
     return () => {
       subscription.unsubscribe();
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [personDetailState.pageSplit]);
   const keyPersonInformation = ignoreKeys(
     Object.keys(personDetailState.dataPersonDetail),
@@ -356,46 +360,73 @@ function fetchDataPerson$(personId, setIsDoneLoading) {
       }),
       delay(1500),
       timeout(3000),
-      retry(10)
+      mergeMap((data) => {
+        if (data.status === 500) {
+          return throwError({ error: "Something went wrong" });
+        }
+        return of(data);
+      }),
+      catchError((error) => {
+        console.error(error);
+        return of({ error: "Something went wrong" });
+      }),
+      retry(1)
     ),
     ajax(`https://api.jikan.moe/v4/people/${personId}/anime`).pipe(
       pluck("response", "data"),
       map((data) => ({ data, typeResponse: "anime" })),
       timeout(3000),
       delay(1500),
-      tap(({ status }) => {
-        if (status === 500) {
-          throw Error("Something went wrong");
+      mergeMap((data) => {
+        if (data.status === 500) {
+          return throwError({ error: "Something went wrong" });
         }
+        return of(data);
       }),
-      retry(10)
+      catchError((error) => {
+        console.error(error);
+        return of({ error: "Something went wrong" });
+      }),
+      retry(1)
     ),
     ajax(`https://api.jikan.moe/v4/people/${personId}/manga`).pipe(
       pluck("response", "data"),
       map((data) => ({ data, typeResponse: "manga" })),
       timeout(3000),
       delay(1500),
-      tap(({ status }) => {
-        if (status === 500) {
-          throw Error("Something went wrong");
+      mergeMap((data) => {
+        if (data.status === 500) {
+          return throwError({ error: "Something went wrong" });
         }
+        return of(data);
       }),
-      retry(10)
+      catchError((error) => {
+        console.error(error);
+        return of({ error: "Something went wrong" });
+      }),
+      retry(1)
     ),
     ajax(`https://api.jikan.moe/v4/people/${personId}/voices`).pipe(
       pluck("response", "data"),
       map((data) => ({ data, typeResponse: "voices" })),
       timeout(3000),
-      tap(({ status }) => {
-        if (status === 500) {
-          throw Error("Something went wrong");
+      mergeMap((data) => {
+        setIsDoneLoading(true);
+        if (data.status === 500) {
+          return throwError({ error: "Something went wrong" });
         }
+        return of(data);
       }),
-      retry(10)
+      catchError((error) => {
+        console.error(error);
+        return of({ error: "Something went wrong" });
+      }),
+      retry(1)
     ),
   ]).pipe(
     concatAll(),
     map((response) => {
+      if (response.error) return { error: response.error };
       if (!response.data) return;
       switch (response.typeResponse) {
         case "info":
@@ -418,10 +449,6 @@ function fetchDataPerson$(personId, setIsDoneLoading) {
             typeResponse: "voices",
           };
       }
-    }),
-    catchError((error) => {
-      console.error(error);
-      return of({ error: "Something went wrong" });
     })
   );
 }

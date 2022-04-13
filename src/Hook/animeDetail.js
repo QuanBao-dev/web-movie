@@ -16,10 +16,16 @@ export const useFetchData = (
   history,
   type
 ) => {
-  useEffect(fetchData(malId, linkWatchingInputRef.current, setShowThemeMusic, history,type), [
-    malId,
-    linkWatchingInputRef.current,
-  ]);
+  useEffect(
+    fetchData(
+      malId,
+      linkWatchingInputRef.current,
+      setShowThemeMusic,
+      history,
+      type
+    ),
+    [malId, linkWatchingInputRef.current]
+  );
 };
 
 export const useFetchBoxMovieOneMovie = (
@@ -27,15 +33,10 @@ export const useFetchBoxMovieOneMovie = (
   malId,
   addMovieRef,
   deleteMovieRef,
-  isLoadingLargePicture
+  isAddMode
 ) => {
   useEffect(
-    fetchBoxMovieOneMovie(
-      malId,
-      idCartoonUser,
-      addMovieRef,
-      deleteMovieRef,
-    ),
-    [idCartoonUser, malId, isLoadingLargePicture]
+    fetchBoxMovieOneMovie(malId, idCartoonUser, addMovieRef, deleteMovieRef, isAddMode),
+    [idCartoonUser, malId, isAddMode]
   );
 };

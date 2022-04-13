@@ -196,8 +196,7 @@ function fetchCharacterDetailData$(characterId) {
       if (status === 500) {
         throw Error("Something went wrong");
       }
-    }),
-    catchError(() => of({}))
+    })
   );
 }
 
@@ -210,8 +209,7 @@ function fetchVoiceActorByCharacterId$(characterId) {
       }
     }),
     pluck("response", "data"),
-    retry(10),
-    catchError(() => of([]))
+    retry(10)
   );
 }
 function fetchAnimeByCharacterId$(characterId) {
@@ -223,8 +221,7 @@ function fetchAnimeByCharacterId$(characterId) {
       if (status === 500) {
         throw Error("Something went wrong");
       }
-    }),
-    catchError(() => of([]))
+    })
   );
 }
 function fetchMangaByCharacterId$(characterId) {
@@ -236,8 +233,7 @@ function fetchMangaByCharacterId$(characterId) {
       if (status) {
         throw Error("Something went wrong");
       }
-    }),
-    catchError(() => of([]))
+    })
   );
 }
 
@@ -245,18 +241,22 @@ function fetchData$(characterId, setIsDoneLoadingVoices) {
   return from([
     fetchCharacterDetailData$(characterId).pipe(
       map((data) => ({ data, typeResponse: "info" })),
+      catchError(() => of({})),
       delay(1500)
     ),
     fetchAnimeByCharacterId$(characterId).pipe(
       map((data) => ({ data, typeResponse: "anime" })),
+      catchError(() => of([])),
       delay(1500)
     ),
     fetchMangaByCharacterId$(characterId).pipe(
       map((data) => ({ data, typeResponse: "manga" })),
+      catchError(() => of([])),
       delay(1500)
     ),
     fetchVoiceActorByCharacterId$(characterId).pipe(
-      map((data) => ({ data, typeResponse: "voice actor" }))
+      map((data) => ({ data, typeResponse: "voice actor" })),
+      catchError(() => of([]))
     ),
   ]).pipe(
     concatAll(),

@@ -85,7 +85,8 @@ const AnimeDetail = (props) => {
     malId,
     addMovieRef,
     deleteMovieRef,
-    animeDetailState.isAddMode
+    animeDetailState.isAddMode,
+    animeDetailState.triggerFetch
   );
   useEffect(() => {
     const { dataInformationAnime } = animeDetailStream.currentState();

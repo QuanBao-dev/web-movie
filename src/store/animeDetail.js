@@ -8,6 +8,7 @@ const initialState = {
   dataLargePictureList: [],
   isAddMode: null,
   malId: null,
+  triggerFetch:null,
   dataRelatedAnime: [],
   pageRelated: 1,
   isLoadingCharacter: null,

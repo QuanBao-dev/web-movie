@@ -194,7 +194,12 @@ export function handleAddBoxMovie(addMovieRef, idCartoonUser, isAddMode) {
             },
           }).pipe(
             pluck("response", "message"),
-            map((data) => ({ ...data, typeResponse: "handle add box" }))
+            map((data) => ({ ...data, typeResponse: "handle add box" })),
+            catchError(() => {
+              animeDetailStream.updateData({
+                triggerFetch: !animeDetailStream.currentState().triggerFetch,
+              });
+            })
           )
         )
       );
@@ -223,7 +228,12 @@ export function handleDeleteBoxMovie(
             },
           }).pipe(
             pluck("response", "message"),
-            map((data) => ({ ...data, typeResponse: "handle delete box" }))
+            map((data) => ({ ...data, typeResponse: "handle delete box" })),
+            catchError(() => {
+              animeDetailStream.updateData({
+                triggerFetch: !animeDetailStream.currentState().triggerFetch,
+              });
+            })
           )
         )
       );

@@ -33,10 +33,17 @@ export const useFetchBoxMovieOneMovie = (
   malId,
   addMovieRef,
   deleteMovieRef,
-  isAddMode
+  isAddMode,
+  triggerFetch
 ) => {
   useEffect(
-    fetchBoxMovieOneMovie(malId, idCartoonUser, addMovieRef, deleteMovieRef, isAddMode),
-    [idCartoonUser, malId, isAddMode]
+    fetchBoxMovieOneMovie(
+      malId,
+      idCartoonUser,
+      addMovieRef,
+      deleteMovieRef,
+      isAddMode
+    ),
+    [idCartoonUser, malId, isAddMode, triggerFetch]
   );
 };

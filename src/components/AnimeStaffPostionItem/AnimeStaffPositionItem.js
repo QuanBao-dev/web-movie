@@ -48,12 +48,20 @@ function AnimeStaffPositionItem({
           />
         )}
         <div className="pop-up-hover">
-          <h3 title="name">
+          <h3
+            title={
+              !isManga
+                ? updateStaffPosition.anime.title
+                : updateStaffPosition.manga.title
+            }
+          >
             {!isManga
               ? updateStaffPosition.anime.title
               : updateStaffPosition.manga.title}
           </h3>
-          <span title="role">( {updateStaffPosition.position} )</span>
+          <span title={updateStaffPosition.position + " role"}>
+            ( {updateStaffPosition.position} )
+          </span>
         </div>
       </Link>
     </div>

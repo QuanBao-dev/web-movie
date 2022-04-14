@@ -35,7 +35,7 @@ function AnimeRelatedItem({ anime, role, lazy = false, type }) {
         )}
         <div className="pop-up-hover">
           <h3>{anime.title}</h3>
-          <div title={anime.role + " role"}>({role})</div>
+          <div title={role + " role"}>({role})</div>
         </div>
       </Link>
     </div>

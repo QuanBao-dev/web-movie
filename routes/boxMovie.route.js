@@ -57,7 +57,7 @@ router.get("/:malId", verifyRole("Admin", "User"), async (req, res) => {
       $and: [{ user: userId }, { malId: req.params.malId }],
     });
     if (!boxMovie) {
-      return res.status(401).send({ error: "You don't have this movie" });
+      return res.status(405).send({ error: "You don't own this movie" });
     }
     res.status(200).send({
       message: ignoreProps(["_id", "__v", "user"], boxMovie.toJSON()),

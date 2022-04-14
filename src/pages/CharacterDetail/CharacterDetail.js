@@ -169,8 +169,12 @@ const CharacterDetail = (props) => {
                       height="100%"
                     />
                     <div className="actor-name">
-                      <h3 title="name">{actor.person.name}</h3>
-                      <div title="language">( {actor.language} )</div>
+                      <h3 title={actor.person.name.replace(",","")}>
+                        {actor.person.name.replace(",","")}
+                      </h3>
+                      <div title={actor.language}>
+                        ( {actor.language} )
+                      </div>
                     </div>
                   </Link>
                 );

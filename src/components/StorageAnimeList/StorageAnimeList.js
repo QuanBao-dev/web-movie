@@ -34,16 +34,12 @@ const StorageAnimeList = ({ query }) => {
       ? query.match(/anime|characters|people|manga/g)[0]
       : "anime";
     storageAnimeStore.updateData({
-      q: query.match(
-        /q=[a-zA-Z0-9 \~\!\@\#\$\%\^\*\(\)\_\-\+\=\`\\\.\<\>\*,]+/g
-      )
+      q: query.match(/q=.+&/g)
         ? decode(
-            query
-              .match(
-                /q=[a-zA-Z0-9 \~\!\@\#\$\%\^\*\(\)\_\-\+\=\`\\\.\<\>\*,]+/g
-              )[0]
-              .replace("q=", "")
+            query.match(/q=.+&/g)[0].replace("q=", "").replace(/(&)$/g, "")
           )
+        : query.match(/q=.+/g)
+        ? decode(query.match(/q=.+/g)[0].replace("q=", "").replace(/(&)$/g, ""))
         : "",
       searchBy: searchBy,
       page: query.match(/page=[0-9]+/g)

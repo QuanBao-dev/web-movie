@@ -41,11 +41,10 @@ export const fetchData = (
   malId,
   linkWatchingInputElement,
   setShowThemeMusic,
-  history,
   type
 ) => {
   return () => {
-    const fetchDataInfo$ = fetchData$(malId, history, type);
+    const fetchDataInfo$ = fetchData$(malId, type);
     const fetchDataVideoPromo$ = fetchDataVideo$(malId, type).pipe(
       tap((data) => {
         if (!data || data.error) return;

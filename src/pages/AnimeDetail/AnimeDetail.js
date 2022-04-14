@@ -1,24 +1,20 @@
-import "./AnimeDetail.css";
+import './AnimeDetail.css';
 
-import loadable from "@loadable/component";
-import CircularProgress from "@material-ui/core/CircularProgress";
-import Axios from "axios";
-import React, { useEffect, useRef, useState } from "react";
-import { useCookies } from "react-cookie";
-import { Link, useHistory } from "react-router-dom";
-import { ajax } from "rxjs/ajax";
+import loadable from '@loadable/component';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import Axios from 'axios';
+import React, { useEffect, useRef, useState } from 'react';
+import { useCookies } from 'react-cookie';
+import { Link } from 'react-router-dom';
+import { ajax } from 'rxjs/ajax';
 
-import FormSubmit from "../../components/FormSubmit/FormSubmit";
-import FormSubmitCrawl from "../../components/FormSubmitCrawl/FormSubmitCrawl";
-import ListVideoUrl from "../../components/ListVideoUrl/ListVideoUrl";
-import MenuTable from "../../components/MenuTable/MenuTable";
-import { animeDetailStream } from "../../epics/animeDetail";
-import { userStream } from "../../epics/user";
-import {
-  useFetchBoxMovieOneMovie,
-  useFetchData,
-  useInitAnimeDetailState,
-} from "../../Hook/animeDetail";
+import FormSubmit from '../../components/FormSubmit/FormSubmit';
+import FormSubmitCrawl from '../../components/FormSubmitCrawl/FormSubmitCrawl';
+import ListVideoUrl from '../../components/ListVideoUrl/ListVideoUrl';
+import MenuTable from '../../components/MenuTable/MenuTable';
+import { animeDetailStream } from '../../epics/animeDetail';
+import { userStream } from '../../epics/user';
+import { useFetchBoxMovieOneMovie, useFetchData, useInitAnimeDetailState } from '../../Hook/animeDetail';
 
 const ListInformation = loadable(() =>
   import("../../components/ListInformation/ListInformation")
@@ -44,7 +40,6 @@ const AnimeDetail = (props) => {
   const { name } = props.match.params;
   const type = props.match.path.split("/")[1];
   const malId = parseInt(name);
-  const history = useHistory();
   const user = userStream.currentState();
   const [cookies] = useCookies();
   const [animeDetailState, setAnimeDetailState] = useState(
@@ -79,7 +74,7 @@ const AnimeDetail = (props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   useInitAnimeDetailState(setAnimeDetailState);
-  useFetchData(setShowThemeMusic, linkWatchingInputRef, malId, history, type);
+  useFetchData(setShowThemeMusic, linkWatchingInputRef, malId, type);
   useFetchBoxMovieOneMovie(
     cookies,
     malId,

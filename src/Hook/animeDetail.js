@@ -13,7 +13,6 @@ export const useFetchData = (
   setShowThemeMusic,
   linkWatchingInputRef,
   malId,
-  history,
   type
 ) => {
   useEffect(
@@ -21,7 +20,6 @@ export const useFetchData = (
       malId,
       linkWatchingInputRef.current,
       setShowThemeMusic,
-      history,
       type
     ),
     [malId, linkWatchingInputRef.current]

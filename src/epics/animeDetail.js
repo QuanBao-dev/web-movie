@@ -20,10 +20,13 @@ import animeDetailStore from "../store/animeDetail";
 
 export const animeDetailStream = animeDetailStore;
 
-export const fetchData$ = (name, history, type) => {
+export const fetchData$ = (name, type) => {
   return timer(0).pipe(
     tap(() => {
       animeDetailStream.updateIsLoading(true, "isLoadingInfoAnime");
+      animeDetailStream.updateData({
+        isAddMode: null,
+      });
     }),
     mergeMapTo(
       ajax(`https://api.jikan.moe/v4/${type}/${name}`).pipe(
@@ -93,9 +96,6 @@ export function fetchLargePicture$(name, type) {
     tap(() => {
       document.body.style.backgroundImage = `url(/background.jpg)`;
       document.body.style.backgroundSize = "cover";
-      animeDetailStream.updateData({
-        isAddMode: null,
-      });
       animeDetailStream.updateIsLoading(true, "isLoadingLargePicture");
     }),
     mergeMapTo(
@@ -164,7 +164,7 @@ export function fetchDataCharacter$(malId, type) {
 export function handleAddBoxMovie(addMovieRef, idCartoonUser, isAddMode) {
   return timer(0).pipe(
     debounceTime(500),
-    filter(() => isAddMode === true),
+    filter(() => isAddMode === true && addMovieRef.current),
     switchMap(() => {
       return fromEvent(addMovieRef.current, "click").pipe(
         filter(() => animeDetailStream.currentState().dataInformationAnime),
@@ -215,7 +215,7 @@ export function handleDeleteBoxMovie(
 ) {
   return timer(0).pipe(
     debounceTime(500),
-    filter(() => isAddMode === false),
+    filter(() => isAddMode === false && deleteMovieRef.current),
     switchMap(() => {
       return fromEvent(deleteMovieRef.current, "click").pipe(
         filter(() => animeDetailStream.currentState().dataInformationAnime),

@@ -96,15 +96,19 @@ const StorageAnimeList = ({ query }) => {
           : query.match(/magazines=[0-9,]+/g)
           ? query.match(/magazines=[0-9,]+/g)[0].replace("magazines=", "")
           : "",
-      letter: query.match(
-        /letter=[a-zA-Z0-9 \~\!\@\#\$\%\^\*\(\)\_\-\+\=\`\\\.\<\>\*,]+/g
-      )
+      letter: query.match(/letter=.+&/g)
         ? decode(
             query
-              .match(
-                /letter=[a-zA-Z0-9 \~\!\@\#\$\%\^\*\(\)\_\-\+\=\`\\\.\<\>\*,]+/g
-              )[0]
+              .match(/letter=.+&/g)[0]
               .replace("letter=", "")
+              .replace(/(&)$/g, "")
+          )
+        : query.match(/letter=.+/g)
+        ? decode(
+            query
+              .match(/letter=.+/g)[0]
+              .replace("letter=", "")
+              .replace(/(&)$/g, "")
           )
         : "",
     });

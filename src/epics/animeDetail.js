@@ -1,5 +1,5 @@
 import capitalize from "lodash/capitalize";
-import { fromEvent, of, throwError, timer } from "rxjs";
+import { fromEvent, iif, of, throwError, timer } from "rxjs";
 import { ajax } from "rxjs/ajax";
 import {
   catchError,
@@ -14,9 +14,11 @@ import {
   switchMapTo,
   takeWhile,
   tap,
+  delay,
 } from "rxjs/operators";
 
 import animeDetailStore from "../store/animeDetail";
+import cachesStore from "../store/caches";
 
 export const animeDetailStream = animeDetailStore;
 
@@ -29,15 +31,26 @@ export const fetchData$ = (name, type) => {
       });
     }),
     mergeMapTo(
-      ajax(`https://api.jikan.moe/v4/${type}/${name}`).pipe(
-        pluck("response", "data"),
-        retry(1),
-        switchMap((data) => {
-          if ([404, 500].includes(data.status)) {
-            return throwError("404 error");
-          }
-          return of(data);
-        })
+      iif(
+        () =>
+          cachesStore.currentState()[name] &&
+          cachesStore.currentState()[name].dataInfo,
+        timer(0).pipe(map(() => cachesStore.currentState()[name].dataInfo)),
+        timer(0).pipe(
+          delay(1500),
+          mergeMapTo(
+            ajax(`https://api.jikan.moe/v4/${type}/${name}`).pipe(
+              pluck("response", "data"),
+              retry(1),
+              switchMap((data) => {
+                if ([404, 500].includes(data.status)) {
+                  return throwError("404 error");
+                }
+                return of(data);
+              })
+            )
+          )
+        )
       )
     )
   );
@@ -45,33 +58,65 @@ export const fetchData$ = (name, type) => {
 
 export const fetchAnimeThemes$ = (malId, type) => {
   return timer(0).pipe(
-    takeWhile(() => type === "anime"),
-    switchMapTo(
-      ajax(`https://api.jikan.moe/v4/${type}/${malId}/themes`).pipe(
-        retry(6),
-        pluck("response", "data")
+    mergeMapTo(
+      iif(
+        () =>
+          cachesStore.currentState()[malId] &&
+          cachesStore.currentState()[malId].themes,
+        timer(0).pipe(map(() => cachesStore.currentState()[malId].themes)),
+        timer(0).pipe(
+          takeWhile(() => type === "anime"),
+          switchMapTo(
+            ajax(`https://api.jikan.moe/v4/${type}/${malId}/themes`).pipe(
+              retry(6),
+              pluck("response", "data")
+            )
+          )
+        )
       )
     )
   );
 };
 
 export const fetchAnimeExternal$ = (malId, type) => {
-  return ajax(`https://api.jikan.moe/v4/${type}/${malId}/external`).pipe(
-    retry(6),
-    pluck("response", "data")
+  return timer(0).pipe(
+    mergeMapTo(
+      iif(
+        () =>
+          cachesStore.currentState()[malId] &&
+          cachesStore.currentState()[malId].externals,
+        timer(0).pipe(map(() => cachesStore.currentState()[malId].externals)),
+        timer(0).pipe(
+          delay(1500),
+          mergeMapTo(
+            ajax(`https://api.jikan.moe/v4/${type}/${malId}/external`).pipe(
+              retry(6),
+              pluck("response", "data")
+            )
+          )
+        )
+      )
+    )
   );
 };
 
 export const fetchDataVideo$ = (malId, type) => {
-  return timer(0).pipe(
-    takeWhile(() => type === "anime"),
-    tap(() => {
-      animeDetailStream.updateIsLoading(true, "isLoadingVideoAnime");
-    }),
-    mergeMapTo(
-      ajax(`https://api.jikan.moe/v4/anime/${malId}/videos`).pipe(
-        retry(6),
-        pluck("response", "data")
+  return iif(
+    () =>
+      cachesStore.currentState()[malId] &&
+      cachesStore.currentState()[malId].dataVideoPromo,
+    timer(0).pipe(map(() => cachesStore.currentState()[malId].dataVideoPromo)),
+    timer(0).pipe(
+      takeWhile(() => type === "anime"),
+      tap(() => {
+        animeDetailStream.updateIsLoading(true, "isLoadingVideoAnime");
+      }),
+      delay(1500),
+      mergeMapTo(
+        ajax(`https://api.jikan.moe/v4/anime/${malId}/videos`).pipe(
+          retry(6),
+          pluck("response", "data")
+        )
       )
     )
   );
@@ -99,14 +144,27 @@ export function fetchLargePicture$(name, type) {
       animeDetailStream.updateIsLoading(true, "isLoadingLargePicture");
     }),
     mergeMapTo(
-      ajax(`https://api.jikan.moe/v4/${type}/${name}/pictures`).pipe(
-        pluck("response", "data"),
-        retry(5),
-        map((pictures) => ({
-          pictures: pictures.map(
-            ({ jpg, webp }) => webp.large_image_url || jpg.large_image_url
-          ),
-        }))
+      iif(
+        () =>
+          cachesStore.currentState()[name] &&
+          cachesStore.currentState()[name].dataLargePictureList,
+        timer(0).pipe(
+          map(() => cachesStore.currentState()[name].dataLargePictureList)
+        ),
+        timer(0).pipe(
+          delay(1500),
+          mergeMapTo(
+            ajax(`https://api.jikan.moe/v4/${type}/${name}/pictures`).pipe(
+              pluck("response", "data"),
+              retry(5),
+              map((pictures) => ({
+                pictures: pictures.map(
+                  ({ jpg, webp }) => webp.large_image_url || jpg.large_image_url
+                ),
+              }))
+            )
+          )
+        )
       )
     )
   );
@@ -134,6 +192,7 @@ export function fetchAnimeRecommendation$(malId, type) {
     tap(() => {
       animeDetailStream.updateIsLoading(true, "isLoadingRelated");
     }),
+    delay(1500),
     mergeMapTo(
       ajax({
         url: `https://api.jikan.moe/v4/${type}/${malId}/recommendations`,
@@ -151,13 +210,21 @@ export function fetchDataCharacter$(malId, type) {
     tap(() => {
       animeDetailStream.updateIsLoading(true, "isLoadingCharacter");
     }),
-    mergeMapTo(
-      ajax(`https://api.jikan.moe/v4/${type}/${malId}/characters`).pipe(
-        retry(20),
-        pluck("response", "data"),
-        catchError((error) => of({ error }))
+    mergeMapTo(iif(
+      () =>
+        cachesStore.currentState()[malId] &&
+        cachesStore.currentState()[malId].dataCharacter,
+      timer(0).pipe(map(() => cachesStore.currentState()[malId].dataCharacter)),
+      timer(0).pipe(
+        mergeMapTo(
+          ajax(`https://api.jikan.moe/v4/${type}/${malId}/characters`).pipe(
+            retry(20),
+            pluck("response", "data"),
+            catchError((error) => of({ error }))
+          )
+        )
       )
-    )
+    ))
   );
 }
 

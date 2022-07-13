@@ -905,9 +905,17 @@ function addDeviceStream(deviceElement, stream, deviceGridElement, peerId) {
   deviceElement.id = peerId;
   deviceElement.srcObject = stream;
   deviceElement.poster =
-    "https://www.kindpng.com/picc/m/24-248253_user-profile-default-image-png-clipart-png-download.png";
+    "https://www.kindpng.com/picc/m /24-248253_user-profile-default-image-png-clipart-png-download.png";
   deviceElement.addEventListener("loadedmetadata", () => {
     deviceElement.play();
+  });
+  deviceElement.addEventListener("click", (e) => {
+    console.log(e.target);
+    e.target.isMuted = !e.target.isMuted;
+    e.target.className = e.target.isMuted ? "video-muted" : "";
+    e.target.title = e.target.isMuted
+      ? `${e.target.title.replace(/ muted/g, "")} muted`
+      : `${e.target.title.replace(/ muted/g, "")}`;
   });
   const children = [...deviceGridElement.children];
   children.forEach((child) => {
@@ -922,6 +930,7 @@ function addDeviceStream(deviceElement, stream, deviceGridElement, peerId) {
       .usersOnline.find((user) => user.peerId === child.id);
     if (user) {
       child.poster = user.avatar;
+      child.isControls = true;
       child.title = user.username;
     }
   });
@@ -931,7 +940,7 @@ async function fetchGroup(groupId, idCartoonUser) {
   const res = await Axios.get(`/api/theater/${groupId}`, {
     headers: {
       authorization: `Bearer ${idCartoonUser}`,
-    },
+    }, 
   });
   try {
     updateAllowFetchCurrentRoomDetail(false);

@@ -4,7 +4,15 @@ import loadable from "@loadable/component";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import React, { useEffect, useState, useRef } from "react";
 import { Link, useHistory } from "react-router-dom";
-import { BehaviorSubject, from, fromEvent, of, timer, throwError } from "rxjs";
+import {
+  BehaviorSubject,
+  from,
+  fromEvent,
+  of,
+  timer,
+  throwError,
+  iif,
+} from "rxjs";
 import { ajax } from "rxjs/ajax";
 import {
   catchError,
@@ -19,6 +27,7 @@ import {
   tap,
   timeout,
 } from "rxjs/operators";
+import cachesStore from "../../store/caches";
 
 const AnimeStaffPositions = loadable(
   () => import("../../components/AnimeStaffPositions/AnimeStaffPositions"),
@@ -154,7 +163,7 @@ const PersonDetail = (props) => {
     return () => {
       subscription.unsubscribe();
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [personDetailState.pageSplit]);
   const keyPersonInformation = ignoreKeys(
     Object.keys(personDetailState.dataPersonDetail),
@@ -198,6 +207,7 @@ const PersonDetail = (props) => {
         {}
       );
   }
+
   if (!personDetailState.dataPersonDetail.error)
     return (
       <div className="person-detail-container">
@@ -350,82 +360,134 @@ const PersonDetail = (props) => {
 
 function fetchDataPerson$(personId, setIsDoneLoading) {
   return from([
-    ajax("https://api.jikan.moe/v4/people/" + personId).pipe(
-      pluck("response", "data"),
-      map((data) => ({ data, typeResponse: "info" })),
-      tap(({ status }) => {
-        if (status === 500) {
-          throw Error("Something went wrong");
-        }
-      }),
-      delay(1500),
-      timeout(3000),
-      mergeMap((data) => {
-        if (data.status === 500) {
-          return throwError({ error: "Something went wrong" });
-        }
-        return of(data);
-      }),
-      catchError((error) => {
-        console.error(error);
-        return of({ error: "Something went wrong" });
-      }),
-      retry(1)
+    iif(
+      () =>
+        cachesStore.currentState().dataPersonDetail &&
+        cachesStore.currentState().dataPersonDetail[personId] &&
+        cachesStore.currentState().dataPersonDetail[personId]["info"],
+      timer(0).pipe(
+        map(() => cachesStore.currentState().dataPersonDetail[personId]["info"])
+      ),
+      ajax("https://api.jikan.moe/v4/people/" + personId).pipe(
+        pluck("response", "data"),
+        map((data) => ({ data, typeResponse: "info" })),
+        tap(({ status }) => {
+          if (status === 500) {
+            throw Error("Something went wrong");
+          }
+        }),
+        delay(1500),
+        mergeMap((data) => {
+          if (data.status === 500) {
+            return throwError({ error: "Something went wrong" });
+          }
+          return of(data);
+        }),
+        catchError((error) => {
+          console.error(error);
+          return of({ error: "Something went wrong" });
+        }),
+        retry(5)
+      )
     ),
-    ajax(`https://api.jikan.moe/v4/people/${personId}/anime`).pipe(
-      pluck("response", "data"),
-      map((data) => ({ data, typeResponse: "anime" })),
-      timeout(3000),
-      delay(1500),
-      mergeMap((data) => {
-        if (data.status === 500) {
-          return throwError({ error: "Something went wrong" });
-        }
-        return of(data);
-      }),
-      catchError((error) => {
-        console.error(error);
-        return of({ error: "Something went wrong" });
-      }),
-      retry(1)
+    iif(
+      () =>
+        cachesStore.currentState().dataPersonDetail &&
+        cachesStore.currentState().dataPersonDetail[personId] &&
+        cachesStore.currentState().dataPersonDetail[personId]["anime"],
+      timer(0).pipe(
+        map(
+          () => cachesStore.currentState().dataPersonDetail[personId]["anime"]
+        )
+      ),
+      ajax(`https://api.jikan.moe/v4/people/${personId}/anime`).pipe(
+        pluck("response", "data"),
+        map((data) => ({ data, typeResponse: "anime" })),
+        timeout(3000),
+        delay(1500),
+        mergeMap((data) => {
+          if (data.status === 500) {
+            return throwError({ error: "Something went wrong" });
+          }
+          return of(data);
+        }),
+        catchError((error) => {
+          console.error(error);
+          return of({ error: "Something went wrong" });
+        }),
+        retry(1)
+      )
     ),
-    ajax(`https://api.jikan.moe/v4/people/${personId}/manga`).pipe(
-      pluck("response", "data"),
-      map((data) => ({ data, typeResponse: "manga" })),
-      timeout(3000),
-      delay(1500),
-      mergeMap((data) => {
-        if (data.status === 500) {
-          return throwError({ error: "Something went wrong" });
-        }
-        return of(data);
-      }),
-      catchError((error) => {
-        console.error(error);
-        return of({ error: "Something went wrong" });
-      }),
-      retry(1)
+    iif(
+      () =>
+        cachesStore.currentState().dataPersonDetail &&
+        cachesStore.currentState().dataPersonDetail[personId] &&
+        cachesStore.currentState().dataPersonDetail[personId]["manga"],
+      timer(0).pipe(
+        map(
+          () => cachesStore.currentState().dataPersonDetail[personId]["manga"]
+        )
+      ),
+      ajax(`https://api.jikan.moe/v4/people/${personId}/manga`).pipe(
+        pluck("response", "data"),
+        map((data) => ({ data, typeResponse: "manga" })),
+        timeout(3000),
+        delay(1500),
+        mergeMap((data) => {
+          if (data.status === 500) {
+            return throwError({ error: "Something went wrong" });
+          }
+          return of(data);
+        }),
+        catchError((error) => {
+          console.error(error);
+          return of({ error: "Something went wrong" });
+        }),
+        retry(1)
+      )
     ),
-    ajax(`https://api.jikan.moe/v4/people/${personId}/voices`).pipe(
-      pluck("response", "data"),
-      map((data) => ({ data, typeResponse: "voices" })),
-      timeout(3000),
-      mergeMap((data) => {
-        setIsDoneLoading(true);
-        if (data.status === 500) {
-          return throwError({ error: "Something went wrong" });
-        }
-        return of(data);
-      }),
-      catchError((error) => {
-        console.error(error);
-        return of({ error: "Something went wrong" });
-      }),
-      retry(1)
+    iif(
+      () =>
+        cachesStore.currentState().dataPersonDetail &&
+        cachesStore.currentState().dataPersonDetail[personId] &&
+        cachesStore.currentState().dataPersonDetail[personId]["voices"],
+      timer(0).pipe(
+        map(
+          () => cachesStore.currentState().dataPersonDetail[personId]["voices"]
+        )
+      ),
+      ajax(`https://api.jikan.moe/v4/people/${personId}/voices`).pipe(
+        pluck("response", "data"),
+        map((data) => ({ data, typeResponse: "voices" })),
+        timeout(3000),
+        mergeMap((data) => {
+          setIsDoneLoading(true);
+          if (data.status === 500) {
+            return throwError({ error: "Something went wrong" });
+          }
+          return of(data);
+        }),
+        catchError((error) => {
+          console.error(error);
+          return of({ error: "Something went wrong" });
+        }),
+        retry(1)
+      )
     ),
   ]).pipe(
     concatAll(),
     map((response) => {
+      cachesStore.updateData({
+        dataPersonDetail: {
+          ...cachesStore.currentState().dataPersonDetail,
+          [personId]: {
+            ...(cachesStore.currentState().dataPersonDetail || {})[personId],
+            [response.typeResponse]: {
+              ...response,
+            },
+          },
+        },
+      });
       if (response.error) return { error: response.error };
       if (!response.data) return;
       switch (response.typeResponse) {

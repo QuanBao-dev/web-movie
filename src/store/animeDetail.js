@@ -23,9 +23,6 @@ let state = initialState;
 const nameStore = {
   initialState,
   subscribe: (setState) => behaviorSubject.subscribe(setState),
-  init: () => {
-    behaviorSubject.next(state);
-  },
   updateIsLoading: (
     bool,
     key = "isLoadingCharacter" ||
@@ -43,6 +40,7 @@ const nameStore = {
   },
   resetState: () => {
     state = {
+      ...state,
       ...initialState,
     };
     behaviorSubject.next(state);

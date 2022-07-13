@@ -11,7 +11,9 @@ import {
   filter,
   takeWhile,
   timeout,
+  map,
 } from "rxjs/operators";
+import cachesStore from "../store/caches";
 import reviewsStore from "../store/reviews";
 
 export const reviewsStream = reviewsStore;
@@ -21,15 +23,25 @@ export function fetchReviewsData$(malId, page, type) {
     filter(() => type),
     tap(() => reviewsStream.updateData({ isStopFetchingReviews: false })),
     switchMapTo(
-      ajax(`https://api.jikan.moe/v4/${type}/${malId}/reviews?page=${page}`).pipe(
-        pluck("response", "data"),
-        retry(3),
-        timeout(5000),
-        retry(reviewsStream.currentState().reviewsData.length === 0 ? null : 3),
-        tap(() => reviewsStream.updateData({ pageReviewsOnDestroy: page })),
-        catchError((error) => {
-          return of({ error });
-        })
+      iif(
+        () =>
+          cachesStore.currentState()[malId] &&
+          cachesStore.currentState()[malId].dataReviews,
+        timer(0).pipe(map(() => cachesStore.currentState()[malId].dataReviews)),
+        ajax(
+          `https://api.jikan.moe/v4/${type}/${malId}/reviews?page=${page}`
+        ).pipe(
+          pluck("response", "data"),
+          retry(3),
+          timeout(5000),
+          retry(
+            reviewsStream.currentState().reviewsData.length === 0 ? null : 3
+          ),
+          tap(() => reviewsStream.updateData({ pageReviewsOnDestroy: page })),
+          catchError((error) => {
+            return of({ error });
+          })
+        )
       )
     )
   );

@@ -1,20 +1,29 @@
-import { fromEvent, of, timer } from "rxjs";
+import { fromEvent, iif, of, timer } from "rxjs";
 import { ajax } from "rxjs/ajax";
 import {
   catchError,
   debounceTime,
   filter,
   mergeMap,
+  mergeMapTo,
   pluck,
   tap,
   timeout,
+  map
 } from "rxjs/operators";
+import cachesStore from "../store/caches";
 
 import lazyLoadAnimeListStore from "../store/lazyLoadAnimeList";
 
 export const lazyLoadAnimeListStream = lazyLoadAnimeListStore;
 
-export function fetchDataGenreAnimeList$(page, url, idCartoonUser, searchBy) {
+export function fetchDataGenreAnimeList$(
+  page,
+  url,
+  idCartoonUser,
+  searchBy,
+  query
+) {
   let obj = {
     method: "GET",
     url: url.replace("{page}", page),
@@ -31,13 +40,26 @@ export function fetchDataGenreAnimeList$(page, url, idCartoonUser, searchBy) {
         pageIsLoaded: page,
       });
     }),
-    mergeMap(() =>
-      ajax(obj).pipe(
-        timeout(5000),
-        pluck("response"),
-        catchError(() => {
-          return of({ error: true });
-        })
+    mergeMapTo(
+      iif(
+        () =>
+          cachesStore.currentState().genres &&
+          cachesStore.currentState().genres[query]&&
+          cachesStore.currentState().genres[query][page],
+        timer(0).pipe(
+          map(() => cachesStore.currentState().genres[query][page])
+        ),
+        timer(0).pipe(
+          mergeMap(() =>
+            ajax(obj).pipe(
+              timeout(5000),
+              pluck("response"),
+              catchError(() => {
+                return of({ error: true });
+              })
+            )
+          )
+        )
       )
     )
   );

@@ -104,6 +104,7 @@ const AnimeDetail = (props) => {
     animeDetailState,
     showThemeMusic
   );
+  // console.log(cachesStore.currentState())
   return (
     animeDetailState.dataInformationAnime && (
       <div className="anime-name-info layout">

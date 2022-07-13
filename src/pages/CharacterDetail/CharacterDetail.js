@@ -6,7 +6,7 @@ import CircularProgress from "@material-ui/core/CircularProgress";
 import React, { useEffect, useState, useRef } from "react";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import { Link } from "react-router-dom";
-import { from, of } from "rxjs";
+import { from, iif, of, timer } from "rxjs";
 import { ajax } from "rxjs/ajax";
 import {
   catchError,
@@ -20,6 +20,7 @@ import {
 } from "rxjs/operators";
 
 import { characterStream } from "../../epics/character";
+import cachesStore from "../../store/caches";
 
 const AllAnimeRelated = loadable(() =>
   import("../../components/AllAnimeRelated/AllAnimeRelated")
@@ -169,12 +170,10 @@ const CharacterDetail = (props) => {
                       height="100%"
                     />
                     <div className="actor-name">
-                      <h3 title={actor.person.name.replace(",","")}>
-                        {actor.person.name.replace(",","")}
+                      <h3 title={actor.person.name.replace(",", "")}>
+                        {actor.person.name.replace(",", "")}
                       </h3>
-                      <div title={actor.language}>
-                        ( {actor.language} )
-                      </div>
+                      <div title={actor.language}>( {actor.language} )</div>
                     </div>
                   </Link>
                 );
@@ -192,52 +191,107 @@ const CharacterDetail = (props) => {
 };
 
 function fetchCharacterDetailData$(characterId) {
-  return ajax(`https://api.jikan.moe/v4/characters/${characterId}`).pipe(
-    timeout(3000),
-    retry(10),
-    pluck("response", "data"),
-    tap(({ status }) => {
-      if (status === 500) {
-        throw Error("Something went wrong");
-      }
-    })
+  return iif(
+    () =>
+      cachesStore.currentState().dataCharacterDetail &&
+      cachesStore.currentState().dataCharacterDetail[characterId] &&
+      cachesStore.currentState().dataCharacterDetail[characterId]["info"],
+    timer(0).pipe(
+      map(
+        () =>
+          cachesStore.currentState().dataCharacterDetail[characterId]["info"].data
+      )
+    ),
+    ajax(`https://api.jikan.moe/v4/characters/${characterId}`).pipe(
+      timeout(3000),
+      retry(10),
+      pluck("response", "data"),
+      tap(({ status }) => {
+        if (status === 500) {
+          throw Error("Something went wrong");
+        }
+      })
+    )
   );
 }
 
 function fetchVoiceActorByCharacterId$(characterId) {
-  return ajax(`https://api.jikan.moe/v4/characters/${characterId}/voices`).pipe(
-    timeout(3000),
-    tap(({ status }) => {
-      if (status === 500) {
-        throw Error("Something went wrong");
-      }
-    }),
-    pluck("response", "data"),
-    retry(10)
+  return iif(
+    () =>
+      cachesStore.currentState().dataCharacterDetail &&
+      cachesStore.currentState().dataCharacterDetail[characterId] &&
+      cachesStore.currentState().dataCharacterDetail[characterId][
+        "voice actor"
+      ],
+    timer(0).pipe(
+      map(
+        () =>
+          cachesStore.currentState().dataCharacterDetail[characterId][
+            "voice actor"
+          ].data
+      )
+    ),
+    ajax(`https://api.jikan.moe/v4/characters/${characterId}/voices`).pipe(
+      timeout(3000),
+      delay(1500),
+      tap(({ status }) => {
+        if (status === 500) {
+          throw Error("Something went wrong");
+        }
+      }),
+      pluck("response", "data"),
+      retry(10)
+    )
   );
 }
 function fetchAnimeByCharacterId$(characterId) {
-  return ajax(`https://api.jikan.moe/v4/characters/${characterId}/anime`).pipe(
-    timeout(3000),
-    retry(10),
-    pluck("response", "data"),
-    tap(({ status }) => {
-      if (status === 500) {
-        throw Error("Something went wrong");
-      }
-    })
+  return iif(
+    () =>
+      cachesStore.currentState().dataCharacterDetail &&
+      cachesStore.currentState().dataCharacterDetail[characterId] &&
+      cachesStore.currentState().dataCharacterDetail[characterId]["anime"],
+    timer(0).pipe(
+      map(
+        () =>
+          cachesStore.currentState().dataCharacterDetail[characterId]["anime"].data
+      )
+    ),
+    ajax(`https://api.jikan.moe/v4/characters/${characterId}/anime`).pipe(
+      timeout(3000),
+      delay(1500),
+      retry(10),
+      pluck("response", "data"),
+      tap(({ status }) => {
+        if (status === 500) {
+          throw Error("Something went wrong");
+        }
+      })
+    )
   );
 }
 function fetchMangaByCharacterId$(characterId) {
-  return ajax(`https://api.jikan.moe/v4/characters/${characterId}/manga`).pipe(
-    timeout(3000),
-    retry(10),
-    pluck("response", "data"),
-    tap(({ status }) => {
-      if (status) {
-        throw Error("Something went wrong");
-      }
-    })
+  return iif(
+    () =>
+      cachesStore.currentState().dataCharacterDetail &&
+      cachesStore.currentState().dataCharacterDetail[characterId] &&
+      cachesStore.currentState().dataCharacterDetail[characterId]["manga"],
+    timer(0).pipe(
+      map(
+        () =>
+          cachesStore.currentState().dataCharacterDetail[characterId]["manga"].data
+      )
+    ),
+    ajax(`https://api.jikan.moe/v4/characters/${characterId}/manga`).pipe(
+      timeout(3000),
+      delay(1500),
+      retry(10),
+      pluck("response", "data"),
+      tap(({ status }) => {
+        if (status) {
+          throw Error("Something went wrong");
+        }
+      })
+    )
   );
 }
 
@@ -246,17 +300,14 @@ function fetchData$(characterId, setIsDoneLoadingVoices) {
     fetchCharacterDetailData$(characterId).pipe(
       map((data) => ({ data, typeResponse: "info" })),
       catchError(() => of({})),
-      delay(1500)
     ),
     fetchAnimeByCharacterId$(characterId).pipe(
       map((data) => ({ data, typeResponse: "anime" })),
       catchError(() => of([])),
-      delay(1500)
     ),
     fetchMangaByCharacterId$(characterId).pipe(
       map((data) => ({ data, typeResponse: "manga" })),
       catchError(() => of([])),
-      delay(1500)
     ),
     fetchVoiceActorByCharacterId$(characterId).pipe(
       map((data) => ({ data, typeResponse: "voice actor" })),
@@ -266,6 +317,19 @@ function fetchData$(characterId, setIsDoneLoadingVoices) {
     concatAll(),
     map((response) => {
       // [dataCharacter, dataVoiceActor, dataAnime, dataManga]
+      cachesStore.updateData({
+        dataCharacterDetail: {
+          ...cachesStore.currentState().dataCharacterDetail,
+          [characterId]: {
+            ...(cachesStore.currentState().dataCharacterDetail || {})[
+              characterId
+            ],
+            [response.typeResponse]: {
+              ...response,
+            },
+          },
+        },
+      });
       switch (response.typeResponse) {
         case "info":
           return {

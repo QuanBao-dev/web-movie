@@ -17,7 +17,7 @@ router.get("/character/:characterId", async (req, res) => {
     const { name } = data.data;
     const image_url = data.data.images.jpg.image_url;
     const filePath = path.join(__dirname, "../build", "index.html");
-    fs.readFile(filePath, "utf8", (error, data) => {
+    fs.promises.readFile(filePath, "utf8", (error, data) => {
       if (!error) {
         data = data
           .replace(titleReg, name)
@@ -48,7 +48,7 @@ router.get("/person/:personId", async (req, res) => {
     const { name } = data.data;
     const image_url = data.data.images.jpg.image_url;
     const filePath = path.join(__dirname, "../build", "index.html");
-    fs.readFile(filePath, "utf8", (error, data) => {
+    fs.promises.readFile(filePath, "utf8", (error, data) => {
       if (!error) {
         data = data
           .replace(titleReg, name)
@@ -80,7 +80,7 @@ router.get("/anime/:id", async (req, res) => {
     const image_url =
       data.data.images.jpg.large_image_url || data.data.images.jpg.image_url;
     const filePath = path.join(__dirname, "../build", "index.html");
-    fs.readFile(filePath, "utf8", (error, data) => {
+    fs.promises.readFile(filePath, "utf8", (error, data) => {
       if (!error) {
         data = data
           .replace(titleReg, title)

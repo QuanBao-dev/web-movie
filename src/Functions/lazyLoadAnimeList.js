@@ -4,6 +4,7 @@ import {
   updatePageScrollingWindow$,
 } from "../epics/lazyLoadAnimeList";
 import { updatedAnimeStream } from "../epics/updatedAnime";
+import cachesStore from "../store/caches";
 
 export const initLazyLoadAnimeList = (setLazyLoadState) => {
   return () => {
@@ -83,10 +84,20 @@ export const fetchDataGenreAnimeList = (
         pageGenre,
         url,
         idCartoonUser,
-        searchBy
+        searchBy,
+        query
       ).subscribe((v) => {
         if (v.error) alert("Something went wrong");
         if (!v.error) {
+          cachesStore.updateData({
+            genres: {
+              ...(cachesStore.currentState().genres || {}),
+              [query]: {
+                ...(cachesStore.currentState().genres || {})[query],
+                [pageGenre]: v,
+              },
+            },
+          });
           let updatedAnime;
           if (
             lazyLoadAnimeListStream.currentState().genreDetailData.length ===

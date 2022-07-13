@@ -1,12 +1,5 @@
 import { from, of } from "rxjs";
-import {
-  concatAll,
-  delay,
-  map,
-  tap,
-  catchError,
-  switchMap,
-} from "rxjs/operators";
+import { catchError, concatAll, map, switchMap, tap } from "rxjs/operators";
 
 import {
   animeDetailStream,
@@ -24,11 +17,11 @@ import {
 } from "../epics/animeDetail";
 import { characterStream } from "../epics/character";
 import { fetchReviewsData$, reviewsStream } from "../epics/reviews";
+import cachesStore from "../store/caches";
 
 export const initAnimeDetailState = (setNameState) => {
   return () => {
     const subscription2 = animeDetailStream.subscribe(setNameState);
-    animeDetailStream.init();
     // window.scroll({ top: 0 });
     return () => {
       document.title = `My Anime Fun - Watch latest anime in high quality`;
@@ -53,6 +46,13 @@ export const fetchData = (
           animeDetailStream.updateData({
             dataVideoPromo: promo,
           });
+          cachesStore.updateData({
+            ...cachesStore.currentState(),
+            [malId]: {
+              ...cachesStore.currentState()[malId],
+              dataVideoPromo: data,
+            },
+          });
         }
         animeDetailStream.updateIsLoading(false, "isLoadingVideoAnime");
       })
@@ -64,6 +64,13 @@ export const fetchData = (
           return;
         }
         try {
+          cachesStore.updateData({
+            ...cachesStore.currentState(),
+            [malId]: {
+              ...cachesStore.currentState()[malId],
+              dataLargePictureList: { pictures: [...pictures] },
+            },
+          });
           animeDetailStream.updateData({
             dataLargePictureList: pictures.reverse(),
             isLoadingLargePicture: false,
@@ -112,6 +119,13 @@ export const fetchData = (
         animeDetailStream.updateData({
           dataRelatedAnime: handledData,
         });
+        cachesStore.updateData({
+          ...cachesStore.currentState(),
+          [malId]: {
+            ...cachesStore.currentState()[malId],
+            dataRelatedAnime: data,
+          },
+        });
       })
     );
     const fetchCharacters$ = fetchDataCharacter$(malId, type).pipe(
@@ -123,11 +137,19 @@ export const fetchData = (
           dataCharacterRaw: data,
           page: 1,
         });
+        cachesStore.updateData({
+          [malId]: {
+            ...cachesStore.currentState()[malId],
+            dataCharacter: data,
+          },
+        });
       })
     );
     const fetchInformation$ = from([
       fetchDataInfo$.pipe(
-        map((data) => ({ ...data, type_data: "data info" })),
+        map((data) => {
+          return { ...data, type_data: "data info" };
+        }),
         catchError(() => {
           return of({ error: "something went wrong" });
         })
@@ -148,34 +170,50 @@ export const fetchData = (
       concatAll(),
       tap((data) => {
         if (!data || data.error) return;
+        let object = {};
         switch (data.type_data) {
           case "data info":
-            animeDetailStream.updateData({
-              dataInformationAnime: {
-                ...data,
-                opening_themes: "",
-                ending_themes: "",
-                external_links: {},
-                broadcast:
-                  data.broadcast && data.broadcast.day
-                    ? [
-                        `Day: ${data.broadcast.day}`,
-                        `Time: ${data.broadcast.time}`,
-                        `Timezone: ${data.broadcast.timezone}`,
-                        `String: ${data.broadcast.string}`,
-                      ]
-                    : null,
+            object = {
+              opening_themes: "",
+              ending_themes: "",
+              external_links: {},
+              broadcast:
+                data.broadcast && data.broadcast.day
+                  ? [
+                      `Day: ${data.broadcast.day}`,
+                      `Time: ${data.broadcast.time}`,
+                      `Timezone: ${data.broadcast.timezone}`,
+                      `String: ${data.broadcast.string}`,
+                    ]
+                  : null,
+            };
+            cachesStore.updateData({
+              [malId]: {
+                ...cachesStore.currentState()[malId],
+                dataInfo: data,
               },
+            });
+            animeDetailStream.updateData({
+              dataInformationAnime: { ...data, ...object },
             });
             document.title =
               data.title || `My Anime Fun - Watch latest anime in high quality`;
             break;
           case "themes":
+            object = {
+              opening_themes: data.openings,
+              ending_themes: data.endings,
+            };
             animeDetailStream.updateData({
               dataInformationAnime: {
                 ...animeDetailStream.currentState().dataInformationAnime,
-                opening_themes: data.openings,
-                ending_themes: data.endings,
+                ...object,
+              },
+            });
+            cachesStore.updateData({
+              [malId]: {
+                ...cachesStore.currentState()[malId],
+                themes: data,
               },
             });
             if (
@@ -188,10 +226,19 @@ export const fetchData = (
             }
             break;
           case "externals":
+            object = {
+              external_links: data,
+            };
+            cachesStore.updateData({
+              [malId]: {
+                ...cachesStore.currentState()[malId],
+                externals: data,
+              },
+            });
             animeDetailStream.updateData({
               dataInformationAnime: {
                 ...animeDetailStream.currentState().dataInformationAnime,
-                external_links: data,
+                ...object,
               },
               isLoadingInfoAnime: false,
             });
@@ -209,11 +256,11 @@ export const fetchData = (
       });
       animeDetailStream.resetState();
       subscription = from([
-        fetchLargePictureUrl$.pipe(delay(1500)),
-        fetchInformation$.pipe(delay(1500)),
-        fetchCharacters$.pipe(delay(1500)),
-        fetchAnimeAppears$.pipe(delay(1500)),
-        fetchDataVideoPromo$.pipe(delay(1500)),
+        fetchLargePictureUrl$,
+        fetchInformation$,
+        fetchCharacters$,
+        fetchAnimeAppears$,
+        fetchDataVideoPromo$,
         fetchReviewsData$(
           malId,
           reviewsStream.currentState().pageReviewsData,
@@ -222,6 +269,9 @@ export const fetchData = (
           .pipe(
             tap((v) => {
               if (v && !v.error) {
+                cachesStore.updateData({
+                  dataReviews: v,
+                });
                 let updatedAnime;
                 if (
                   reviewsStream.currentState().reviewsData.length === 0 ||
@@ -288,7 +338,12 @@ export const fetchBoxMovieOneMovie = (
         switchMap((api) => {
           if (!api.error) {
             animeDetailStream.updateData({ isAddMode: false });
-            return handleDeleteBoxMovie(deleteMovieRef, idCartoonUser, malId, isAddMode);
+            return handleDeleteBoxMovie(
+              deleteMovieRef,
+              idCartoonUser,
+              malId,
+              isAddMode
+            );
           } else {
             animeDetailStream.updateData({ isAddMode: true });
             return handleAddBoxMovie(addMovieRef, idCartoonUser, isAddMode);

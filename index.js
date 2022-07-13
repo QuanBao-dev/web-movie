@@ -103,10 +103,10 @@ io.on("connection", (socket) => {
         );
       }
     );
-    socket.on("device-reconnect", (peerId, groupId) => {
-      console.log("device-reconnect", peerId, groupId);
-      socket.broadcast.emit("connect-device-to-others", peerId, groupId);
-    });
+    // socket.on("device-reconnect", (peerId, groupId) => {
+    //   console.log("device-reconnect", peerId, groupId);
+    //   // socket.broadcast.emit("connect-device-to-others", peerId, groupId);
+    // });
     socket.on("user-keep-remote-changed", (groupId) => {
       socket.emit("fetch-user-online");
       socket.broadcast.emit("fetch-user-online");

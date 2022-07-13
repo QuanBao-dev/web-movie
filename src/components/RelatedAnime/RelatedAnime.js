@@ -10,12 +10,11 @@ import CircularProgress from "@material-ui/core/CircularProgress";
 
 const RelatedAnime = ({ isLoading, type }) => {
   const [recommendationState, setRecommendationState] = useState(
-    animeDetailStream.currentState() || animeDetailStream.initialState
+    animeDetailStream.currentState() 
   );
   const buttonRef = useRef();
   useEffect(() => {
     const subscription = animeDetailStream.subscribe(setRecommendationState);
-    animeDetailStream.init();
     return () => {
       subscription.unsubscribe();
     };

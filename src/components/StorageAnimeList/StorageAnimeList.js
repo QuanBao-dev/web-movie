@@ -4,11 +4,12 @@ import "./StorageAnimeList.css";
 import { CircularProgress } from "@material-ui/core";
 import React, { useEffect, useRef, useState } from "react";
 import { Link, useHistory } from "react-router-dom";
-import { of, timer } from "rxjs";
+import { iif, of, timer } from "rxjs";
 import { ajax } from "rxjs/ajax";
 import {
   catchError,
   filter,
+  map,
   pluck,
   retry,
   switchMapTo,
@@ -18,6 +19,7 @@ import {
 import storageAnimeStore from "../../store/storageAnime";
 import AnimeList from "../AnimeList/AnimeList";
 import { decode } from "url-encode-decode";
+import cachesStore from "../../store/caches";
 const StorageAnimeList = ({ query }) => {
   const [storageAnimeState, setStorageAnimeState] = useState(
     storageAnimeStore.currentState()
@@ -28,7 +30,7 @@ const StorageAnimeList = ({ query }) => {
     const subscription = storageAnimeStore.subscribe(setStorageAnimeState);
     return () => subscription.unsubscribe();
   }, []);
-
+  // console.log(cachesStore.currentState())
   useEffect(() => {
     const searchBy = query.match(/anime|characters|people|manga/g)
       ? query.match(/anime|characters|people|manga/g)[0]
@@ -112,8 +114,25 @@ const StorageAnimeList = ({ query }) => {
           )
         : "",
     });
-    const subscription = timer(0)
-      .pipe(
+    const subscription = iif(
+      () =>
+        cachesStore.currentState().genres &&
+        cachesStore.currentState().genres[
+          `https://api.jikan.moe/v4/${
+            storageAnimeStore.currentState().searchBy
+          }${query}`
+        ],
+      timer(0).pipe(
+        map(
+          () =>
+            cachesStore.currentState().genres[
+              `https://api.jikan.moe/v4/${
+                storageAnimeStore.currentState().searchBy
+              }${query}`
+            ]
+        )
+      ),
+      timer(0).pipe(
         filter(() => query !== storageAnimeStore.currentState().query),
         tap(() => {
           storageAnimeStore.updateData({
@@ -133,15 +152,23 @@ const StorageAnimeList = ({ query }) => {
           )
         )
       )
-      .subscribe((response) => {
-        if (response.error) return;
-        storageAnimeStore.updateData({
-          dataAnime: response.data,
-          query,
-          isLoading: false,
-          maxPage: response.pagination.last_visible_page,
-        });
+    ).subscribe((response) => {
+      cachesStore.updateData({
+        genres: {
+          ...(cachesStore.currentState().genres || {}),
+          [`https://api.jikan.moe/v4/${
+            storageAnimeStore.currentState().searchBy
+          }${query}`]: response,
+        },
       });
+      if (response.error) return;
+      storageAnimeStore.updateData({
+        dataAnime: response.data,
+        query,
+        isLoading: false,
+        maxPage: response.pagination.last_visible_page,
+      });
+    });
     return () => {
       subscription.unsubscribe();
       if (window.location.href.includes("storage"))

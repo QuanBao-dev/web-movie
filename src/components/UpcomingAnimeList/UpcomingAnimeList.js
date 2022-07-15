@@ -92,7 +92,7 @@ const UpcomingAnimeList = () => {
         <h1 className="title-upcoming-anime">
           <Link
             style={{ textDecoration: "none" }}
-            to={`/storage?status=upcoming&order_by=favorites&sort=desc&page=1`}
+            to={`/storage?page=1&status=upcoming&order_by=favorites&sort=desc`}
           >
             Upcoming anime
           </Link>

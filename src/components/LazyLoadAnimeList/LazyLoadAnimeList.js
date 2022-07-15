@@ -1,20 +1,20 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import "./LazyLoadAnimeList.css";
+import './LazyLoadAnimeList.css';
 
-import loadable from "@loadable/component";
-import CircularProgress from "@material-ui/core/CircularProgress";
-import React, { useRef, useState } from "react";
-import { useEffect } from "react";
-import { Link } from "react-router-dom";
+import loadable from '@loadable/component';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import React, { useRef, useState } from 'react';
+import { useEffect } from 'react';
+import { useCookies } from 'react-cookie';
+import { Link } from 'react-router-dom';
 
-import { lazyLoadAnimeListStream } from "../../epics/lazyLoadAnimeList";
+import { lazyLoadAnimeListStream } from '../../epics/lazyLoadAnimeList';
 import {
   useFetchDataGenreAnimeList,
   useGenreIdChange,
   useInitLazyLoadAnimeList,
   useUpdatePageScrollingWindow,
-} from "../../Hook/lazyLoadAnimeList";
-import { useCookies } from "react-cookie";
+} from '../../Hook/lazyLoadAnimeList';
 
 const AnimeList = loadable(() =>
   import("../../components/AnimeList/AnimeList")
@@ -33,7 +33,13 @@ const LazyLoadAnimeList = ({ url, query, searchBy }) => {
   useInitLazyLoadAnimeList(setLazyLoadState);
   useGenreIdChange(query, lazyLoadState);
   useUpdatePageScrollingWindow(lazyLoadState.isStopScrollingUpdated);
-  useFetchDataGenreAnimeList(lazyLoadState, query, url, searchBy, cookie.idCartoonUser);
+  useFetchDataGenreAnimeList(
+    lazyLoadState,
+    query,
+    url,
+    searchBy,
+    cookie.idCartoonUser
+  );
   return (
     <div className="container-genre-detail">
       <Link
@@ -47,8 +53,9 @@ const LazyLoadAnimeList = ({ url, query, searchBy }) => {
                         `page=${lazyLoadState.pageGenre}`
                       )
                       .replace("?", "")
-                  : query.replace("?", "") +
-                    `${query !== "" ? "&" : ""}page=${lazyLoadState.pageGenre}`
+                  : `${query !== "" ? "&" : ""}page=${
+                      lazyLoadState.pageGenre
+                    }` + query.replace("?", "")
               }`
             : "/"
         }
@@ -63,7 +70,9 @@ const LazyLoadAnimeList = ({ url, query, searchBy }) => {
         error={null}
         lazy={true}
         animeListRef={animeListRef}
-        searchBy={["anime", "latest", "box"].includes(searchBy) ? "anime" : searchBy}
+        searchBy={
+          ["anime", "latest", "box"].includes(searchBy) ? "anime" : searchBy
+        }
       />
 
       {!lazyLoadState.isStopScrollingUpdated && (

@@ -92,10 +92,7 @@ export const fetchDataGenreAnimeList = (
           cachesStore.updateData({
             genres: {
               ...(cachesStore.currentState().genres || {}),
-              [query]: {
-                ...(cachesStore.currentState().genres || {})[query],
-                [pageGenre]: v,
-              },
+              [url.replace("{page}", pageGenre)]: v,
             },
           });
           let updatedAnime;

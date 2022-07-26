@@ -5,13 +5,10 @@ import { Link } from "react-router-dom";
 
 const RandomAnimeItem = ({
   title,
-  duration,
   aired,
   episodes,
   score,
-  rating,
   images,
-  length,
   index,
   malId,
 }) => {

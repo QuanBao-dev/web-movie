@@ -5,7 +5,7 @@ import { from, of, timer } from "rxjs";
 import { ajax } from "rxjs/ajax";
 import {
   catchError,
-  combineAll,
+  concatAll,
   pluck,
   retry,
   switchMapTo,
@@ -48,21 +48,22 @@ const RandomAnimeList = () => {
             fetchRandomAnime$,
             fetchRandomAnime$,
             fetchRandomAnime$,
-          ]).pipe(combineAll())
+          ]).pipe(concatAll())
         )
       )
-      .subscribe((randomAnimeList) => {
-        for (let i = 0; i < randomAnimeList.length; i++)
-          if (randomAnimeList[i].error) return;
+      .subscribe((randomAnime) => {
         randomAnimeListStore.updateData({
-          randomAnimeList: randomAnimeList,
+          randomAnimeList: [
+            ...randomAnimeListStore.currentState().randomAnimeList,
+            randomAnime,
+          ],
           isLoading: false,
         });
       });
     return () => {
       subscription.unsubscribe();
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   return (
     <div className="random-anime-list">
@@ -77,15 +78,12 @@ const RandomAnimeList = () => {
           <RandomAnimeItem
             key={index}
             title={title}
-            duration={duration}
             aired={aired}
             episodes={episodes}
             score={score}
-            rating={rating}
             images={images}
             malId={mal_id}
             index={index}
-            length={randomAnimeListState.randomAnimeList.length}
           />
         )
       )}

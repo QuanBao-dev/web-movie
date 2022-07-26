@@ -62,4 +62,5 @@
 
 .list-anime-nowrap .anime-item{
   display: inline-block;
+  max-width: 250px;
 }

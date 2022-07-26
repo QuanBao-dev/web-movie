@@ -24,11 +24,11 @@ const responsiveObject = [
   },
   {
     maxWidth: 600,
-    minWidth: 400,
+    minWidth: 500,
     quantityItemPerRow: 3,
   },
   {
-    maxWidth: 400,
+    maxWidth: 500,
     minWidth: 0,
     quantityItemPerRow: 2,
   },

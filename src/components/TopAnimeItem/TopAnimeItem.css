@@ -3,7 +3,7 @@
   min-height: 460px;
   position: relative;
   border-radius: 10px;
-  margin:1.5rem;
+  margin:1rem;
 }
 
 .top-anime-list-info{
@@ -77,4 +77,29 @@
 .top-anime-list li a:hover + div.title span{
   background-size: 100% 5px;
   color: yellow;
+}
+
+@media (max-width:1510px){
+  .top-anime-list li{
+    width: 20%!important;
+  }
+}
+
+@media (max-width:1273px){
+  .top-anime-list li{
+    width: 28%!important;
+  }
+}
+@media (max-width:500px){
+  .top-anime-list li{
+    width: 40%!important;
+  }
+}
+
+@media (max-width:600px){
+  .top-anime-list li{
+    width: 90%!important;
+    margin: 0!important;
+    margin-right: 1rem;
+  }
 }

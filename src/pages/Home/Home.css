@@ -12,21 +12,6 @@
   box-shadow: 0 0 10px 5px black;
   flex-wrap: wrap;
 }
-
-@media (max-width:1000px){
-  .top-anime-list li{
-    width: 40%!important;
-  }
-}
-
-@media (max-width:600px){
-  .top-anime-list li{
-    width: 90%!important;
-    margin: 0!important;
-    margin-right: 1rem;
-  }
-}
-
 .anime-pagination{
   background-color: rgb(47, 58, 71);
   width:100%;

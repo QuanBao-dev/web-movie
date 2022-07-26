@@ -1,7 +1,8 @@
 .anime-item{
   display:block;
   height: 350px;
-  width: 220px;
+  width: 18%;
+  min-width:170px;
   border-radius: 10px;
   box-shadow: 0 0 10px 5px rgba(0, 0, 0, 0.329);
   cursor: pointer;
@@ -15,9 +16,9 @@
   max-width: 440px;
 }
 
-.anime-pagination .anime-item{
+/* .anime-pagination .anime-item{
   width: 18%;
-}
+} */
 
 .anime-item.relative{
   position: relative;

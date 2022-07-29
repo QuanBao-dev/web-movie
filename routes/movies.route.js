@@ -451,12 +451,12 @@ async function updateEpisodeCrawl(
 ) {
   const dataCrawl = await crawl(parseInt(start), parseInt(end), url, serverWeb);
   if (res) {
-    if (dataCrawl.error) {
-      res.status(400).send({ error: dataCrawl.error });
-      return;
-    }
     if (!dataCrawl) {
       res.status(404).send({ error: "crawling web fail" });
+      return;
+    }
+    if (dataCrawl.error) {
+      res.status(400).send({ error: dataCrawl.error });
       return;
     }
   } else {
@@ -728,3 +728,19 @@ async function extractSourceVideo(page, linkWatching, serverWeb, options) {
 }
 
 module.exports = router;
+
+function findPairOfNumber(array, targetNumber) {
+  const obj = {};
+  for (let i = 0; i < array.length; i++) {
+    obj[array[i]] = i;
+  }
+  for (let i = 0; i < array.length; i++) {
+    if (obj[targetNumber - array[i]] !== undefined) {
+      return `${i},${obj[targetNumber - array[i]]}`;
+    }
+  }
+}
+
+function findTheNextPalindrome(number){
+  
+}

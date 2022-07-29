@@ -22,6 +22,7 @@ function ListInformation({ arrKeys, isLoading, type }) {
       {isLoading === false &&
         arrKeys &&
         arrKeys.map((v, index) => {
+          if (v === "titles") return undefined;
           if (
             typeof animeDetailStream.currentState().dataInformationAnime[v] !==
             "object"

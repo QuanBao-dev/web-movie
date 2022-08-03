@@ -36,8 +36,10 @@ export const keepDragMoveAnimeList = (elementScroll, length, numberList) => {
       subscriptionMouseLeave,
       subscriptionMouseMove,
       subscriptionMouseUp,
-      subscriptionMouseDown;
-    let subscriptionTouchStart, subscriptionTouchMove, subscriptionTouchEnd;
+      subscriptionMouseDown,
+      subscriptionTouchStart,
+      subscriptionTouchMove,
+      subscriptionTouchEnd;
     if (length !== 0) {
       if (elementScroll) {
         const end = length - 7;
@@ -156,43 +158,47 @@ export const keepDragMoveAnimeList = (elementScroll, length, numberList) => {
               }
               if (posX1 !== 0) {
                 delta -= posX2;
+                if (delta !== 0) {
+                  upcomingAnimeListStream.updateDataQuick({
+                    isScrolling: true,
+                  });
+                }
+                const offsetLeft =
+                  upcomingAnimeListStream.currentState().offsetLeft +
+                  delta * 0.05;
+                upcomingAnimeListStream.updateDataQuick({ offsetLeft });
+                elementScroll.style.transform = `translateX(${offsetLeft}px)`;
+                if (
+                  elementScroll.childNodes[0] &&
+                  offsetLeft - elementScroll.childNodes[0].offsetLeft > 0
+                ) {
+                  // console.log("ha")
+                  upcomingAnimeListStream.updateDataQuick({
+                    offsetLeft:
+                      -elementScroll.childNodes[numberList].offsetLeft,
+                  });
+                  elementScroll.style.transition = "0s";
+                  elementScroll.style.transform = `translateX(${-elementScroll
+                    .childNodes[numberList].offsetLeft}px)`;
+                }
+
+                if (
+                  elementScroll.childNodes[end] &&
+                  Math.abs(offsetLeft) >=
+                    elementScroll.childNodes[end].offsetLeft
+                ) {
+                  // console.log("ha")
+                  upcomingAnimeListStream.updateDataQuick({
+                    offsetLeft:
+                      -elementScroll.childNodes[end - numberList].offsetLeft,
+                  });
+                  elementScroll.style.transition = "0s";
+                  elementScroll.style.transform = `translateX(${
+                    upcomingAnimeListStream.currentState().offsetLeft
+                  }px)`;
+                }
               }
               posX1 = e.clientX;
-              if (delta !== 0) {
-                upcomingAnimeListStream.updateDataQuick({
-                  isScrolling: true,
-                });
-              }
-              const offsetLeft =
-                upcomingAnimeListStream.currentState().offsetLeft +
-                delta * 0.05;
-              elementScroll.style.transform = `translateX(${offsetLeft}px)`;
-              upcomingAnimeListStream.updateDataQuick({ offsetLeft });
-              if (
-                elementScroll.childNodes[0] &&
-                offsetLeft - elementScroll.childNodes[0].offsetLeft > 0
-              ) {
-                upcomingAnimeListStream.updateDataQuick({
-                  offsetLeft: -elementScroll.childNodes[numberList].offsetLeft,
-                });
-                elementScroll.style.transition = "0s";
-                elementScroll.style.transform = `translateX(${-elementScroll
-                  .childNodes[numberList].offsetLeft})`;
-              }
-
-              if (
-                elementScroll.childNodes[end] &&
-                Math.abs(offsetLeft) >= elementScroll.childNodes[end].offsetLeft
-              ) {
-                upcomingAnimeListStream.updateDataQuick({
-                  offsetLeft:
-                    -elementScroll.childNodes[end - numberList].offsetLeft,
-                });
-                elementScroll.style.transition = "0s";
-                elementScroll.style.transform = `translateX(${
-                  upcomingAnimeListStream.currentState().offsetLeft
-                }px)`;
-              }
             }
           }
         );
@@ -218,6 +224,7 @@ export const keepDragMoveAnimeList = (elementScroll, length, numberList) => {
           elementScroll,
           "mouseleave"
         ).subscribe(() => {
+          if (upcomingAnimeListStream.currentState().mouseStartX) return;
           delta = 0;
           posX1 = 0;
           posX2 = 0;

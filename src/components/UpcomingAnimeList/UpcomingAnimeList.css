@@ -24,6 +24,8 @@
 .button-scrolling{
   position: absolute;
   top: 0;
+  display: flex;
+  align-items: center;
   z-index: 3;
   cursor: pointer;
   height: 100%;

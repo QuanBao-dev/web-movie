@@ -1,6 +1,4 @@
 import "./NavBar.css";
-
-import Axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useRef } from "react";
 import { NavLink as Link, useHistory, withRouter } from "react-router-dom";
@@ -311,20 +309,22 @@ const NavBar = ({ userState, removeCookie, cookies }) => {
                         return alert("You just can upload image");
                       }
                       const file = await convertImgToBase64(e.target.files[0]);
-                      const res = await Axios.put(
-                        "/api/users/current/avatar",
-                        {
+                      const res = await fetch("/api/users/current/avatar", {
+                        method: "PUT",
+                        body: JSON.stringify({
                           avatarImage: file.target.result,
+                        }),
+
+                        headers: {
+                          authorization: `Bearer ${cookies.idCartoonUser}`,
+                          "Content-Type": "application/json",
                         },
-                        {
-                          headers: {
-                            authorization: `Bearer ${cookies.idCartoonUser}`,
-                          },
-                        }
-                      );
-                      userStream.updateAvatarUser(res.data.message);
+                      });
+                      const resJson = await res.json();
+                      if (resJson.error) throw Error(resJson.error);
+                      userStream.updateAvatarUser(resJson.message);
                     } catch (error) {
-                      console.error(error);
+                      console.error(error.message);
                     }
                   }}
                 />
@@ -339,7 +339,8 @@ const NavBar = ({ userState, removeCookie, cookies }) => {
 
 async function logoutUser(removeCookie, cookie) {
   try {
-    await Axios.delete("/api/users/logout", {
+    await fetch("/api/users/logout", {
+      method: "DELETE",
       headers: {
         authorization: `Bearer ${cookie}`,
       },

@@ -1,8 +1,7 @@
-import Axios from 'axios';
-import React from 'react';
+import React from "react";
 
-import { animeDetailStream } from '../../epics/animeDetail';
-import Input from '../Input/Input';
+import { animeDetailStream } from "../../epics/animeDetail";
+import Input from "../Input/Input";
 
 function FormSubmit({
   inputEpisodeRef,
@@ -53,8 +52,9 @@ function FormSubmit({
           const episode = parseInt(inputEpisodeRef.current.value);
           const embedUrl = inputVideoUrlRef.current.value;
           const typeVideo = typeVideoSelectRef.current.value === "video";
-          const language = document.querySelector(".select-language-anime")
-            .value;
+          const language = document.querySelector(
+            ".select-language-anime"
+          ).value;
           const isDub =
             document.querySelector(".select-mode-anime").value === "dub";
           const { idCartoonUser } = cookies;
@@ -63,24 +63,29 @@ function FormSubmit({
             return;
           }
           try {
-            const res = await Axios.put(
+            const res = await fetch(
               `/api/movies/${malId}/episode/${episode}/${language}/${isDub}`,
               {
-                embedUrl,
-                typeVideo,
-              },
-              {
+                method:"PUT",
+                body: JSON.stringify({
+                  embedUrl,
+                  typeVideo,
+                }),
+
                 headers: {
                   authorization: `Bearer ${idCartoonUser}`,
+                  "Content-Type": "application/json",
                 },
               }
             );
+            const resJson = await res.json();
+            if (resJson.error) throw Error("Some thing went wrong");
             const data = episodeData;
             if (language === "vi") {
               animeDetailStream.updateData({
                 dataEpisodesAnime: {
                   ...data,
-                  episodes: res.data,
+                  episodes: resJson,
                 },
               });
             }
@@ -89,14 +94,14 @@ function FormSubmit({
                 animeDetailStream.updateData({
                   dataEpisodesAnime: {
                     ...data,
-                    episodesEngDub: res.data,
+                    episodesEngDub: resJson,
                   },
                 });
               } else {
                 animeDetailStream.updateData({
                   dataEpisodesAnime: {
                     ...data,
-                    episodesEng: res.data,
+                    episodesEng: resJson,
                   },
                 });
               }
@@ -114,4 +119,4 @@ function FormSubmit({
   );
 }
 
-export default FormSubmit
+export default FormSubmit;

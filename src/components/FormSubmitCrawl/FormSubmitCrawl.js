@@ -1,4 +1,3 @@
-import Axios from "axios";
 import React, { useEffect, useState } from "react";
 import { animeDetailStream } from "../../epics/animeDetail";
 import { updatedAnimeStream } from "../../epics/updatedAnime";
@@ -76,21 +75,26 @@ function FormSubmitCrawl({
           }
           try {
             buttonSubmitCrawlInputRef.current.disabled = true;
-            const updateMovie = await Axios.put(
+            let updateMovie = await fetch(
               `/api/movies/${malId}/episodes/crawl`,
               {
-                start,
-                end,
-                url,
-                serverWeb,
-                isDub,
-              },
-              {
+                method: "PUT",
+                body: JSON.stringify({
+                  start,
+                  end,
+                  url,
+                  serverWeb,
+                  isDub,
+                }),
                 headers: {
                   authorization: `Bearer ${cookies.idCartoonUser}`,
+                  "Content-Type": "application/json",
                 },
               }
             );
+
+            updateMovie = await updateMovie.json();
+            if (updateMovie.error) throw Error(updateMovie.error);
 
             if (
               startEpisodeInputRef.current &&
@@ -99,7 +103,7 @@ function FormSubmitCrawl({
               linkWatchingInputRef.current
             ) {
               animeDetailStream.updateData({
-                dataEpisodesAnime: updateMovie.data.message,
+                dataEpisodesAnime: updateMovie.message,
               });
               setError(null);
               startEpisodeInputRef.current.value = "";
@@ -107,17 +111,11 @@ function FormSubmitCrawl({
               buttonSubmitCrawlInputRef.current.disabled = false;
               linkWatchingInputRef.current &&
                 (linkWatchingInputRef.current.value =
-                  updateMovie.data.message.source || "");
+                  updateMovie.message.source || "");
             }
           } catch (error) {
-            if (
-              error &&
-              error.response &&
-              error.response.data &&
-              error.response.data.error
-            ) {
-              setError(error.response.data.error);
-            }
+            if (error) setError(error);
+
             if (
               startEpisodeInputRef.current &&
               endEpisodeInputRef.current &&

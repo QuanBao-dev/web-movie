@@ -1,7 +1,6 @@
 import "./AnimeItem.css";
 import "react-lazy-load-image-component/src/effects/opacity.css";
 
-import Axios from "axios";
 import React from "react";
 import { useRef } from "react";
 import { useCookies } from "react-cookie";
@@ -42,7 +41,8 @@ const AnimeItem = ({
             onClick={async () => {
               try {
                 navBarStore.updateIsShowBlockPopUp(true);
-                await Axios.delete(`/api/movies/box/${anime.malId}`, {
+                await fetch(`/api/movies/box/${anime.malId}`, {
+                  method: "DELETE",
                   headers: {
                     authorization: `Bearer ${cookies.idCartoonUser}`,
                   },

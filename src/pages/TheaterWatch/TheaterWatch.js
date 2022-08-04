@@ -1,7 +1,6 @@
 import "./TheaterWatch.css";
 
 import loadable from "@loadable/component";
-import Axios from "axios";
 import Peer from "peerjs";
 import React, { useEffect, useRef, useState } from "react";
 import { useCookies } from "react-cookie";
@@ -723,18 +722,17 @@ async function createNewVideo(source, uploadOtherUser = false, transcriptUrl) {
 }
 
 async function updateUserKeepRemote(groupId, userId) {
-  await Axios.put(
-    `/api/theater/${groupId}/members`,
-    {
+  await fetch(`/api/theater/${groupId}/members`, {
+    method: "PUT",
+    body: JSON.stringify({
       userId: userId,
       keepRemote: true,
+    }),
+    headers: {
+      "Content-Type": "application/json",
+      authorization: `Bearer ${idCartoonUser}`,
     },
-    {
-      headers: {
-        authorization: `Bearer ${idCartoonUser}`,
-      },
-    }
-  );
+  });
 }
 
 function addEventListenerVideoElement(
@@ -937,16 +935,18 @@ function addDeviceStream(deviceElement, stream, deviceGridElement, peerId) {
 }
 
 async function fetchGroup(groupId, idCartoonUser) {
-  const res = await Axios.get(`/api/theater/${groupId}`, {
+  const res = await fetch(`/api/theater/${groupId}`, {
+    method: "GET",
     headers: {
       authorization: `Bearer ${idCartoonUser}`,
-    }, 
+    },
   });
+  const resJson = await res.json();
   try {
     updateAllowFetchCurrentRoomDetail(false);
     updateSignIn(true);
     theaterStream.updateData({
-      currentRoomDetail: res.data.message,
+      currentRoomDetail: resJson.message,
     });
   } catch (error) {}
 }

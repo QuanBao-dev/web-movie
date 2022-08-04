@@ -18,7 +18,28 @@
 
 .button-right{
   margin: 0 0 0 auto;
+
 }
+
+.btn:disabled{
+  pointer-events: none;
+  background-color: #6b3333;
+}
+
+.btn{
+  padding:1rem;
+  text-decoration: none;
+  color: white;
+  border: none;
+  outline: none;
+  cursor: pointer;
+}
+
+.btn-primary{
+  background-color: #1838c5;
+}
+
+
 
 @media(max-width: 550px){
   .form-register{

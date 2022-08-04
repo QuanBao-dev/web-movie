@@ -2,7 +2,6 @@ import "./Login.css";
 
 import React, { useEffect, useRef, useState } from "react";
 import { useCookies } from "react-cookie";
-import Axios from "axios";
 
 import Input from "../../components/Input/Input";
 import { validateFormSubmitLogin$ } from "../../epics/home";
@@ -109,11 +108,20 @@ async function submitForm(
   try {
     setEmailError(null);
     setPasswordError(null);
-    const res = await Axios.post("/api/users/login", {
-      email: email.value,
-      password: password.value,
+    const res = await fetch("/api/users/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        email: email.value,
+        password: password.value,
+      }),
     });
-    const resJson = res.data;
+    const resJson = await res.json();
+    if (resJson.error) {
+      throw Error(JSON.stringify({ error: resJson.error }));
+    }
     const token = resJson.message;
     setCookie("idCartoonUser", token, {
       expires: new Date(Date.now() + 43200000),
@@ -128,20 +136,18 @@ async function submitForm(
     });
     // history.push("/");
   } catch (error) {
-    // console.log(email,password);
+    const errorData = JSON.parse(error.message);
+    console.log(errorData.error);
     if (
-      error.response &&
-      error.response.data.error.toLowerCase().includes("email")
+      errorData.error.toLowerCase().includes("email") ||
+      errorData.error.toLowerCase().includes("account")
     ) {
-      setEmailError(error.response.data.error);
+      setEmailError(errorData.error);
     } else {
       setEmailError(null);
     }
-    if (
-      error.response &&
-      error.response.data.error.toLowerCase().includes("password")
-    ) {
-      setPasswordError(error.response.data.error);
+    if (errorData.error.toLowerCase().includes("password")) {
+      setPasswordError(errorData.error);
     } else {
       setPasswordError(null);
     }

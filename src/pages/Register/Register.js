@@ -1,6 +1,5 @@
 import "./Register.css";
 
-import Axios from "axios";
 import React, { useEffect, useRef, useState } from "react";
 import { useHistory } from "react-router-dom";
 
@@ -76,28 +75,36 @@ async function submitForm(
     setEmailError(null);
     setPasswordError(null);
     setUsernameError(null);
-    await Axios.post("/api/users/register", {
-      email,
-      password,
-      username,
+    const res = await fetch("/api/users/register", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        email,
+        password,
+        username,
+      }),
     });
+    const resJson = await res.json();
+    if (resJson.error) throw Error(resJson.error);
     // console.log(resJson);
     history.push("/auth/login");
   } catch (error) {
     // alert(error.response.data.error);
     // console.log(email,password);
-    if (error.response.data.error.toLowerCase().includes("email")) {
-      setEmailError(error.response.data.error);
+    if (error.message.toLowerCase().includes("email")) {
+      setEmailError(error.message);
     } else {
       setEmailError(null);
     }
-    if (error.response.data.error.toLowerCase().includes("password")) {
-      setPasswordError(error.response.data.error);
+    if (error.message.toLowerCase().includes("password")) {
+      setPasswordError(error.message);
     } else {
       setPasswordError(null);
     }
-    if (error.response.data.error.toLowerCase().includes("username")) {
-      setUsernameError(error.response.data.error);
+    if (error.message.toLowerCase().includes("username")) {
+      setUsernameError(error.message);
     } else {
       setUsernameError(null);
     }

@@ -1,6 +1,5 @@
 import "./FormEditCarousel.css";
 
-import Axios from "axios";
 import React, { useRef } from "react";
 import { useCookies } from "react-cookie";
 import navBarStore from "../../store/navbar";
@@ -68,24 +67,31 @@ const FormEditCarousel = () => {
                 navBarStore.updateIsShowBlockPopUp(true);
                 let url = "";
                 if ($(".file-upload-carousel").value.trim() !== "") {
-                  url = await base64DataUrl($(".file-upload-carousel").files[0]);
+                  url = await base64DataUrl(
+                    $(".file-upload-carousel").files[0]
+                  );
                 } else {
                   url = imageUrlInputRef.current.value;
                 }
-                const { data } = await Axios.put(
+                const res = await fetch(
                   "/api/movies/carousel/" + idInputRef.current.value,
                   {
-                    malId: malIdInputRef.current.value,
-                    url,
-                  },
-                  {
+                    method: "PUT",
+                    body: JSON.stringify({
+                      malId: malIdInputRef.current.value,
+                      url,
+                    }),
+
                     headers: {
                       authorization: `Bearer ${cookies.idCartoonUser}`,
+                      "Content-Type":"application/json"
                     },
                   }
                 );
+                const resJson = await res.json();
+                if (resJson.error) throw Error("Some things went wrong");
                 carouselStream.updateData({
-                  dataCarousel: data.message,
+                  dataCarousel: resJson.message,
                   isShowFormEditCarousel: false,
                 });
               } catch (error) {}

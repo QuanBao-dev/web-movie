@@ -1,7 +1,6 @@
 import "./Theater.css";
 
 import loadable from "@loadable/component";
-import Axios from "axios";
 import React, { useRef, useState } from "react";
 import { useCookies } from "react-cookie";
 import { Link, Route, Switch } from "react-router-dom";
@@ -141,29 +140,35 @@ function InputCreateRoom({
           };
           buttonSubmitRef.current.disabled = true;
           try {
-            const res = await Axios.post("/api/theater", data, {
+            const res = await fetch("/api/theater", {
+              method: "POST",
+              body: JSON.stringify(data),
               headers: {
                 authorization: `Bearer ${cookies.idCartoonUser}`,
+                "Content-Type": "application/json",
               },
             });
+            const resJson = await res.json();
+            console.log(resJson.error);
             // socket.emit("create-new-room");
+            if(resJson.error) throw Error(resJson.error)
             updateAllowFetchRooms(true);
             inputRoomNameRef.current.value = "";
             inputPasswordRef.current.value = "";
             theaterStream.updateData({
-              rooms: [...theaterStream.currentState().rooms, res.data.message],
+              rooms: [...theaterStream.currentState().rooms, resJson.message],
             });
           } catch (error) {
-            if (error.response.data.error.toLowerCase().includes("roomname")) {
-              setRoomNameError(error.response.data.error);
+            if (error.message.toLowerCase().includes("roomname")) {
+              setRoomNameError(error.message);
               inputRoomNameRef.current.value = "";
             } else {
               setRoomNameError(null);
               inputRoomNameRef.current.value = "";
               inputPasswordRef.current.value = "";
             }
-            if (error.response.data.error.toLowerCase().includes("password")) {
-              setPasswordError(error.response.data.error);
+            if (error.message.toLowerCase().includes("password")) {
+              setPasswordError(error.message);
               inputPasswordRef.current.value = "";
             } else {
               inputRoomNameRef.current.value = "";

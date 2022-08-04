@@ -9,6 +9,7 @@ import {
   pluck,
   retry,
   switchMapTo,
+  tap,
   takeWhile,
 } from "rxjs/operators";
 
@@ -38,7 +39,14 @@ const RandomAnimeList = () => {
     );
     const subscription = timer(0)
       .pipe(
-        takeWhile(() => randomAnimeListState.randomAnimeList.length === 0),
+        takeWhile(
+          () => randomAnimeListStore.currentState().randomAnimeList.length !== 7
+        ),
+        tap(() => {
+          randomAnimeListStore.updateData({
+            randomAnimeList: [],
+          });
+        }),
         switchMapTo(
           from([
             fetchRandomAnime$,

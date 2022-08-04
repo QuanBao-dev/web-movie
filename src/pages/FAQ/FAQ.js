@@ -1,7 +1,6 @@
 import "./FAQ.css";
 import React, { useEffect, useRef, useState } from "react";
 import { userStream } from "../../epics/user";
-import Axios from "axios";
 import { useCookies } from "react-cookie";
 import { ajax } from "rxjs/ajax";
 import { pluck } from "rxjs/operators";
@@ -48,21 +47,23 @@ const FAQ = () => {
               const html = contentFaqRef.current.innerHTML
                 .replace(/&lt;/g, "<")
                 .replace(/&gt;/g, ">");
+              console.log(html);
               try {
-                const result = await Axios.post(
-                  "/api/faq",
-                  {
+                const result = await fetch("/api/faq", {
+                  method: "POST",
+                  body: JSON.stringify({
                     html: html,
+                  }),
+                  headers: {
+                    "Content-Type": "application/json",
+                    authorization: `Bearer ${cookies.idCartoonUser}`,
                   },
-                  {
-                    headers: {
-                      authorization: `Bearer ${cookies.idCartoonUser}`,
-                    },
-                  }
-                );
-                setHtmlContent(result.data.message);
+                });
+                const resJson = await result.json();
+                if (resJson.error) throw Error(resJson.error);
+                setHtmlContent(resJson.message);
               } catch (error) {
-                console.log(error.response);
+                console.log(error.message);
               }
               document.querySelector("#save-button").disabled = false;
             }}

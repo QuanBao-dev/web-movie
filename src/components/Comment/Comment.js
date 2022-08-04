@@ -1,6 +1,5 @@
 import "./Comment.css";
 
-import Axios from "axios";
 import { nanoid } from "nanoid";
 import React, { createRef, useEffect, useRef, useState } from "react";
 import { useCookies } from "react-cookie";
@@ -337,17 +336,16 @@ function DeleteComment({ v, malId, cookies }) {
       onClick={async () => {
         navBarStore.updateIsShowBlockPopUp(true);
         try {
-          await Axios.put(
-            "/api/movies/message/delete/" + malId,
-            {
+          await fetch("/api/movies/message/delete/" + malId, {
+            method: "PUT",
+            body: JSON.stringify({
               commentId: v.commentId,
+            }),
+            headers: {
+              authorization: `Bearer ${cookies.idCartoonUser}`,
+              "Content-Type":"application/json"
             },
-            {
-              headers: {
-                authorization: `Bearer ${cookies.idCartoonUser}`,
-              },
-            }
-          );
+          });
           if (chatStream.currentState().currentPage !== 1) {
             chatStream.updateData({
               messages: [],
@@ -444,19 +442,19 @@ async function handleUpdateMessage(
     : null;
   try {
     navBarStore.updateIsShowBlockPopUp(true);
-    await Axios.put(
-      `/api/movies/${malId}`,
-      {
+    await fetch(`/api/movies/${malId}`, {
+      method: "PUT",
+      body: JSON.stringify({
         newMessage,
         commentId,
         isPush,
+      }),
+
+      headers: {
+        authorization: "Bearer " + idCartoonUser,
+        "Content-Type": "application/json",
       },
-      {
-        headers: {
-          authorization: "Bearer " + idCartoonUser,
-        },
-      }
-    );
+    });
     if (chatStream.currentState().currentPage !== 1) {
       chatStream.updateData({
         messages: [],

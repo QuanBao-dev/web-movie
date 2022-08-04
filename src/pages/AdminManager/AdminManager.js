@@ -1,6 +1,5 @@
 import "./AdminManager.css";
 
-import Axios from "axios";
 import React, { useEffect, useRef, useState } from "react";
 import { useCookies } from "react-cookie";
 
@@ -142,7 +141,8 @@ const AdminManager = () => {
                         onClick={async () => {
                           try {
                             let temp = [...adminState.users];
-                            await Axios.delete(`/api/users/${user._id}`, {
+                            await fetch(`/api/users/${user._id}`, {
+                              method: "DELETE",
                               headers: {
                                 authorization: `Bearer ${cookies.idCartoonUser}`,
                               },
@@ -177,7 +177,8 @@ const AdminManager = () => {
                         onClick={async () => {
                           try {
                             let temp = [...adminState.users];
-                            await Axios.delete(`/api/users/${user._id}`, {
+                            await fetch(`/api/users/${user._id}`, {
+                              method: "DELETE",
                               headers: {
                                 authorization: `Bearer ${cookies.idCartoonUser}`,
                               },

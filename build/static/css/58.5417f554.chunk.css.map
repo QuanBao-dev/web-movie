@@ -1,0 +1,1 @@
+{"version":3,"sources":["Toggle.css"],"names":[],"mappings":"AAAA,QACE,iBAAkB,CAClB,UAAU,CACV,SAAU,CACV,cACF","file":"58.5417f554.chunk.css","sourcesContent":[".toggle{\r\n  position: absolute;\r\n  top:2.3rem;\r\n  left: 1rem;\r\n  cursor: pointer;\r\n}"]}

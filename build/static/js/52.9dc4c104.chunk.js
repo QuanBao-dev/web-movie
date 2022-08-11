@@ -1,0 +1,2 @@
+(this["webpackJsonpmy-app-2"]=this["webpackJsonpmy-app-2"]||[]).push([[52],{287:function(a,n,t){"use strict";t.r(n);t(288);var e=t(0),i=t.n(e),o=t(7),s=Object(o.a)((function(){return Promise.all([t.e(0),t.e(44)]).then(t.bind(null,301))}));n.default=function(a){var n=a.updateStaffPosition,t=a.lazy,e=void 0!==t&&t,o=a.isManga;return i.a.createElement("div",{className:"container-staff-position"},n&&n.map((function(a,n){return i.a.createElement(s,{lazy:e,key:n,updateStaffPosition:a,isManga:o})})))}},288:function(a,n,t){}}]);
+//# sourceMappingURL=52.9dc4c104.chunk.js.map

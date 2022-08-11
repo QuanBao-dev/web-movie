@@ -1,0 +1,2 @@
+(this["webpackJsonpmy-app-2"]=this["webpackJsonpmy-app-2"]||[]).push([[5],{208:function(e,a,n){"use strict";n.r(a);n(276);var t=n(7),i=n(0),r=n.n(i),l=Object(t.a)((function(){return Promise.all([n.e(0),n.e(43)]).then(n.bind(null,299))}));a.default=function(e){var a=e.animeList,n=e.lazy,t=void 0!==n&&n;return r.a.createElement("div",{className:"all-anime-related"},a&&a.map((function(e,a){var n=e.anime,i=e.role,c=e.type;return r.a.createElement(l,{anime:n,role:i,key:a,lazy:t,type:c})})))}},276:function(e,a,n){}}]);
+//# sourceMappingURL=5.8d2d5ae1.chunk.js.map

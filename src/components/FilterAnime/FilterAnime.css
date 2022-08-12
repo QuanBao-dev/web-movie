@@ -1,0 +1,99 @@
+.filter-anime-container{
+  flex: 1 1 10%;
+  min-width: 288px;
+  border-right: 3px solid rgba(128, 128, 128, 0.411);
+}
+
+.filter-anime-wrapper{
+  position: -webkit-sticky; /* Safari */
+  position: sticky;
+  top: 0;
+  overflow: hidden;
+}
+
+.filter-anime-title{
+  text-align: center;
+  font-family: "Roboto", sans-serif;
+  width: 100%;
+  border-bottom: 1px solid #454545;
+  padding-bottom: 0.4rem;
+  color: rgb(255, 111, 135);
+}
+
+.button-filter-anime{
+  padding: 0.3rem 0.6rem;
+  border: 3px solid rgb(255, 122, 144);
+  font-family: "Roboto", sans-serif;
+  text-transform: uppercase;
+  font-size: 1rem;
+  background-color: rgb(43, 46, 59);
+  font-weight: 800;
+  color: rgb(255, 153, 170);
+  cursor: pointer;
+}
+
+.button-filter-anime:hover{
+  background-color: black;
+  border: 3px solid white;
+}
+
+.fieldset-filter-button{
+  padding: 0.6rem;
+  position: relative;
+  margin: 0.4rem;
+  border-color: #505050;
+  font-family: 'Roboto', sans-serif, Arial, Helvetica;
+  background-color: #2a2a2a;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.filter-anime-input-container{
+  padding: 0.6rem;
+  position: relative;
+  margin: 0.4rem;
+  border-color: #505050;
+  font-family: 'Roboto', sans-serif, Arial, Helvetica;
+  background-color: #2a2a2a;
+}
+
+.filter-anime-input{
+  width: 100%;
+}
+
+.filter-check-box{
+  transform: scale(2);
+  cursor: pointer;
+}
+
+.search-producer-anime-container{
+  display:flex;
+  transition: 0.5s;
+  position: relative;
+}
+
+.search-producer-anime-container fieldset{
+  min-width:87%
+}
+
+.navigation-filter-mode{
+  display: flex;
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  justify-content: center;
+}
+
+.navigation-filter-mode li{
+  width: 40%;
+  height: 10px;  
+  cursor: pointer;
+  background-color: #8d8d8d;
+  margin: 0 10px;
+}
+
+.navigation-filter-mode li.active{
+  background-color: aliceblue;
+}

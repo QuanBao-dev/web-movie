@@ -1,0 +1,47 @@
+.custom-select-container{
+  padding: 0.6rem;
+  position: relative;
+  margin: 0.4rem;
+  border-color: #505050;
+  background-color: #2a2a2a;
+}
+
+.label-select{
+  font-family: 'Roboto', sans-serif, Arial, Helvetica;
+  text-transform: uppercase;
+  font-weight: 700;
+  font-size:1rem;
+  text-align: center;
+}
+
+.custom-select-wrapper{
+  position: relative;
+}
+
+.custom-select-list{
+  width: 100%;
+  text-transform: capitalize;
+  font-family: 'Roboto', sans-serif, Arial, Helvetica;
+  text-align: center;
+  background-color: rgb(48, 47, 47);
+  border-radius: 5px;
+  color: white;
+  padding: 0.2rem 0.5rem;
+  -moz-appearance:none; /* Firefox */
+  -webkit-appearance:none; /* Safari and Chrome */
+  appearance:none;
+  padding-right: 1.5rem;
+  outline: none;
+  font-size:larger ;
+  color: rgb(253, 128, 149);
+}
+
+
+.custom-select-wrapper i{
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 1;
+  color: rgb(253, 128, 149);
+}

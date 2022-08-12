@@ -1,0 +1,57 @@
+.all-anime-related{
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  background-color: rgb(30, 36, 85);
+  box-shadow: 0 0 5px 2px black;
+}
+
+
+  .all-anime-related > div{
+    cursor: pointer;
+    margin: 0.9rem;
+    display: flex;
+    align-items: center;
+    box-shadow: 0 0 10px 1px black;
+    position: relative;
+    background-color: black;
+    border-radius: 10px;
+    transition: 0.1s;
+    max-width: 225px;
+    justify-content:center;
+    flex: 1 1 auto;
+  }
+  @media (max-width:655px){
+    .all-anime-related > div{
+      width: 40%;
+      height: auto;
+    }
+
+    .pop-up-hover h3{
+      white-space: nowrap; 
+      width: 100%; 
+      text-align: center;
+      overflow: hidden;
+      text-overflow: ellipsis; 
+      text-transform: capitalize;
+      font-style: italic;
+      font-size: smaller;
+      color: white;
+    }
+  }
+  .all-anime-related > div:hover{
+    transform: scale(1.1);
+  }
+  .all-anime-related > div:hover .pop-up-hover{
+    transform: scale(1);
+  }
+
+    .all-anime-related div img{
+      border-radius: 10px;
+      width: 100%;
+      object-fit: cover;
+      background-color: black;
+      height: 100%;
+    }

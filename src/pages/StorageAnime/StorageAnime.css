@@ -1,0 +1,20 @@
+.storage-anime-container{
+  width: 100%;
+  max-width: 1398px;
+  margin:auto;
+  flex-wrap: wrap;
+  min-height: 100vh;
+  box-shadow: 0 0 1px 2px rgba(255, 255, 255, 0.24);
+  background-color: hsl(240, 5%, 13%);
+  display: flex;
+}
+
+@media (max-width:831px) {
+  .storage-anime-container{
+    flex-direction: column-reverse;
+  }
+
+  .filter-anime-container{
+    border-right: none!important;
+  }
+}

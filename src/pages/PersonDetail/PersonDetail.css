@@ -1,0 +1,139 @@
+.person-detail-container{
+  background-color: #292946;
+  width: 90%;
+  margin: auto;
+  padding: 2rem;
+  color: white;
+  box-shadow: 0 0 6px 5px black;
+}
+  .person-information-wrapper{
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    background-color: rgb(34, 37, 75);
+    border-radius: 10px;
+    padding: 1rem;
+    flex-wrap: wrap;
+    box-shadow: 0 0 10px 1px rgb(18, 71, 73);
+  }
+    .image-person{
+      max-width: 400px;
+      margin: 1rem;
+      display: block;
+      width: 100%;
+      box-shadow: 0 0 20px 5px rgba(255, 255, 255, 0.733);
+    }
+    .person-information{
+      max-width: 661px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      margin:1rem;
+      font-size: 1.6rem;
+      text-align: center;
+      letter-spacing: 0.05em;
+      line-height: 2rem;
+      padding: 2rem;
+      background-color: rgb(68, 68, 61);
+      box-shadow: 0 0 10px 5px rgba(0, 0, 0, 0.733);
+      border-radius: 10px;
+    }
+
+.text-capitalize{
+  text-transform: capitalize;
+  font-size: 2rem;
+  font-family: 'Times New Roman', Times, serif;
+  margin:10px 0;
+  color: orange;
+  line-height: 1em;
+  display: block;
+  padding: 1rem;
+  background-color: rgb(68, 68, 61);
+  text-align: center;
+  font-style: italic;
+}
+
+.wrapper-text{
+  margin-bottom: 1rem;
+  border-bottom: 2px double rgb(0, 0, 0);
+  padding-bottom: 1rem;
+  padding: 1em 1rem;
+  box-shadow: 0 22px 10px 1px rgba(82, 77, 77, 0.753);
+}
+
+.text-about-person{
+  white-space: pre-wrap;
+  font-family: Arial, Helvetica, sans-serif;
+  text-align: start;
+  font-size: larger;
+  overflow-wrap: break-word;
+  letter-spacing: 0.05em;
+  line-height: 2rem;
+}
+
+.list-anime-voice-acting{
+  display: flex;
+  flex-direction: column;
+}
+
+.person-voice-item{
+  display: flex;
+  background-color: #3c3c66;
+  border-radius: 20px;
+  margin-bottom: 1rem;
+  box-shadow: 0 0 4px 1px black;
+  width: 100%;
+  justify-content: flex-start;
+}
+
+.character-item-voice{
+  cursor: pointer;
+  box-shadow: 0 0 1px 1px black;
+  margin-right: 0.2rem;
+  width: 100%;
+  display: block;
+  position: -webkit-sticky; 
+  position: sticky;
+  top: 0;
+  max-width: 125px;
+  align-self: flex-start;  
+  height: auto;
+  text-decoration: none;
+}
+
+.person__image-character{
+  width: 100%;
+  height: 100%;
+  min-width: 100px;
+  display: block;
+  object-fit: contain;
+}
+
+pre{
+  color:#d4c4c4
+}
+
+
+@media(max-width:600px){
+  .person-detail-container{
+    padding: 0;
+    width: 100%;
+  }
+}
+
+.pop-up-hover-character{
+  background-color: #16163a;
+  display: flex;
+  transition: 0.4s;
+  color: yellow;
+  align-items: center;
+  text-align: center;
+  text-shadow: 2px 2px black;
+  justify-content: center;
+  font-size: 1.2rem;
+  letter-spacing: 2px;
+}
+
+.character-item-voice:hover .pop-up-hover-character{
+  background-color: #7a7a8f;
+}

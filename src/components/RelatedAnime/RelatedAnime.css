@@ -1,0 +1,20 @@
+.see-more-movie{
+  width: 100%;
+  padding: 1rem;
+  text-align: center;
+  color: white;
+  font-weight: bolder;
+  font-size: larger;
+  cursor: pointer;
+  outline: none;
+  border:none;
+  background-color: rgb(23, 87, 160);
+}
+
+.see-more-movie:active{
+  background-color: rgb(38, 65, 107);
+}
+
+.recommendation-anime-container .anime-item{
+  max-width: 350px;
+}

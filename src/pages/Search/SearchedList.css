@@ -1,0 +1,43 @@
+.container-search-anime{
+  background-color: rgb(36, 43, 73);
+  box-shadow: 0 0 10px 4px black;
+  width: 82%;
+  margin: auto;
+  padding: 1em;
+  text-align: center;
+  word-wrap: break-word;
+}
+
+.container-search-anime h1{
+  background-color: rgb(77, 59, 59);
+  border-top: 4px solid red;
+  padding: 0.5em;
+}
+
+.page-list{
+  display: flex;
+  width: 100%;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin: auto;
+}
+
+.page-item-search{
+  padding: 1rem;
+  background-color: black;
+  margin:0 0.2em;
+  cursor: pointer;
+}
+
+.active-page-search{
+  background-color: rgb(41, 62, 119);
+  box-shadow: 0 0 2px 1px black;
+}
+
+@media(max-width:882px){
+  .container-search-anime{
+    width: 100%;
+    padding: 0;
+    padding-top: 0.2rem;
+  }
+}

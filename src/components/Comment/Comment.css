@@ -1,0 +1,160 @@
+.chat-box-user__button{
+  border-radius: 10px;
+  margin: 10px;
+  padding: 10px;
+  cursor: pointer;
+}
+
+.wrapper-button{
+  display: flex;
+  justify-content: center;
+  width: 500px;
+  margin: 0 auto;
+  background-color: rgb(71, 65, 65);
+}
+
+.button-comment-reply{
+  cursor: pointer;
+  display: inline-block;
+}
+
+.comment{
+  border: 1px solid black;
+  padding: 10px;
+  box-shadow: 0 0 1px 1px black;
+  margin-bottom: 10px;
+  position: relative;
+  font-size: 1.2rem;
+  position: relative;
+}
+
+.image-avatar{
+  border-radius: 5px;
+}
+
+.container-avatar{
+  position: absolute;
+  right: 100%;
+  margin-right:3px;
+  top:0;
+}
+
+.textarea-comment-container{
+  width: 100%;
+  border: none;
+  color: white;
+  outline: none;
+  max-height: 200px;
+  background-color: #3d4669;
+  overflow: hidden;
+}
+
+.textarea-comment{
+  width: 100%;
+  padding: 1rem;
+  border: none;
+  color: white;
+  cursor: text;
+  font-size: 1.4rem;
+  outline: none;
+  max-height: 200px;
+  background-color: #3d4669;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.textarea-comment::-webkit-scrollbar{
+  width: 5px;
+  background-color: #000000;
+}
+
+.textarea-comment::-webkit-scrollbar-thumb{
+  background-color: #534c4c;
+}
+
+
+.delete-symbol{
+  color:white;
+  position: absolute;
+  right: 0;
+  top: 0;
+  cursor: pointer;
+}
+
+.comment .author{
+  color: aqua;
+  margin-bottom: 10px;
+}
+
+.comment .content-message{
+  color: aliceblue;
+}
+
+.content-comment .link{
+  cursor: pointer;
+  display: inline-block;
+}
+
+.content-comment .link:hover{
+  text-decoration: underline;
+}
+
+.button-submit-comment{
+  margin: 0 0 0 auto;
+}
+
+.wrapper-messages{
+  width: 90%;
+  box-shadow: 0 0 1px 1px #000000;
+  display: block;
+  background-color: #262c41;
+  padding: 2rem;
+}
+
+@media(max-width:376px){
+  .wrapper-messages{
+    padding: .5rem!important;
+    box-shadow: none!important;
+  }
+}
+
+.comment-button-see{
+  width: 100%;
+  padding: 1rem 0;
+  background-color: #000000;
+  text-align: center;
+  text-transform: uppercase;
+  cursor: pointer;
+  font-weight: bolder;
+}
+
+.time-since-comment{
+  color: #8e919c;
+}
+
+.textarea-comment:empty::before{
+  content: "Comment";
+  color: #a6adbb;
+}
+
+.btn{
+  padding:1rem;
+  text-decoration: none;
+  color: white;
+  border: none;
+  outline: none;
+  cursor: pointer;
+}
+
+.btn:active{
+  transform: scale(1.1,1.1);
+}
+
+.btn:disabled{
+  pointer-events: none;
+  background-color: #6b3333;
+}
+
+.btn-danger{
+  background-color: #a31212;
+}

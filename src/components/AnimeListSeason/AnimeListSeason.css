@@ -1,0 +1,6 @@
+
+@media (max-width:428px) {
+  .anime-list-season-container .anime-item{
+    max-width: 46%;
+  }
+}

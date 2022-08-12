@@ -1,0 +1,21 @@
+.video-promotion-list{
+  display: flex;
+  flex-direction: column;
+}
+
+.see-more-video{
+  background-color: black;
+  color: white;
+  border:none;
+  padding: 1rem;
+  text-transform: uppercase;
+  font-weight: bolder;
+  font-size: 1.1rem;
+  outline: none;
+  cursor: pointer;
+  text-align: center;
+}
+
+.see-more-video:active{
+  transform: scale(1,1.1);
+}

@@ -1,0 +1,19 @@
+.container-reviews{
+  width: 90%;
+  box-shadow: 0 0 1px 1px #000000;
+  display: block;
+  background-color: #262c41;
+  margin-top: 1em;
+  width: 100%;
+}
+
+.loading-symbol-review{
+  text-align: center;
+}
+
+@media (max-width: 376px){
+  .container-reviews{
+    padding: 0!important;
+  }
+
+}

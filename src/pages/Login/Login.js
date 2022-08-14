@@ -1,13 +1,13 @@
-import "./Login.css";
+import './Login.css';
 
-import React, { useEffect, useRef, useState } from "react";
-import { useCookies } from "react-cookie";
+import React, { useEffect, useRef, useState } from 'react';
+import { useCookies } from 'react-cookie';
+import { useHistory } from 'react-router-dom';
 
-import Input from "../../components/Input/Input";
-import { validateFormSubmitLogin$ } from "../../epics/home";
-import { useHistory } from "react-router-dom";
-import { fetchingUser$ } from "../../epics/user";
-import { userStream } from "../../epics/user";
+import Input from '../../components/Input/Input';
+import { validateFormSubmitLogin$ } from '../../epics/home';
+import { userStream } from '../../epics/user';
+
 const Login = () => {
   const [, setCookie] = useCookies(["idCartoonUser"]);
   const [emailError, setEmailError] = useState(null);
@@ -127,13 +127,28 @@ async function submitForm(
       expires: new Date(Date.now() + 43200000),
       path: "/",
     });
-    fetchingUser$(token).subscribe((v) => {
-      if (!v.error) {
-        history.replace("/");
-        window.scroll({ top: 0 });
-        userStream.updateUser(v.response.message);
-      }
+    const res1 = await fetch("/api", {
+      method: "GET",
+      headers: {
+        authorization: `Bearer ${token || ""}`,
+      },
     });
+    const res1Json = await res1.json();
+    if (!res1Json.error) {
+      history.replace("/");
+      window.scroll({ top: 0 });
+      userStream.updateUser(res1Json.message);
+    } else {
+      console.log("ah")
+      userStream.updateUser(userStream.initialState);
+    }
+    // fetchingUser$(token).subscribe((v) => {
+    //   if (!v.error) {
+    //     history.replace("/");
+    //     window.scroll({ top: 0 });
+    //     userStream.updateUser(v.response.message);
+    //   }
+    // });
     // history.push("/");
   } catch (error) {
     const errorData = JSON.parse(error.message);

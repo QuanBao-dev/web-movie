@@ -3,8 +3,7 @@ module.exports.verifyRole = (...roles) => {
   return (req, res, next) => {
     const authHeader = req.headers["authorization"];
     let token;
-    if (process.env.NODE_ENV === "development")
-      token = authHeader && authHeader.split(" ")[1];
+    token = authHeader && authHeader.split(" ")[1];
     if (token === "undefined") token = null;
     if (!token) token = req.signedCookies.idCartoonUser;
     if (!token) return res.status(401).send({ error: "Access Denied" });

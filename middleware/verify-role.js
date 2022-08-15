@@ -6,8 +6,7 @@ module.exports.verifyRole = (...roles) => {
     if (process.env.NODE_ENV === "development")
       token = authHeader && authHeader.split(" ")[1];
     if (token === "undefined") token = null;
-    if (!token || process.env.NODE_ENV === "production")
-      token = req.signedCookies.idCartoonUser;
+    if (!token) token = req.signedCookies.idCartoonUser;
     if (!token) return res.status(401).send({ error: "Access Denied" });
     try {
       const decode = jwt.verify(token, process.env.JWT_KEY);

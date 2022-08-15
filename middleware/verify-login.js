@@ -4,11 +4,9 @@ module.exports.verifyLogin = (req, res, next) => {
   const authHeader = req.headers["authorization"];
   let token;
   token = authHeader && authHeader.split(" ")[1];
-  if (!token) {
-    token = req.signedCookies.idCartoonUser;
-    return next();
-  }
-
+  if (!token) token = req.signedCookies.idCartoonUser;
+  console.log(token);
+  if (!token) return next();
   try {
     const verified = jwt.verify(token, process.env.JWT_KEY);
     req.user = verified;

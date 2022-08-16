@@ -14,6 +14,7 @@ const SliderLargeImage = ({
   page,
   triggerSlideSmallImage,
 }) => {
+  const carouselSlideItemRef = useRef();
   const {
     amountProductsEachPageStateList,
     isDisplayLayerBlockStateList,
@@ -125,7 +126,16 @@ const SliderLargeImage = ({
         ref={carouselSlideListWrapperRef}
       >
         {dataList.map((imageUrl, key) => (
-          <div key={key} className="carousel-slide-item">
+          <div
+            key={key}
+            className="carousel-slide-item"
+            ref={carouselSlideItemRef}
+            style={{
+              minWidth:
+                carouselSlideItemRef.current &&
+                Math.round(carouselSlideItemRef.current.offsetWidth),
+            }}
+          >
             <img
               src={imageUrl}
               alt="Not found"

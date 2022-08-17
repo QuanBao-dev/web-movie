@@ -23,6 +23,7 @@
   box-shadow: 0px 0px 15px 2px rgb(51, 57, 92);
   margin-top: 0.4rem;
   touch-action: pan-y;
+  -ms-touch-action: pan-y;
 }
 
 .block-list-anime{

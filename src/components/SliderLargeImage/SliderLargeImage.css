@@ -9,6 +9,7 @@
   display: flex;
   width: 100%;
   touch-action: pan-y;
+  -ms-touch-action: pan-y;
 }
 
 .carousel-slide-item{

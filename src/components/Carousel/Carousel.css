@@ -63,6 +63,8 @@
   width: 100%;
   transition: 0.4s;
   min-height: 210px;
+  touch-action: pan-y;
+  -ms-touch-action: pan-y;
 }
 
 .button-update-carousel-container{

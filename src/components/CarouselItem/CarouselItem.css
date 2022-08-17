@@ -1,7 +1,9 @@
 .section-carousel-container .item{
-  width: 100%;
+  min-width: 100%;
+  display: block;
   position: relative;
   cursor: pointer;
+  display: block;
 }
 
 .section-carousel-container .item h1{

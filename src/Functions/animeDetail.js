@@ -217,8 +217,8 @@ export const fetchData = (
               },
             });
             if (
-              (data && data.openings && data.openings.length > 3) ||
-              (data && data.endings && data.endings.length > 3)
+              (data && data.openings && data.openings.length > 6) ||
+              (data && data.endings && data.endings.length > 6)
             ) {
               setShowThemeMusic(false);
             } else {

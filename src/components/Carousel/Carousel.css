@@ -1,8 +1,9 @@
 .layout-section{
   width: 100%;
-  margin: auto;
   overflow: hidden;
   background-color: black;
+  position: relative;
+  display: block;
 }
 
 .background{
@@ -59,11 +60,7 @@
 
 .section-carousel-container{
   display: flex;
-  flex-wrap: nowrap;
-  width: 700%;
-  align-items: center;
-  justify-content: center;
-  position: relative;
+  width: 100%;
   transition: 0.4s;
   min-height: 210px;
 }

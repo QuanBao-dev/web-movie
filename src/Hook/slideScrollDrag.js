@@ -46,14 +46,30 @@ export const useSlideFeature = (
   const posX1 = useRef(0);
   const posX2 = useRef(0);
   const delta = useRef(0);
+  const isInitRef = useRef(true);
   const [isIntervalMode, setIsIntervalMode] = useState(
     initIsIntervalModeRef.current
   );
 
   useEffect(() => {
+    if (isInitRef.current) {
+      sliderWrapperRef.current.style.transition = "0s";
+    }
     sliderWrapperRef.current.style.transform = `translateX(${
-      widthEachItem * (amountProductsEachPage - pageActive)
+      sliderWrapperRef.current.offsetWidth *
+      (amountProductsEachPage - pageActive)
     }px)`;
+    isInitRef.current = false;
+    const subscription = fromEvent(window, "load").subscribe((v) => {
+      sliderWrapperRef.current.style.transition = "0s";
+      sliderWrapperRef.current.style.transform = `translateX(${
+        sliderWrapperRef.current.offsetWidth *
+        (amountProductsEachPage - pageActive)
+      }px)`;
+    });
+    return () => {
+      subscription.unsubscribe();
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [realPage, amountProductsEachPage, pageActive, widthEachItem]);
   useAutoSlideCarousel(
@@ -321,13 +337,16 @@ const useMouseUpSlide = (
         );
         sliderContainerRef.current.style.transition = "0.5s";
         let newPage =
-          parseInt(Math.abs(currentOffsetLeft) / widthEachItem) +
-          amountElementPerPage;
+          parseInt(
+            Math.abs(currentOffsetLeft) / sliderContainerRef.current.offsetWidth
+          ) + amountElementPerPage;
 
         if (Math.abs(posX2.current) < 3) {
           const checkNewPage =
-            Math.round(Math.abs(currentOffsetLeft) / widthEachItem) +
-            amountElementPerPage;
+            Math.round(
+              Math.abs(currentOffsetLeft) /
+                sliderContainerRef.current.offsetWidth
+            ) + amountElementPerPage;
           newPage = checkNewPage;
         }
 
@@ -339,7 +358,8 @@ const useMouseUpSlide = (
 
         if (newPage === pageActive) {
           sliderContainerRef.current.style.transform = `translateX(${
-            (amountElementPerPage - pageActive) * widthEachItem
+            (amountElementPerPage - pageActive) *
+            sliderContainerRef.current.offsetWidth
           }px)`;
         } else {
           setPageActive(newPage);
@@ -412,9 +432,10 @@ const useMouseMoveSlide = (
           }
           let deltaClientY = 0;
           if (saveMovementTouchList.length === 5) {
-            deltaClientY =
-              Math.abs(saveMovementTouchList[saveMovementTouchList.length - 1] -
-              saveMovementTouchList[0]);
+            deltaClientY = Math.abs(
+              saveMovementTouchList[saveMovementTouchList.length - 1] -
+                saveMovementTouchList[0]
+            );
           }
           if (deltaClientY > 1) return;
         }
@@ -422,7 +443,8 @@ const useMouseMoveSlide = (
           setIsDisplayLayerBlock(true);
         if (isIntervalMode) setIsIntervalMode(false);
         const currentOffsetLeft =
-          (amountElementPerPage - pageActive) * widthEachItem;
+          (amountElementPerPage - pageActive) *
+          sliderContainerRef.current.offsetWidth;
         if (!isMobile) posX2.current = posX1.current - e.clientX;
         else posX2.current = posX1.current - e.touches[0].clientX;
         if (posX1.current !== 0) {
@@ -430,7 +452,7 @@ const useMouseMoveSlide = (
           sliderContainerRef.current.style.transition = "0s";
           const newPageEstimated = definedNewPage(
             currentOffsetLeft + delta.current,
-            widthEachItem,
+            sliderContainerRef.current.offsetWidth,
             amountElementPerPage
           );
           const pageEstimatedDownLimit =
@@ -460,7 +482,7 @@ const useMouseMoveSlide = (
             sliderContainerRef.current.style.transform = `translateX(${
               currentOffsetLeft +
               delta.current -
-              widthEachItem * dataRawListLength
+              sliderContainerRef.current.offsetWidth * dataRawListLength
             }px)`;
           }
 
@@ -468,7 +490,7 @@ const useMouseMoveSlide = (
             sliderContainerRef.current.style.transform = `translateX(${
               currentOffsetLeft +
               delta.current +
-              widthEachItem * dataRawListLength
+              sliderContainerRef.current.offsetWidth * dataRawListLength
             }px)`;
           }
         }

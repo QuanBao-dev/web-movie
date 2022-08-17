@@ -4,6 +4,8 @@ import loadable from "@loadable/component";
 import React, { useEffect, useState } from "react";
 
 import { stream } from "../../epics/home";
+import { useFetchCarousel, useInitCarousel } from "../../Hook/carousel";
+import { carouselStream } from "../../epics/carousel";
 // const   from "../../components/RandomAnimeList/RandomAnimeList";
 const RandomAnimeList = loadable(
   () => import("../../components/RandomAnimeList/RandomAnimeList"),
@@ -104,6 +106,11 @@ window.addEventListener("resize", () => {
 });
 function Home() {
   const [homeState, setHomeState] = useState(stream.currentState());
+  const [carouselState, setCarouselState] = useState(
+    carouselStream.currentState()
+  );
+  useInitCarousel(setCarouselState);
+  useFetchCarousel();
   useEffect(() => {
     setTimeout(() => {
       window.scroll({
@@ -126,7 +133,9 @@ function Home() {
   // console.log(homeState);
   return (
     <div className="home-page">
-      <Carousel />
+      {carouselState.dataCarousel.length > 0 && (
+        <Carousel dataCarousel={carouselState.dataCarousel} />
+      )}
       <div className="recently-updated-movie">
         <div className="wrapper-search-anime-list">
           <SearchTool />
@@ -139,7 +148,7 @@ function Home() {
       <div className="container-anime-list">
         <div className="container-display-anime__home">
           <div className="anime-pagination">
-            <AnimeListSeason  />
+            <AnimeListSeason />
           </div>
           <TopAnimeList homeState={homeState} />
         </div>

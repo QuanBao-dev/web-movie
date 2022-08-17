@@ -175,7 +175,13 @@ const SliderSmallImage = ({
             key={key}
             className="carousel-small-image-item"
             style={{
-              minWidth: `${100 / 4}%`,
+              minWidth:
+                carouselSmallImageListWrapperRef.current &&
+                `${
+                  (100 / 4) *
+                  0.01 *
+                  carouselSmallImageListWrapperRef.current.offsetWidth
+                }px`,
             }}
           >
             <img

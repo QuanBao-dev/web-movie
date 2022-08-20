@@ -15,6 +15,7 @@
 
 .nav-bar + div{
   margin-top: 72px;
+  overflow: hidden;
 }
 
 .nav-bar__item .active{

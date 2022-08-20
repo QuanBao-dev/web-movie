@@ -92,7 +92,6 @@ function FormSubmitCrawl({
                 },
               }
             );
-
             updateMovie = await updateMovie.json();
             if (updateMovie.error) throw Error(updateMovie.error);
 
@@ -114,7 +113,7 @@ function FormSubmitCrawl({
                   updateMovie.message.source || "");
             }
           } catch (error) {
-            if (error) setError(error);
+            if (error.message) setError(error.message);
 
             if (
               startEpisodeInputRef.current &&

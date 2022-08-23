@@ -36,13 +36,21 @@ const StorageAnimeList = ({ query }) => {
       ? query.match(/anime|characters|people|manga/g)[0]
       : "anime";
     storageAnimeStore.updateData({
-      q: query.match(/q=.+&/g)
-        ? decode(
-            query.match(/q=.+&/g)[0].replace("q=", "").replace(/(&)$/g, "")
-          )
-        : query.match(/q=.+/g)
-        ? decode(query.match(/q=.+/g)[0].replace("q=", "").replace(/(&)$/g, ""))
-        : "",
+      q: query.match(/q=[a-zA-Z\%~!@_#$%^*(){}:"?><|/\\\`0-9]+&/g)
+      ? decode(
+          query
+            .match(/q=[a-zA-Z\%~!@_#$%^*(){}:"?><|/\\\`0-9]+&/g)[0]
+            .replace("q=", "")
+            .replace(/(&)$/g, "")
+        )
+      : query.match(/q=.+/g)
+      ? decode(
+          query
+            .match(/q=.+/g)[0]
+            .replace("q=", "")
+            .replace(/(&)$/g, "")
+        )
+      : "",
       searchBy: searchBy,
       page: query.match(/page=[0-9]+/g)
         ? parseInt(query.match(/page=[0-9]+/g)[0].replace("page=", ""))
@@ -98,10 +106,10 @@ const StorageAnimeList = ({ query }) => {
           : query.match(/magazines=[0-9,]+/g)
           ? query.match(/magazines=[0-9,]+/g)[0].replace("magazines=", "")
           : "",
-      letter: query.match(/letter=.+&/g)
+      letter: query.match(/letter=[a-zA-Z\%~!@_#$%^*(){}:"?><|/\\\`0-9]+&/g)
         ? decode(
             query
-              .match(/letter=.+&/g)[0]
+              .match(/letter=[a-zA-Z\%~!@_#$%^*(){}:"?><|/\\\`0-9]+&/g)[0]
               .replace("letter=", "")
               .replace(/(&)$/g, "")
           )

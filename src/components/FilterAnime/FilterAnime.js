@@ -5,6 +5,7 @@ import { useHistory } from "react-router-dom";
 import { fromEvent, timer } from "rxjs";
 import { ajax } from "rxjs/ajax";
 import { filter, pluck, switchMapTo, tap } from "rxjs/operators";
+import { encode } from "url-encode-decode";
 
 import storageAnimeStore from "../../store/storageAnime";
 import CustomSelect from "../CustomSelect/CustomSelect";
@@ -195,7 +196,7 @@ const FilterAnime = () => {
         } = ans;
         history.push(
           `/storage?page=${page}${searchBy !== "anime" ? `&${searchBy}` : ""}${
-            q ? `&q=${q.replace(/&/g, "%26")}` : ""
+            q ? `&q=${encode(q)}` : ""
           }${type ? `&type=${type}` : ""}${rating ? `&rating=${rating}` : ""}${
             status ? `&status=${status}` : ""
           }${orderBy ? `&order_by=${orderBy}` : ""}${
@@ -212,7 +213,7 @@ const FilterAnime = () => {
               : producer
               ? `&magazines=${producer}`
               : ""
-          }${letter ? `&letter=${letter.replace(/&/g, "%26")}` : ""}`
+          }${letter ? `&letter=${encode(letter)}` : ""}`
         );
       }
     );

@@ -3,6 +3,7 @@ import React from "react";
 import { timeSince } from "../../epics/comment";
 
 function ReviewItem({ review, type }) {
+  // console.log(review.score);
   return (
     <div className="review-item">
       <div className="user-info-review-container">
@@ -10,20 +11,19 @@ function ReviewItem({ review, type }) {
           <img src={review.user.images.webp.image_url} alt="Image_reviewer" />
           <div>
             <div className="username">{review.user.username}</div>
-            <div className="helpful-count">
-              {review.votes} people found this review helpful
-            </div>
           </div>
         </div>
-        <div>
-          {type === "anime"
-            ? `${review.episodes_watched} episode${
-                review.episodes_watched > 1 ? "s" : ""
-              } watched`
-            : `${review.chapters_read} chapter${
-                review.chapters_read > 1 ? "s" : ""
-              } read`}
-        </div>
+        {(review.episodes_watched || review.chapters_read) && (
+          <div>
+            {type === "anime"
+              ? `${review.episodes_watched} episode${
+                  review.episodes_watched > 1 ? "s" : ""
+                } watched`
+              : `${review.chapters_read} chapter${
+                  review.chapters_read > 1 ? "s" : ""
+                } read`}
+          </div>
+        )}
       </div>
       <div className="time-since-review">
         {timeSince(new Date(review.date).getTime()) === "Recently"
@@ -32,18 +32,24 @@ function ReviewItem({ review, type }) {
       </div>
       <div className="container-board-evaluate">
         <div>
-          {Object.keys(review.scores).map((key, index) => (
+          {Object.keys(review.reactions).map((key, index) => (
             <div className="section-evaluate" key={index}>
-              <span>{key}</span>
+              <span>{key.replace("_", " ")}</span>
             </div>
           ))}
+          <div className="section-evaluate">
+            <span>Score</span>
+          </div>
         </div>
         <div>
-          {Object.keys(review.scores).map((key, index) => (
+          {Object.keys(review.reactions).map((key, index) => (
             <div key={index}>
-              <span className="score-section">{review.scores[key]}</span>
+              <span className="score-section">{review.reactions[key]}</span>
             </div>
           ))}
+          <div>
+              <span className="score-section">{review.score}</span>
+            </div>
         </div>
       </div>
       <pre>

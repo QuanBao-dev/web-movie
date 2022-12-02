@@ -36,7 +36,7 @@ let idCartoonUser;
 let groupId;
 let videoWatchElement;
 const options = {
-  host: "web-rtc-myanimefun.herokuapp.com",
+  host: "web-rtc-myanimefun.up.railway.app",
   secure: true,
   path: "/",
   config: {

@@ -7,7 +7,6 @@ const path = require("path");
 const app = express();
 const port = process.env.PORT || 5000;
 const server = require("http").Server(app);
-const sslRedirect = require("heroku-ssl-redirect").default;
 const io = require("socket.io")(server);
 const compression = require("compression");
 cloudinary.config({
@@ -202,7 +201,6 @@ io.on("connection", (socket) => {
   });
 });
 
-app.use(sslRedirect());
 app.use(compression());
 app.disable("X-Powered-By");
 app.use(express.json({ limit: "50mb" }));

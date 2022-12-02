@@ -159,7 +159,7 @@ function App() {
   useEffect(() => {
     const subscription = userStream.subscribe(setUserState);
     const subscriptionLock = navBarStore.subscribe(setToggleNavBarState);
-    fetch("https://web-rtc-myanimefun.herokuapp.com");
+    fetch("https://web-rtc-myanimefun.up.railway.app");
     return () => {
       subscription.unsubscribe();
       subscriptionLock.unsubscribe();

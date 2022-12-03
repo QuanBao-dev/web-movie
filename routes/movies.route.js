@@ -4,7 +4,7 @@ const UpdatedMovie = require("../models/updatedMovie");
 const ignoreProps = require("../validations/ignore.validation");
 const { verifyRole } = require("../middleware/verify-role");
 const { default: Axios } = require("axios");
-const puppeteer = require("@scaleleap/puppeteer");
+const puppeteer = require("puppeteer");
 const CarouselMovie = require("../models/carouselMovie.model");
 const LengthMovie = require("../models/lengthMovie.model");
 const User = require("../models/user.model");
@@ -608,9 +608,6 @@ async function addMovieUpdated(malId) {
 
 async function crawl(start, end, url, serverWeb) {
   const browser = await puppeteer.launch({
-    extra: {
-      stealth: true,
-    },
     headless: true,
     args: ["--start-maximized", "--no-sandbox"],
     defaultViewport: null,
@@ -619,11 +616,11 @@ async function crawl(start, end, url, serverWeb) {
   try {
     const context = await browser.createIncognitoBrowserContext();
     const page = await context.newPage();
-    await page.setDefaultNavigationTimeout(0);
     const options = {
       waitUntil: "networkidle2",
-      timeout: 0,
+      timeout: 60000,
     };
+    console.log(url);
     await page.goto(url, options);
     let linkWatching;
     if (serverWeb === "gogostream") {

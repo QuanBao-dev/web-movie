@@ -30,27 +30,29 @@ const StorageAnimeList = ({ query }) => {
     const subscription = storageAnimeStore.subscribe(setStorageAnimeState);
     return () => subscription.unsubscribe();
   }, []);
-  // console.log(cachesStore.currentState())
+  useEffect(() => {
+    window.scroll({ top: 0 });
+  }, [storageAnimeState.page]);
   useEffect(() => {
     const searchBy = query.match(/anime|characters|people|manga/g)
       ? query.match(/anime|characters|people|manga/g)[0]
       : "anime";
     storageAnimeStore.updateData({
       q: query.match(/q=[a-zA-Z\%+~!@_#\-$%^*(){}:"?><|/\\\`0-9 ]+&/g)
-      ? decode(
-          query
-            .match(/q=[a-zA-Z\%+~!@_#\-$%^*(){}:"?><|/\\\`0-9 ]+&/g)[0]
-            .replace("q=", "")
-            .replace(/(&)$/g, "")
-        )
-      : query.match(/q=[a-zA-Z\%+~!@_#\-$%^*(){}:"?><|/\\\`0-9 ]+/g)
-      ? decode(
-          query
-            .match(/q=[a-zA-Z\%+~!@_#\-$%^*(){}:"?><|/\\\`0-9 ]+/g)[0]
-            .replace("q=", "")
-            .replace(/(&)$/g, "")
-        )
-      : "",
+        ? decode(
+            query
+              .match(/q=[a-zA-Z\%+~!@_#\-$%^*(){}:"?><|/\\\`0-9 ]+&/g)[0]
+              .replace("q=", "")
+              .replace(/(&)$/g, "")
+          )
+        : query.match(/q=[a-zA-Z\%+~!@_#\-$%^*(){}:"?><|/\\\`0-9 ]+/g)
+        ? decode(
+            query
+              .match(/q=[a-zA-Z\%+~!@_#\-$%^*(){}:"?><|/\\\`0-9 ]+/g)[0]
+              .replace("q=", "")
+              .replace(/(&)$/g, "")
+          )
+        : "",
       searchBy: searchBy,
       page: query.match(/page=[0-9]+/g)
         ? parseInt(query.match(/page=[0-9]+/g)[0].replace("page=", ""))

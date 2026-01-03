@@ -110,20 +110,22 @@ const AnimeItem = ({
               {new Date(anime.airing_start).getFullYear()}
             </div>
           )}
-        {anime.aired && anime.aired.prop.from.day && !anime.aired.prop.to.day && (
-          <div
-            title={
-              "Started airing on " + new Date(anime.aired.from).toUTCString()
-            }
-            className="anime-info-display_summary top-left_summary color-green"
-          >
-            {anime.aired.prop.from.month}
-            {anime.aired.prop.from.month && "/"}
-            {anime.aired.prop.from.day}
-            {anime.aired.prop.from.day && "/"}
-            {anime.aired.prop.from.year}
-          </div>
-        )}
+        {anime.aired &&
+          anime.aired.prop.from.day &&
+          !anime.aired.prop.to.day && (
+            <div
+              title={
+                "Started airing on " + new Date(anime.aired.from).toUTCString()
+              }
+              className="anime-info-display_summary top-left_summary color-green"
+            >
+              {anime.aired.prop.from.month}
+              {anime.aired.prop.from.month && "/"}
+              {anime.aired.prop.from.day}
+              {anime.aired.prop.from.day && "/"}
+              {anime.aired.prop.from.year}
+            </div>
+          )}
         {anime.aired && anime.aired.prop.to.day && (
           <div
             title={

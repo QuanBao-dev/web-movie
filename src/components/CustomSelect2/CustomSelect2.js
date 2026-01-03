@@ -153,22 +153,25 @@ const CustomSelect2 = ({
                 inputRef.current.focus();
               }}
             >
-              {allSelectedOptions.map((data, index) => (
-                <span
-                  key={index}
-                  onClick={() => {
-                    setAllSelectedOptions(
-                      allSelectedOptions.filter(
-                        ({ mal_id }) => mal_id !== data.mal_id
-                      )
-                    );
-                  }}
-                >
-                  <div className="one"></div>
-                  <div className="two"></div>
-                  {data.name}
-                </span>
-              ))}
+              {allSelectedOptions.map(
+                (data, index) =>
+                  data && (
+                    <span
+                      key={index}
+                      onClick={() => {
+                        setAllSelectedOptions(
+                          allSelectedOptions.filter(
+                            ({ mal_id }) => mal_id !== data.mal_id
+                          )
+                        );
+                      }}
+                    >
+                      <div className="one"></div>
+                      <div className="two"></div>
+                      {data.name}
+                    </span>
+                  )
+              )}
             </div>
           )}
           <input
@@ -263,35 +266,41 @@ const CustomSelect2 = ({
         </div>
         <ul className="list-suggestion" ref={listSuggestionRef}>
           {dataSuggestions.length === 0 && <div>No Results</div>}
-          {dataSuggestions.map((data, index) => (
-            <li
-              style={{
-                backgroundColor:
-                  activeIndex === index ? "rgb(110, 110, 110)" : null,
-              }}
-              className={
-                checkIfActiveItem(allSelectedOptions, data.mal_id)
-                  ? "active"
-                  : ""
-              }
-              onClick={(e) => {
-                inputRef.current.focus();
-                inputRef.current.value = "";
-                listSuggestionRef.current.style.display = "none";
-                if (e.target.className !== "active")
-                  setAllSelectedOptions([...allSelectedOptions, { ...data }]);
-                else
-                  setAllSelectedOptions(
-                    allSelectedOptions.filter(
-                      ({ mal_id }) => mal_id !== data.mal_id
-                    )
-                  );
-              }}
-              key={index}
-            >
-              {data.name}
-            </li>
-          ))}
+          {dataSuggestions.map(
+            (data, index) =>
+              data && (
+                <li
+                  style={{
+                    backgroundColor:
+                      activeIndex === index ? "rgb(110, 110, 110)" : null,
+                  }}
+                  className={
+                    checkIfActiveItem(allSelectedOptions, data.mal_id)
+                      ? "active"
+                      : ""
+                  }
+                  onClick={(e) => {
+                    inputRef.current.focus();
+                    inputRef.current.value = "";
+                    listSuggestionRef.current.style.display = "none";
+                    if (e.target.className !== "active")
+                      setAllSelectedOptions([
+                        ...allSelectedOptions,
+                        { ...data },
+                      ]);
+                    else
+                      setAllSelectedOptions(
+                        allSelectedOptions.filter(
+                          ({ mal_id }) => mal_id !== data.mal_id
+                        )
+                      );
+                  }}
+                  key={index}
+                >
+                  {data.name}
+                </li>
+              )
+          )}
         </ul>
       </div>
     </fieldset>
@@ -299,7 +308,9 @@ const CustomSelect2 = ({
 };
 
 function checkIfActiveItem(allSelectedItemList, mal_id) {
-  return allSelectedItemList.map((data) => data.mal_id).includes(mal_id);
+  return allSelectedItemList
+    .map((data) => data && data.mal_id)
+    .includes(mal_id);
 }
 
 export default CustomSelect2;

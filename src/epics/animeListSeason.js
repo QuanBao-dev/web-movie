@@ -65,11 +65,7 @@ export const changeSeasonYear$ = (
   ]).pipe(combineAll());
 };
 
-export const fetchAnimeSeason$ = (
-  year,
-  season,
-  page
-) => {
+export const fetchAnimeSeason$ = (year, season, page) => {
   return timer(0).pipe(
     switchMapTo(
       ajax(
@@ -80,7 +76,10 @@ export const fetchAnimeSeason$ = (
           animeListSeasonStream.updateDataQuick({
             maxPage: anime.pagination.last_visible_page,
           });
-          return anime.data;
+
+          return anime.data.filter((v) => {
+            return v.rating !== "Rx - Hentai";
+          });
           // // updateOriginalData(anime);
           // console.log(anime);
           // animeListSeasonStream.updateData({

@@ -21,7 +21,8 @@
 }
 
 .image-video-promotion img{
-  max-height: 605px;
+  object-fit: contain;
+  background-color: black;
 }
 
 .image-video-promotion span{

@@ -15,11 +15,12 @@ function VideoPromotionItem({ video, lazy }) {
           {lazy && (
             <LazyLoadImage
               src={video.trailer.embed_url
+                .replace("-nocookie", "")
                 .replace(
                   "https://www.youtube.com/embed",
                   "https://img.youtube.com/vi"
                 )
-                .replace(/\?.+/g, "/hqdefault.jpg")}
+                .replace(/\?.+/g, "/maxresdefault.jpg")}
               alt={video.title}
               width="100%"
               effect="opacity"
@@ -28,11 +29,12 @@ function VideoPromotionItem({ video, lazy }) {
           {!lazy && (
             <img
               src={video.trailer.embed_url
+                .replace("-nocookie", "")
                 .replace(
                   "https://www.youtube.com/embed",
                   "https://img.youtube.com/vi"
                 )
-                .replace(/\?.+/g, "/hqdefault.jpg")}
+                .replace(/\?.+/g, "/maxresdefault.jpg")}
               alt={video.title}
               width="100%"
             />
@@ -45,9 +47,9 @@ function VideoPromotionItem({ video, lazy }) {
       {toggle && (
         <iframe
           allow="autoplay"
-          style={{ margin: "auto",outline:"none",border:"none" }}
+          style={{ margin: "auto", outline: "none", border: "none" }}
           width="100%"
-          height="600px"
+          height={window.screen.availHeight}
           src={video.trailer.embed_url.replace(/autoplay=0/g, "autoplay=1")}
           title={video.title}
         />

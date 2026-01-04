@@ -10,8 +10,8 @@ const options = {
   mal_id: 1,
 };
 
-router.get("/:malIdList", async(req, res) => {
-  try{
+router.get("/:malIdList", async (req, res) => {
+  try {
     const malIdList = req.params.malIdList.split(",");
     const list = await Promise.all(
       malIdList.map(async (malId) => {
@@ -24,7 +24,7 @@ router.get("/:malIdList", async(req, res) => {
     res.send({
       message: list,
     });
-  }catch(error){
+  } catch (error) {
     res.status(404).send({ error: "Something went wrong" });
   }
 });

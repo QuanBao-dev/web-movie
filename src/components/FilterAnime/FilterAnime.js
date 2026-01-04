@@ -131,7 +131,7 @@ const FilterAnime = () => {
         )
       )
       .subscribe((data) => {
-        if (!data) return;
+        if (!data || !data[0]) return;
         producerValueRef.current = data;
         setTriggerReset(!triggerReset);
       });

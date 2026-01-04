@@ -4,6 +4,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { fromEvent, of } from "rxjs";
 import { ajax } from "rxjs/ajax";
 import { catchError, debounceTime, filter, pluck } from "rxjs/operators";
+import storageAnimeStore from "../../store/storageAnime";
 
 const CustomSelect2 = ({
   dataOptions,
@@ -25,6 +26,10 @@ const CustomSelect2 = ({
   const [textSearch, setTextSearch] = useState("");
   const [activeIndex, setActiveIndex] = useState(0);
   const [triggerFetch, setTriggerFetch] = useState(0);
+  const [storageAnimeState, setStorageAnimeState] = useState(
+    storageAnimeStore.currentState()
+  );
+
   const searchByRef = useRef();
   const pageRef = useRef();
   const textSearchRef = useRef();
@@ -38,6 +43,39 @@ const CustomSelect2 = ({
     if (!defaultValue) return;
     setAllSelectedOptions(defaultValue);
   }, [defaultValue]);
+
+  useEffect(() => {
+    const subscription = storageAnimeStore.subscribe(setStorageAnimeState);
+    return () => subscription.unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    if (
+      label.toLocaleLowerCase() !== "producers" ||
+      storageAnimeState.producers === ""
+    )
+      return;
+    const subscription = ajax(
+      "https://api.jikan.moe/v4/producers/" + storageAnimeState.producers
+    )
+      .pipe(
+        pluck("response", "data"),
+        debounceTime(1000),
+        catchError((error) => of({ error }))
+      )
+      .subscribe((v) => {
+        const selectedOption = {
+          mal_id: v.mal_id,
+          name: v.titles[0].title,
+        };
+        setAllSelectedOptions([...allSelectedOptions, selectedOption]);
+      });
+    return () => {
+      subscription.unsubscribe();
+    };
+    // eslint-disable-next-line
+  }, [storageAnimeState.producers, label]);
+
   useEffect(() => {
     if (!url) {
       setActiveIndex(0);
@@ -65,14 +103,38 @@ const CustomSelect2 = ({
           searchByRef.current !== searchByState ||
           textSearchRef.current !== textSearch
         ) {
-          setDataSuggestions([...data.data]);
+          setDataSuggestions([
+            ...data.data.map(({ mal_id, titles }) => ({
+              mal_id,
+              name: titles[0].title,
+            })),
+          ]);
           setPage(1);
           setActiveIndex(0);
         }
 
         if (pageRef.current !== page) {
-          setDataSuggestions([...dataSuggestions, ...data.data]);
+          setDataSuggestions([
+            ...dataSuggestions,
+            ...data.data.map(({ mal_id, titles }) => ({
+              mal_id,
+              name: titles[0].title,
+            })),
+          ]);
         }
+
+        // setAllSelectedOptions([
+        //   ...allSelectedOptions,
+        //   data.data
+        //     .map(({ mal_id, titles }) => ({
+        //       mal_id,
+        //       name: titles[0].title,
+        //     }))
+        //     .find(
+        //       ({ mal_id }) =>
+        //         mal_id === +storageAnimeStore.currentState().producers
+        //     ),
+        // ]);
 
         pageRef.current = page;
         textSearchRef.current = textSearch;
@@ -133,6 +195,7 @@ const CustomSelect2 = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   valueRef.current = allSelectedOptions;
+
   return (
     <fieldset
       className="custom-select2-container"
